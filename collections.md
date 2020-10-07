@@ -169,6 +169,15 @@ AdaBound：一种基于PyTorch实现的优化器，训练速度堪比Adam，质�
 
 [二阶梯度优化新崛起，超越 Adam，Transformer 只需一半迭代量](https://mp.weixin.qq.com/s/uHrRBS3Ju9MAWbaukiGnOA)
 
+[Second Order Optimization Made Practical](https://arxiv.org/abs/2002.09018)
+
+摘要：目前，无论是从理论还是应用层面来说，机器学习中的优化都是以随机梯度下降等一阶梯度方法为主。囊括二阶梯度和/或二阶数据统计的二阶优化方法虽然理论基础更强，但受限于计算量、内存和通信花销等因素，二阶梯度优化方法的普及度不高。然而在谷歌大脑与普林斯顿大学等研究者的努力下，二阶梯度优化终于在实战大模型上展现出独特的优势。
+
+研究者表示，为了缩短理论和实际优化效果之间的差距，该论文提出了一种二阶优化的概念性验证，并通过一系列重要的算法与数值计算提升，证明它在实际深度模型中能有非常大的提升。具体而言，在训练深度模型过程中，二阶梯度优化 Shampoo 能高效利用由多核 CPU 和多加速器单元组成的异构硬件架构。并且在大规模机器翻译、图像识别等领域实现了非常优越的性能，要比现有的顶尖一阶梯度下降方法还要好。
+
+推荐：本文的亮点在于研究者提出了真正应用的二阶梯度最优化器，在实战大模型上展现出独特的优势。
+
+
 ## 激活函数
 
 ### 激活函数汇总
@@ -212,6 +221,9 @@ NLP中彩票假设的应用：
 Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始化的网络包含一个小的子网络，这个子网络在进行单独地训练时，其性能能够与原始网络匹敌。在本文中，研究者证明了一个更有力的假说（正如 Ramanujan 等人在 2019 年所猜想的那样），即对于每个有界分布和每个带有有界权重的目标网络来说，一个具有随机权重的充分过参数化神经网络包含一个具有与目标网络几乎相同准确率的子网络，并且无需任何进一步的训练。
 
 ===>从根本上来说，剪枝随机初始化的神经网络与优化权重值一样重要。
+
+[剪枝与学习权重同等重要，Lottery Ticket Hypothesis第一次被理论证明](https://mp.weixin.qq.com/s/3X48NLdTHYoYeqVS0-A1OQ)
+
 
 ## 知识蒸馏
 
@@ -276,6 +288,10 @@ Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始�
 [当博弈论遇上机器学习：一文读懂相关理论](https://mp.weixin.qq.com/s/1t6WuTQpltMtP-SRF1rT4g)
 
 ## normalization相关
+
+### BN
+
+[批归一化到底做了什么？DeepMind研究者进行了拆解](https://mp.weixin.qq.com/s/6jAKhdw93E22PPQyBEwBQw)
 
 ### FRN
 
@@ -517,6 +533,15 @@ Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始�
 
 [https://github.com/facebookresearch/pytorch3d](https://github.com/facebookresearch/pytorch3d)
 
+
+[PolyGen: An Autoregressive Generative Model of 3D Meshes](https://arxiv.org/pdf/2002.10880.pdf)
+
+摘要：在本文中，来自 DeepMind 的研究者提出了一种直接建模网格的方法 PolyGen，该方法利用 Transformer 架构来循序地预测网格的顶点和表面。文中提出的 3D 网格深度生成模型 PolyGen 以对象类、三维像素和图像等一系列输入为条件，同时由于该模型是概率性的，因此它可以生成捕获模糊场景中不确定性的样本。
+
+实验表明，该模型能够生成高质量、可用的网格，并为网格建模任务创建对数似然基准。研究者表示，PolyGen 模型能够生成连贯的、多样化的 3D 网格，并且相信可以扩展该模型在计算机视觉、机器人学和 3D 内容创建中的应用。
+
+推荐：本文的亮点在于，研究者将网格生成问题作为自回归序列建模来处理，同时结合了 Transformers 和指针网络的优势，从而能够灵活地建模长度可变的网格序列。
+
 ## GNN+CV
 
 [一文读懂：图卷积在基于骨架的动作识别中的应用](https://mp.weixin.qq.com/s/aMFFQBfVXgQr71nyjpyf0g)
@@ -589,6 +614,22 @@ Facebook将该方法称为“半弱监督”(semi-weak supervision)，是结合�
 
 [超生动图解LSTM和GRU，一文读懂循环神经网络！](https://mp.weixin.qq.com/s/vVDAB2U7478yOXUT9ByjFw)
 
+## fasttext&word2vec
+
+[fasttext源码解析](https://my.oschina.net/u/3800567/blog/2877570)
+
++ ```Dictionary::readWord```：空格分割，一次读出来一个word
++ ```Dictionary::add```：每个word求个hash，加进词典时，id就是从0开始的序号，同时记录一下词频
++ ```Dictionary::threshold```：按词频排序，扔掉低频词
++ ```Dictionary::initNgrams```：每个词，加上前缀BOW（<）和后缀（>），然后先扔进这个词的subwords里，然后再调用``` Dictionary::computeSubwords```把这个词的ngrams也扔进它的subwords里
+
+整个词表，是word数+bucket这么大，其中bucket表示可容纳的subwords和wordNgrams的数量，默认200w
+
+
+## 分词
+
+[【Subword】深入理解NLP Subword算法：BPE、WordPiece、ULM](https://mp.weixin.qq.com/s/U9F8G-OUCb9kunTk_tZYFw)
+
 ## 语法解析
 
 EMNLP 2019最佳论文
@@ -604,6 +645,12 @@ EMNLP 2019最佳论文
 [包学包会，这些动图和代码让你一次读懂「自注意力」](https://mp.weixin.qq.com/s/Z0--eLLiFwfSuMvnddKGPQ)
 
 [http://jalammar.github.io/illustrated-transformer/](http://jalammar.github.io/illustrated-transformer/)
+
+## 文本匹配
+
+[谈谈文本匹配和多轮检索](https://mp.weixin.qq.com/s/uoEX0TjJZmyquNch5Wikvg)
+
+[搜索中的深度匹配模型](https://mp.weixin.qq.com/s/lcyw_kHNxPB-DUfNzTaj5g)
 
 ## 机器翻译
 
@@ -742,6 +789,8 @@ MASS 采用了编码器-解码器框架，并尝试在给定部分句子的情�
 huggingface的distill gpt-2：[https://github.com/huggingface/transformers](https://github.com/huggingface/transformers)
 
 ### albert
+
+[刚刚，Google发布24个小型BERT模型，直接通过MLM损失进行预训练](https://mp.weixin.qq.com/s/s0ysFH4CRvsHY1Gp3b4DPQ)
 
 [ALBERT：用于语言表征自监督学习的轻量级 BERT](https://mp.weixin.qq.com/s/0V-051qkTk9EYiuEWYE3jQ)
 
@@ -938,6 +987,14 @@ ICLR2020 cmu+google：
 
 [AAAI 2020 \| BERT稳吗？亚马逊、MIT等提出针对NLP模型的对抗攻击框架TextFooler](https://mp.weixin.qq.com/s/3wPda43A-Jm6gl9ysxciEA)
 
+
+[A Primer in BERTology: What we know about how BERT works](https://arxiv.org/pdf/2002.12327.pdf)
+
+摘要：目前，基于 Transformer 的模型已经广泛应用于自然语言处理中，但我们依然对这些模型的内部工作机制知之甚少。在本文中，来自麻省大学洛威尔分校的研究者对流行的 BERT 模型进行综述，并综合分析了 40 多项分析研究。他们还概览了对模型和训练机制提出的改进，然后描画了未来的研究方向。
+
+[Pre-trained Models for Natural Language Processing: A Survey](https://arxiv.org/abs/2003.08271)
+
+
 ## 对话
 
 ### 对话数据集
@@ -1062,7 +1119,14 @@ ICLR2020 cmu+google：
 
 [语音版BERT？滴滴提出无监督预训练模型，中文识别性能提升10%以上](https://mp.weixin.qq.com/s/4wLR_9RVxbTsHKXf-1MLIw)
 
-[Improving transformer-based speech recognition using unsupervised pre-training](https://arxiv.org/pdf/1910.09932.pdf)# 视频算法
+[Improving transformer-based speech recognition using unsupervised pre-training](https://arxiv.org/pdf/1910.09932.pdf)
+
+## 搜狗录音笔
+
+[投喂4万种噪声，20种语言方言实时转录，搜狗「开挂」录音笔这样炼成](https://mp.weixin.qq.com/s/p4uckiXAkVQVaJhfpISjOQ)
+
+[非常时期，搜狗新一代“AI笔皇”问世！支持同声传译，转写准确率98%](https://mp.weixin.qq.com/s/KWnu_aHwHlhwDxJ2Cj-cZg)
+# 视频算法
 
 ## 视频数据集
 
@@ -1274,7 +1338,12 @@ ICLR2020 cmu+google：
 
 [Is BERT Really Robust? A Strong Baseline for Natural Language Attack on Text Classification and Entailment](https://arxiv.org/abs/1907.11932?context=cs)
 
-众所周知，CV 领域的 adversarial attack 被非常广泛的研究，但是在 NLP 领域的对抗攻击却因为文本的离散的特性而难以推进。对于 NLP 的模型来说，那些在人们眼里几乎没变的文本却会被模型非常不同地对待，甚至错判。这些是特别致命的、且急需研究的方向。这是一篇与 MIT 合作的 AAAI 2020 Oral 文章，自然语言对抗样本生成，我们将详细解读如何简单高效地生成自然语言对抗样本，并且高度 attack 文本分类和文本推测的 7 个数据集。# 多目标
+众所周知，CV 领域的 adversarial attack 被非常广泛的研究，但是在 NLP 领域的对抗攻击却因为文本的离散的特性而难以推进。对于 NLP 的模型来说，那些在人们眼里几乎没变的文本却会被模型非常不同地对待，甚至错判。这些是特别致命的、且急需研究的方向。这是一篇与 MIT 合作的 AAAI 2020 Oral 文章，自然语言对抗样本生成，我们将详细解读如何简单高效地生成自然语言对抗样本，并且高度 attack 文本分类和文本推测的 7 个数据集。
+
+## gan压缩
+
+[韩松、朱俊彦等人提出GAN压缩法：算力消耗不到1/9，现已开源](https://mp.weixin.qq.com/s/SGCoCy8wJEhEpLSHrYK3pQ)
+# 多目标
 
 ## 多目标+推荐综述
 
@@ -1320,6 +1389,8 @@ ICLR2020 cmu+google：
 [推荐系统的发展与2019最新论文回顾](https://mp.weixin.qq.com/s/C6e8Pn9IoKCMuQshh_u6Xw)
 
 [深度推荐系统2019年度阅读收藏清单](https://mp.weixin.qq.com/s/u6r5FiPbfVF31Q38OIn6xA)
+
+[推荐工业界实战角度详解TensorFlow中Wide & Deep源码（三）](https://mp.weixin.qq.com/s/ur7xwdY86KlWU3qpmqUcog)
 
 ## 推荐中的采样
 
@@ -1376,7 +1447,6 @@ ICLR2020 cmu+google：
 
 + 原domain $S$：有大量用户交互行为的图文或视频推荐。一条样本包括$\left(u, \mathbf{x}^{u}\right) \in \mathcal{S}$，其中，$\mathbf{x}^{u}=\left\{x_{1}^{u}, \ldots, x_{n}^{u}\right\}\left(x_{i}^{u} \in X\right)$表示用户的点击历史
 + 目标domain $T$：可以是用户label很少的一些预测任务。例如用户可能喜欢的item、用户性别、用户年龄分桶等。一条样本包括$(u, y) \in \mathcal{T}$，其中$y \in \mathcal{Y}$是一个有监督的标签。
-
 
 
 
@@ -1466,7 +1536,14 @@ HugeCTR 是首个全部解决以上问题的开源 GPU 训练框架，与现有 
 
 ## 阿里妈妈CTR
 
-[阿里妈妈点击率预估中的长期兴趣建模](https://mp.weixin.qq.com/s/RQ1iBs8ftvNR0_xB7X8Erg)# 图神经网络
+[阿里妈妈点击率预估中的长期兴趣建模](https://mp.weixin.qq.com/s/RQ1iBs8ftvNR0_xB7X8Erg)
+
+## 凤巢
+
+大规模深度学习广告系统的分布式分层GPU参数服务器
+
+[Distributed Hierarchical GPU Parameter Server for Massive Scale Deep Learning Ads Systems](https://arxiv.org/pdf/2003.05622.pdf)
+# 图神经网络
 
 [https://daiwk.github.io/posts/links-navigation-gnn.html](https://daiwk.github.io/posts/links-navigation-gnn.html)
 
@@ -1572,6 +1649,11 @@ HugeCTR 是首个全部解决以上问题的开源 GPU 训练框架，与现有 
 ## 社区发现相关
 
 [最小熵原理：“层层递进”之社区发现与聚类](https://mp.weixin.qq.com/s/0ssSBQC8oFP0JutlKZ3yCA)
+
+
+## transformer+gnn
+
+[原来Transformer就是一种图神经网络，这个概念你清楚吗？](https://mp.weixin.qq.com/s/DABEcNf1hHahlZFMttiT2g)
 # 强化学习
 
 ## RL历史
@@ -1579,6 +1661,11 @@ HugeCTR 是首个全部解决以上问题的开源 GPU 训练框架，与现有 
 [漫画带你图解强化学习](https://mp.weixin.qq.com/s/MdtjTRGV813t6Mn3JES-pw)
 
 [强化学习70年演进：从精确动态规划到基于模型](https://mp.weixin.qq.com/s/sIS9VvZ3yTtn6puJScuHig)
+
+## RL概述
+
+[强化学习之路——清华博士后解读83篇文献，万字长文总结](https://mp.weixin.qq.com/s/eQslEpJIT1negsbzmcORcA)
+
 
 ## MAB相关
 
@@ -1697,6 +1784,11 @@ UDRL学会将这些输入观察结果解释为命令，并根据过去(可能是
 基于模型的强化学习（Model-Based Reinforcement Learning，MBRL）为样本高效学习提供了一个有前途的方向，通常可以实现连续控制任务（continuous control task）的 SOTA 结果。然而，许多现有的 MBRL 方法依赖于贪婪策略（greedy policy）与探索启发法的结合，甚至那些利用原则试探索奖金（exploration bonus）的方法也能够以特定方式构建双重目标。
 
 在本文中，研究者介绍了 Ready Policy One（RP1），这是一种将 MBRL 视为主动学习问题的框架。研究者的目标是在尽可能少样本中改进世界模型（world model）。RP1 通过利用混合目标函数来实现这一目标，该函数在优化过程中的适应性调整至关重要，从而使算法可以权衡不同学习阶段的奖励与探索。此外，一旦拥有足够丰富的轨迹批（trajectory batch）来改进模型，研究者会引入一种原则式机制（principled mechanism）来终止样本收集。
+
+## ES
+
+[Evolution Strategies as a Scalable Alternative to Reinforcement Learning](https://arxiv.org/pdf/1703.03864.pdf)
+
 # Auto-ML
 
 ## automl综述
@@ -1922,6 +2014,8 @@ CIKM 2019最佳论文
 
 [The Deep Learning Revolution and Its Implications for Computer Architecture and Chip Design](https://arxiv.org/abs/1911.05289)
 
+[Kaggle竞赛硬件如何选择？不差钱、追求速度，那就上TPU吧](https://mp.weixin.qq.com/s/HK-lq-6_LxzVkBo9k7kjMg)
+
 ## pixel 4
 
 [数十亿次数学运算只消耗几毫瓦电力，谷歌开源Pixel 4背后的视觉模型](https://mp.weixin.qq.com/s/uySIMxsZRmDLq-5zAZO9bQ)
@@ -2054,6 +2148,8 @@ DALI 和 TensorFlow 自带的 DataLoader 类似，是一个专门用于加速数
 
 [强化学习、联邦学习、图神经网络，飞桨全新工具组件详解](https://mp.weixin.qq.com/s/TFXXOZPU-40NdOmk4lb-iw)
 
+[YOLOv3比原作高10个点，飞桨更新至73个视觉算法、203个预训练模型](https://mp.weixin.qq.com/s/WjJFTMvVtToeAn3QXsoewQ)
+
 ## TensorRT
 
 [手把手教你采用基于TensorRT的BERT模型实现实时自然语言理解](https://mp.weixin.qq.com/s/rvoelBO-XjbswxQigH-6TQ)
@@ -2125,7 +2221,14 @@ tf版本：
 
 ## auto-ml架构
 
-[比谷歌AutoML快110倍，全流程自动机器学习平台应该是这样的](https://mp.weixin.qq.com/s/2dBJZLgVICXRmR7JcmnciA)# 量子计算
+[比谷歌AutoML快110倍，全流程自动机器学习平台应该是这样的](https://mp.weixin.qq.com/s/2dBJZLgVICXRmR7JcmnciA)
+
+
+## megengine
+
+[国产深度学习框架MegEngine，旷视打造，三月底即将开源](https://mp.weixin.qq.com/s/Eq8L-NuESY1uIqUO2Qxcew)
+
+# 量子计算
 
 [https://daiwk.github.io/posts/dl-quantum-computing.html](https://daiwk.github.io/posts/dl-quantum-computing.html)
 
