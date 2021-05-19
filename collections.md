@@ -65,6 +65,8 @@ Yoshua Bengio 在[Deep Learning for System 2 Processing](http://www.iro.umontrea
 
 ### xgb
 
+[珍藏版 \| 20道XGBoost面试题](https://cloud.tencent.com/developer/article/1500914)
+
 参考[7 papers \| Quoc V. Le、何恺明等新论文；用进化算法设计炉石](https://mp.weixin.qq.com/s/lLeWCgZJfc-921jZd2rlTA)
 
 [A Comparative Analysis of XGBoost](https://arxiv.org/pdf/1911.01914v1.pdf)
@@ -134,6 +136,8 @@ Colin Wei等人的论文“Regularization Matters: Generalization and Optimizati
 [理论、算法两手抓，UIUC 助理教授孙若愚 60 页长文综述深度学习优化问题](https://mp.weixin.qq.com/s/-vD6OMcyJ_hQ3ms5RW20JA)
 
 [Optimization for deep learning: theory and algorithms](https://arxiv.org/pdf/1912.08957.pdf)
+
+[一个框架看懂优化算法之异同 SGD/AdaGrad/Adam](https://zhuanlan.zhihu.com/p/32230623)
 
 ### 复合函数最优化
 
@@ -255,6 +259,32 @@ Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始�
 
 ## 损失函数
 
+### mse vs cross-entropy
+
+不一定回归就用mse，分类才用交叉熵
+
+[https://zhuanlan.zhihu.com/p/362496849](https://zhuanlan.zhihu.com/p/362496849)
+
+[https://www.zhihu.com/question/415245797/answer/1791746717](https://www.zhihu.com/question/415245797/answer/1791746717)
+
+[https://zhuanlan.zhihu.com/p/304462034](https://zhuanlan.zhihu.com/p/304462034)
+
+[https://blog.csdn.net/u011508640/article/details/72815981](https://blog.csdn.net/u011508640/article/details/72815981)
+
+各种分布：
+
+[https://github.com/graykode/distribution-is-all-you-need](https://github.com/graykode/distribution-is-all-you-need)
+
+### cross-entroy vs nllloss
+
+[https://blog.csdn.net/geter_CS/article/details/84857220](https://blog.csdn.net/geter_CS/article/details/84857220)
+
+[https://blog.csdn.net/qq_22210253/article/details/85229988](https://blog.csdn.net/qq_22210253/article/details/85229988)
+
+CrossEntropyLoss就是把Softmax–Log–NLLLoss合并成一步
+
+<div><img src="./assets/ce-nllloss.png" width="400" /></div>
+
 ### L_DMI
 
 [NeurIPS 2019 \| 一种对噪音标注鲁棒的基于信息论的损失函数](https://mp.weixin.qq.com/s/MtApYev80-xVEd70lLp_zw)
@@ -316,6 +346,11 @@ Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始�
 ## 调参
 
 [你有哪些deep learning（rnn、cnn）调参的经验？](https://www.zhihu.com/question/41631631/)
+
+## 表示学习
+
+[窥一斑而知全豹，三篇论文遍历ICLR 2020新型表征方式](https://mp.weixin.qq.com/s/k_vTgZGoVD-pVBjEqI6sfw)
+
 
 ## 新的结构
 
@@ -386,6 +421,15 @@ Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始�
 [This Looks Like That: Deep Learning for Interpretable Image Recognition](https://arxiv.org/pdf/1806.10574.pdf)
 
 当人遇到图像判断的时候，总是会分解图片并解释分类的理由，而机器在判断的时候总是跟人的判断会有些差距。本文旨在缩小机器分类和人分类之间的差距，提出了一个 ProtoPNet，根据人判断的机理来分类图像。本文网络通过分解图像，得到不同的原型部分，通过组成这些信息最终得到正确的分类。
+
+
+challenge sets，大部分是英文，中文比较少。构造方法：
+
++ 从已有数据集泛化：改下位词、同义词、反义词
++ 从已有数据集只抽出可用的部分
++ 使用模板建模具体语言特征
++ 对抗样本
+
 
 ## 子集选择
 
@@ -616,6 +660,8 @@ Facebook将该方法称为“半弱监督”(semi-weak supervision)，是结合�
 
 ## fasttext&word2vec
 
+注：w2v训练时的内积不是2个emb-in的内积，而是emb-in和emb-out的内积
+
 [fasttext源码解析](https://my.oschina.net/u/3800567/blog/2877570)
 
 + ```Dictionary::readWord```：空格分割，一次读出来一个word
@@ -624,6 +670,7 @@ Facebook将该方法称为“半弱监督”(semi-weak supervision)，是结合�
 + ```Dictionary::initNgrams```：每个词，加上前缀BOW（<）和后缀（>），然后先扔进这个词的subwords里，然后再调用``` Dictionary::computeSubwords```把这个词的ngrams也扔进它的subwords里
 
 整个词表，是word数+bucket这么大，其中bucket表示可容纳的subwords和wordNgrams的数量，默认200w
+
 
 
 ## 分词
@@ -764,6 +811,177 @@ MASS 采用了编码器-解码器框架，并尝试在给定部分句子的情�
 [Linguistic Knowledge and Transferability of Contextual Representations](https://arxiv.org/abs/1903.08855)
 
 [What does BERT learn about the structure of language?](https://hal.inria.fr/hal-02131630/document)
+
+bert的一些细节：
+
+[https://github.com/google-research/bert/blob/master/modeling.py](https://github.com/google-research/bert/blob/master/modeling.py)
+
+#### multi-head att 实现
+
+输入原始的query(即from_tensor)之后, 把```[batch, from_seq, emb]```变成```[?, emb]```，其中```?=batch*from_seq```
+
+```python
+from_tensor_2d = reshape_to_matrix(from_tensor)
+
+def reshape_to_matrix(input_tensor):
+    """Reshapes a >= rank 2 tensor to a rank 2 tensor (i.e., a matrix)."""
+    ndims = input_tensor.shape.ndims
+    if ndims < 2:
+        raise ValueError("Input tensor must have at least rank 2. Shape = %s" %
+            (input_tensor.shape))
+    if ndims == 2:
+        return input_tensor
+    width = input_tensor.shape[-1]
+output_tensor = tf.reshape(input_tensor, [-1, width])
+    return output_tensor
+```
+
+然后再接一个fc，把```[?, emb]```变成```[?, head_num * per_head]```，一般```head_num * per_head=emb```。
+
+```python
+query_layer = tf.layers.dense(
+        from_tensor_2d,
+        num_attention_heads * size_per_head,
+        activation=query_act,
+        name="query",
+        kernel_initializer=create_initializer(initializer_range))
+```
+
+因为```?=batch*from_seq```，所以可以直接做如下变换
+
+```python
+query_layer = transpose_for_scores(query_layer, batch_size,
+        num_attention_heads, from_seq_length,
+        size_per_head)
+```
+
+实际就是把```?```拆开成```batch, from_seq```，整个变成```[batch, from_seq, head_num, per_head]```，然后做了个 transpose，把1和2互换了下，得到```[batch, head_num, from_seq, per_head]```
+
+```python
+def transpose_for_scores(input_tensor, batch_size, num_attention_heads,
+        seq_length, width):
+    output_tensor = tf.reshape(
+            input_tensor, [batch_size, seq_length, num_attention_heads, width])
+
+    output_tensor = tf.transpose(output_tensor, [0, 2, 1, 3])
+    return output_tensor
+```
+
+然后key也做完全一样的操作(不过处理的是to_tensor，如果是self-attention，那to_tensor=from_tensor), 得到```[batch, head_num, to_seq, per_head]```：
+
+```python
+to_tensor_2d = reshape_to_matrix(to_tensor)
+key_layer = tf.layers.dense(
+        to_tensor_2d,
+        num_attention_heads * size_per_head,
+        activation=key_act,
+        name="key",
+        kernel_initializer=create_initializer(initializer_range))
+
+key_layer = transpose_for_scores(key_layer, batch_size, num_attention_heads,
+        to_seq_length, size_per_head)
+```
+
+然后就算 $$ QK^T $$ 了，注意这里对key取了转置，也就是```[batch, head_num, from_seq, per_head]```乘以```[batch, head_num, per_head, to_seq]```，得到的结果是```[batch, head_num, from_seq, to_seq]```：
+
+```python
+attention_scores = tf.matmul(query_layer, key_layer, transpose_b=True)
+attention_scores = tf.multiply(attention_scores,
+    1.0 / math.sqrt(float(size_per_head)))
+
+if attention_mask is not None:
+    # `attention_mask` = [B, 1, F, T]
+    attention_mask = tf.expand_dims(attention_mask, axis=[1])
+
+    # Since attention_mask is 1.0 for positions we want to attend and 0.0 for
+    # masked positions, this operation will create a tensor which is 0.0 for
+    # positions we want to attend and -10000.0 for masked positions.
+    adder = (1.0 - tf.cast(attention_mask, tf.float32)) * -10000.0
+
+    # Since we are adding it to the raw scores before the softmax, this is
+    # effectively the same as removing these entirely.
+    attention_scores += adder
+attention_probs = tf.nn.softmax(attention_scores)
+attention_probs = dropout(attention_probs, attention_probs_dropout_prob)
+```
+
+然后看下value的操作：
+
+```python
+value_layer = tf.layers.dense(
+        to_tensor_2d,
+        num_attention_heads * size_per_head,
+        activation=value_act,
+        name="value",
+        kernel_initializer=create_initializer(initializer_range))
+
+# `value_layer` = [batch, to_seq, head_num, per_head]
+value_layer = tf.reshape(
+            value_layer,
+            [batch_size, to_seq_length, num_attention_heads, size_per_head])
+
+# `value_layer` = [batch, head_num, to_seq, per_head]
+value_layer = tf.transpose(value_layer, [0, 2, 1, 3])
+
+# `context_layer` = [batch, head_num, from_seq, per_head]
+context_layer = tf.matmul(attention_probs, value_layer)
+
+# `context_layer` = [batch, from_seq, head_num, per_head]
+context_layer = tf.transpose(context_layer, [0, 2, 1, 3])
+```
+
+再确认一点， $$ softmax(QK^T) $$ 是```[batch, head_num, from_seq, to_seq]```，而 $$ V $$ 是```[batch, head_num, to_seq, per_head]```，所以context_layer是```[batch, head_num, from_seq, per_head]```
+
+最后，再搞一下，变回```[batch, from_seq, head_num * per_head]```：
+
+```python
+if do_return_2d_tensor:
+# `context_layer` = [B*F, N*H]
+    context_layer = tf.reshape(
+        context_layer,
+        [batch_size * from_seq_length, num_attention_heads * size_per_head])
+else:
+# `context_layer` = [B, F, N*H]
+    context_layer = tf.reshape(
+        context_layer,
+        [batch_size, from_seq_length, num_attention_heads * size_per_head])
+```
+
+如上过程是 $$ Concat(head_1, ..., head_h) $$ ，其中 $$ head_i = Attention(QW_i^Q, KW_i^K, VW_i^V) $$ 。包装在了函数```attention_layer```之中，我们注意到原文还有一个大小为 $$ hd_v\times d_{model} $$ 的 $$ W^O $$ ，也就是大小为 $$ d_{model}\times d_{model} $$ ，再看看源码。。也就是说，正常的bert里，```attention_heads```就只有一个元素，然后接了个```hidden_size```的fc，而前面的代码里也提到了```hidden_size```正好就是 $$ d_{model} $$ ，所以这就是 $$ W^O $$ 。
+
+```python
+attention_heads = []
+with tf.variable_scope("self"):
+    attention_head = attention_layer(xxxxx)
+    attention_heads.append(attention_head)
+    attention_output = None
+    if len(attention_heads) == 1:
+        attention_output = attention_heads[0]
+    else:
+        # In the case where we have other sequences, we just concatenate
+        # them to the self-attention head before the projection.
+        attention_output = tf.concat(attention_heads, axis=-1)
+    # Run a linear projection of `hidden_size` then add a residual
+    # with `layer_input`.
+    with tf.variable_scope("output"):
+        attention_output = tf.layers.dense(
+            attention_output,
+            hidden_size,
+            kernel_initializer=create_initializer(initializer_range))
+        attention_output = dropout(attention_output, hidden_dropout_prob)
+        attention_output = layer_norm(attention_output + layer_input)
+
+```
+
+关于 mask，可以看看这个[https://juejin.im/post/5b9f1af0e51d450e425eb32d](https://juejin.im/post/5b9f1af0e51d450e425eb32d)
+
+摘抄一下：
+
+什么是padding mask呢？回想一下，我们的每个批次输入序列长度是不一样的！也就是说，我们要对输入序列进行对齐！具体来说，就是给在较短的序列后面填充0。因为这些填充的位置，其实是没什么意义的，所以我们的attention机制不应该把注意力放在这些位置上，所以我们需要进行一些处理。
+具体的做法是，把这些位置的值加上一个非常大的负数(可以是负无穷)，这样的话，经过softmax，这些位置的概率就会接近0！
+
+而sequence mask是为了使得decoder不能看见未来的信息。也就是对于一个序列，在time_step为t的时刻，我们的解码输出应该只能依赖于t时刻之前的输出，而不能依赖t之后的输出。因此我们需要想一个办法，把t之后的信息给隐藏起来。
+那么具体怎么做呢？也很简单：产生一个上三角矩阵，上三角的值全为1，下三角的值权威0，对角线也是0。把这个矩阵作用在每一个序列上，就可以达到我们的目的啦。
 
 
 ### gpt-2
@@ -1061,7 +1279,8 @@ ICLR2020 cmu+google：
 
 ## 常识知识与常识推理
 
-[AAAI 2020学术会议提前看：常识知识与常识推理](https://mp.weixin.qq.com/s/0CWrelur99lwyuIxSyJyxA)# 语音算法
+[AAAI 2020学术会议提前看：常识知识与常识推理](https://mp.weixin.qq.com/s/0CWrelur99lwyuIxSyJyxA)
+# 语音算法
 
 ## 语音数据集
 
@@ -1126,6 +1345,25 @@ ICLR2020 cmu+google：
 [投喂4万种噪声，20种语言方言实时转录，搜狗「开挂」录音笔这样炼成](https://mp.weixin.qq.com/s/p4uckiXAkVQVaJhfpISjOQ)
 
 [非常时期，搜狗新一代“AI笔皇”问世！支持同声传译，转写准确率98%](https://mp.weixin.qq.com/s/KWnu_aHwHlhwDxJ2Cj-cZg)
+
+
+## 音乐推荐相关
+
+[https://paperswithcode.com/search?q_meta=&q=music+recommend](https://paperswithcode.com/search?q_meta=&q=music+recommend)
+
+spotify的paper：
+
+[https://research.atspotify.com/?s=playlist&type=publications](https://research.atspotify.com/?s=playlist&type=publications)
+
+歌单生成：
+
+[A Comparison of Methods for Treatment Assignment with an Application to Playlist Generation](https://arxiv.org/pdf/2004.11532v3.pdf)
+
+
+探索利用：
+
+[Explore, Exploit, and Explain: Personalizing Explainable Recommendations with Bandits](https://static1.squarespace.com/static/5ae0d0b48ab7227d232c2bea/t/5ba849e3c83025fa56814f45/1537755637453/BartRecSys.pdf)
+
 # 视频算法
 
 ## 视频数据集
@@ -1394,6 +1632,10 @@ ICLR2020 cmu+google：
 
 ## 推荐中的采样
 
+batch内shuffle采样（有放回）
+
+[On Sampling Strategies for Neural Network-based Collaborative Filtering](https://arxiv.org/pdf/1706.07881.pdf)
+
 [浅谈个性化推荐系统中的非采样学习](https://mp.weixin.qq.com/s/OGLJx-1tGYYuLWFricfRKg)
 
 [Sampling-Bias-Corrected Neural Modeling for Large Corpus Item Recommendations](https://dl.acm.org/doi/10.1145/3298689.3346996)
@@ -1405,6 +1647,20 @@ ICLR2020 cmu+google：
 [一文看懂序列推荐建模的最新进展与挑战](https://mp.weixin.qq.com/s/RQ1iBs8ftvNR0_xB7X8Erg)
 
 [从MLP到Self-Attention，一文总览用户行为序列推荐模型](https://mp.weixin.qq.com/s/aMqh79_jjgSCn1StuCvyRw)
+
+## bias v.s. debias
+
+[推荐系统炼丹笔记：推荐系统Bias大全 \| Debias方法综述](https://blog.csdn.net/m0_52122378/article/details/110950122)
+
+### position bias
+
+[搜索、推荐业务中 - position bias的工业界、学术界 发展历程 - 系列1(共计2)](https://zhuanlan.zhihu.com/p/79904391)
+
+[推荐系统遇上深度学习(七十一)-\[华为\]一种消除CTR预估中位置偏置的框架](https://www.jianshu.com/p/37768b399cd8)
+
+[PAL: A Position-bias Aware Learning Framework for CTR Prediction in Live Recommender Systems](https://dl.acm.org/citation.cfm?id=3347033)
+
+[推荐系统之Position-Bias建模](https://mp.weixin.qq.com/s/as8MWJZ2SAVZedx2v02fmA)
 
 ## 用户模型
 
@@ -1445,10 +1701,8 @@ ICLR2020 cmu+google：
 
 预训练时没有\[TCL\]，fintune时加上。
 
-+ 原domain $S$：有大量用户交互行为的图文或视频推荐。一条样本包括$\left(u, \mathbf{x}^{u}\right) \in \mathcal{S}$，其中，$\mathbf{x}^{u}=\left\{x_{1}^{u}, \ldots, x_{n}^{u}\right\}\left(x_{i}^{u} \in X\right)$表示用户的点击历史
-+ 目标domain $T$：可以是用户label很少的一些预测任务。例如用户可能喜欢的item、用户性别、用户年龄分桶等。一条样本包括$(u, y) \in \mathcal{T}$，其中$y \in \mathcal{Y}$是一个有监督的标签。
-
-
++ 原domain $$ S $$：有大量用户交互行为的图文或视频推荐。一条样本包括$$ \left(u, \mathbf{x}^{u}\right) \in \mathcal{S} $$，其中，$$ \mathbf{x}^{u}=\left\{x_{1}^{u}, \ldots, x_{n}^{u}\right\}\left(x_{i}^{u} \in X\right) $$表示用户的点击历史
++ 目标domain $$ T $$：可以是用户label很少的一些预测任务。例如用户可能喜欢的item、用户性别、用户年龄分桶等。一条样本包括$$ (u, y) \in \mathcal{T} $$，其中$$ y \in \mathcal{Y} $$是一个有监督的标签。
 
 
 ## 召回
@@ -1462,6 +1716,12 @@ ICLR2020 cmu+google：
 ### JTM
 
 [下一代深度召回与索引联合优化算法JTM](https://mp.weixin.qq.com/s/heiy74_QriwxpZRyTUEgPg)
+
+### DR
+
+[字节最新复杂召回模型，提出深度检索DR框架解决超大规模推荐系统中的匹配问题](https://cloud.tencent.com/developer/article/1698045)
+
+[Deep Retrieval: An End-to-End Learnable Structure Model for Large-Scale Recommendations](https://arxiv.org/abs/2007.07203)
 
 ## transformer+推荐
 
@@ -1498,6 +1758,24 @@ ICLR2020 cmu+google：
 [NeurIPS 2019 \| 从感知跃升到认知，这是阿里在认知智能推荐领域的探索与应用](https://mp.weixin.qq.com/s/MzF-UT5Hm071bTUTZpKDGw)
 
 [Learning Disentangled Representations for Recommendation](https://arxiv.org/pdf/1910.14238.pdf)
+
+
+## 自监督
+
+[Self-supervised Learning for Large-scale Item Recommendations](https://arxiv.org/pdf/2007.12865.pdf)
+
+v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/2007.12865v3.pdf)
+
+<div><img src="./assets/ssl-1.png" width="400" /></div>
+
+<div><img src="./assets/ssl-2.png" width="400" /></div>
+
+
+## GNN+推荐
+
+[https://zhuanlan.zhihu.com/p/323302898](https://zhuanlan.zhihu.com/p/323302898)
+
+[Graph Neural Networks in Recommender Systems: A Survey](https://arxiv.org/pdf/2011.02260.pdf)
 # 特征工程
 
 [浅谈微视推荐系统中的特征工程](https://mp.weixin.qq.com/s/NqVP0ksfLiRLSGkuWxiz5A)
@@ -1506,19 +1784,64 @@ ICLR2020 cmu+google：
 
 # CTR预估
 
-## position bias
-
-[搜索、推荐业务中 - position bias的工业界、学术界 发展历程 - 系列1(共计2)](https://zhuanlan.zhihu.com/p/79904391)
-
-[推荐系统遇上深度学习(七十一)-\[华为\]一种消除CTR预估中位置偏置的框架](https://www.jianshu.com/p/37768b399cd8)
-
-[PAL: A Position-bias Aware Learning Framework for CTR Prediction in Live Recommender Systems](https://dl.acm.org/citation.cfm?id=3347033)
-
-[推荐系统之Position-Bias建模](https://mp.weixin.qq.com/s/as8MWJZ2SAVZedx2v02fmA)
-
 ## 传统ctr
 
 [https://daiwk.github.io/posts/dl-traditional-ctr-models.html](https://daiwk.github.io/posts/dl-traditional-ctr-models.html)
+
+
+## lr for ctr
+
+[Simple and scalable response prediction for display advertising](https://people.csail.mit.edu/romer/papers/TISTRespPredAds.pdf)
+
+[Online Models for Content Optimization](https://www.researchgate.net/publication/221618458_Online_Models_for_Content_Optimization)
+
+## gbdt for ctr
+
+gbdt基础知识：
+
+[https://zhuanlan.zhihu.com/p/86263786](https://zhuanlan.zhihu.com/p/86263786)
+
+bagging全称叫bootstrap aggregating，每个基学习器都会对训练集进行有放回抽样得到子训练集，比较著名的采样法为0.632自助法。每个基学习器基于不同子训练集进行训练，并综合所有基学习器的预测值得到最终的预测结果。bagging常用的综合方法是投票法，票数最多的类别为预测类别。
+
+boosting训练过程为阶梯状，基模型的训练是有顺序的，每个基模型都会在前一个基模型学习的基础上进行学习，最终综合所有基模型的预测值产生最终的预测结果，用的比较多的综合方式为加权法。
+
+stacking是先用全部数据训练好基模型，然后每个基模型都对每个训练样本进行的预测，其预测值将作为训练样本的特征值，最终会得到新的训练样本，然后基于新的训练样本进行训练得到模型，然后得到最终预测结果。
+
+bagging和stacking中的基模型为强模型（偏差低，方差高），而boosting中的基模型为弱模型（偏差高，方差低）。
+
+bagging的特点：
+
++ 整体模型的期望等于基模型的期望，这也就意味着整体模型的偏差和基模型的偏差近似。
++ 整体模型的方差小于等于基模型的方差，当且仅当相关性为1时取等号，随着基模型数量增多，整体模型的方差减少，从而防止过拟合的能力增强，模型的准确度得到提高。
+
+所以，bagging中的基模型一定要为强模型，如果bagging使用弱模型则会导致整体模型的偏差提高，而准确度降低。
+
+boosting的特点：
+
++ 整体模型的方差等于基模型的方差，如果基模型不是弱模型，其方差相对较大，这将导致整体模型的方差很大，即无法达到防止过拟合的效果。因此，boosting框架中的基模型必须为弱模型。
++ boosting框架中采用基于贪心策略的前向加法，整体模型的期望由基模型的期望累加而成，所以随着基模型数的增多，整体模型的期望值增加，整体模型的准确度提高。
+
+
+gbdt与Adaboost对比
+
+相同：
+
++ 都是boosting，使用弱分类器；
++ 都使用前向分布算法；
+
+不同：
+
++ 迭代思路不同：adaboost是通过提升错分数据点的权重来弥补模型的不足（利用错分样本），而GBDT是通过算梯度来弥补模型的不足（利用残差）；
++ 损失函数不同：adaBoost采用的是指数损失，GBDT使用的是绝对损失或者Huber损失函数；
+
+[Learning the click-through rate for rare/new ads from similar ads](https://www.researchgate.net/publication/221299556_Learning_the_click-through_rate_for_rarenew_ads_from_similar_ads)
+
+[Using boosted trees for click-through rate prediction for sponsored search](https://www.researchgate.net/publication/254463616_Using_boosted_trees_for_click-through_rate_prediction_for_sponsored_search)
+
+[Improving Ad Relevance in Sponsored Search](https://www.researchgate.net/publication/221520094_Improving_Ad_Relevance_in_Sponsored_Search)
+
+[Stochastic Gradient Boosted Distributed Decision Trees](./assets/gbdt-Stochastic%20Gradient%20Boosted%20Distributed%20Decision%20Trees.pdf)
+
 
 ## 深度学习ctr
 
@@ -1545,6 +1868,12 @@ HugeCTR 是首个全部解决以上问题的开源 GPU 训练框架，与现有 
 大规模深度学习广告系统的分布式分层GPU参数服务器
 
 [Distributed Hierarchical GPU Parameter Server for Massive Scale Deep Learning Ads Systems](https://arxiv.org/pdf/2003.05622.pdf)
+
+## cvr
+
+ecpc：用户给定一个粗粒度出价，模型可以在一定的范围内调价
+ocpc：完全以模型出价为准
+
 # 图神经网络
 
 [https://daiwk.github.io/posts/links-navigation-gnn.html](https://daiwk.github.io/posts/links-navigation-gnn.html)
@@ -1668,6 +1997,10 @@ HugeCTR 是首个全部解决以上问题的开源 GPU 训练框架，与现有 
 
 [强化学习之路——清华博士后解读83篇文献，万字长文总结](https://mp.weixin.qq.com/s/eQslEpJIT1negsbzmcORcA)
 
+pg/ddpg相关
+
+[https://daiwk.github.io/posts/rl-stepbystep-chap9.html](https://daiwk.github.io/posts/rl-stepbystep-chap9.html)
+
 
 ## MAB相关
 
@@ -1755,9 +2088,61 @@ UDRL学会将这些输入观察结果解释为命令，并根据过去(可能是
 
 ## 游戏+RL
 
-### 游戏AI历史
+### 游戏AI历史(alphago系列)
+
+[https://deepmind.com/research/case-studies/alphago-the-story-so-far](https://deepmind.com/research/case-studies/alphago-the-story-so-far)
 
 [从α到μ：DeepMind棋盘游戏AI进化史](https://mp.weixin.qq.com/s/IcaxjdDLjihCK-nKBlJVWg)
+
+alphago：[Mastering the game of Go with deep neural networks and tree search](https://storage.googleapis.com/deepmind-media/alphago/AlphaGoNaturePaper.pdf)
+
+alphago zero：[Mastering the game of Go without Human Knowledge](https://www.nature.com/articles/nature24270.epdf?author_access_token=VJXbVjaSHxFoctQQ4p2k4tRgN0jAjWel9jnR3ZoTv0PVW4gB86EEpGqTRDtpIz-2rmo8-KG06gqVobU5NSCFeHILHcVFUeMsbvwS-lxjqQGg98faovwjxeTUgZAUMnRQ)
+
+alpha zero: [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/pdf/1712.01815.pdf)
+
+mu zero: [Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model](https://science.sciencemag.org/content/sci/362/6419/1140.full.pdf)
+
+#### alphago
+
+reward：1胜，-1负，中间状态0
+
+3个网络：
+
++ SL：学习棋谱的P
++ RL：自己和自己下，学习一个P
++ V：学习s的长期收益
++ fast roolout：用一个简单的线性模型学习棋谱的P
+
+
+[蒙特卡罗树搜索+深度学习 -- AlphaGo原版论文阅读笔记](https://blog.csdn.net/dinosoft/article/details/50893291)
+
+mcts：
+
+选Q+u最大的a，
+
+首先模拟n次，
+
++ N(s,a)：对于第i次，如果经过当前的(s,a)，那么+1
++ Q(s,a)：对于第i次，如果走到叶子时经过了当前的(s,a)，那么把V(叶子)加上，最后除以N(s,a)
++ V(叶子)：(1-lambda) * value network的输出+lambda * fastrollout走到结束时的reward
++ u(s,a)：与P(s,a)/(1+N(s,a))成正比
++ P(s,a)：policy network的输出
+
+最开始还没expand时，Q是0，那SL的P就是prior probabilities。P还能起到减少搜索宽度的作用，普通点得分很低。比较难被select到。有趣的结论是，比较得出这里用SL比RL的要好！！模仿人类走棋的SL结果更适合MCTS搜索，因为人类选择的是 a diverse beam of promising moves。而RL的学的是最优的下法（whereas RL optimizes for the single best move）。所以人类在这一点暂时获胜！不过另一方面，RL学出来的value networks在评估方面效果好。所以各有所长。**搜索次数N一多会扣分， 鼓励exploration其他分支。**
+
+#### alphago zero
+
+模型输出p和v，训练的时候通过mcts去选action。loss就是p的交叉熵+v的rmse
+
+#### alpha zero
+
+主要是特征改了一下，使得可以适用于各种棋,loss没变
+
+#### muzero
+
+模型加了个r，loss里加了个r，
+
+planning需要考虑r V P，还有次数N
 
 ### 绝悟
 
@@ -1785,15 +2170,17 @@ UDRL学会将这些输入观察结果解释为命令，并根据过去(可能是
 
 基于模型的强化学习（Model-Based Reinforcement Learning，MBRL）为样本高效学习提供了一个有前途的方向，通常可以实现连续控制任务（continuous control task）的 SOTA 结果。然而，许多现有的 MBRL 方法依赖于贪婪策略（greedy policy）与探索启发法的结合，甚至那些利用原则试探索奖金（exploration bonus）的方法也能够以特定方式构建双重目标。
 
-在本文中，研究者介绍了 Ready Policy One（RP1），这是一种将 MBRL 视为主动学习问题的框架。研究者的目标是在尽可能少样本中改进世界模型（world model）。RP1 通过利用混合目标函数来实现这一目标，该函数在优化过程中的适应性调整至关重要，从而使算法可以权衡不同学习阶段的奖励与探索。此外，一旦拥有足够丰富的轨迹批（trajectory batch）来改进模型，研究者会引入一种原则式机制（principled mechanism）来终止样本收集。
-
 ## ES
 
 [Evolution Strategies as a Scalable Alternative to Reinforcement Learning](https://arxiv.org/pdf/1703.03864.pdf)
 
+在本文中，研究者介绍了 Ready Policy One（RP1），这是一种将 MBRL 视为主动学习问题的框架。研究者的目标是在尽可能少样本中改进世界模型（world model）。RP1 通过利用混合目标函数来实现这一目标，该函数在优化过程中的适应性调整至关重要，从而使算法可以权衡不同学习阶段的奖励与探索。此外，一旦拥有足够丰富的轨迹批（trajectory batch）来改进模型，研究者会引入一种原则式机制（principled mechanism）来终止样本收集。
+
 # Auto-ML
 
 ## automl综述
+
+[https://github.com/hibayesian/awesome-automl-papers](https://github.com/hibayesian/awesome-automl-papers)
 
 [CVPR 2019神经网络架构搜索进展综述](https://mp.weixin.qq.com/s/c7S_hV_8iRhR4ZoFxQYGYQ)
 
@@ -2429,3 +2816,20 @@ ppt也在这个网页上
 [“狗屁不通文章生成器”登顶GitHub热榜，分分钟写出万字形式主义大作](https://mp.weixin.qq.com/s/gp9eFeM5Q85pAazWDuG9_g)
 
 [实时可视化Debug：VS Code 开源新工具，一键解析代码结构](https://mp.weixin.qq.com/s/943dZHSZyQbjlxTpv54w7Q)
+# 基础知识
+
+## C++
+
+[百度C++工程师的那些极限优化（内存篇）](https://mp.weixin.qq.com/s/wF4M2pqlVq7KljaHAruRug)
+
+[https://daiwk.github.io/posts/knowledge-c++-useful-features.html](https://daiwk.github.io/posts/knowledge-c++-useful-features.html)
+
+
+
+## python
+
+[https://daiwk.github.io/posts/knowledge-python.html](https://daiwk.github.io/posts/knowledge-python.html)
+
+## core相关
+
+[https://daiwk.github.io/posts/knowledge-stack-heap-core.html](https://daiwk.github.io/posts/knowledge-stack-heap-core.html)
