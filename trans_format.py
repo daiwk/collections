@@ -16,7 +16,6 @@ for line in sys.stdin:
         continue
     print(line.\
             replace("align*", "aligned").\
-            replace("../assets/", "./assets/").\
             replace("<html>", "<div>").\
             replace("<br/>", "").\
             replace("</html>", "</div>").\
@@ -34,3 +33,4 @@ for line in sys.stdin:
 #            replace("`\[", "$$").\
 #            replace("\]`", "$$").\
 #
+##            replace("../assets/", "./assets/").\
