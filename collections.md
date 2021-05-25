@@ -531,6 +531,8 @@ challenge sets，大部分是英文，中文比较少。构造方法：
 
 [超全！YOLO目标检测从V1到V3结构详解](https://mp.weixin.qq.com/s/5weWze-75FwEjfbHDbpPCw)
 
+[【目标检测】YOLOv4特征提取网络——CSPDarkNet结构解析及PyTorch实现](https://blog.csdn.net/EasonCcc/article/details/108879514)
+
 ## 图像识别
 
 [显著提升图像识别网络效率，Facebook提出IdleBlock混合组成方法](https://mp.weixin.qq.com/s/tc7DaM8dkq7SjiXtPp4uHA)
@@ -1901,6 +1903,8 @@ ocpc：完全以模型出价为准
 [A Gentle Introduction to Deep Learning for Graphs](https://arxiv.org/pdf/1912.12693.pdf)
 
 [2020年，图机器学习将走向何方？](https://mp.weixin.qq.com/s/YC2gvjbSBs2qOgix6wVhuQ)
+
+常见问题：[QA派\｜GNN工业应用-PinSAGE](https://zhuanlan.zhihu.com/p/195735468)
 
 ### GNN理论研究
 
