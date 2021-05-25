@@ -283,7 +283,7 @@ Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始�
 
 CrossEntropyLoss就是把Softmax–Log–NLLLoss合并成一步
 
-<div><img src="./assets/ce-nllloss.png" width="400" /></div>
+<div><img src="../assets/ce-nllloss.png" width="400" /></div>
 
 ### L_DMI
 
@@ -1731,7 +1731,7 @@ batch内shuffle采样（有放回）
 
 ## 多目标
 
-cgc参考paddle代码：[cgc_demo.py](./assets/cgc_dir/cgc_demo.py)
+cgc参考paddle代码：[cgc_demo.py](../assets/cgc_dir/cgc_demo.py)
 
 ## 工业界的一些推荐应用
 
@@ -1772,9 +1772,9 @@ cgc参考paddle代码：[cgc_demo.py](./assets/cgc_dir/cgc_demo.py)
 
 v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/2007.12865v3.pdf)
 
-<div><img src="./assets/ssl-1.png" width="400" /></div>
+<div><img src="../assets/ssl-1.png" width="400" /></div>
 
-<div><img src="./assets/ssl-2.png" width="400" /></div>
+<div><img src="../assets/ssl-2.png" width="400" /></div>
 
 
 ## GNN+推荐
@@ -1846,7 +1846,7 @@ gbdt与Adaboost对比
 
 [Improving Ad Relevance in Sponsored Search](https://www.researchgate.net/publication/221520094_Improving_Ad_Relevance_in_Sponsored_Search)
 
-[Stochastic Gradient Boosted Distributed Decision Trees](./assets/gbdt-Stochastic%20Gradient%20Boosted%20Distributed%20Decision%20Trees.pdf)
+[Stochastic Gradient Boosted Distributed Decision Trees](../assets/gbdt-Stochastic%20Gradient%20Boosted%20Distributed%20Decision%20Trees.pdf)
 
 
 ## 深度学习ctr
