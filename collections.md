@@ -1782,6 +1782,11 @@ v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/
 [https://zhuanlan.zhihu.com/p/323302898](https://zhuanlan.zhihu.com/p/323302898)
 
 [Graph Neural Networks in Recommender Systems: A Survey](https://arxiv.org/pdf/2011.02260.pdf)
+
+## DCNv2
+
+[DCN V2：Google提出改进版DCN，用于大规模排序系统中的特征交叉学习(附代码)](https://zhuanlan.zhihu.com/p/353223660)
+
 # 特征工程
 
 [浅谈微视推荐系统中的特征工程](https://mp.weixin.qq.com/s/NqVP0ksfLiRLSGkuWxiz5A)
