@@ -985,6 +985,86 @@ with tf.variable_scope("self"):
 而sequence mask是为了使得decoder不能看见未来的信息。也就是对于一个序列，在time_step为t的时刻，我们的解码输出应该只能依赖于t时刻之前的输出，而不能依赖t之后的输出。因此我们需要想一个办法，把t之后的信息给隐藏起来。
 那么具体怎么做呢？也很简单：产生一个上三角矩阵，上三角的值全为1，下三角的值权威0，对角线也是0。把这个矩阵作用在每一个序列上，就可以达到我们的目的啦。
 
+#### masked-language-model的实现
+
+[https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/run_pretraining.py#L240](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/run_pretraining.py#L240)
+
+
+如下，其中```hidden_size```就是是 $$ d_{model} $$：
+
+```python
+def get_masked_lm_output(bert_config, input_tensor, output_weights, positions,
+                         label_ids, label_weights):
+  """Get loss and log probs for the masked LM."""
+  input_tensor = gather_indexes(input_tensor, positions)
+
+  with tf.variable_scope("cls/predictions"):
+    # We apply one more non-linear transformation before the output layer.
+    # This matrix is not used after pre-training.
+    with tf.variable_scope("transform"):
+      input_tensor = tf.layers.dense(
+          input_tensor,
+          units=bert_config.hidden_size,
+          activation=modeling.get_activation(bert_config.hidden_act),
+          kernel_initializer=modeling.create_initializer(
+              bert_config.initializer_range))
+      input_tensor = modeling.layer_norm(input_tensor)
+
+    # The output weights are the same as the input embeddings, but there is
+    # an output-only bias for each token.
+    output_bias = tf.get_variable(
+        "output_bias",
+        shape=[bert_config.vocab_size],
+        initializer=tf.zeros_initializer())
+    logits = tf.matmul(input_tensor, output_weights, transpose_b=True)
+    logits = tf.nn.bias_add(logits, output_bias)
+    log_probs = tf.nn.log_softmax(logits, axis=-1)
+
+    label_ids = tf.reshape(label_ids, [-1])
+    label_weights = tf.reshape(label_weights, [-1])
+
+    one_hot_labels = tf.one_hot(
+        label_ids, depth=bert_config.vocab_size, dtype=tf.float32)
+
+    # The `positions` tensor might be zero-padded (if the sequence is too
+    # short to have the maximum number of predictions). The `label_weights`
+    # tensor has a value of 1.0 for every real prediction and 0.0 for the
+    # padding predictions.
+    per_example_loss = -tf.reduce_sum(log_probs * one_hot_labels, axis=[-1])
+    numerator = tf.reduce_sum(label_weights * per_example_loss)
+    denominator = tf.reduce_sum(label_weights) + 1e-5
+    loss = numerator / denominator
+
+  return (loss, per_example_loss, log_probs)
+```
+
+其中的gather如下：
+
+```python
+def gather_indexes(sequence_tensor, positions):
+  """Gathers the vectors at the specific positions over a minibatch."""
+  sequence_shape = modeling.get_shape_list(sequence_tensor, expected_rank=3)
+  batch_size = sequence_shape[0]
+  seq_length = sequence_shape[1]
+  width = sequence_shape[2]
+
+  flat_offsets = tf.reshape(
+      tf.range(0, batch_size, dtype=tf.int32) * seq_length, [-1, 1])
+  flat_positions = tf.reshape(positions + flat_offsets, [-1])
+  flat_sequence_tensor = tf.reshape(sequence_tensor,
+                                    [batch_size * seq_length, width])
+  output_tensor = tf.gather(flat_sequence_tensor, flat_positions)
+  return output_tensor
+```
+
+注意调用时传的是如下参数
+
+```python
+    (masked_lm_loss,
+     masked_lm_example_loss, masked_lm_log_probs) = get_masked_lm_output(
+         bert_config, model.get_sequence_output(), model.get_embedding_table(),
+         masked_lm_positions, masked_lm_ids, masked_lm_weights)
+```
 
 ### gpt-2
 
@@ -2846,3 +2926,52 @@ ppt也在这个网页上
 ## core相关
 
 [https://daiwk.github.io/posts/knowledge-stack-heap-core.html](https://daiwk.github.io/posts/knowledge-stack-heap-core.html)
+
+
+tf.keras中的预训练修改模型中layer的名字，解决“The name is used 2 times … all layer names should be unique.”问题。
+
+[https://nrasadi.medium.com/change-model-layer-name-in-tensorflow-keras-58771dd6bf1b](https://nrasadi.medium.com/change-model-layer-name-in-tensorflow-keras-58771dd6bf1b)
+
+```python
+import tensorflow as tf
+
+def add_prefix(model, prefix: str, custom_objects=None):
+    '''Adds a prefix to layers and model name while keeping the pre-trained weights
+    Arguments:
+        model: a tf.keras model
+        prefix: a string that would be added to before each layer name
+        custom_objects: if your model consists of custom layers you shoud add them pass them as a dictionary. 
+            For more information read the following:
+            https://keras.io/guides/serialization_and_saving/#custom-objects
+    Returns:
+        new_model: a tf.keras model having same weights as the input model.
+    '''
+    
+    config = model.get_config()
+    old_to_new = {}
+    new_to_old = {}
+    
+    for layer in config['layers']:
+        new_name = prefix + layer['name']
+        old_to_new[layer['name']], new_to_old[new_name] = new_name, layer['name']
+        layer['name'] = new_name
+        layer['config']['name'] = new_name
+
+        if len(layer['inbound_nodes']) > 0:
+            for in_node in layer['inbound_nodes'][0]:
+                in_node[0] = old_to_new[in_node[0]]
+    
+    for input_layer in config['input_layers']:
+        input_layer[0] = old_to_new[input_layer[0]]
+    
+    for output_layer in config['output_layers']:
+        output_layer[0] = old_to_new[output_layer[0]]
+    
+    config['name'] = prefix + config['name']
+    new_model = tf.keras.Model().from_config(config, custom_objects)
+    
+    for layer in new_model.layers:
+        layer.set_weights(model.get_layer(new_to_old[layer.name]).get_weights())
+    
+    return new_model
+```
