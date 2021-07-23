@@ -386,6 +386,9 @@ CrossEntropyLoss就是把Softmax–Log–NLLLoss合并成一步
 
 由 Judea Pearl 倡导的图形因果推理（graphical causal inference）源于 AI 研究，并且在很长一段时间内，它与机器学习领域几乎没有任何联系。在本文中，研究者探讨了图形因果推理与机器学习之间已建立以及应该建立哪些联系，并介绍了一些关键概念。本文认为，机器学习和 AI 领域的未解决难题在本质上与因果关系有关，并解释了因果关系领域如何理解这些难题。
 
+
+[https://www.cnblogs.com/caoyusang/p/13518354.html](https://www.cnblogs.com/caoyusang/p/13518354.html)
+
 ## 能量模型
 
 [ICLR 2020 \| 分类器其实是基于能量的模型？判别式分类器设计新思路](https://mp.weixin.qq.com/s/7qcuHvk9UoCvoJRFzQXuHQ)
