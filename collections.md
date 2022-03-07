@@ -19,6 +19,15 @@ Yoshua Bengio 在[Deep Learning for System 2 Processing](http://www.iro.umontrea
 ## 2019nlp
 
 [2019 NLP大全：论文、博客、教程、工程进展全梳理（长文预警）](https://mp.weixin.qq.com/s/5T3-SxBTVzndULwKiFp4Hw)
+
+## 2021年盘点
+
+google research总结
+
+[https://ai.googleblog.com/2022/01/google-research-themes-from-2021-and.html](https://ai.googleblog.com/2022/01/google-research-themes-from-2021-and.html)
+
+[谷歌大神Jeff Dean领衔，万字展望5大AI趋势播报文章](https://baijiahao.baidu.com/s?id=1721742678416388422&wfr=spider&for=pc)
+
 # 传统ML
 
 ## PRML
@@ -1365,6 +1374,43 @@ ICLR2020 cmu+google：
 ## 常识知识与常识推理
 
 [AAAI 2020学术会议提前看：常识知识与常识推理](https://mp.weixin.qq.com/s/0CWrelur99lwyuIxSyJyxA)
+
+## 大模型
+
+### InstructGPT
+
+[OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
+
+[https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/](https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/)
+
+[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)
+
+### 达摩院大模型技术交流
+
+[https://developer.aliyun.com/live/248332](https://developer.aliyun.com/live/248332)
+
+ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) 密码：5yyf
+
+### Google的大规模稀疏模型设计
+
+[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
+
+代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
+
+
+### RETRO Transformer
+
+[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
+
+[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
+
+[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
+
+### WebGPT
+
+[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
+
+[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
 # 语音算法
 
 ## 语音数据集
@@ -1954,6 +2000,8 @@ gbdt与Adaboost对比
 HugeCTR 是首个全部解决以上问题的开源 GPU 训练框架，与现有 CPU 和混合 CPU / GPU 解决方案相比，它的速度提高了 12 倍至 44 倍。HugeCTR 是一种端到端训练解决方案，其所有计算都在 GPU 上执行，而 CPU 仅用于 I / O。GPU 哈希表支持动态缩放。它利用 MPI 进行多节点训练，以支持任意大的嵌入尺寸。它还还支持混合精度训练，在 Volta GPU 及其后续版本上可以利用 Tensor cores 进一步加速。
 
 [如何解决点击率预估？英伟达专家详解HugeCTR训练框架（二）](https://mp.weixin.qq.com/s/14ETFLjojsP7Aop4_THVKQ)
+
+[Merlin HugeCTR 分级参数服务器简介](https://mp.weixin.qq.com/s/bfnQ3glPYA0sAgZlntTDUw)
 
 ## 阿里妈妈CTR
 
@@ -2715,6 +2763,9 @@ tf版本：
 
 [国产深度学习框架MegEngine，旷视打造，三月底即将开源](https://mp.weixin.qq.com/s/Eq8L-NuESY1uIqUO2Qxcew)
 
+## 异构硬件加速
+
+[广告深度学习计算：异构硬件加速实践](https://mp.weixin.qq.com/s/DFkzvhLwLFlOg6QJwtSBbw)
 # 量子计算
 
 [https://daiwk.github.io/posts/dl-quantum-computing.html](https://daiwk.github.io/posts/dl-quantum-computing.html)
