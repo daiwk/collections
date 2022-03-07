@@ -1984,6 +1984,7 @@ gbdt与Adaboost对比
 
 [Stochastic Gradient Boosted Distributed Decision Trees](../assets/gbdt-Stochastic%20Gradient%20Boosted%20Distributed%20Decision%20Trees.pdf)
 
+[https://zhuanlan.zhihu.com/p/148050748](https://zhuanlan.zhihu.com/p/148050748)
 
 ## 深度学习ctr
 
