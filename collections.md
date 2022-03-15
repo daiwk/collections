@@ -1411,6 +1411,10 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 [WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
 
 [https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
+
+## prompt
+
+[Fine-tune之后的NLP新范式：Prompt越来越火，CMU华人博士后出了篇综述文章](https://zhuanlan.zhihu.com/p/395795968)
 # 语音算法
 
 ## 语音数据集
