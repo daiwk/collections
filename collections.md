@@ -663,6 +663,7 @@ Facebook将该方法称为“半弱监督”(semi-weak supervision)，是结合�
 ### 图像对抗攻击
 
 [胶囊网络显神威：Google AI和Hinton团队检测到针对图像分类器的对抗攻击](https://mp.weixin.qq.com/s/ux81Z5H2ZcC0Rq8Hi6c27w)
+
 # 自然语言处理
 
 ## nlp综述
@@ -1416,6 +1417,7 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 ## prompt
 
 [Fine-tune之后的NLP新范式：Prompt越来越火，CMU华人博士后出了篇综述文章](https://zhuanlan.zhihu.com/p/395795968)
+
 # 语音算法
 
 ## 语音数据集
@@ -1656,6 +1658,7 @@ spotify的paper：
 ## 阿里短视频推荐相关工作
 
 [淘宝如何拥抱短视频时代？视频推荐算法实战](https://mp.weixin.qq.com/s/8N09Argm9sNJRYipq3Mipw)
+
 # GAN
 
 ## GAN综述
@@ -1717,6 +1720,7 @@ spotify的paper：
 ## gan压缩
 
 [韩松、朱俊彦等人提出GAN压缩法：算力消耗不到1/9，现已开源](https://mp.weixin.qq.com/s/SGCoCy8wJEhEpLSHrYK3pQ)
+
 # 多目标
 
 ## 多目标+推荐综述
@@ -2137,6 +2141,7 @@ ocpc：完全以模型出价为准
 ## transformer+gnn
 
 [原来Transformer就是一种图神经网络，这个概念你清楚吗？](https://mp.weixin.qq.com/s/DABEcNf1hHahlZFMttiT2g)
+
 # 强化学习
 
 ## RL历史
@@ -2391,6 +2396,7 @@ planning需要考虑r V P，还有次数N
 ## 视频NAS
 
 [比手工模型快10~100倍，谷歌揭秘视频NAS三大法宝](https://mp.weixin.qq.com/s/0kGJfKARKs2TuIQ4YJYbUA)
+
 # 压缩与部署
 
 ## 压缩综述
@@ -2483,6 +2489,7 @@ NeurIPS 2019，华为诺亚方舟。神经网络的小型化已经在 cnn 网络
 [AAAI 2020 \| 滴滴&东北大学提出自动剪枝压缩算法框架，性能提升120倍](https://mp.weixin.qq.com/s/4UcjyNQLp7_BNT-LzuscCw)
 
 [AutoCompress: An Automatic DNN Structured Pruning Framework forUltra-High Compression Rates](https://arxiv.org/abs/1907.03141)
+
 # few-shot & meta-learning
 
 [https://daiwk.github.io/posts/ml-few-shot-learning.html](https://daiwk.github.io/posts/ml-few-shot-learning.html)
@@ -2540,6 +2547,7 @@ CIKM 2019最佳论文
 ## nips 2019 few-shot
 
 [NeurIPS 2019 少样本学习研究亮点全解析](https://mp.weixin.qq.com/s/XHfibJQGzcL8OhJCpoqjqQ)
+
 # 硬件
 
 ## 硬件综述
@@ -2588,6 +2596,7 @@ MobileNetV3 语义分割的 TensorFlow 版开源实现可以在 DeepLab 中找�
 ## 传感器相关
 
 [基于传感器的人类行为识别DL方法难在哪？这篇综述列了11项挑战](https://mp.weixin.qq.com/s/OnUaZyO9ZMmQlpacKbU7ug)
+
 # 架构
 
 ## 分布式机器学习
@@ -2774,6 +2783,7 @@ tf版本：
 ## 异构硬件加速
 
 [广告深度学习计算：异构硬件加速实践](https://mp.weixin.qq.com/s/DFkzvhLwLFlOg6QJwtSBbw)
+
 # 量子计算
 
 [https://daiwk.github.io/posts/dl-quantum-computing.html](https://daiwk.github.io/posts/dl-quantum-computing.html)
@@ -2793,6 +2803,7 @@ tf版本：
 [密码学重大里程碑！科学家暴力破解迄今最长RSA密钥，功劳却不在摩尔定律](https://mp.weixin.qq.com/s/jXSMb_ndS6dNu9Bmx1_SlQ)
 
 [阿里的AI安全武功秘籍：迁移+元学习开路，小样本数据能用跨模态](https://mp.weixin.qq.com/s/8X1REQzCVwxqxzutwMh28g)
+
 # 多模态
 
 ## 多模态综述
@@ -2800,9 +2811,11 @@ tf版本：
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
 
 [Multimodal Intelligence: Representation  Learning, Information Fusion, and Applications](https://arxiv.org/abs/1911.03977)
+
 # 机器人
 
 [四大视角、万字长文，欧盟MuMMER项目之商场服务机器人深入解读](https://mp.weixin.qq.com/s/x6p6ghxrPOu-heO6zZ5bIQ)
+
 # 落地的一些思考
 
 [AI模型走下高科技神坛、走进大规模量产、深入渗透产业界\|百度研究院2020十大预测](https://mp.weixin.qq.com/s/Wd27UcbbaTDi8WWGBygu-A)
@@ -2932,6 +2945,7 @@ ppt也在这个网页上
 ## 多任务与元学习课程
 
 [斯坦福CS330 2019秋季课程视频全新上线，专注多任务与元学习](https://mp.weixin.qq.com/s/cekZ78Grw4Bu_umWaQDUdw)
+
 # 一些网址和应用
 
 ## 一些笔记
@@ -2976,6 +2990,7 @@ ppt也在这个网页上
 [“狗屁不通文章生成器”登顶GitHub热榜，分分钟写出万字形式主义大作](https://mp.weixin.qq.com/s/gp9eFeM5Q85pAazWDuG9_g)
 
 [实时可视化Debug：VS Code 开源新工具，一键解析代码结构](https://mp.weixin.qq.com/s/943dZHSZyQbjlxTpv54w7Q)
+
 # 基础知识
 
 ## C++
@@ -3042,3 +3057,4 @@ def add_prefix(model, prefix: str, custom_objects=None):
     
     return new_model
 ```
+
