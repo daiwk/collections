@@ -964,7 +964,7 @@ else:
         [batch_size, from_seq_length, num_attention_heads * size_per_head])
 ```
 
-如上过程是 $$ Concat(head_1, ..., head_h) $$ ，其中 $$ head_i = Attention(QW_i^Q, KW_i^K, VW_i^V) $$ 。包装在了函数```attention_layer```之中，我们注意到原文还有一个大小为 $$ hd_v \times d_{model} $$ 的 $$ W^O $$ ，也就是大小为 $$ d_{model}\times d_{model} $$ ，再看看源码。。也就是说，正常的bert里，```attention_heads```就只有一个元素，然后接了个```hidden_size```的fc，而前面的代码里也提到了```hidden_size```正好就是 $$ d_{model} $$ ，所以这就是 $$ W^O $$ 。
+如上过程是 $$ Concat(head_1, ..., head_h) $$ ，其中 $$ head_i = Attention(QW_i^Q, KW_i^K, VW_i^V) $$ 。包装在了函数```attention_layer```之中，我们注意到原文还有一个大小为$$hd_v \times d_{model}$$的 $$ W^O $$ ，也就是大小为 $$d_{model}\times d_{model}$$ ，再看看源码。。也就是说，正常的bert里，```attention_heads```就只有一个元素，然后接了个```hidden_size```的fc，而前面的代码里也提到了```hidden_size```正好就是 $$ d_{model} $$ ，所以这就是 $$ W^O $$ 。
 
 ```python
 attention_heads = []
