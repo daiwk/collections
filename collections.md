@@ -662,7 +662,8 @@ Facebook将该方法称为“半弱监督”(semi-weak supervision)，是结合�
 
 ### 图像对抗攻击
 
-[胶囊网络显神威：Google AI和Hinton团队检测到针对图像分类器的对抗攻击](https://mp.weixin.qq.com/s/ux81Z5H2ZcC0Rq8Hi6c27w)# 自然语言处理
+[胶囊网络显神威：Google AI和Hinton团队检测到针对图像分类器的对抗攻击](https://mp.weixin.qq.com/s/ux81Z5H2ZcC0Rq8Hi6c27w)
+# 自然语言处理
 
 ## nlp综述
 
@@ -2481,7 +2482,8 @@ NeurIPS 2019，华为诺亚方舟。神经网络的小型化已经在 cnn 网络
 
 [AAAI 2020 \| 滴滴&东北大学提出自动剪枝压缩算法框架，性能提升120倍](https://mp.weixin.qq.com/s/4UcjyNQLp7_BNT-LzuscCw)
 
-[AutoCompress: An Automatic DNN Structured Pruning Framework forUltra-High Compression Rates](https://arxiv.org/abs/1907.03141)# few-shot & meta-learning
+[AutoCompress: An Automatic DNN Structured Pruning Framework forUltra-High Compression Rates](https://arxiv.org/abs/1907.03141)
+# few-shot & meta-learning
 
 [https://daiwk.github.io/posts/ml-few-shot-learning.html](https://daiwk.github.io/posts/ml-few-shot-learning.html)
 
@@ -2585,7 +2587,8 @@ MobileNetV3 语义分割的 TensorFlow 版开源实现可以在 DeepLab 中找�
 
 ## 传感器相关
 
-[基于传感器的人类行为识别DL方法难在哪？这篇综述列了11项挑战](https://mp.weixin.qq.com/s/OnUaZyO9ZMmQlpacKbU7ug)# 架构
+[基于传感器的人类行为识别DL方法难在哪？这篇综述列了11项挑战](https://mp.weixin.qq.com/s/OnUaZyO9ZMmQlpacKbU7ug)
+# 架构
 
 ## 分布式机器学习
 
@@ -2777,7 +2780,9 @@ tf版本：
 
 [量子导航即将上路：实时更新，全局优化，不仅更快还能解决拥堵](https://mp.weixin.qq.com/s/xfFPdukHOr_LAdqmKHeNJg)
 
-[对标谷歌、IBM、微软，亚马逊正式推出量子计算云服务Braket](https://mp.weixin.qq.com/s/rMMdI22-_t1IT0Ckwda89w)# 信息安全
+[对标谷歌、IBM、微软，亚马逊正式推出量子计算云服务Braket](https://mp.weixin.qq.com/s/rMMdI22-_t1IT0Ckwda89w)
+
+# 信息安全
 
 [破解神经网络、攻击GPU，AI黑客教程来了，已登GitHub热榜](https://mp.weixin.qq.com/s/XUy7fMjSFY2Q5nmBxL84SA)
 
@@ -2926,7 +2931,8 @@ ppt也在这个网页上
 
 ## 多任务与元学习课程
 
-[斯坦福CS330 2019秋季课程视频全新上线，专注多任务与元学习](https://mp.weixin.qq.com/s/cekZ78Grw4Bu_umWaQDUdw)# 一些网址和应用
+[斯坦福CS330 2019秋季课程视频全新上线，专注多任务与元学习](https://mp.weixin.qq.com/s/cekZ78Grw4Bu_umWaQDUdw)
+# 一些网址和应用
 
 ## 一些笔记
 
