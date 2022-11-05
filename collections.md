@@ -1,5 +1,4 @@
-本文地址[https://github.com/daiwk/collections/blob/master/pdfs/collections.pdf](https://github.com/daiwk/collections/blob/master/pdfs/collections.pdf)
-
+本文地址[https://github.com/daiwk/collections/blob/master/pdfs/collections.pdf](https://github.com/daiwk/collections/blob/master/pdfs/collections.pdf)\n
 # 一些回顾性的经典总结
 
 ## 2019年盘点
@@ -1929,7 +1928,13 @@ v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/
 
 [DCN V2：Google提出改进版DCN，用于大规模排序系统中的特征交叉学习(附代码)](https://zhuanlan.zhihu.com/p/353223660)
 
-# 特征工程
+## item冷启
+
+poso 
+
+[Personalized Cold Start Modules for Large-scale Recommender Systems](https://arxiv.org/abs/2108.04690)
+
+[https://zhuanlan.zhihu.com/p/534056942](https://zhuanlan.zhihu.com/p/534056942)# 特征工程
 
 [浅谈微视推荐系统中的特征工程](https://mp.weixin.qq.com/s/NqVP0ksfLiRLSGkuWxiz5A)
 
