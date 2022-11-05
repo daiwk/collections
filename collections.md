@@ -2800,6 +2800,11 @@ tf版本：
 
 [广告深度学习计算：异构硬件加速实践](https://mp.weixin.qq.com/s/DFkzvhLwLFlOg6QJwtSBbw)
 
+## GPU基础知识
+
+CPU与GPU之间通过PCIe进行连接
+
+
 # 量子计算
 
 [https://daiwk.github.io/posts/dl-quantum-computing.html](https://daiwk.github.io/posts/dl-quantum-computing.html)
