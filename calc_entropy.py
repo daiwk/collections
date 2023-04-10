@@ -1,6 +1,14 @@
 import tensorflow as tf
 import math
 
+## examples from:
+# https://www.tensorflow.org/api_docs/python/tf/nn/sigmoid_cross_entropy_with_logits
+# https://www.tensorflow.org/api_docs/python/tf/nn/softmax_cross_entropy_with_logits
+
+# sigmoid_cross_entropy_with_logits: p = sigmoid(logit); loss = -(ylogp + (1-y)log(1-p))
+# softmax_cross_entropy_with_logits: p = exp(x)/sum_i(exp(x_i)); loss = -ylogp
+
+
 sigmoid_logits = tf.constant([1., -1., 0.])
 softmax_logits = tf.stack([sigmoid_logits, tf.zeros_like(sigmoid_logits)],
                           axis=-1)
