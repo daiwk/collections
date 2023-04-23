@@ -1,6 +1,10 @@
 import tensorflow as tf
 import math
 
+## refs: 
+### https://www.zhihu.com/question/50043438
+### https://www.tensorflow.org/extras/candidate_sampling.pdf
+
 ## examples from:
 # https://www.tensorflow.org/api_docs/python/tf/nn/sigmoid_cross_entropy_with_logits
 # https://www.tensorflow.org/api_docs/python/tf/nn/softmax_cross_entropy_with_logits
