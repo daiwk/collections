@@ -19,7 +19,6 @@ for line in sys.stdin:
             replace("<html>", "<div>").\
             replace("<br/>", "").\
             replace("</html>", "</div>").\
-            replace("## ", "# ").\
             replace("<img src='", "![](").\
             replace("`\(", "$").\
             replace("\)`", "$").\
