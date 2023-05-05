@@ -3028,6 +3028,19 @@ ppt也在这个网页上
 
 [实时可视化Debug：VS Code 开源新工具，一键解析代码结构](https://mp.weixin.qq.com/s/943dZHSZyQbjlxTpv54w7Q)
 
+## llm网站合集
+
++ ChatGPT聚合站：[https://hokex.com](https://hokex.com)
++ 游戏生成站：[https://latitude.io/](https://latitude.io/)
++ 家庭作业辅助站：[https://ontimeai.com/](https://ontimeai.com/)
++ 文字转语音站：[https://www.resemble.ai/](https://www.resemble.ai/)
++ 艺术作画站：[https://starryai.com/](https://starryai.com/)
++ logo制作站：[https://www.logoai.com/](https://www.logoai.com/)
++ ai写作站：[https://www.getconch.ai/](https://www.getconch.ai/)
++ 音乐制作站：[https://soundraw.io/](https://soundraw.io/)
++ 声音模拟站：[https://fakeyou.com/](https://fakeyou.com/)
++ 一句话生成一段视频：[https://runwayml.com/](https://runwayml.com/)
++ 文字转语音：[https://murf.ai/](https://runwayml.com/)
 
 
 # 基础知识
