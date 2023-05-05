@@ -325,6 +325,10 @@ CrossEntropyLoss就是把Softmax–Log–NLLLoss合并成一步
 
 [https://lilianweng.github.io/lil-log/2019/11/10/self-supervised-learning.html](https://lilianweng.github.io/lil-log/2019/11/10/self-supervised-learning.html)
 
+    
+[A Cookbook of Self-Supervised Learning](https://arxiv.org/pdf/2304.12210.pdf)
+
+
 ## 机器学习+博弈论
 
 [当博弈论遇上机器学习：一文读懂相关理论](https://mp.weixin.qq.com/s/1t6WuTQpltMtP-SRF1rT4g)
