@@ -718,6 +718,8 @@ EMNLP 2019最佳论文
 
 [http://jalammar.github.io/illustrated-transformer/](http://jalammar.github.io/illustrated-transformer/)
 
+[从熵不变性看Attention的Scale操作](https://kexue.fm/archives/8823)
+
 ## 文本匹配
 
 [谈谈文本匹配和多轮检索](https://mp.weixin.qq.com/s/uoEX0TjJZmyquNch5Wikvg)
