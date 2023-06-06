@@ -1434,6 +1434,17 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 [https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
 
 
+## llm相关汇总
+
+llm中文数据集
+
+[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
+
+简单综述
+
+[https://juejin.cn/post/7240022931078004797](https://juejin.cn/post/7240022931078004797)
+
+
 # 语音算法
 
 ## 语音数据集
