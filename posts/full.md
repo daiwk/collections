@@ -1444,6 +1444,10 @@ llm中文数据集
 
 [https://juejin.cn/post/7240022931078004797](https://juejin.cn/post/7240022931078004797)
 
+## llm for rec
+
+[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+
 
 # 语音算法
 
