@@ -1,4 +1,6 @@
 
+[https://daiwk.gitbook.io/collections/posts/llm_aigc](https://daiwk.gitbook.io/collections/posts/llm_aigc)
+
 # 一些回顾性的经典总结
 
 ## 2019年盘点
@@ -28,101 +30,6 @@ google research总结
 [https://ai.googleblog.com/2022/01/google-research-themes-from-2021-and.html](https://ai.googleblog.com/2022/01/google-research-themes-from-2021-and.html)
 
 [谷歌大神Jeff Dean领衔，万字展望5大AI趋势播报文章](https://baijiahao.baidu.com/s?id=1721742678416388422&wfr=spider&for=pc)
-
-# 大模型与AIGC
-
-## llm应用合辑
-
-+ ChatGPT聚合站：[https://hokex.com](https://hokex.com)
-+ 游戏生成站：[https://latitude.io/](https://latitude.io/)
-+ 家庭作业辅助站：[https://ontimeai.com/](https://ontimeai.com/)
-+ 文字转语音站：[https://www.resemble.ai/](https://www.resemble.ai/)
-+ 艺术作画站：[https://starryai.com/](https://starryai.com/)
-+ logo制作站：[https://www.logoai.com/](https://www.logoai.com/)
-+ ai写作站：[https://www.getconch.ai/](https://www.getconch.ai/)
-+ 音乐制作站：[https://soundraw.io/](https://soundraw.io/)
-+ 声音模拟站：[https://fakeyou.com/](https://fakeyou.com/)
-+ 一句话生成一段视频：[https://runwayml.com/](https://runwayml.com/)
-+ 文字转语音：[https://murf.ai/](https://runwayml.com/)
-
-
-## NLP大模型
-
-### InstructGPT
-
-[OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
-
-[https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/](https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/)
-
-[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)
-
-### 达摩院大模型技术交流
-
-[https://developer.aliyun.com/live/248332](https://developer.aliyun.com/live/248332)
-
-ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) 密码：5yyf
-
-### Google的大规模稀疏模型设计
-
-[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
-
-代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
-
-
-### RETRO Transformer
-
-[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
-
-[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
-
-[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
-
-### WebGPT
-
-[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
-
-[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
-
-### prompt
-
-[Fine-tune之后的NLP新范式：Prompt越来越火，CMU华人博士后出了篇综述文章](https://zhuanlan.zhihu.com/p/395795968)
-
-### ray-llm
-
-[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
-
-
-### llm相关汇总
-
-llm中文数据集
-
-[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
-
-简单综述
-
-[https://juejin.cn/post/7240022931078004797](https://juejin.cn/post/7240022931078004797)
-
-### llm for rec
-
-[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
-
-## CV大模型
-
-### stable diffusion
-
-xx
-
-## 多模态
-
-[【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
-
-[Multimodal Intelligence: Representation  Learning, Information Fusion, and Applications](https://arxiv.org/abs/1911.03977)
-
-[BERT在多模态领域中的应用](https://mp.weixin.qq.com/s/THxlQX2MPXua0_N0Ug0EWA)
-
-CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
-
-CLIP
 
 
 # 传统ML
