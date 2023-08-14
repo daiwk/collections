@@ -25,6 +25,30 @@
 
 [Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)
 
+### Anthropic
+
+[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
+
+[Studying Large Language Model Generalization with Influence Functions](https://arxiv.org/pdf/2308.03296.pdf)
+
+[Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
+
+
+### llama2
+
+[Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
+
+### ChatGLM
+
+ACL22 [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/abs/2103.10360)
+
+iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
+
+### PALM-E
+
+[PaLM-E: An Embodied Multimodal Language Model](https://arxiv.org/abs/2303.03378)
+
+
 ### 达摩院大模型技术交流
 
 [https://developer.aliyun.com/live/248332](https://developer.aliyun.com/live/248332)
@@ -79,6 +103,9 @@ llm中文数据集
 
 ### stable diffusion
 
+[High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
+
+![](../assets/stable-diffusion.png)
 
 输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$$z_T$$（正向扩散）
 
