@@ -1,5 +1,14 @@
 # 大模型与AIGC
 
+## 小结
+
++ gpt1：transformer的decoder，参数量117m（0.1b）
++ gpt2：模型结构小改，增加数据，参数量变大（1.5b）
++ gpt3：175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning
++ Instructgpt：RLHF（sft-->rm-->ppo）
++ gpt3.5：据说基本上等于instructgpt
++ gpt4：没公开细节，但听说效果很好，用起来也确实比3.5要好
+
 ## llm应用合辑
 
 + ChatGPT聚合站：[https://hokex.com](https://hokex.com)
