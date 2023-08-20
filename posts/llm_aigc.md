@@ -43,9 +43,23 @@
 [Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
 
 
+### llama
+
+[LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)
+
+之前的工作考虑的是在训练预算有限的前提下，如何提升模型性能（2022年deepmind的[Training Compute-Optimal Large Language Models](https://arxiv.org/pdf/2203.15556.pdf)）,llama考虑在预测时的预算。例如deepmind推荐一个10b的模型在200b的token上训练，但其实一个7b的模型当用了1T的token后，性能仍在提升。
+
+
+
+
+
 ### llama2
 
 [Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
+
+
+[https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
+
 
 ### ChatGLM
 
