@@ -61,6 +61,8 @@ llama只用公开数据训练，而Chinchilla、PaLM、GPT-3都有自己的未�
 + Arxiv(2.5%)：拿原始的tex文件，删掉first section之前的东西，还有一些注释、宏
 + Stack Exchange(2%)：高质量的问答网站，按答案的分数排序
 
+![](../assets/llama_data.png)
+
 tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数字，回退到字节去处理未知的utf8字符（fallback to bytes to decompose unknown UTF-8 characters）
 
 总共有1.4T的token，对大部分训练数据，每个token在训练时只用了一次，除了维基和book大概用了两次。
@@ -75,7 +77,14 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 + SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
 + Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
 
-优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%
+优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%。0.1的weight decay和1.0的gradient cliping，使用2000steps的warmup
+
+#### 训练加速
+
++ 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $$o(n^2)$$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
+    + 不存储attention weights
+    + 不计算被mask的key/query得分
++ 减少xxx：
 
 
 ### llama2
