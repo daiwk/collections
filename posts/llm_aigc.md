@@ -75,7 +75,7 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 + SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
 + Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
 
-
+优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%
 
 
 ### llama2
