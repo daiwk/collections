@@ -23,6 +23,10 @@
 + 一句话生成一段视频：[https://runwayml.com/](https://runwayml.com/)
 + 文字转语音：[https://murf.ai/](https://runwayml.com/)
 
+## LLM+推荐
+
+[推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
+
 
 ## NLP大模型
 
