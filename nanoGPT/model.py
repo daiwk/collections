@@ -53,7 +53,9 @@ class CausalSelfAttention(nn.Module):
         B, T, C = x.size() # batch size, sequence length, embedding dimensionality (n_embd)
 
         # calculate query, key, values for all heads in batch and move head forward to be the batch dim
-        q, k, v  = self.c_attn(x).split(self.n_embd, dim=2)
+        q, k, v  = self.c_attn(x).split(self.n_embd, dim=2) ## 按第2维，即3*n_embd那维拆成每个size是n_embd的张量，也就是拆成3个向量
+        # 将原始的k张量从形状[B, T, C]改变为[B, T, self.n_head, C // self.n_head]
+        # transpose交换1和2两个维度，即变成[B, self.n_head, T, C // self.n_head], nh是注意力头的数量，hs是每个头的大小。
         k = k.view(B, T, self.n_head, C // self.n_head).transpose(1, 2) # (B, nh, T, hs)
         q = q.view(B, T, self.n_head, C // self.n_head).transpose(1, 2) # (B, nh, T, hs)
         v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2) # (B, nh, T, hs)
