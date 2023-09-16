@@ -46,6 +46,9 @@ class CausalSelfAttention(nn.Module):
         if not self.flash:
             print("WARNING: using slow attention. Flash Attention requires PyTorch >= 2.0")
             # causal mask to ensure that attention is only applied to the left in the input sequence
+            # block_size是序列长度
+            # torch.tril(...): 这是一个取下三角形的函数。它会返回一个新的张量，其中只有主对角线及其以下的元素被保留，主对角线以上的元素都被设置为0。这常用于Transformer模型中，确保在自注意力计算时，一个位置只能注意到它之前的位置（因果关系，或称之为因果masking）。
+            # self.register_buffer("bias", ...): 在PyTorch中，模型的参数通常会通过nn.Parameter进行注册，这样它们可以在训练过程中被优化。然而，有些张量是模型的一部分，但不应该在训练中被优化（例如，这里的掩码）。register_buffer方法允许我们注册这样的张量，确保它们可以随模型一起被保存和加载，但在训练过程中不会被认为是参数。
             self.register_buffer("bias", torch.tril(torch.ones(config.block_size, config.block_size))
                                         .view(1, 1, config.block_size, config.block_size))
 
@@ -56,6 +59,7 @@ class CausalSelfAttention(nn.Module):
         q, k, v  = self.c_attn(x).split(self.n_embd, dim=2) ## 按第2维，即3*n_embd那维拆成每个size是n_embd的张量，也就是拆成3个向量
         # 将原始的k张量从形状[B, T, C]改变为[B, T, self.n_head, C // self.n_head]
         # transpose交换1和2两个维度，即变成[B, self.n_head, T, C // self.n_head], nh是注意力头的数量，hs是每个头的大小。
+        # C = nh * hs，即n_embd=头数 * 每个头的size
         k = k.view(B, T, self.n_head, C // self.n_head).transpose(1, 2) # (B, nh, T, hs)
         q = q.view(B, T, self.n_head, C // self.n_head).transpose(1, 2) # (B, nh, T, hs)
         v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2) # (B, nh, T, hs)
@@ -66,14 +70,18 @@ class CausalSelfAttention(nn.Module):
             y = torch.nn.functional.scaled_dot_product_attention(q, k, v, attn_mask=None, dropout_p=self.dropout if self.training else 0, is_causal=True)
         else:
             # manual implementation of attention
+            ## @表示矩阵乘法,k的-2和-1交换，得到[B,nh,hs,T]，而q是[B,nh,T,hs]，乘完得到[B,nh,T,T]
             att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
+            ## mask_fill：如果是True(即上三角)，就用-inf填充，然后-inf过softmax的时候就是0
             att = att.masked_fill(self.bias[:,:,:T,:T] == 0, float('-inf'))
             att = F.softmax(att, dim=-1)
             att = self.attn_dropout(att)
             y = att @ v # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs)
+        # 变成(B,T,nh,hs),确保张量在内存中是连续存储的操作。因为当我们执行某些操作（如转置）后，张量可能不再是连续的，这可能会影响某些后续操作（例如view）。
         y = y.transpose(1, 2).contiguous().view(B, T, C) # re-assemble all head outputs side by side
 
         # output projection
+        # c_proj是多头att最后那个Linear projection，映射回原来的维度(n_embd)
         y = self.resid_dropout(self.c_proj(y))
         return y
 
