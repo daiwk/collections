@@ -1806,6 +1806,8 @@ batch内shuffle采样（有放回）
 
 [https://github.com/imsheridan/DeepRec/tree/master/Match](https://github.com/imsheridan/DeepRec/tree/master/Match)
 
+[精准推荐的秘术：阿里解耦域适应无偏召回模型详解](https://mp.weixin.qq.com/s/0Cbc3aAYTeFqLDutLBXJmA?notreplace=true)对应[Co-training Disentangled Domain Adaptation Network for Leveraging Popularity Bias in Recommenders](https://ir.webis.de/anthology/2022.sigirconf_conference-2022.10/)
+
 ## JTM
 
 [下一代深度召回与索引联合优化算法JTM](https://mp.weixin.qq.com/s/heiy74_QriwxpZRyTUEgPg)
