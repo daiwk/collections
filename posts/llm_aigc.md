@@ -30,6 +30,24 @@
 
 ## NLP大模型
 
+### nanogpt
+
+简化版的gpt，
+tiktoken：gpt2中使用的开源分词工具，比huggingface的tokenizer快得多
+
+```python
+import tiktoken
+enc = tiktoken.get_encoding("gpt2")
+
+# 字节对编码过程，我的输出是[31373, 995]
+encoding_res = enc.encode("hello world")
+print(encoding_res)
+
+# 字节对解码过程，解码结果：hello world
+raw_text = enc.decode(encoding_res)
+print(raw_text)
+```
+
 ### InstructGPT
 
 [OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
@@ -159,6 +177,8 @@ llm中文数据集
 ### llm for rec
 
 [Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+
+[https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
 
 ## CV大模型
 
