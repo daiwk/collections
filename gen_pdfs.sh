@@ -7,6 +7,7 @@ cat ./posts/full.md | python3 trans_format.py >> ./collections-pdf.md
 
 git add ./assets
 git add posts
+git add codes
 git add pdfs
 git add gen_pdfs.sh
 git commit -m 'x'
