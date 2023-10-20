@@ -207,3 +207,11 @@ $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新�
 CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 
 CLIP
+
+## 其他
+
+torch里的categorical分布(类别分布)
+[https://blog.csdn.net/qq_37388085/article/details/127251550](https://blog.csdn.net/qq_37388085/article/details/127251550)
+
+[https://zhuanlan.zhihu.com/p/59550457](https://zhuanlan.zhihu.com/p/59550457)
+
