@@ -415,7 +415,7 @@ class RLHF(nn.Module):
         if self.mode == 'reward':
             return self.forward_reward(idx, targets)
         else:
-            return self.model(idx, targets)
+            return self.model(idx, targets) # gpt正常生成logits(vocab_size大小的打分)
      
     def generate(self, idx, max_new_tokens, device, block_size, use_reference=True, reward_model=None, hard_code_reward=True):
         # idx is (B, T) array of indices in the current context
