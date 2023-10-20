@@ -2,6 +2,8 @@
 
 ## 小结
 
+decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
+
 + gpt1：transformer的decoder，参数量117m（0.1b）
 + gpt2：模型结构小改，增加数据，参数量变大（1.5b）
 + gpt3：175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning
