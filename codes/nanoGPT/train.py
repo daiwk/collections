@@ -118,6 +118,7 @@ val_data = np.memmap(os.path.join(data_dir, 'val.bin'), dtype=np.uint16, mode='r
 def get_batch(split):
     data = train_data if split == 'train' else val_data
     ix = torch.randint(len(data) - block_size, (batch_size,))
+    ## 参考https://zhuanlan.zhihu.com/p/639445749 这里target是预测的下一个数，例如[1,2,3,4], 输入[1]，预测2；输入[1,2,3]，预测4
     x = torch.stack([torch.from_numpy((data[i:i+block_size]).astype(np.int64)) for i in ix])
     y = torch.stack([torch.from_numpy((data[i+1:i+1+block_size]).astype(np.int64)) for i in ix])
     if device_type == 'cuda':
