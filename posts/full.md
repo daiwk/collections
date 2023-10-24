@@ -2090,6 +2090,8 @@ APG: 面向CTR预估的自适应参数生成网络
 
 常见问题：[QA派\｜GNN工业应用-PinSAGE](https://zhuanlan.zhihu.com/p/195735468)
 
+[https://keg.cs.tsinghua.edu.cn/jietang/publications/KDD23-MLG-keynote.pdf](https://keg.cs.tsinghua.edu.cn/jietang/publications/KDD23-MLG-keynote.pdf)
+
 ## GNN理论研究
 
 [On The Equivalence Between Node Embeddings And Structural Graph Representations](https://arxiv.org/pdf/1910.00452.pdf)
