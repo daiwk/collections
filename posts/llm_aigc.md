@@ -25,6 +25,83 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 + 一句话生成一段视频：[https://runwayml.com/](https://runwayml.com/)
 + 文字转语音：[https://murf.ai/](https://runwayml.com/)
 
+## RLHF
+
+[https://huggingface.co/blog/zh/rlhf](https://huggingface.co/blog/zh/rlhf)
+
++ 预训练一个语言模型 (LM) ；
++ 聚合问答数据并训练一个奖励模型 (Reward Model，RM)，也叫偏好模型；
++ 用强化学习 (RL) 方式微调 LM。
+
+### sft
+
+
+![](../assets/rlhf-sft.png)
+
++ openai：instructGPT使用小版本的GPT-3，并对“更可取”（preferable）的人工生成文本微调
++ Anthropic：1000w-520亿参数的transformer，并按“有用、诚实和无害”的标准在上下文线索上蒸馏原始LM
++ DeepMind：2800亿的模型Gopher
+
+### rm
+
+![](../assets/rlhf-rm.png)
+
+接收一系列文本并返回一个标量奖励，数值上对应人的偏好。我们可以用端到端的方式用 LM 建模，或者用模块化的系统建模 (比如对输出进行排名，再将排名转换为奖励) 。
+
++ **模型选择**：RM 可以是另一个经过微调的 LM，也可以是根据偏好数据从头开始训练的 LM。Anthropic 提出了一种特殊的预训练方式，即用偏好模型预训练 (Preference Model Pretraining，PMP) 来替换一般预训练后的微调过程。因为前者被认为对样本数据的利用率更高。
++ **训练文本**：RM 的提示 - 生成对文本是从预定义数据集中采样生成的，并用初始的 LM 给这些提示生成文本。Anthropic 的数据主要是通过 Amazon Mechanical Turk 上的聊天工具生成的，并在 [Hub](https://huggingface.co/datasets/Anthropic/hh-rlhf) 上 可用，而 OpenAI 使用了用户提交给 GPT API 的 prompt。
++ **训练奖励数值**：人工对 LM 生成的回答进行排名。起初我们可能会认为应该直接对文本标注分数来训练 RM，但是由于标注者的价值观不同导致这些分数未经过校准并且充满噪音，通过排名可以比较多个模型的输出并构建更好的规范数据集，这些不同的排名结果将被归一化为用于训练的标量奖励值。
+
+目前成功的 RLHF 系统使用了和生成模型具有 不同 大小的 LM，OpenAI 使用了 175B 的 LM 和 6B 的 RM，Anthropic 使用的 LM 和 RM 从 10B 到 52B 大小不等，DeepMind 使用了 70B 的 Chinchilla 模型分别作为 LM 和 RM
+
+
+### rl
+
+![](../assets/rlhf-rl.png)
+
+直接微调整个 10B～100B+ 参数的成本过高 ，参考低秩自适应[LoRA](https://arxiv.org/abs/2106.09685)和DeepMind的[Sparrow LM](https://arxiv.org/abs/2209.14375)。目前多个组织找到的可行方案是使用策略梯度强化学习 (Policy Gradient RL) 算法、近端策略优化 (Proximal Policy Optimization，PPO) **微调初始 LM 的部分或全部参数**。
+
++ 策略 (policy)：一个接受提示并返回一系列文本 (或文本的概率分布) 的 LM
++ 行动空间（action space）： LM 的词表对应的所有词元 (一般在 50k 数量级) 
++ 观察空间 (observation space)： 是可能的输入词元序列，也比较大 (词汇量^输入标记的数量) 
++ 奖励函数：偏好模型和策略转变约束 (Policy shift constraint) 的结合。
+
+ppo确定的奖励函数如下：
+
++ 提示$x$输入初始LM和当前微调的LM，分别得到输出文本$y_1$和$y_2$
++ 将来自当前策略的文本传给RM得到标量奖励$r_{\theta}$
++ 将两个模型的生成文本进行比较计算差异的惩罚项，一般是输出词分布间的KL散度的缩放，即$r=r_{\theta}-\lambda r_{KL}$，
+
+惩罚项的好处：
++ 用于惩罚策略在每个训练batch中生成大幅偏离初始模型，以确保模型输出合理连贯的文本。
++ 如果没有这一项，可能导致模型在优化中生成乱码文本，以愚弄奖励模型提供高奖励值。
+
+根据PPO，按当前batch的奖励进行优化。PPO是置信域优化（TRO，Trust Region Optimization）算法，用梯度约束确保更新步骤不会破坏学习过程的稳定性。
+
+DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
+
+
+### 开源库
+
+#### openai的lm-human-preferences
+
+[https://github.com/openai/lm-human-preferences](https://github.com/openai/lm-human-preferences)
+
+#### huggingface的TRL
+
+[https://github.com/huggingface/trl](https://github.com/huggingface/trl)
+ 
+
+#### CarperAI的trlx
+
+[https://github.com/CarperAI/trlx](https://github.com/CarperAI/trlx)
+
+#### allenai的RL4LMs
+
+[https://github.com/allenai/RL4LMs](https://github.com/allenai/RL4LMs)
+
+
+
 ## LLM+推荐
 
 [推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
