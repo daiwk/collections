@@ -88,10 +88,14 @@ DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
 
 + Rollout：根据策略（LM）生成轨迹（文本）。
 + Evaluate：对生成的轨迹进行评估（RM）。
-+ Old Policy Sampling：从旧的策略（initial actor）中采样概率等信息。
++ Old Policy Sampling：计算并存储旧策略的概率、价值等值，
+    + 输入：Ref_model、Actor、Critic、Prompt+Response
+    + 输出：Ref Logprobs、Old Logprobs、Old Values
 + KL Penalty：计算当前策略和原始LM之间的KL散度，用作对策略改变过快的惩罚项。
-+ Generalized Advantage Estimation (GAE)：GAE是一种优势函数的估计方法，它结合了所有可能的n-step 进行advantage估计。
-+ New Policy Sampling：从新的策略中采样概率等信息。
++ Generalized Advantage Estimation (GAE)：G。基于old value和reward估计优势函数A，它结合了所有可能的n-step 进行advantage估计
++ New Policy Sampling：
+    + 输入ref_model、actor、critic，从新的策略中采样概率等信息，
+    + 输出new logprobs、new values和logits，供actor loss、critic loss以及entropy loss用。
 + Critic Loss：Critic的目标是估计状态的价值函数，Critic loss就是价值函数预测值和实际回报之间的差距。
 + Actor Loss：Actor的目标是优化策略，Actor loss就是基于优势函数的策略梯度。
 + Entropy Loss：为了增加探索性，通常会添加一个基于策略熵的正则项，它鼓励策略保持多样性。
@@ -155,17 +159,17 @@ vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
 
 #### KL
 
-#### Old Policy Sampling
+#### Old Policy Sampling（无bp）
 
 是**make experience**的过程，计算并**存储**旧策略的概率、价值等值，来为后面更新的过程服务。
 
 + Old Logprobs：从“旧的”策略[即在这个batch数据中初始的LM（initial actor）]中计算每个token在旧的策略下的概率Old Logprobs。
-+ Old Values：旧策略中每个**时间步（每个token的预测结果）**的价值，这个值由critic网络进行预测，critic网络就是需要这个值的原因是advantage的计算依赖于Old Values。
++ Old Values：旧策略中每个**时间步**（每个token的预测结果）的价值，这个值由critic网络进行预测，critic网络就是需要这个值的原因是advantage的计算依赖于Old Values。
 + Ref Logprobs：最最原始的LM对于每个时间步的概率预测，一般就是**固定不变的gpt3**，计算这个值的目的是限制actor的更新，防止其偏离原始gpt3太远，他的实现在下一个步骤中。
 
 
 
-#### New Policy Sampling
+#### New Policy Sampling（有bp）
 
 在**新的策略**（更新后的actor）下对轨迹（文本）计算概率的过程，计算Actor Loss，即策略梯度的损失。
 
