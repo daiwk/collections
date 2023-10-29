@@ -82,24 +82,42 @@ ppo确定的奖励函数如下：
 DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
 
 
+#### 概述
+
 [https://zhuanlan.zhihu.com/p/635757674](https://zhuanlan.zhihu.com/p/635757674)
 
 ![](../assets/rlhf-ppo-flows-orig.webp)
 
 + Rollout：根据策略（LM）生成轨迹（文本）。
+    + 输入：Batch Prompt、LM
+    + 输出：Prompt+Response
 + Evaluate：对生成的轨迹进行评估（RM）。
+    + 输入：Prompt+Response、RM
+    + 输出：Reward
 + Old Policy Sampling：计算并存储旧策略的概率、价值等值，
     + 输入：Ref_model、Actor、Critic、Prompt+Response
     + 输出：Ref Logprobs、Old Logprobs、Old Values
-+ KL Penalty：计算当前策略和原始LM之间的KL散度，用作对策略改变过快的惩罚项。
++ KL Penalty：计算**当前策略**和**原始LM**之间的KL散度，用作对策略改变过快的惩罚项。
+    + 输入：Ref Logprobs、Old Logprobs、Reward
+    + 输出：Token Reward
 + Generalized Advantage Estimation (GAE)：G。基于old value和reward估计优势函数A，它结合了所有可能的n-step 进行advantage估计
+    + 输入：Token Reward、Old Values
+    + 输出：Advantages、Returns
 + New Policy Sampling：
     + 输入ref_model、actor、critic，从新的策略中采样概率等信息，
     + 输出new logprobs、new values和logits，供actor loss、critic loss以及entropy loss用。
 + Critic Loss：Critic的目标是估计状态的价值函数，Critic loss就是价值函数预测值和实际回报之间的差距。
+    + 输入：New Values、Returns
+    + 输出：critic梯度更新
 + Actor Loss：Actor的目标是优化策略，Actor loss就是基于优势函数的策略梯度。
+    + 输入：Old Logprobs，New Logprobs、Advantages
+    + 输出：actor梯度更新
 + Entropy Loss：为了增加探索性，通常会添加一个基于策略熵的正则项，它鼓励策略保持多样性。
-+ Policykl：这是对策略迭代过程的一个度量，它度量新策略和旧策略之间的差距。
+    + 输入：Logits
+    + 输出：entropy loss
++ Policykl：这是对策略迭代过程的一个度量，它度量**新策略**和**旧策略**之间的差距。
+    + 输入：Old Logprobs、New Logprobs
+    + 输出：是否early stop
 
 在PPO中，策略优化的过程涉及到两个策略：一个是"旧的"策略，这是我们在开始每次优化迭代时使用的策略，另一个是"新的"策略，这是我们在优化过程中**不断更新**的策略。
 
@@ -157,8 +175,6 @@ vf_loss = 0.5 * masked_mean(torch.max(vf_losses1, vf_losses2), mask)
 vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
 ```
 
-#### KL
-
 #### Old Policy Sampling（无bp）
 
 是**make experience**的过程，计算并**存储**旧策略的概率、价值等值，来为后面更新的过程服务。
@@ -167,6 +183,73 @@ vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
 + Old Values：旧策略中每个**时间步**（每个token的预测结果）的价值，这个值由critic网络进行预测，critic网络就是需要这个值的原因是advantage的计算依赖于Old Values。
 + Ref Logprobs：最最原始的LM对于每个时间步的概率预测，一般就是**固定不变的gpt3**，计算这个值的目的是限制actor的更新，防止其偏离原始gpt3太远，他的实现在下一个步骤中。
 
+```python
+all_logprobs, _, values, masks = self.batched_forward_pass(self.model, queries, responses, model_inputs)
+ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries, responses, model_inputs)
+```
+
+#### KL Penalty
+
+用于保证经过强化学习后的模型（新策略actor）不会过于偏离原始预训练模型（ref model）。
+
+```python
+# 初始化两个列表来分别存储奖励和非得分奖励
+rewards, non_score_rewards = [], []
+
+# 使用 zip 函数并行遍历输入的得分、对数概率、参考模型的对数概率以及mask
+for score, logprob, ref_logprob, mask in zip(scores, logprobs, ref_logprobs, masks):
+    # 计算 KL 散度，即模型的对数概率与参考模型的对数概率之间的差值
+    kl = logprob - ref_logprob
+
+    # 计算非得分奖励，即 KL 散度乘以 KL 控制器值的负值
+    non_score_reward = -self.kl_ctl.value * kl
+    non_score_rewards.append(non_score_reward)
+
+    # 复制非得分奖励为新的奖励
+    reward = non_score_reward.clone()
+
+    # 找到mask中最后一个非零元素的索引，这表示输入序列的实际长度
+    last_non_masked_index = mask.nonzero()[-1]
+
+    # 对于最后一个非mask部分的token，其奖励是偏好模型的得分加上 KL 散度
+    reward[last_non_masked_index] += score
+
+    # 将计算的奖励添加到奖励列表中
+    rewards.append(reward)
+
+# 返回包含所有奖励的张量以及包含所有非得分奖励的张量
+return torch.stack(rewards), torch.stack(non_score_rewards)
+```
+
+#### GAE
+
+GAE是一种多步优势估计方法。它通过引入一个权衡参数λ，在**单步TD误差**和**多步TD误差**之间进行权衡，从而**减小估计的方差**，提高学习的稳定性。其中$\sigma _{t+l}$是时间步$t+l$的TD误差。
+
+$$A_t=\sum ^{k-1}_{l=0}(\lambda \eta )^{l}\sigma _{t+l}$$
+
+$$\sigma _{t+l}=r_{t+l+1}+\eta V(s_{t+l+1})-V(s_{t+l})$$
+
+```python
+# 从后往前遍历整个生成的序列
+for t in reversed(range(gen_len)):
+    # 计算下一个状态的价值，如果当前状态已经是最后一个状态，则下一个状态的价值为0
+    nextvalues = values[:, t + 1] if t < gen_len - 1 else 0.0
+
+    # 计算 δ，它是奖励加上衰减后的下一个状态的价值，然后减去当前状态的价值
+    delta = rewards[:, t] + self.config.gamma * nextvalues - values[:, t]
+
+    # 使用 δ 更新 lastgaelam，这是 GAE 公式的一部分
+    lastgaelam = delta + self.config.gamma * self.config.lam * lastgaelam
+
+    # 将计算的优势值添加到优势值列表中
+    advantages_reversed.append(lastgaelam)
+
+# 将优势值列表反向并转换为张量
+advantages = torch.stack(advantages_reversed[::-1]).transpose(0, 1)
+
+# 计算回报值，它是优势值加上状态值
+returns = advantages + values
+```
 
 
 #### New Policy Sampling（有bp）
@@ -174,6 +257,17 @@ vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
 在**新的策略**（更新后的actor）下对轨迹（文本）计算概率的过程，计算Actor Loss，即策略梯度的损失。
 
 Old Logprobs是一次性一个batch的数据计算的，这是因为在一个batch中旧策略都是不变的；而New Logprobs是一个mini batch计算一次，这是因为新策略每个mini batch变一次。
+
+#### entropy loss
+
+一个策略的熵越大，意味着这个策略选择各个动作的概率更加“平均”。在actor的loss里加熵，使得策略的熵尽可能大，从而有更多机会探索可能带来更好奖励的文本轨迹。
+
+```python
+entropy = -torch.sum(logits* torch.log(logits + 1e-9), dim=-1).mean()
+```
+
+#### Policy kl
+
 
 
 
