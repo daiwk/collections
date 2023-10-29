@@ -179,7 +179,7 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 ### 开源库
 
-#### openai的lm-human-preferences
+#### openai的lm-human-preferences(gpt2的finetune)
 
 [https://github.com/openai/lm-human-preferences](https://github.com/openai/lm-human-preferences)
 
