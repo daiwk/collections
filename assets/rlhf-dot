@@ -26,6 +26,9 @@ digraph {
 	"Token Reward"
 	Logits
 	"是否early stop"
+	LM -> "Ref Model" [label=copy style=dashed]
+	LM -> Actor [label=copy style=dashed]
+	Actor -> Critic [label="+nn" style=dashed]
 	subgraph cluster_rollout {
 		"Batch Prompt" -> Rollout
 		LM -> Rollout

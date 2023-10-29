@@ -30,6 +30,9 @@ g.node("Token Reward")
 g.node("Logits")
 g.node("是否early stop")
 
+g.edge("LM", "Ref Model", label="copy", style="dashed")
+g.edge("LM", "Actor", label="copy", style="dashed")
+g.edge("Actor", "Critic", label="+nn", style="dashed")
 
 with g.subgraph(name="cluster_rollout") as dot:
     ## Rollout
