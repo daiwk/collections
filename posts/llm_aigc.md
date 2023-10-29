@@ -88,6 +88,7 @@ DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
 
 ![](../assets/rlhf-ppo-flows-orig.webp)
 
+
 + Rollout：根据策略（LM）生成轨迹（文本）。
     + 输入：Batch Prompt、LM
     + 输出：Prompt+Response
@@ -120,6 +121,10 @@ DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
     + 输出：是否early stop
 
 在PPO中，策略优化的过程涉及到两个策略：一个是"旧的"策略，这是我们在开始每次优化迭代时使用的策略，另一个是"新的"策略，这是我们在优化过程中**不断更新**的策略。
+
+自己整理重画的
+
+![](../assets/rlhf-dot.jpg)
 
 
 #### actor & actor loss
