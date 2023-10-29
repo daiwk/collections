@@ -33,6 +33,7 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 + 聚合问答数据并训练一个奖励模型 (Reward Model，RM)，也叫偏好模型；
 + 用强化学习 (RL) 方式微调 LM。
 
+
 ### sft
 
 
@@ -79,6 +80,97 @@ ppo确定的奖励函数如下：
 根据PPO，按当前batch的奖励进行优化。PPO是置信域优化（TRO，Trust Region Optimization）算法，用梯度约束确保更新步骤不会破坏学习过程的稳定性。
 
 DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
+
+
+[https://zhuanlan.zhihu.com/p/635757674](https://zhuanlan.zhihu.com/p/635757674)
+
+![](../assets/rlhf-ppo-flows-orig.webp)
+
++ Rollout：根据策略（LM）生成轨迹（文本）。
++ Evaluate：对生成的轨迹进行评估（RM）。
++ Old Policy Sampling：从旧的策略（initial actor）中采样概率等信息。
++ KL Penalty：计算当前策略和原始LM之间的KL散度，用作对策略改变过快的惩罚项。
++ Generalized Advantage Estimation (GAE)：GAE是一种优势函数的估计方法，它结合了所有可能的n-step 进行advantage估计。
++ New Policy Sampling：从新的策略中采样概率等信息。
++ Critic Loss：Critic的目标是估计状态的价值函数，Critic loss就是价值函数预测值和实际回报之间的差距。
++ Actor Loss：Actor的目标是优化策略，Actor loss就是基于优势函数的策略梯度。
++ Entropy Loss：为了增加探索性，通常会添加一个基于策略熵的正则项，它鼓励策略保持多样性。
++ Policykl：这是对策略迭代过程的一个度量，它度量新策略和旧策略之间的差距。
+
+在PPO中，策略优化的过程涉及到两个策略：一个是"旧的"策略，这是我们在开始每次优化迭代时使用的策略，另一个是"新的"策略，这是我们在优化过程中**不断更新**的策略。
+
+
+#### actor & actor loss
+
+Actor 是**策略**，它决定文本会被怎么样生成，是从**策略网络**拷贝来的模拟整个智能体在环境中行动的网络。
+
+优势函数表示在给定的状态下采取某个行动比遵循当前策略的期望回报要好多少。
+
+Actor Loss如下，用重要性采样比较在**旧策略**和**新策略**下行动的概率（Old Logprobs，New Logprobs），然后将这个比值（也就是 Importance Sampling 的权重）与**优势函数Advantages**相乘，得到了对 Actor Loss 的一个估计。
+
+$$L=\pi_{new}/\pi_{old} * A$$
+
+```python
+# 计算新旧策略下概率的比值
+ratio = torch.exp(logprobs - old_logprobs)
+
+# 计算未截断的策略梯度损失
+pg_losses = -advantages * ratio
+
+# 计算截断的策略梯度损失
+pg_losses2 = -advantages * torch.clamp(ratio, 1.0 - self.config.cliprange, 1.0 + self.config.cliprange)
+
+# 选择两者中较大的作为最终的策略梯度损失
+pg_loss = masked_mean(torch.max(pg_losses, pg_losses2), mask)
+
+# 计算因为截断导致策略梯度损失改变的比例
+pg_clipfrac = masked_mean(torch.gt(pg_losses2, pg_losses).double(), mask)
+```
+
+
+#### critic & critic loss
+
+critic是专门用来预测actor轨迹**每一步价值**的网络，actor上加几个线性层能够给每个token预测一个值。任务是估计状态的价值函数，也就是预测从当前状态开始，通过遵循某个策略，期望能得到的总回报。
+
+Critic Loss是最小化它的预测价值与实际回报之间的差距，常用mse
+
+通过最小化Critic Loss，Critic的预测能力会逐渐提升。因为Critic的预测结果会被用来**估计每个行动的优势（Advantage）**，这个优势值又会被用来计算策略的更新（Actor Loss）。
+
+```python
+# 将价值函数的预测值裁剪到一个范围内
+vpredclipped = clip_by_value(
+            vpreds, values - self.config.cliprange_value, values + self.config.cliprange_value
+        )
+
+# 计算裁剪前和裁剪后的价值函数损失
+vf_losses1 = (vpreds - returns) ** 2
+vf_losses2 = (vpredclipped - returns) ** 2
+
+# 最终的价值函数损失是裁剪前和裁剪后损失的最大值的平均值的一半
+vf_loss = 0.5 * masked_mean(torch.max(vf_losses1, vf_losses2), mask)
+
+# 计算裁剪操作实际发生的频率
+vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
+```
+
+#### KL
+
+#### Old Policy Sampling
+
+是**make experience**的过程，计算并**存储**旧策略的概率、价值等值，来为后面更新的过程服务。
+
++ Old Logprobs：从“旧的”策略[即在这个batch数据中初始的LM（initial actor）]中计算每个token在旧的策略下的概率Old Logprobs。
++ Old Values：旧策略中每个**时间步（每个token的预测结果）**的价值，这个值由critic网络进行预测，critic网络就是需要这个值的原因是advantage的计算依赖于Old Values。
++ Ref Logprobs：最最原始的LM对于每个时间步的概率预测，一般就是**固定不变的gpt3**，计算这个值的目的是限制actor的更新，防止其偏离原始gpt3太远，他的实现在下一个步骤中。
+
+
+
+#### New Policy Sampling
+
+在**新的策略**（更新后的actor）下对轨迹（文本）计算概率的过程，计算Actor Loss，即策略梯度的损失。
+
+Old Logprobs是一次性一个batch的数据计算的，这是因为在一个batch中旧策略都是不变的；而New Logprobs是一个mini batch计算一次，这是因为新策略每个mini batch变一次。
+
 
 
 ### 开源库
