@@ -454,6 +454,14 @@ llm中文数据集
 
 [https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
 
+### 大模型的一些现象 
+
+#### 重复生成
+
+[https://www.zhihu.com/question/616130636](https://www.zhihu.com/question/616130636)
+
+[https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
+
 ## CV大模型
 
 ### stable diffusion
