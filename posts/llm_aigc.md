@@ -86,6 +86,8 @@ DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
 
 [https://zhuanlan.zhihu.com/p/635757674](https://zhuanlan.zhihu.com/p/635757674)
 
+[Fine-Tuning Language Models from Human Preferences](https://arxiv.org/pdf/1909.08593.pdf)
+
 [Secrets of RLHF in Large Language Models Part I: PPO](https://arxiv.org/pdf/2307.04964.pdf)
 
 
@@ -94,6 +96,31 @@ DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
 + Rollout and Evaluation：从prompt库里抽样，使用语言模型生成response，然后使用奖励模型（Reward Model, RM）给出奖励得分。这个得分反映了生成的response的质量，比如它是否符合人类的偏好，是否符合任务的要求等。
 + Make experience：收集了一系列的“经验”，即模型的行为和对应的奖励。这些经验包括了模型生成的response以及对应的奖励得分。这些经验将被用于下一步的优化过程。
 + Optimization：使用收集到的经验来更新模型的参数。具体来说，我们使用PPO算法来调整模型的参数，使得模型生成的response的奖励得分能够增加。PPO算法的一个关键特性是它尝试保持模型的行为不会发生太大的改变，这有助于保证模型的稳定性。
+
+官方代码example
+
+```python
+from tqdm import tqdm
+
+for epoch, batch in tqdm(enumerate(ppo_trainer.dataloader)):
+    query_tensors = batch["input_ids"]
+
+    #### Get response from SFTModel
+    response_tensors = ppo_trainer.generate(query_tensors, **generation_kwargs)
+    batch["response"] = [tokenizer.decode(r.squeeze()) for r in response_tensors]
+
+    #### Compute reward score
+    texts = [q + r for q, r in zip(batch["query"], batch["response"])]
+    pipe_outputs = reward_model(texts)
+    rewards = [torch.tensor(output[1]["score"]) for output in pipe_outputs]
+
+    #### Run PPO step
+    stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
+    ppo_trainer.log_stats(stats, batch, rewards)
+
+#### Save model
+ppo_trainer.save_model("my_ppo_model")
+```
 
 ![](../assets/rlhf-workflow.jpeg)
 
