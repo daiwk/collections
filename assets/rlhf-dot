@@ -30,59 +30,72 @@ digraph {
 	LM -> Actor [label=copy style=dashed]
 	Actor -> Critic [label="+nn" style=dashed]
 	subgraph cluster_rollout {
+		label="Rollout:"
 		"Batch Prompt" -> Rollout
 		LM -> Rollout
 		Rollout -> "Prompt+Response"
 	}
 	subgraph cluster_evaluate {
+		label="Evaluation:"
 		"Prompt+Response" -> Evaluate
 		RM -> Evaluate
 		Evaluate -> Reward
 	}
-	subgraph cluster_old_policy_sampling {
-		"Ref Model" -> "Old Policy Sampling"
-		Actor -> "Old Policy Sampling"
-		Critic -> "Old Policy Sampling"
-		"Prompt+Response" -> "Old Policy Sampling"
-		"Old Policy Sampling" -> "Ref Logprobs"
-		"Old Policy Sampling" -> "Old Logprobs"
-		"Old Policy Sampling" -> "Old Values"
-	}
-	subgraph cluster_kl_penalty {
-		"Old Logprobs" -> "KL Penalty"
-		"Ref Logprobs" -> "KL Penalty"
-		Reward -> "KL Penalty"
-		"KL Penalty" -> "Token Reward"
-	}
-	subgraph cluster_gae {
-		"Old Values" -> GAE
-		"Token Reward" -> GAE
-		GAE -> Advantages
-		GAE -> Returns
-	}
-	subgraph cluster_new_policy_sampling {
-		"Ref Model" -> "New Policy Sampling"
-		Actor -> "New Policy Sampling"
-		Critic -> "New Policy Sampling"
-		"New Policy Sampling" -> Logits
-		"New Policy Sampling" -> "New Logprobs"
-		"New Policy Sampling" -> "New Values"
-	}
-	subgraph cluster_critic_loss {
-		"New Values" -> "Critic Loss"
-		Returns -> "Critic Loss"
-	}
-	subgraph cluster_actor_loss {
-		"Old Logprobs" -> "Actor Loss"
-		"New Logprobs" -> "Actor Loss"
-		Advantages -> "Actor Loss"
-	}
-	subgraph cluster_entropy_loss {
-		Logits -> "Entropy Loss"
-	}
-	subgraph cluster_policy_kl {
-		"Old Logprobs" -> "Policy KL"
-		"New Logprobs" -> "Policy KL"
-		"Policy KL" -> "是否early stop"
+	subgraph cluster_optimization {
+		label="Optimzation:"
+		subgraph cluster_old_policy_sampling {
+			label=cluster_old_policy_sampling
+			"Ref Model" -> "Old Policy Sampling"
+			Actor -> "Old Policy Sampling"
+			Critic -> "Old Policy Sampling"
+			"Prompt+Response" -> "Old Policy Sampling"
+			"Old Policy Sampling" -> "Ref Logprobs"
+			"Old Policy Sampling" -> "Old Logprobs"
+			"Old Policy Sampling" -> "Old Values"
+		}
+		subgraph cluster_kl_penalty {
+			label=cluster_kl_penalty
+			"Old Logprobs" -> "KL Penalty"
+			"Ref Logprobs" -> "KL Penalty"
+			Reward -> "KL Penalty"
+			"KL Penalty" -> "Token Reward"
+		}
+		subgraph cluster_gae {
+			label=cluster_gae
+			"Old Values" -> GAE
+			"Token Reward" -> GAE
+			GAE -> Advantages
+			GAE -> Returns
+		}
+		subgraph cluster_new_policy_sampling {
+			label=cluster_new_policy_sampling
+			"Ref Model" -> "New Policy Sampling"
+			Actor -> "New Policy Sampling"
+			Critic -> "New Policy Sampling"
+			"New Policy Sampling" -> Logits
+			"New Policy Sampling" -> "New Logprobs"
+			"New Policy Sampling" -> "New Values"
+		}
+		subgraph cluster_critic_loss {
+			label=cluster_critic_loss
+			"New Values" -> "Critic Loss"
+			Returns -> "Critic Loss"
+		}
+		subgraph cluster_actor_loss {
+			label=cluster_actor_loss
+			"Old Logprobs" -> "Actor Loss"
+			"New Logprobs" -> "Actor Loss"
+			Advantages -> "Actor Loss"
+		}
+		subgraph cluster_entropy_loss {
+			label=cluster_entropy_loss
+			Logits -> "Entropy Loss"
+		}
+		subgraph cluster_policy_kl {
+			label=cluster_policy_kl
+			"Old Logprobs" -> "Policy KL"
+			"New Logprobs" -> "Policy KL"
+			"Policy KL" -> "是否early stop"
+		}
 	}
 }
