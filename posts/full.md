@@ -1699,6 +1699,8 @@ spotify的paper：
 
 ## 推荐系统整体梳理
 
+[https://github.com/Doragd/Algorithm-Practice-in-Industry](https://github.com/Doragd/Algorithm-Practice-in-Industry)
+
 王喆的机器学习笔记系列：
 
 [https://github.com/wzhe06/Reco-papers](https://github.com/wzhe06/Reco-papers)
