@@ -137,7 +137,7 @@ ppo_trainer.save_model("my_ppo_model")
 + KL Penalty：计算**当前策略**和**原始LM**之间的KL散度，用作对策略改变过快的惩罚项。
     + 输入：Ref Logprobs、Old Logprobs、Reward
     + 输出：Token Reward
-+ Generalized Advantage Estimation (GAE)：G。基于old value和reward估计优势函数A，它结合了所有可能的n-step 进行advantage估计
++ Generalized Advantage Estimation (GAE)：G。基于old value(shape是(`batch_size`, `response_length`))和reward估计优势函数A，它结合了所有可能的n-step 进行advantage估计
     + 输入：Token Reward、Old Values
     + 输出：Advantages、Returns
 + New Policy Sampling：
