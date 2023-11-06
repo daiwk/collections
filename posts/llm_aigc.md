@@ -307,6 +307,14 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 entropy = -torch.sum(logits* torch.log(logits + 1e-9), dim=-1).mean()
 ```
 
+新实现：
+
+```python
+    pd = torch.nn.functional.softmax(logits, dim=-1)
+    entropy = torch.logsumexp(logits, axis=-1) - torch.sum(pd * logits, axis=-1)
+```
+
+
 #### Policy kl
 
 
@@ -378,6 +386,10 @@ print(raw_text)
 ### llama
 
 [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)
+
+
+参考代码：
+[https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py)
 
 之前的工作考虑的是在训练预算有限的前提下，如何提升模型性能（2022年deepmind的[Training Compute-Optimal Large Language Models](https://arxiv.org/pdf/2203.15556.pdf)的Chinchilla）,llama考虑在预测时的预算。例如chinchilla是一个10b的模型在200b的token上训练，但其实一个7b的模型当用了1T的token后，性能仍在提升。LLama-13b比gpt3在大多数benchmark上好，但size只有1/10，在一个GPU上就能跑。
 
