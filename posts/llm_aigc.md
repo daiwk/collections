@@ -1,5 +1,10 @@
 # 大模型与AIGC
 
+各种学习相关代码
+
+[https://github.com/daiwk/llms](https://github.com/daiwk/llms)
+
+
 ## 小结
 
 decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
