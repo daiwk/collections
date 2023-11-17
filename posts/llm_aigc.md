@@ -44,8 +44,6 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 ![rlhf-sft](../assets/rlhf-sft.png)
 
-<html><img src="../assets/rlhf-sft.png" width="400" /><br/></html>
-
 + openai：instructGPT使用小版本的GPT-3，并对“更可取”（preferable）的人工生成文本微调
 + Anthropic：1000w-520亿参数的transformer，并按“有用、诚实和无害”的标准在上下文线索上蒸馏原始LM
 + DeepMind：2800亿的模型Gopher
@@ -65,7 +63,7 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 ### rl
 
-![rlhf-rl](../assets/rlhf-rl.png){ height=40% }
+![rlhf-rl](../assets/rlhf-rl.png)
 
 直接微调整个 10B～100B+ 参数的成本过高 ，参考低秩自适应[LoRA](https://arxiv.org/abs/2106.09685)和DeepMind的[Sparrow LM](https://arxiv.org/abs/2209.14375)。目前多个组织找到的可行方案是使用策略梯度强化学习 (Policy Gradient RL) 算法、近端策略优化 (Proximal Policy Optimization，PPO) **微调初始 LM 的部分或全部参数**。
 
