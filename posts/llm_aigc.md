@@ -44,6 +44,8 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 ![rlhf-sft](../assets/rlhf-sft.png)
 
+<html><img src="../assets/rlhf-sft.png" width="400" /><br/></html>
+
 + openai：instructGPT使用小版本的GPT-3，并对“更可取”（preferable）的人工生成文本微调
 + Anthropic：1000w-520亿参数的transformer，并按“有用、诚实和无害”的标准在上下文线索上蒸馏原始LM
 + DeepMind：2800亿的模型Gopher
