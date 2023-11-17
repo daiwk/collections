@@ -1,5 +1,7 @@
 # 大模型与AIGC
 
+下载本文pdf：[https://github.com/daiwk/collections/blob/master/pdfs/llm_aigc.pdf](https://github.com/daiwk/collections/blob/master/pdfs/llm_aigc.pdf)
+
 各种学习相关代码
 
 [https://github.com/daiwk/llms](https://github.com/daiwk/llms)
@@ -186,7 +188,8 @@ ratio = torch.exp(logprobs - old_logprobs)
 pg_losses = -advantages * ratio
 
 # 计算截断的策略梯度损失
-pg_losses2 = -advantages * torch.clamp(ratio, 1.0 - self.config.cliprange, 1.0 + self.config.cliprange)
+pg_losses2 = -advantages * torch.clamp(ratio, 1.0 - self.config.cliprange,
+     1.0 + self.config.cliprange)
 
 # 选择两者中较大的作为最终的策略梯度损失
 pg_loss = masked_mean(torch.max(pg_losses, pg_losses2), mask)
@@ -230,8 +233,10 @@ vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
 + Ref Logprobs：最最原始的LM对于每个时间步的概率预测，一般就是**固定不变的gpt3**，计算这个值的目的是限制actor的更新，防止其偏离原始gpt3太远，他的实现在下一个步骤中。
 
 ```python
-all_logprobs, _, values, masks = self.batched_forward_pass(self.model, queries, responses, model_inputs)
-ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries, responses, model_inputs)
+all_logprobs, _, values, masks = self.batched_forward_pass(self.model, queries, 
+    responses, model_inputs)
+ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries, 
+    responses, model_inputs)
 ```
 
 #### KL Penalty
@@ -243,7 +248,8 @@ ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries, respo
 rewards, non_score_rewards = [], []
 
 # 使用 zip 函数并行遍历输入的得分、对数概率、参考模型的对数概率以及mask
-for score, logprob, ref_logprob, mask in zip(scores, logprobs, ref_logprobs, masks):
+for score, logprob, ref_logprob, mask in zip(scores, logprobs, 
+        ref_logprobs, masks):
     # 计算 KL 散度，即模型的对数概率与参考模型的对数概率之间的差值
     kl = logprob - ref_logprob
 
