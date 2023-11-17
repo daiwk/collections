@@ -42,7 +42,9 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 ### sft
 
 
-../assets/rlhf-sft.png 
+![rlhf-sft](../assets/rlhf-sft.png)
+
+<div><img src="../assets/rlhf-sft.png" width="400" /></div>
 
 + openai：instructGPT使用小版本的GPT-3，并对“更可取”（preferable）的人工生成文本微调
 + Anthropic：1000w-520亿参数的transformer，并按“有用、诚实和无害”的标准在上下文线索上蒸馏原始LM
@@ -50,7 +52,7 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 ### rm
 
-../assets/rlhf-rm.png 
+![rlhf-rm](../assets/rlhf-rm.png)
 
 接收一系列文本并返回一个标量奖励，数值上对应人的偏好。我们可以用端到端的方式用 LM 建模，或者用模块化的系统建模 (比如对输出进行排名，再将排名转换为奖励) 。
 
@@ -63,7 +65,7 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 ### rl
 
-../assets/rlhf-rl.png 
+![rlhf-rl](../assets/rlhf-rl.png){ height=40% }
 
 直接微调整个 10B～100B+ 参数的成本过高 ，参考低秩自适应[LoRA](https://arxiv.org/abs/2106.09685)和DeepMind的[Sparrow LM](https://arxiv.org/abs/2209.14375)。目前多个组织找到的可行方案是使用策略梯度强化学习 (Policy Gradient RL) 算法、近端策略优化 (Proximal Policy Optimization，PPO) **微调初始 LM 的部分或全部参数**。
 
@@ -96,7 +98,7 @@ DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
 [Secrets of RLHF in Large Language Models Part I: PPO](https://arxiv.org/pdf/2307.04964.pdf)
 
 
-../assets/rlhf-ppo-flows-orig.png 
+![rlhf-ppo-flows-orig](../assets/rlhf-ppo-flows-orig.png)
 
 + Rollout and Evaluation：从prompt库里抽样，使用语言模型生成response，然后使用奖励模型（Reward Model, RM）给出奖励得分。这个得分反映了生成的response的质量，比如它是否符合人类的偏好，是否符合任务的要求等。
 + Make experience：收集了一系列的“经验”，即模型的行为和对应的奖励。这些经验包括了模型生成的response以及对应的奖励得分。这些经验将被用于下一步的优化过程。
@@ -127,7 +129,7 @@ for epoch, batch in tqdm(enumerate(ppo_trainer.dataloader)):
 ppo_trainer.save_model("my_ppo_model")
 ```
 
-../assets/rlhf-workflow.jpeg 
+![rlhf-workflow](../assets/rlhf-workflow.jpeg)
 
 
 + Rollout：根据策略（LM）生成轨迹（文本）。
@@ -165,7 +167,7 @@ ppo_trainer.save_model("my_ppo_model")
 
 自己整理重画的
 
-../assets/rlhf-dot.jpg 
+![rlhf-dot](../assets/rlhf-dot.jpg)
 
 
 #### actor & actor loss
@@ -410,7 +412,7 @@ llama只用公开数据训练，而Chinchilla、PaLM、GPT-3都有自己的未�
 + Arxiv(2.5%)：拿原始的tex文件，删掉first section之前的东西，还有一些注释、宏
 + Stack Exchange(2%)：高质量的问答网站，按答案的分数排序
 
-../assets/llama_data.png 
+![llama_data](../assets/llama_data.png)
 
 tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数字，回退到字节去处理未知的utf8字符（fallback to bytes to decompose unknown UTF-8 characters）
 
@@ -418,19 +420,19 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 附：gpt4说：当我们说"一个token只训练一次"，我们其实是在说在一个epoch（一个完整遍历训练集的过程）中，我们只遍历一次完整的数据集。如果一个特定的token在数据集中出现多次，那么在一个epoch中，这个token就会被用来训练模型多次。
 
-../assets/llama.png 
+![llama](../assets/llama.png)
 
 #### 网络结构
 
 + pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))
-+ SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
++ SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$4d$改了$2/34d$
 + Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
 
 优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%。0.1的weight decay和1.0的gradient cliping，使用2000steps的warmup
 
 #### 训练加速
 
-+ 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $$o(n^2)$$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
++ 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $o(n^2)$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
     + 不存储attention weights
     + 不计算被mask的key/query得分
 + 减少xxx：
@@ -521,7 +523,7 @@ llm中文数据集
 
 [High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
 
-![xx](../assets/stable-diffusion.png)
+![stable-diffusion](../assets/stable-diffusion.png)
 
 输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$z_T$（正向扩散）
 
