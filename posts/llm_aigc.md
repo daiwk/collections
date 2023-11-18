@@ -274,10 +274,10 @@ for t in reversed(range(gen_len)):
     # 计算下一个状态的价值，如果当前状态已经是最后一个状态，则下一个状态的价值为0
     nextvalues = values[:, t + 1] if t < gen_len - 1 else 0.0
 
-    # 计算 δ，它是奖励加上衰减后的下一个状态的价值，然后减去当前状态的价值
+    # 计算 delta，它是奖励加上衰减后的下一个状态的价值，然后减去当前状态的价值
     delta = rewards[:, t] + self.config.gamma * nextvalues - values[:, t]
 
-    # 使用 δ 更新 lastgaelam，这是 GAE 公式的一部分
+    # 使用 delta 更新 lastgaelam，这是 GAE 公式的一部分
     lastgaelam = delta + self.config.gamma * self.config.lam * lastgaelam
 
     # 将计算的优势值添加到优势值列表中
