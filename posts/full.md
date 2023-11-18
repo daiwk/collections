@@ -297,7 +297,8 @@ Frankle 和 Carbin 在 2018 年提出的彩票假说表明，一个随机初始�
 
 CrossEntropyLoss就是把Softmax–Log–NLLLoss合并成一步
 
-<html><img src="../assets/ce-nllloss.png" width="400" /><br/></html>
+![ssl1](../assets/ce-nllloss.png)
+
 
 ## L_DMI
 
@@ -1867,9 +1868,9 @@ cgc参考paddle代码：[cgc_demo.py](../assets/cgc_dir/cgc_demo.py)
 
 v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/2007.12865v3.pdf)
 
-<html><img src="../assets/ssl-1.png" width="400" /><br/></html>
+![ssl1](../assets/ssl-1.png)
 
-<html><img src="../assets/ssl-2.png" width="400" /><br/></html>
+![ssl1](../assets/ssl-2.png)
 
 
 ## GNN+推荐
