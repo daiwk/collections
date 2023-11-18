@@ -314,7 +314,7 @@ entropy = -torch.sum(logits* torch.log(logits + 1e-9), dim=-1).mean()
 
 $$KL[\pi_{\theta_{old}}(\cdot|s_t),\pi_{\theta}(\cdot|s_t)]\le \delta $$
 
-在代码中，每个mini batch都会进行early stop的判定，如果计算出的KL散度大于$\delta $，那么就会停止这一轮的优化，以保证新策略不会偏离旧策略太远。
+在代码中，每个mini batch都会进行early stop的判定，如果计算出的KL散度大于 $\delta$，那么就会停止这一轮的优化，以保证新策略不会偏离旧策略太远。
 
 ```python
 # 计算旧策略和新策略之间的KL散度
