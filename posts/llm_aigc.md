@@ -9,8 +9,6 @@
 
 ## 历史
 
-decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
-
 + gpt1：transformer的decoder，参数量117m（0.1b）
 + gpt2：模型结构小改，增加数据，参数量变大（1.5b）
 + gpt3：175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning
@@ -356,7 +354,7 @@ ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries,
 Old Logprobs是一次性一个batch的数据计算的，这是因为在一个batch中旧策略都是不变的；而New Logprobs是一个mini batch计算一次，这是因为新策略每个mini batch变一次。
 
 
-### 开源库
+### 开源rlhf库
 
 #### openai的lm-human-preferences(gpt2的finetune)
 
@@ -427,7 +425,7 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 [Alpaca: A Strong, Replicable Instruction-Following Model](https://crfm.stanford.edu/2023/03/13/alpaca.html?trk=cndc-detail)
 
-已经有许多项目建立在 LLaMA 模型的基础之上，其中一个著名的项目是 Stanford 的羊驼（Alpaca）模型。Alpaca 基于 LLaMA 模型，是有 70 亿参数指令微调的语言 Transformer。Alpaca 没有使用人工反馈的强化学习（RLHF），而是使用监督学习的方法，其使用了 52k 的指令-输出对（instruction-output pairs）。通过查询基于 GPT-3 的 text-davinci-003 模型来检索数据。因此，Alpaca 本质上使用的是一种弱监督（weakly supervised）或以知识蒸馏（knowledge-distillation-flavored）为主的微调。模型的训练数据，是通过查询 GPT-3 模型获得的。通俗地来说，这是『用 LLM 来训练 LLM』，或者称之为『用 AI 来训练 AI』。
+在 LLaMA 模型的基础上的一个著名的项目是Stanford的羊驼（Alpaca）模型，有70亿（7b）参数，**没有使用RLHF**，而是使用**监督学习**的方法。其数据集是通过查询基于 GPT-3 的 text-davinci-003 模型的结果，得到的52k的指令-输出对（instruction-output pairs）。因此，Alpaca 本质上使用的是一种弱监督（weakly supervised）或以知识蒸馏（knowledge-distillation-flavored）为主的微调。可以理解为是『用 LLM 来训练 LLM』，或者称之为『用 AI 来训练 AI』。
 
 ![Alpaca](../assets/alpaca.jpeg)
 
@@ -472,32 +470,25 @@ CLIP
 [PaLM-E: An Embodied Multimodal Language Model](https://arxiv.org/abs/2303.03378)
 
 
-# Google的大规模稀疏模型设计
+
+
+# pathways
+
+
+## Google的大规模稀疏模型设计
 
 [DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
 
 代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
 
-# 待归类
-
-## RETRO Transformer
-
-[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
-
-[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
-
-[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
-
-## WebGPT
-
-[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
-
-[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
-
 
 # megatron-lm
 
 [https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
+
+# deepspeed
+
+[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
 
 
 # ray-llm
@@ -506,12 +497,13 @@ CLIP
 
 # medusa-llm
 
+
+decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
+
+
 [https://sites.google.com/view/medusa-llm](https://sites.google.com/view/medusa-llm)
 
-
-简单综述
-
-[https://juejin.cn/post/7240022931078004797](https://juejin.cn/post/7240022931078004797)
+用了tree-attention
 
 
 # 大模型的一些现象 
@@ -563,6 +555,19 @@ torch里的categorical分布(类别分布)
 llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
 
 
+## RETRO Transformer
+
+[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
+
+[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
+
+[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
+
+## WebGPT
+
+[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
+
+[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
 
 ## llm应用合辑
 
