@@ -1,5 +1,6 @@
 
-[https://daiwk.gitbook.io/collections/posts/llm_aigc](https://daiwk.gitbook.io/collections/posts/llm_aigc)
+下载本文pdf：[https://github.com/daiwk/collections/blob/master/pdfs/collections.pdf](https://github.com/daiwk/collections/blob/master/pdfs/collections.pdf)
+
 
 # 一些回顾性的经典总结
 
