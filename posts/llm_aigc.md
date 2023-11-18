@@ -1,4 +1,4 @@
-# 大模型与AIGC
+# 概述
 
 下载本文pdf：[https://github.com/daiwk/collections/blob/master/pdfs/llm_aigc.pdf](https://github.com/daiwk/collections/blob/master/pdfs/llm_aigc.pdf)
 
@@ -7,7 +7,7 @@
 [https://github.com/daiwk/llms](https://github.com/daiwk/llms)
 
 
-## 小结
+## 历史
 
 decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
 
@@ -18,21 +18,23 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 + gpt3.5：据说基本上等于instructgpt
 + gpt4：没公开细节，但听说效果很好，用起来也确实比3.5要好
 
-## llm应用合辑
+![一些大模型](../assets/LLM/WechatIMG322.jpg)
 
-+ ChatGPT聚合站：[https://hokex.com](https://hokex.com)
-+ 游戏生成站：[https://latitude.io/](https://latitude.io/)
-+ 家庭作业辅助站：[https://ontimeai.com/](https://ontimeai.com/)
-+ 文字转语音站：[https://www.resemble.ai/](https://www.resemble.ai/)
-+ 艺术作画站：[https://starryai.com/](https://starryai.com/)
-+ logo制作站：[https://www.logoai.com/](https://www.logoai.com/)
-+ ai写作站：[https://www.getconch.ai/](https://www.getconch.ai/)
-+ 音乐制作站：[https://soundraw.io/](https://soundraw.io/)
-+ 声音模拟站：[https://fakeyou.com/](https://fakeyou.com/)
-+ 一句话生成一段视频：[https://runwayml.com/](https://runwayml.com/)
-+ 文字转语音：[https://murf.ai/](https://runwayml.com/)
+[Fine-tune之后的NLP新范式：Prompt越来越火，CMU华人博士后出了篇综述文章](https://zhuanlan.zhihu.com/p/395795968)
 
-## RLHF
+## 一些综述
+
+[Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](../assets/LLM/foundation%20models%20NLP.pdf)
+
+[大规模语言模型：从理论到实践](../assets/LLM/LLM-TAP.pdf)
+
+# RLHF & instructGPT
+
+[OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
+
+[https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/](https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/)
+
+[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)
 
 [https://huggingface.co/blog/zh/rlhf](https://huggingface.co/blog/zh/rlhf)
 
@@ -41,8 +43,7 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 + 用强化学习 (RL) 方式微调 LM。
 
 
-### sft
-
+## sft
 
 ![rlhf-sft](../assets/rlhf-sft.png)
 
@@ -50,7 +51,7 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 + Anthropic：1000w-520亿参数的transformer，并按“有用、诚实和无害”的标准在上下文线索上蒸馏原始LM
 + DeepMind：2800亿的模型Gopher
 
-### rm
+## rm
 
 ![rlhf-rm](../assets/rlhf-rm.png)
 
@@ -63,7 +64,7 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 目前成功的 RLHF 系统使用了和生成模型具有 不同 大小的 LM，OpenAI 使用了 175B 的 LM 和 6B 的 RM，Anthropic 使用的 LM 和 RM 从 10B 到 52B 大小不等，DeepMind 使用了 70B 的 Chinchilla 模型分别作为 LM 和 RM
 
 
-### rl
+## rl
 
 ![rlhf-rl](../assets/rlhf-rl.png)
 
@@ -89,7 +90,7 @@ ppo确定的奖励函数如下：
 DeepMind对Gopher用了类似的奖励设置，但用的是A2C来优化梯度。
 
 
-#### 概述
+### rl流程概述
 
 [https://zhuanlan.zhihu.com/p/635757674](https://zhuanlan.zhihu.com/p/635757674)
 
@@ -169,6 +170,7 @@ ppo_trainer.save_model("my_ppo_model")
 
 ![rlhf-dot](../assets/rlhf-dot.jpg)
 
+### 几个重要的loss
 
 #### actor & actor loss
 
@@ -222,21 +224,6 @@ vf_loss = 0.5 * masked_mean(torch.max(vf_losses1, vf_losses2), mask)
 
 # 计算裁剪操作实际发生的频率
 vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
-```
-
-#### Old Policy Sampling（无bp）
-
-是**make experience**的过程，计算并**存储**旧策略的概率、价值等值，来为后面更新的过程服务。
-
-+ Old Logprobs：从“旧的”策略[即在这个batch数据中初始的LM（initial actor）]中计算每个token在旧的策略下的概率Old Logprobs。
-+ Old Values：旧策略中每个**时间步**（每个token的预测结果）的价值，这个值由critic网络进行预测，critic网络就是需要这个值的原因是advantage的计算依赖于Old Values。
-+ Ref Logprobs：最最原始的LM对于每个时间步的概率预测，一般就是**固定不变的gpt3**，计算这个值的目的是限制actor的更新，防止其偏离原始gpt3太远，他的实现在下一个步骤中。
-
-```python
-all_logprobs, _, values, masks = self.batched_forward_pass(self.model, queries, 
-    responses, model_inputs)
-ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries, 
-    responses, model_inputs)
 ```
 
 #### KL Penalty
@@ -303,14 +290,7 @@ advantages = torch.stack(advantages_reversed[::-1]).transpose(0, 1)
 returns = advantages + values
 ```
 
-
-#### New Policy Sampling（有bp）
-
-在**新的策略**（更新后的actor）下对轨迹（文本）计算概率的过程，计算Actor Loss，即策略梯度的损失。
-
-Old Logprobs是一次性一个batch的数据计算的，这是因为在一个batch中旧策略都是不变的；而New Logprobs是一个mini batch计算一次，这是因为新策略每个mini batch变一次。
-
-#### entropy loss
+####  entropy loss
 
 一个策略的熵越大，意味着这个策略选择各个动作的概率更加“平均”。在actor的loss里加熵，使得策略的熵尽可能大，从而有更多机会探索可能带来更好奖励的文本轨迹。
 
@@ -328,7 +308,52 @@ entropy = -torch.sum(logits* torch.log(logits + 1e-9), dim=-1).mean()
 
 #### Policy kl
 
+在PPO中，KL散度被用作一种约束，以确保在优化过程中新策略不会偏离旧策略太远。这是为了防止过度优化，因为过度优化可能会导致策略性能的大幅下降。
 
+我们希望在优化目标函数的同时，满足以下的KL散度约束：
+
+$$KL[\pi_{\theta_{old}}(\cdot|s_t),\pi_{\theta}(\cdot|s_t)]\le \delta $$
+
+在代码中，每个mini batch都会进行early stop的判定，如果计算出的KL散度大于$\delta $，那么就会停止这一轮的优化，以保证新策略不会偏离旧策略太远。
+
+```python
+# 计算旧策略和新策略之间的KL散度
+policykl = masked_mean(old_logprobs - logprobs, mask) 
+# old_logprobs 是旧策略下行为的概率的对数，logprobs 是新策略下的对数概率
+# masked_mean 函数计算差异（old_logprobs - logprobs）的平均值，
+# 但只考虑mask中对应元素为True的元素
+
+# 检查计算出的KL散度（policykl）是否大于目标KL散度（self.config.target_kl）的1.5倍
+if policykl > 1.5 * self.config.target_kl: 
+    self.optimizer.zero_grad()  
+    # 如果实际的KL散度超过了目标的1.5倍，那么策略改变过多，这步的梯度也不更新了。
+    early_stop = True  
+    # 并设置early_stop标志为True，表示应提前停止优化，以防止策略从旧策略进一步偏离
+```
+
+
+### 两个采样
+
+#### Old Policy Sampling（无bp）
+
+是**make experience**的过程，计算并**存储**旧策略的概率、价值等值，来为后面更新的过程服务。
+
++ Old Logprobs：从“旧的”策略[即在这个batch数据中初始的LM（initial actor）]中计算每个token在旧的策略下的概率Old Logprobs。
++ Old Values：旧策略中每个**时间步**（每个token的预测结果）的价值，这个值由critic网络进行预测，critic网络就是需要这个值的原因是advantage的计算依赖于Old Values。
++ Ref Logprobs：最最原始的LM对于每个时间步的概率预测，一般就是**固定不变的gpt3**，计算这个值的目的是限制actor的更新，防止其偏离原始gpt3太远，他的实现在下一个步骤中。
+
+```python
+all_logprobs, _, values, masks = self.batched_forward_pass(self.model, queries, 
+    responses, model_inputs)
+ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries, 
+    responses, model_inputs)
+```
+
+#### New Policy Sampling（有bp）
+
+在**新的策略**（更新后的actor）下对轨迹（文本）计算概率的过程，计算Actor Loss，即策略梯度的损失。
+
+Old Logprobs是一次性一个batch的数据计算的，这是因为在一个batch中旧策略都是不变的；而New Logprobs是一个mini batch计算一次，这是因为新策略每个mini batch变一次。
 
 
 ### 开源库
@@ -351,50 +376,7 @@ entropy = -torch.sum(logits* torch.log(logits + 1e-9), dim=-1).mean()
 [https://github.com/allenai/RL4LMs](https://github.com/allenai/RL4LMs)
 
 
-
-## LLM+推荐
-
-[推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
-
-
-## NLP大模型
-
-### nanogpt
-
-简化版的gpt，
-tiktoken：gpt2中使用的开源分词工具，比huggingface的tokenizer快得多
-
-```python
-import tiktoken
-enc = tiktoken.get_encoding("gpt2")
-
-# 字节对编码过程，我的输出是[31373, 995]
-encoding_res = enc.encode("hello world")
-print(encoding_res)
-
-# 字节对解码过程，解码结果：hello world
-raw_text = enc.decode(encoding_res)
-print(raw_text)
-```
-
-### InstructGPT
-
-[OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
-
-[https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/](https://openai.com/blog/deep-reinforcement-learning-from-human-preferences/)
-
-[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)
-
-### Anthropic
-
-[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
-
-[Studying Large Language Model Generalization with Influence Functions](https://arxiv.org/pdf/2308.03296.pdf)
-
-[Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
-
-
-### llama
+# llama
 
 [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)
 
@@ -406,7 +388,7 @@ print(raw_text)
 
 llama只用公开数据训练，而Chinchilla、PaLM、GPT-3都有自己的未公开数据集。其他的OPT、GPT-NeoX、BLOOM、GLM虽然也只用公开数据集，但打不过PaLM-62B或者Chinchilla
 
-#### 预训练数据
+## 预训练数据
 
 + English CommonCrawl(67%)：使用CCNet pipeline，去重、用fasttext把非英文的页面删了，用n-gram把低质内容删了。此外，还训了一个线性模型，对页面进行分类：作为维基百科的引用 vs 随机采样的页面，最后把不属于引用这个类别的页面删了
 + C4(15%)：与CCNet类似，主要区别在质量过滤是基于启发式的规则，如标点符号的存在，或者词数和句子数
@@ -426,7 +408,7 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 ![llama](../assets/llama.png)
 
-#### 网络结构
+## 网络结构
 
 + pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))
 + SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$4d$改了$2/34d$
@@ -434,15 +416,22 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%。0.1的weight decay和1.0的gradient cliping，使用2000steps的warmup
 
-#### 训练加速
+## 训练加速
 
 + 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $o(n^2)$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
     + 不存储attention weights
     + 不计算被mask的key/query得分
 + 减少xxx：
 
+## 衍生：Alpaca
 
-### llama2
+[Alpaca: A Strong, Replicable Instruction-Following Model](https://crfm.stanford.edu/2023/03/13/alpaca.html?trk=cndc-detail)
+
+已经有许多项目建立在 LLaMA 模型的基础之上，其中一个著名的项目是 Stanford 的羊驼（Alpaca）模型。Alpaca 基于 LLaMA 模型，是有 70 亿参数指令微调的语言 Transformer。Alpaca 没有使用人工反馈的强化学习（RLHF），而是使用监督学习的方法，其使用了 52k 的指令-输出对（instruction-output pairs）。通过查询基于 GPT-3 的 text-davinci-003 模型来检索数据。因此，Alpaca 本质上使用的是一种弱监督（weakly supervised）或以知识蒸馏（knowledge-distillation-flavored）为主的微调。模型的训练数据，是通过查询 GPT-3 模型获得的。通俗地来说，这是『用 LLM 来训练 LLM』，或者称之为『用 AI 来训练 AI』。
+
+![Alpaca](../assets/alpaca.jpeg)
+
+# llama2
 
 [Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
 
@@ -450,92 +439,24 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 [https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
 
 
-### ChatGLM
+
+# Anthropic的一些工作
+
+[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
+
+[Studying Large Language Model Generalization with Influence Functions](https://arxiv.org/pdf/2308.03296.pdf)
+
+[Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
+
+
+# ChatGLM
 
 ACL22 [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/abs/2103.10360)
 
 iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
 
-### PALM-E
 
-[PaLM-E: An Embodied Multimodal Language Model](https://arxiv.org/abs/2303.03378)
-
-
-### 达摩院大模型技术交流
-
-[https://developer.aliyun.com/live/248332](https://developer.aliyun.com/live/248332)
-
-ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) 密码：5yyf
-
-### Google的大规模稀疏模型设计
-
-[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
-
-代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
-
-
-### RETRO Transformer
-
-[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
-
-[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
-
-[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
-
-### WebGPT
-
-[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
-
-[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
-
-### prompt
-
-[Fine-tune之后的NLP新范式：Prompt越来越火，CMU华人博士后出了篇综述文章](https://zhuanlan.zhihu.com/p/395795968)
-
-### ray-llm
-
-[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
-
-
-### llm相关汇总
-
-llm中文数据集
-
-[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
-
-简单综述
-
-[https://juejin.cn/post/7240022931078004797](https://juejin.cn/post/7240022931078004797)
-
-### llm for rec
-
-[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
-
-[https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
-
-### 大模型的一些现象 
-
-#### 重复生成
-
-[https://www.zhihu.com/question/616130636](https://www.zhihu.com/question/616130636)
-
-[https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
-
-## CV大模型
-
-### stable diffusion
-
-[High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
-
-![stable-diffusion](../assets/stable-diffusion.png)
-
-输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$z_T$（正向扩散）
-
-输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$\tau_\theta$
-
-$z_T$在$\tau_\theta$的指导下不断去噪（反向扩散），得到新的z，再通过解码器得到最终生成的图像
-
-## 多模态
+# PALM-E
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
 
@@ -547,10 +468,136 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 
 CLIP
 
-## 其他
+
+[PaLM-E: An Embodied Multimodal Language Model](https://arxiv.org/abs/2303.03378)
+
+
+# Google的大规模稀疏模型设计
+
+[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
+
+代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
+
+# 待归类
+
+## RETRO Transformer
+
+[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
+
+[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
+
+[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
+
+## WebGPT
+
+[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
+
+[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
+
+
+# megatron-lm
+
+[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
+
+
+# ray-llm
+
+[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
+
+# medusa-llm
+
+[https://sites.google.com/view/medusa-llm](https://sites.google.com/view/medusa-llm)
+
+
+简单综述
+
+[https://juejin.cn/post/7240022931078004797](https://juejin.cn/post/7240022931078004797)
+
+
+# 大模型的一些现象 
+
+## 重复生成
+
+[https://www.zhihu.com/question/616130636](https://www.zhihu.com/question/616130636)
+
+[https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
+
+
+# stable diffusion
+
+[High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
+
+![stable-diffusion](../assets/stable-diffusion.png)
+
+输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$z_T$（正向扩散）
+
+输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$\tau_\theta$
+
+$z_T$在$\tau_\theta$的指导下不断去噪（反向扩散），得到新的z，再通过解码器得到最终生成的图像
+
+
+# LLM+推荐
+
+## 综述
+
+
+[https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
+
+
+## P5
+
+[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+
+## llm vs ID
+
+
+[推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
+
+# 其他
 
 torch里的categorical分布(类别分布)
 [https://blog.csdn.net/qq_37388085/article/details/127251550](https://blog.csdn.net/qq_37388085/article/details/127251550)
 
 [https://zhuanlan.zhihu.com/p/59550457](https://zhuanlan.zhihu.com/p/59550457)
 
+llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
+
+
+
+## llm应用合辑
+
++ ChatGPT聚合站：[https://hokex.com](https://hokex.com)
++ 游戏生成站：[https://latitude.io/](https://latitude.io/)
++ 家庭作业辅助站：[https://ontimeai.com/](https://ontimeai.com/)
++ 文字转语音站：[https://www.resemble.ai/](https://www.resemble.ai/)
++ 艺术作画站：[https://starryai.com/](https://starryai.com/)
++ logo制作站：[https://www.logoai.com/](https://www.logoai.com/)
++ ai写作站：[https://www.getconch.ai/](https://www.getconch.ai/)
++ 音乐制作站：[https://soundraw.io/](https://soundraw.io/)
++ 声音模拟站：[https://fakeyou.com/](https://fakeyou.com/)
++ 一句话生成一段视频：[https://runwayml.com/](https://runwayml.com/)
++ 文字转语音：[https://murf.ai/](https://runwayml.com/)
+
+## nanogpt
+
+简化版的gpt，
+tiktoken：gpt2中使用的开源分词工具，比huggingface的tokenizer快得多
+
+```python
+import tiktoken
+enc = tiktoken.get_encoding("gpt2")
+
+# 字节对编码过程，我的输出是[31373, 995]
+encoding_res = enc.encode("hello world")
+print(encoding_res)
+
+# 字节对解码过程，解码结果：hello world
+raw_text = enc.decode(encoding_res)
+print(raw_text)
+```
+
+## 达摩院大模型技术交流
+
+[https://developer.aliyun.com/live/248332](https://developer.aliyun.com/live/248332)
+
+ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) 密码：5yyf
