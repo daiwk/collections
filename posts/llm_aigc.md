@@ -60,7 +60,7 @@ $$L(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}
 
 ### Chinchilla扩展法则
 
-DeepMinde在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来指导LLM最优计算量的训练。通过变化更大范围的模型大小（7000w到160亿参数）和数据大小（50亿到5000亿个token）进行实验，拟合了如下的扩散法则：
+DeepMind在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来指导LLM最优计算量的训练。通过变化更大范围的模型大小（7000w到160亿参数）和数据大小（50亿到5000亿个token）进行实验，拟合了如下的扩散法则：
 
 $$
 L(N, D)=E+\frac{A}{N^\alpha}+\frac{B}{D^\beta}
@@ -674,10 +674,18 @@ $z_T$在$\tau_\theta$的指导下不断去噪（反向扩散），得到新的z�
 
 # 其他
 
-torch里的categorical分布(类别分布)
-[https://blog.csdn.net/qq_37388085/article/details/127251550](https://blog.csdn.net/qq_37388085/article/details/127251550)
+## 公开资源
 
-[https://zhuanlan.zhihu.com/p/59550457](https://zhuanlan.zhihu.com/p/59550457)
+### 模型
+
+| aaa | x | b | 来 |   |
+|-----|---|---|----|---|
+| bbb |   |   |    |   |
+| cc  |   |   |    |   |
+| dd  |   |   |    |   |
+
+
+### 数据集
 
 llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
 
