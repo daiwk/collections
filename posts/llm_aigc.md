@@ -76,7 +76,9 @@ $$
 涌现能力：在小型模型中不存在而在大型模型中产生的能力，当规模达到一定程度时，性能显著提升，超出随机水平（参考
 [Emergent Abilities of Large Language Models](https://arxiv.org/pdf/2206.07682.pdf)）。与物理学中的**相变**现象类似（物质从一种相（状态）转变为另一种相的过程，通常伴随着能量的吸收或释放，并且涉及不同的物理性质，例如固体、液体和气体之间的转变）。
 
+<div align="center">
 ![](../assets/emergent%20ability.png)
+</div>
 
 LLM的3种典型涌现能力及其对应代表模型：
 
