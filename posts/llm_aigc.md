@@ -295,7 +295,7 @@ return torch.stack(rewards), torch.stack(non_score_rewards)
 
 #### GAE
 
-GAE是一种多步优势估计方法。它通过引入一个权衡参数$\lambda $，在**单步TD误差**和**多步TD误差**之间进行权衡，从而**减小估计的方差**，提高学习的稳定性。其中$\sigma _{t+l}$是时间步$t+l$的TD误差。
+GAE是一种多步优势估计方法。它通过引入一个权衡参数$\lambda$，在**单步TD误差**和**多步TD误差**之间进行权衡，从而**减小估计的方差**，提高学习的稳定性。其中$\sigma _{t+l}$是时间步$t+l$的TD误差。
 
 $$A_t=\sum ^{k-1}_{l=0}(\lambda \eta )^{l}\sigma _{t+l}$$
 
