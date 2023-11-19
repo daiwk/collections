@@ -679,9 +679,9 @@ $z_T$在$\tau_\theta$的指导下不断去噪（反向扩散），得到新的z�
 ### 模型
 
 | 模型 | 大小 | 预训练数据规模 | 硬件 | 训练时间  |
-|-----|---|---|----|---|
-| T5 [Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf) |  11B |  1万亿tokens | 1024 TPU v3  |  - |
-| mT5 [mt5: A massively multilingual pre-trained text-to-text transformer](https://arxiv.org/pdf/2010.11934.pdf) |  13B |  1万亿tokens | -  |  - |
+|------------|-----|-----|------|-----|
+| [T5](https://arxiv.org/pdf/1910.10683.pdf) |  11B |  1万亿tokens | 1024 TPU v3  |  - |
+| [mT5](https://arxiv.org/pdf/2010.11934.pdf) |  13B |  1万亿tokens | -  |  - |
 
 
 ### 数据集
