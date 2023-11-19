@@ -38,7 +38,7 @@
 
 ## 扩展法则
 
-2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个非嵌入参数）的性能，提出了在计算预算$c$的条件下，$L$是用nats表示的交叉熵损失，模型性能与模型规模$N$、数据集规模$D$以及训练计算量$C$间存在如下幂律关系：
+2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个**非嵌入参数**）的性能，提出了在**计算预算**$c$的条件下，$L$是用nats表示的交叉熵损失，模型性能与**模型规模**$N$、**数据集规模**$D$以及**训练计算量**$C$间存在如下幂律关系：
 
 $$L(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}$$
 
@@ -64,11 +64,37 @@ $$
 
 其中$a=\frac{\alpha}{\alpha+\beta}$，$b=\frac{\beta}{\alpha+\beta}$，$G$是由$A,B,\alpha,\beta$计算出的扩展系数。
 
+随着计算预算的增加，
+
++ openai的扩展法则更偏向于将更大预算分给**模型大小**，因为其对比各模型时使用了固定的训练数据量和学习率等超参，低估了数据量的作用。
++ Chinchilla扩展法则认为**模型大小和数据大小要同比例增加**，即$a$和$b$取值差不多。因为其在无视模型大小的前提下，发现设置与数据量差不多match的学习率能获得更好的loss。
+
+然而，有一些能力（如涌现）无法根据扩展法则进行预测，只有当模型达到一定规模时才会出现。
+
+## 涌现能力
+
+涌现能力：在小型模型中不存在而在大型模型中产生的能力，当规模达到一定程度时，性能显著提升，超出随机水平（参考
+[Emergent Abilities of Large Language Models](https://arxiv.org/pdf/2206.07682.pdf)）。与物理学中的**相变**现象类似（物质从一种相（状态）转变为另一种相的过程，通常伴随着能量的吸收或释放，并且涉及不同的物理性质，例如固体、液体和气体之间的转变）。
+
+![](../assets/emergent%20ability.png)
+
+LLM的3种典型涌现能力及其对应代表模型：
+
+### 上下文学习
+
+GPT-3（[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165.pdf)）提出，只要提供一个自然语言指令和/或几个任务演示，语言模型就能通过完成输入文本的词序列的方式来为测试实例生成预期输出，不用额外的梯度更新。
+
++ ICL能力小模型不具备：1750亿的GPT-3有ICL能力，但GPT-1和GPT-2无此能力。
++ ICL能力取决于具体下游任务：130亿的GPT-3能在算术任务上有ICL，但1750亿的GPT-3在波斯语QA上无能为力。
 
 
-# 涌现能力
+### 指令遵循
 
-[Emergent Abilities of Large Language Models](https://arxiv.org/pdf/2206.07682.pdf)
+
+
+### 逐步推理
+
+
 
 [How does GPT Obtain its Ability? Tracing Emergent Abilities of Language Models to their Sources](https://yaofu.notion.site/How-does-GPT-Obtain-its-Ability-Tracing-Emergent-Abilities-of-Language-Models-to-their-Sources-b9a57ac0fcf74f30a1ab9e3e36fa1dc1)
 
