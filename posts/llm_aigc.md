@@ -11,7 +11,7 @@
 
 + gpt1：transformer的decoder，参数量117m（0.1b）
 + gpt2：模型结构小改，增加数据，参数量变大（1.5b）
-+ gpt3：175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning
++ gpt3：175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning(这点在**3.3亿的BERT和15亿的gpt2中看不到**）
 + Instructgpt：RLHF（sft-->rm-->ppo）
 + gpt3.5：据说基本上等于instructgpt
 + gpt4：没公开细节，但听说效果很好，用起来也确实比3.5要好
@@ -22,14 +22,44 @@
 
 ## 一些综述
 
-[Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](../assets/LLM/foundation%20models%20NLP.pdf)
++ [Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](../assets/LLM/foundation%20models%20NLP.pdf)
++ [大规模语言模型：从理论到实践](../assets/LLM/LLM-TAP.pdf)，[Pre-trained Models for Natural Language Processing: A Survey](https://arxiv.org/pdf/2003.08271.pdf)邱锡鹏等
++ 人大的大模型综述：[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)，[自己存了一份pdf](../assets/LLM/LLM_Survey_Chinese.pdf)
++ [Talking about large language models](https://arxiv.org/pdf/2212.03551.pdf)
++ [Pre-train, prompt, and predict: A systematic survey of prompting methods in natural language processing](https://arxiv.org/pdf/2107.13586.pdf)，引用数2k+
++ [A comprehensive survey on pretrained foundation models: A history from BERT to chatgpt](https://arxiv.org/pdf/2302.09419.pdf)，唐杰等
++ [Pre-Trained Models: Past, Present and Future](https://arxiv.org/pdf/2106.07139.pdf)
++ [A Comprehensive Survey of AI-Generated Content (AIGC): A History of Generative AI from GAN to ChatGPT](https://arxiv.org/pdf/2303.04226.pdf)
++ [Pretrained Language Models for Text Generation: A Survey](https://arxiv.org/pdf/2105.10311.pdf)
++ [A survey for in-context learning](https://arxiv.org/pdf/2301.00234.pdf)
++ [Towards reasoning in large language models: A survey](https://arxiv.org/pdf/2212.10403.pdf)
++ [Reasoning with language model prompting: A survey](https://arxiv.org/pdf/2212.09597.pdf)
++ [Dense Text Retrieval based on Pretrained Language Models: A Survey](https://arxiv.org/pdf/2211.14876.pdf)
 
-[大规模语言模型：从理论到实践](../assets/LLM/LLM-TAP.pdf)
+## 扩展法则
 
-人大的大模型综述：
-[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)
+2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)提出了在计算预算$c$的条件下，$L$是用nats表示的交叉熵损失，模型性能与模型规模$N$、数据集规模$D$以及训练计算量$C$间存在如下幂律关系：
 
-[自己存了一份pdf](../assets/LLM/LLM_Survey_Chinese.pdf)
+$$L(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}$$
+
+$$L(D)=(\frac{D_c}{D})^{\alpha _D}, {\alpha}_D\sim 0.05,N_c\sim 5.4\times 10^{13}$$
+
+$$L(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}$$
+
+其中，$N_c$表示非嵌入参数数量，$D_c$表示训练token数量,$C_c$表示FP-days。
+
+### Chinchilla扩展法则
+
+DeepMinde在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来入学积分LLM最优计算量的训练。
+
+
+
+# 涌现能力
+
+[Emergent Abilities of Large Language Models](https://arxiv.org/pdf/2206.07682.pdf)
+
+[How does GPT Obtain its Ability? Tracing Emergent Abilities of Language Models to their Sources](https://yaofu.notion.site/How-does-GPT-Obtain-its-Ability-Tracing-Emergent-Abilities-of-Language-Models-to-their-Sources-b9a57ac0fcf74f30a1ab9e3e36fa1dc1)
+
 
 # RLHF & instructGPT
 
