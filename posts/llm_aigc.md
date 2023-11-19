@@ -38,7 +38,7 @@
 
 ## 扩展法则
 
-2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)提出了在计算预算$c$的条件下，$L$是用nats表示的交叉熵损失，模型性能与模型规模$N$、数据集规模$D$以及训练计算量$C$间存在如下幂律关系：
+2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个非嵌入参数）的性能，提出了在计算预算$c$的条件下，$L$是用nats表示的交叉熵损失，模型性能与模型规模$N$、数据集规模$D$以及训练计算量$C$间存在如下幂律关系：
 
 $$L(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}$$
 
@@ -50,7 +50,19 @@ $$L(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}
 
 ### Chinchilla扩展法则
 
-DeepMinde在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来入学积分LLM最优计算量的训练。
+DeepMinde在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来指导LLM最优计算量的训练。通过变化更大范围的模型大小（7000w到160亿参数）和数据大小（50亿到5000亿个token）进行实验，拟合了如下的扩散法则：
+
+$$
+L(N, D)=E+\frac{A}{N^\alpha}+\frac{B}{D^\beta}
+$$
+
+其中$E=1.69,A=406.4,B=410.7,\alpha = 0.34, \beta =0.28$，通过在约束条件$C\approx 6ND$下优化损失$L(N,D)$，将计算预算最优地分配给模型大小和数据大小的方法：
+
+$$
+N_{o p t}(C)=G\left(\frac{C}{6}\right)^a, \quad D_{o p t}(C)=G^{-1}\left(\frac{C}{6}\right)^b
+$$
+
+其中$a=\frac{\alpha}{\alpha+\beta}$，$b=\frac{\beta}{\alpha+\beta}$，$G$是由$A,B,\alpha,\beta$计算出的扩展系数。
 
 
 
