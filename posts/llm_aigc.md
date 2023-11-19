@@ -24,7 +24,7 @@
 
 + [Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](../assets/LLM/foundation%20models%20NLP.pdf)
 + [大规模语言模型：从理论到实践](../assets/LLM/LLM-TAP.pdf)，[Pre-trained Models for Natural Language Processing: A Survey](https://arxiv.org/pdf/2003.08271.pdf)邱锡鹏等
-+ 人大的大模型综述：[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)，[自己存了一份pdf](../assets/LLM/LLM_Survey_Chinese.pdf)
++ 人大的大模型综述：[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)，[自己存了一份pdf](../assets/LLM/LLM_Survey_Chinese.pdf)，（**！！！本章大部分内容按这个来组织！！！**）
 + [Talking about large language models](https://arxiv.org/pdf/2212.03551.pdf)
 + [Pre-train, prompt, and predict: A systematic survey of prompting methods in natural language processing](https://arxiv.org/pdf/2107.13586.pdf)，引用数2k+
 + [A comprehensive survey on pretrained foundation models: A history from BERT to chatgpt](https://arxiv.org/pdf/2302.09419.pdf)，唐杰等
@@ -90,13 +90,44 @@ GPT-3（[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165
 
 ### 指令遵循
 
+使用**自然语言描述的混合多任务数据集进行微调（指令微调）**，LLM在**未见过的以指令形式描述的任务**上表现出色，具有更好的泛化能力。例如[Multitask prompted training enables zero-shot task generalization](https://arxiv.org/pdf/2110.08207.pdf)、[Training language models to follow instructions with human feedback](https://arxiv.org/pdf/2203.02155.pdf)、[Finetuned language models are zero-shot learners](https://arxiv.org/pdf/2109.01652.pdf)。
+
+在[Finetuned language models are zero-shot learners](https://arxiv.org/pdf/2109.01652.pdf)的实验中，当模型大小达到680亿时，经过指定微调的LaMDA-PT开始在未见过的任务上显著优于未微调的模型，而80亿或更小的模型则没有这个现象。
+
+在[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)的实验中，PaLM至少在620亿参数上才能在4个评估基准的各种任务上表现良好。
 
 
 ### 逐步推理
 
+对于涉及多个推理步骤的复杂任务（如数学），可以使用**思维链（Chain-of-Thought, CoT）**提示策略（[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)），让LLM通过**利用中间推理步骤的提示机制**来解决这类任务。
 
+[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)发现，CoT在模型大于600亿的PaLM和LaMBDA变体中能够提升在算术推理基准任务的效果，而当模型大于1000亿时，相比标准提示的优势更明显。
 
 [How does GPT Obtain its Ability? Tracing Emergent Abilities of Language Models to their Sources](https://yaofu.notion.site/How-does-GPT-Obtain-its-Ability-Tracing-Emergent-Abilities-of-Language-Models-to-their-Sources-b9a57ac0fcf74f30a1ab9e3e36fa1dc1)
+
+## LLM关键点
+
+如何让LLM能够**通用**且**有能力**？
+
+### 扩展
+
+更大的模型、数据规模和更多的训练计算，但计算预算是有限的，可以用扩展法更高效地分配计算资源，如Chinchilla在**相同计算预算下增加训练token数**，优于更大模型规模的Gopher，同时需要数据清理。
+
+### 训练
+
++ 分布式的训练框架：包括DeepSpeed（[Deepspeed: System optimizations enable training deep learning models with over 100 billion parameters](https://dl.acm.org/doi/abs/10.1145/3394486.3406703)）和Megatron-LM（[Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/pdf/1909.08053.pdf)和[Efficient large-scale language model training on GPU clusters using megatron-lm](https://arxiv.org/pdf/2104.04473.pdf)）
++ 优化技巧：有助于提升训练稳定性和模型性能，如**重新开始以克服训练损失激增**（[Palm: Scaling language modeling with pathways](https://arxiv.org/pdf/2204.02311.pdf)）和**混合精度训练**（[BLOOM: A 176b-parameter open-access multilingual language model](https://arxiv.org/pdf/2211.05100.pdf)）。
+
+### 能力引导
+
+
+
+### 对齐微调
+
+
+### 工具操作
+
+
 
 
 # RLHF & instructGPT
