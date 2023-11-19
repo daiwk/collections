@@ -26,6 +26,11 @@
 
 [大规模语言模型：从理论到实践](../assets/LLM/LLM-TAP.pdf)
 
+人大的大模型综述：
+[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)
+
+[自己存了一份pdf](../assets/LLM/LLM_Survey_Chinese.pdf)
+
 # RLHF & instructGPT
 
 [OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
