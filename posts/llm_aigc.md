@@ -38,7 +38,7 @@
 
 ## 扩展法则
 
-2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)提出了在计算预算$c$的条件下，$L$是用nats表示的交叉熵损失，模型性能与模型规模$N$、数据集规模$D$以及训练计算量$C$间存在如下幂律关系：
+2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)提出了在计算预算$ c $的条件下，$ L $是用nats表示的交叉熵损失，模型性能与模型规模$ N $、数据集规模$D$以及训练计算量$ C $间存在如下幂律关系：
 
 $$L(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}$$
 
@@ -46,7 +46,7 @@ $$L(D)=(\frac{D_c}{D})^{\alpha _D}, {\alpha}_D\sim 0.05,N_c\sim 5.4\times 10^{13
 
 $$L(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}$$
 
-其中，$N_c$表示非嵌入参数数量，$D_c$表示训练token数量,$C_c$表示FP-days。
+其中，$ N_c $表示非嵌入参数数量，$ D_c $表示训练token数量,$ C_c $表示FP-days。
 
 ### Chinchilla扩展法则
 
