@@ -9,12 +9,17 @@
 
 ## 历史
 
-+ gpt1：transformer的decoder，参数量117m（0.1b）
-+ gpt2：模型结构小改，增加数据，参数量变大（1.5b）
-+ gpt3：175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning(这点在**3.3亿的BERT和15亿的gpt2中看不到**）
-+ Instructgpt：RLHF（sft-->rm-->ppo）
-+ gpt3.5：据说基本上等于instructgpt
-+ gpt4：没公开细节，但听说效果很好，用起来也确实比3.5要好
++ 2017年的[Learning to generate reviews and discovering sentiment](https://arxiv.org/pdf/1704.01444.pdf)尝试用rnn来实现智能系统
++ 2018年的gpt1：[Improving language understanding by generative pre-training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)，生成式预训练（Generative pre-training, gpt），用transformer的decoder，参数量117m（0.1b），无监督预训练和有监督微调。确定对自然语言文本建模的基本原则为**预测下一个单词**。
++ 2019年的gpt2：[Language models are unsupervised multitask learners](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)模型结构小改，增加数据，参数量变大为15亿（1.5b），无监督语言建模，**无需使用标记数据进行显式微调**。
+    + 参考[The natural language decathlon: Multitask learning as question answering](https://arxiv.org/pdf/1806.08730.pdf)中**多任务求解的概率形式**$p(output|input,task)$。
+    + 提出“由于特定任务的有监督目标与无监督目标（语言建模）相同，只是在序列的子集上进行评估，因此，无监督目标的全局最小值也是有监督目标的全局最小值”，即每个NLP任务可以看作**世界文本子集的单词预测问题**，如果模型有足够能力来复原世界文本，无监督语言建模可以解决各种问题。
+    + 仅无监督与监督微调的SOTA相比效果还是不太行。虽然GPT2模型规模相对较小，但如对话等任务在其基础上做微调还是能拿到很好的效果的，例如[DIALOGPT : Large-scale generative pre-training for conversational response generation](https://arxiv.org/pdf/1911.00536.pdf)、[End-to-end neural pipeline for goal-oriented dialogue systems using GPT-2](https://aclanthology.org/2020.acl-main.54.pdf)
++ 2020年的gpt3：[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165.pdf)，175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning（这点在**3.3亿的BERT和15亿的gpt2中看不到**）。**预训练和ICL有相同的语言建模范式**：预训练预测给定上下文条件下的后续文本序列，ICL预测正确的任务解决方案，其可被格式化为给定任务描述和示范下的文本序列。
++ GPT-3的两种改进方法
+    + 使用代码数据训练：
+    + 与人类对齐：
+
 
 ![一些大模型](../assets/LLM/WechatIMG322.jpg)
 
@@ -120,13 +125,22 @@ GPT-3（[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165
 
 ### 能力引导
 
+当LLM执行某些特定任务时，可能不会显式地展示出其通用求解器的能力，**设计合适的任务指令或具体的ICL策略**可以**激发**这种能力，例如
 
++ 通过**包含中间推理步骤的CoT提示**
++ 使用**自然语言表达的任务描述**，对LLM进行**指令微调**
 
 ### 对齐微调
+
+由于预训练语料库包括高质量和低质量的数据，LLM可能生成有毒、偏见甚至有害的内容，要让LLM和人类价值观保持一致，如**有用性、诚实性和无害性**。RLHF相关工作如[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)和[Deep reinforcement learning from human preferences](https://arxiv.org/pdf/1706.03741.pdf)能够产生高质量、无害的回答（例如拒绝回答侮辱性问题）。
 
 
 ### 工具操作
 
+LLM本质是基于海量文本语料库进行文本生成训练的，对于不适合以文本形式表达的任务表现不佳（如数字计算），且其能力受限于预训练数据，无法获取最新信息。可以利用外部工具：
+
++ [Toolformer: Language models can teach themselves to use tools](https://arxiv.org/pdf/2302.04761.pdf)能利用计算器进行准确计算
++ [Webgpt: Browser-assisted question-answering with human feed- back](https://arxiv.org/pdf/2112.09332.pdf)能利用搜索引擎检索未知信息
 
 
 
