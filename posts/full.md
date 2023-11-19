@@ -2717,17 +2717,23 @@ DALI 和 TensorFlow 自带的 DataLoader 类似，是一个专门用于加速数
 
 ## pytorch
 
-## pytorch设计思路
+
+### torch里的categorical分布(类别分布)
+[https://blog.csdn.net/qq_37388085/article/details/127251550](https://blog.csdn.net/qq_37388085/article/details/127251550)
+
+[https://zhuanlan.zhihu.com/p/59550457](https://zhuanlan.zhihu.com/p/59550457)
+
+### pytorch设计思路
 
 [NeurIPS顶会接收，PyTorch官方论文首次曝光完整设计思路](https://mp.weixin.qq.com/s/_hZSIha2MURdH3oUKhWVRw)
 
 [PyTorch: An Imperative Style, High-Performance Deep Learning Library](https://papers.nips.cc/paper/9015-pytorch-an-imperative-style-high-performance-deep-learning-library.pdf)
 
-## pytorch分布式训练
+### pytorch分布式训练
 
 [了解Pytorch 分布式训练，这一篇足够了!](https://mp.weixin.qq.com/s/P1vVkZglyXtTrYqLh8sHAw)
 
-## Texar-PyTorch
+### Texar-PyTorch
 
 [Texar-PyTorch：在PyTorch中集成TensorFlow的最佳特性](https://mp.weixin.qq.com/s/PyV6uQk5gAT9PjAiU7Xi2w)
 
