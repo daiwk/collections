@@ -681,12 +681,54 @@ $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新�
 
 | ckpt? | 模型 |发布时间 | 大小 | 预训练数据规模 | 硬件 | 训练时间  |
 |---|---|---|---|---|---|---|
-| 有 | [T5](https://arxiv.org/pdf/1910.10683.pdf) | 2019.10| 11B |  1万亿tokens | 1024 TPU v3  |  - |
-| 无 | [GPT-3](https://arxiv.org/pdf/2005.14165.pdf) | 2020.05 | 175B |  3000万亿tokens | -  |  - |
-| 无 | [GShard](https://arxiv.org/pdf/2006.16668.pdf) | 2020.06 | 600B |  1万亿tokens | 2048 TPU v3 | 4天 |
-| 无 | [PanGu-$$\alpha$$](https://arxiv.org/pdf/2104.12369.pdf) | 2021.04 | 13B |  1.1TB | 2048 Ascend 910 | - |
-| 无 | [Codex](https://arxiv.org/pdf/2107.03374.pdf) | 2021.07 | 12B |  1000万亿tokens | - | - |
-| 有 | [mT5](https://arxiv.org/pdf/2010.11934.pdf) | 2020.10 | 13B |  1万亿tokens | -  |  - |
+| Y | [T5](https://arxiv.org/pdf/1910.10683.pdf) | 2019.10| 11B |  1万亿tokens | 1024 TPU v3  |  - |
+| N | [GPT-3](https://arxiv.org/pdf/2005.14165.pdf) | 2020.05 | 175B |  3000万亿tokens | -  |  - |
+| N | [GShard](https://arxiv.org/pdf/2006.16668.pdf) | 2020.06 | 600B |  1万亿tokens | 2048 TPU v3 | 4天 |
+| Y | [mT5](https://arxiv.org/pdf/2010.11934.pdf) | 2020.10 | 13B |  1万亿tokens | -  |  - |
+| Y | [PanGu-$$\alpha$$](https://arxiv.org/pdf/2104.12369.pdf) | 2021.04 | 13B |  1.1TB | 2048 Ascend 910 | - |
+| Y | [CPM-2](https://arxiv.org/pdf/2106.10715.pdf) | 2021.06 | 198B |  2.6TB | - | - |
+| N | [Codex](https://arxiv.org/pdf/2107.03374.pdf) | 2021.07 | 12B |  1000万亿tokens | - | - |
+| N | [ERNIE 3.0](https://arxiv.org/pdf/2107.02137.pdf) | 2021.07 | 10B |  3750亿tokens | 384 v100 | - |
+| N | [Jurassic-1](https://uploads-ssl.webflow.com/60fd4503684b466578c0d307/61138924626a6981ee09caf6_jurassic_tech_paper.pdf) | 2021.08 | 178B | 3000亿tokens | 800 GPU | - |
+| N | [HyperCLOVA](https://arxiv.org/pdf/2109.04650.pdf) | 2021.09 | 82B | 3000亿tokens | 1024 A100 | 13.4天 |
+| N | [FLAN](https://arxiv.org/pdf/2109.01652.pdf) | 2021.09 | 137B | - | 128 TPU v3 | 60小时 |
+| N | [Yuan 1.0](https://arxiv.org/pdf/2110.04725.pdf) | 2021.10 | 245B | 1800亿tokens | 2128 GPU | - |
+| Y | [T0](https://arxiv.org/pdf/2211.01786.pdf) | 2021.10 | 11B | - | 512 TPU v3 | 27小时 |
+| N | [Anthropic](https://arxiv.org/pdf/2112.00861.pdf) | 2021.12 | 52B | 4000亿tokens | - | - |
+| N | [WebGPT](https://arxiv.org/pdf/2112.09332.pdf) | 2021.12 | 175B |  - | - | - |
+| N | [Gopher](https://arxiv.org/pdf/2112.11446.pdf) | 2021.12 | 280B |  3000亿tokens | 4096 TPU v3 | 920小时 |
+| N | [ERNIE 3.0 Titan](https://arxiv.org/pdf/2112.12731.pdf) | 2021.12 | 260B |  - | - | - |
+| N | [GLaM](https://arxiv.org/pdf/2112.06905.pdf) | 2021.12 | 1200B | 2800亿tokens | 1024 TPU v4 | 574小时 |
+| N | [LaMDA](https://arxiv.org/pdf/2201.08239.pdf) | 2022.01 | 137B |  7680亿tokens | 1024 TPU v3 | 57.5天 |
+| N | [MT-NLG](https://arxiv.org/pdf/2201.11990.pdf) | 2022.01 | 530B | 2700亿tokens | 4480 80G A100 | - |
+| N | [AlphaCode](https://arxiv.org/pdf/2203.07814.pdf) | 2022.02 | 41B | 9670亿tokens | - | - |
+| N | [InstructGPT](https://arxiv.org/pdf/2203.02155.pdf) | 2022.03 | 175B |  - | - | - |
+| N | [Chinchilla](https://arxiv.org/pdf/2203.15556.pdf) | 2022.03 | 70B | 1.4万亿tokens | - | - |
+| Y | [CodeGen](https://arxiv.org/pdf/2203.13474.pdf) | 2022.03 | 16B | 5770亿tokens | - | - |
+| Y | [GPT-NeoX-20B](https://arxiv.org/pdf/2204.06745.pdf) | 2022.04 | 20B | 825GB | 96 40G A100 | - |
+| Y | [Tk-Instruct](https://arxiv.org/pdf/2204.07705.pdf) | 2022.04 | 11B |  - | 256 TPU v3 | 4小时 |
+| N | [PaLM](https://arxiv.org/pdf/2204.02311.pdf) | 2022.04 | 540B | 7800亿tokens | 6144 TPU v4 | - |
+| Y | [UL2](https://arxiv.org/pdf/2205.05131.pdf) | 2022.05 | 20B |  825GB | 96 40G A100 | - |
+| Y | [OPT](https://arxiv.org/pdf/2205.01068.pdf) | 2022.05 | 175B | 1800亿tokens | 992 80G A100 | - |
+| Y | [NLLB](https://arxiv.org/pdf/2207.04672.pdf) | 2022.07 | 54.5B |  - | - | - |
+| N | [AlexaTM](https://arxiv.org/pdf/2208.01448.pdf) | 2022.08 | 20B | 1.3万亿tokens | 128 A100 | 120天 |
+| N | [Sparrow](https://arxiv.org/pdf/2209.14375.pdf) | 2022.09 | 70B | 64 TPU v3 | - | - |
+| N | [WeLM](https://arxiv.org/pdf/2209.10372.pdf) | 2022.09 | 10B | 3000亿tokens | 128 A100 40G | 24天 |
+| N | [U-PaLM](https://arxiv.org/pdf/2210.11399.pdf) | 2022.10 | 540B | - | 512 TPU v4 | 5天 |
+| N | [Flan-PaLM](https://arxiv.org/pdf/2210.11416.pdf) | 2022.10 | 540B |  - | 512 TPU v4 | 37小时 |
+| N | [Flan-U-PaLM](https://arxiv.org/pdf/2210.11416.pdf) | 2022.10 | 540B |  - | - | - |
+| Y | [GLM](https://arxiv.org/pdf/2210.02414.pdf) | 2022.10 | 130B | 4000亿tokens | 768 40G A100 | 60天 |
+| Y | [Flan-T5](https://arxiv.org/pdf/2210.11416.pdf) | 2022.10 | 11B |  - | - | - |
+| Y | [BLOOM](https://arxiv.org/pdf/2211.05100.pdf) | 2022.11 | 176B | 3660亿tokens | 384 80G A100 | 105天 |
+| Y | [mT0](https://arxiv.org/pdf/2211.01786.pdf) | 2022.11 | 13B |  - | - | - |
+| Y | [Galactica](https://arxiv.org/pdf/2211.09085.pdf) | 2022.11 | 120B | 1060亿tokens | - | - |
+| Y | [BLOOMZ](https://arxiv.org/pdf/2211.01786.pdf) | 2022.11 | 176B |  - | - | - |
+| Y | [OPT-IML](https://arxiv.org/pdf/2212.12017.pdf) | 2022.12 | 175B |  - | 128 40G A100 | - |
+| Y | [LLaMA](https://arxiv.org/pdf/2302.13971.pdf) | 2023.02 | 65B | 1.4万亿tokens | 2048 80G A100 | 21天 |
+| N | [GPT-4](https://arxiv.org/pdf/2303.08774.pdf) | 2023.03 | - |  - | - | - |
+| Y | [CodeGeeX](https://arxiv.org/pdf/2303.17568.pdf) | 2022.09 | 13B | 8500亿tokens | 1536 Ascend 910 | 60天 |
+| N | [PanGU-$$\Sigma$$](https://arxiv.org/pdf/2303.10845.pdf) | 2023.03 | 1085B | 3290亿tokens | 512 Ascend 910 | 100天 |
+| Y | [Pythia](https://arxiv.org/pdf/2304.01373.pdf) | 2023.04 | 12B | 3000亿tokens | 256 40G A100 | - |
 
 
 ### 数据集
