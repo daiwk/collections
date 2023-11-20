@@ -684,8 +684,8 @@ $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新�
 | 有 | [T5](https://arxiv.org/pdf/1910.10683.pdf) | 2019.10| 11B |  1万亿tokens | 1024 TPU v3  |  - |
 | 无 | [GPT-3](https://arxiv.org/pdf/2005.14165.pdf) | 2020.05 | 175B |  3000万亿tokens | -  |  - |
 | 无 | [GShard](https://arxiv.org/pdf/2006.16668.pdf) | 2020.06 | 600B |  1万亿tokens | 2048 TPU v3 | 4天 |
-| 无 | [PanGu-alpha](https://arxiv.org/pdf/2104.12369.pdf)) | 2021.04 | 13B |  1.1TB | 2048 Ascend 910 | - |
-| 无 | [Codex](https://arxiv.org/pdf/2107.03374.pdf)) | 2021.07 | 12B |  1000万亿tokens | - | - |
+| 无 | [PanGu-$$\alpha$$](https://arxiv.org/pdf/2104.12369.pdf) | 2021.04 | 13B |  1.1TB | 2048 Ascend 910 | - |
+| 无 | [Codex](https://arxiv.org/pdf/2107.03374.pdf) | 2021.07 | 12B |  1000万亿tokens | - | - |
 | 有 | [mT5](https://arxiv.org/pdf/2010.11934.pdf) | 2020.10 | 13B |  1万亿tokens | -  |  - |
 
 
