@@ -7,4 +7,4 @@ for line in sys.stdin:
         #print '<img href="%s" />' % line
         print(line + '{ height=40% }')
         continue
-    print(line)
+    print(line.replace("XXX", "$$"))

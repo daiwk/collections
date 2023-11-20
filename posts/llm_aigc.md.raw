@@ -12,7 +12,7 @@
 + 2017年的[Learning to generate reviews and discovering sentiment](https://arxiv.org/pdf/1704.01444.pdf)尝试用rnn来实现智能系统
 + 2018年的gpt1：[Improving language understanding by generative pre-training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)，生成式预训练（Generative pre-training, gpt），用transformer的decoder，参数量117m（0.1b），无监督预训练和有监督微调。确定对自然语言文本建模的基本原则为**预测下一个单词**。
 + 2019年的gpt2：[Language models are unsupervised multitask learners](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)模型结构小改，增加数据，参数量变大为15亿（1.5b），无监督语言建模，**无需使用标记数据进行显式微调**。
-    + 参考[The natural language decathlon: Multitask learning as question answering](https://arxiv.org/pdf/1806.08730.pdf)中**多任务求解的概率形式**： $p(output|input,task)$ 。
+    + 参考[The natural language decathlon: Multitask learning as question answering](https://arxiv.org/pdf/1806.08730.pdf)中**多任务求解的概率形式**： $$p(output|input,task)$$ 。
     + 提出“由于特定任务的有监督目标与无监督目标（语言建模）相同，只是在序列的子集上进行评估，因此，无监督目标的全局最小值也是有监督目标的全局最小值”，即每个NLP任务可以看作**世界文本子集的单词预测问题**，如果模型有足够能力来复原世界文本，无监督语言建模可以解决各种问题。
     + 仅无监督与监督微调的SOTA相比效果还是不太行。虽然GPT2模型规模相对较小，但如对话等任务在其基础上做微调还是能拿到很好的效果的，例如[DIALOGPT : Large-scale generative pre-training for conversational response generation](https://arxiv.org/pdf/1911.00536.pdf)、[End-to-end neural pipeline for goal-oriented dialogue systems using GPT-2](https://aclanthology.org/2020.acl-main.54.pdf)
 + 2020年的gpt3：[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165.pdf)，175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning（这点在**3.3亿的BERT和15亿的gpt2中看不到**）。**预训练和ICL有相同的语言建模范式**：预训练预测给定上下文条件下的后续文本序列，ICL预测正确的任务解决方案，其可被格式化为给定任务描述和示范下的文本序列。
@@ -48,36 +48,36 @@
 
 ### openai的扩展法则
 
-2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个**非嵌入参数**）的性能，提出了在**计算预算**$c$的条件下，$L$是用nats表示的交叉熵损失，模型性能与**模型规模**$N$、**数据集规模**$D$以及**训练计算量**$C$间存在如下幂律关系：
+2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个**非嵌入参数**）的性能，提出了在**计算预算**$$c$$的条件下，$$L$$是用nats表示的交叉熵损失，模型性能与**模型规模**$$N$$、**数据集规模**$$D$$以及**训练计算量**$$C$$间存在如下幂律关系：
 
-$$L(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}$$
+XXXL(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}XXX
 
-$$L(D)=(\frac{D_c}{D})^{\alpha _D}, {\alpha}_D\sim 0.05,N_c\sim 5.4\times 10^{13}$$
+XXXL(D)=(\frac{D_c}{D})^{\alpha _D}, {\alpha}_D\sim 0.05,N_c\sim 5.4\times 10^{13}XXX
 
-$$L(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}$$
+XXXL(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}XXX
 
-其中，$N_c$表示非嵌入参数数量，$D_c$表示训练token数量,$C_c$表示FP-days。
+其中，$$N_c$$表示非嵌入参数数量，$$D_c$$表示训练token数量,$$C_c$$表示FP-days。
 
 ### Chinchilla扩展法则
 
 DeepMind在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来指导LLM最优计算量的训练。通过变化更大范围的模型大小（7000w到160亿参数）和数据大小（50亿到5000亿个token）进行实验，拟合了如下的扩散法则：
 
-$$
+XXX
 L(N, D)=E+\frac{A}{N^\alpha}+\frac{B}{D^\beta}
-$$
+XXX
 
-其中$E=1.69,A=406.4,B=410.7,\alpha = 0.34, \beta =0.28$，通过在约束条件$C\approx 6ND$下优化损失$L(N,D)$，将计算预算最优地分配给模型大小和数据大小的方法：
+其中$$E=1.69,A=406.4,B=410.7,\alpha = 0.34, \beta =0.28$$，通过在约束条件$$C\approx 6ND$$下优化损失$$L(N,D)$$，将计算预算最优地分配给模型大小和数据大小的方法：
 
-$$
+XXX
 N_{o p t}(C)=G\left(\frac{C}{6}\right)^a, \quad D_{o p t}(C)=G^{-1}\left(\frac{C}{6}\right)^b
-$$
+XXX
 
-其中$a=\frac{\alpha}{\alpha+\beta}$，$b=\frac{\beta}{\alpha+\beta}$，$G$是由$A,B,\alpha,\beta$计算出的扩展系数。
+其中$$a=\frac{\alpha}{\alpha+\beta}$$，$$b=\frac{\beta}{\alpha+\beta}$$，$$G$$是由$$A,B,\alpha,\beta$$计算出的扩展系数。
 
 随着计算预算的增加，
 
 + openai的扩展法则更偏向于将更大预算分给**模型大小**，因为其对比各模型时使用了固定的训练数据量和学习率等超参，低估了数据量的作用。
-+ Chinchilla扩展法则认为**模型大小和数据大小要同比例增加**，即$a$和$b$取值差不多。因为其在无视模型大小的前提下，发现设置与数据量差不多match的学习率能获得更好的loss。
++ Chinchilla扩展法则认为**模型大小和数据大小要同比例增加**，即$$a$$和$$b$$取值差不多。因为其在无视模型大小的前提下，发现设置与数据量差不多match的学习率能获得更好的loss。
 
 然而，有一些能力（如涌现）无法根据扩展法则进行预测，只有当模型达到一定规模时才会出现。
 
@@ -198,9 +198,9 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 
 ppo确定的奖励函数如下：
 
-+ 提示$x$输入初始LM和当前微调的LM，分别得到输出文本$y_1$和$y_2$
-+ 将来自当前策略的文本传给RM得到标量奖励$r_{\theta}$
-+ 将两个模型的生成文本进行比较计算差异的惩罚项，一般是输出词分布间的KL散度的缩放，即$r=r_{\theta}-\lambda r_{KL}$，
++ 提示$$x$$输入初始LM和当前微调的LM，分别得到输出文本$$y_1$$和$$y_2$$
++ 将来自当前策略的文本传给RM得到标量奖励$$r_{\theta}$$
++ 将两个模型的生成文本进行比较计算差异的惩罚项，一般是输出词分布间的KL散度的缩放，即$$r=r_{\theta}-\lambda r_{KL}$$，
 
 惩罚项的好处：
 + 用于惩罚策略在每个训练batch中生成大幅偏离初始模型，以确保模型输出合理连贯的文本。
@@ -301,7 +301,7 @@ Actor 是**策略**，它决定文本会被怎么样生成，是从**策略网�
 
 Actor Loss如下，用重要性采样比较在**旧策略**和**新策略**下行动的概率（Old Logprobs，New Logprobs），然后将这个比值（也就是 Importance Sampling 的权重）与**优势函数Advantages**相乘，得到了对 Actor Loss 的一个估计。
 
-$$L=\pi_{new}/\pi_{old} * A$$
+XXXL=\pi_{new}/\pi_{old} * AXXX
 
 ```python
 # 计算新旧策略下概率的比值
@@ -383,11 +383,11 @@ return torch.stack(rewards), torch.stack(non_score_rewards)
 
 #### GAE
 
-GAE是一种多步优势估计方法。它通过引入一个权衡参数$\lambda$，在**单步TD误差**和**多步TD误差**之间进行权衡，从而**减小估计的方差**，提高学习的稳定性。其中$\sigma _{t+l}$是时间步$t+l$的TD误差。
+GAE是一种多步优势估计方法。它通过引入一个权衡参数$$\lambda$$，在**单步TD误差**和**多步TD误差**之间进行权衡，从而**减小估计的方差**，提高学习的稳定性。其中$$\sigma _{t+l}$$是时间步$$t+l$$的TD误差。
 
-$$A_t=\sum ^{k-1}_{l=0}(\lambda \eta )^{l}\sigma _{t+l}$$
+XXXA_t=\sum ^{k-1}_{l=0}(\lambda \eta )^{l}\sigma _{t+l}XXX
 
-$$\sigma _{t+l}=r_{t+l+1}+\eta V(s_{t+l+1})-V(s_{t+l})$$
+XXX\sigma _{t+l}=r_{t+l+1}+\eta V(s_{t+l+1})-V(s_{t+l})XXX
 
 ```python
 # 从后往前遍历整个生成的序列
@@ -433,9 +433,9 @@ entropy = -torch.sum(logits* torch.log(logits + 1e-9), dim=-1).mean()
 
 我们希望在优化目标函数的同时，满足以下的KL散度约束：
 
-$$KL[\pi_{\theta_{old}}(\cdot|s_t),\pi_{\theta}(\cdot|s_t)]\le \delta $$
+XXXKL[\pi_{\theta_{old}}(\cdot|s_t),\pi_{\theta}(\cdot|s_t)]\le \delta XXX
 
-在代码中，每个mini batch都会进行early stop的判定，如果计算出的KL散度大于 $\delta$，那么就会停止这一轮的优化，以保证新策略不会偏离旧策略太远。
+在代码中，每个mini batch都会进行early stop的判定，如果计算出的KL散度大于 $$\delta$$，那么就会停止这一轮的优化，以保证新策略不会偏离旧策略太远。
 
 ```python
 # 计算旧策略和新策略之间的KL散度
@@ -536,14 +536,14 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 ## 网络结构
 
 + pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))
-+ SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$4d$改了$2/34d$
++ SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
 + Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
 
 优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%。0.1的weight decay和1.0的gradient cliping，使用2000steps的warmup
 
 ## 训练加速
 
-+ 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $o(n^2)$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
++ 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $$o(n^2)$$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
     + 不存储attention weights
     + 不计算被mask的key/query得分
 + 减少xxx：
@@ -648,11 +648,11 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 ![stable-diffusion](../assets/stable-diffusion.png)
 
-输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$z_T$（正向扩散）
+输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$$z_T$$（正向扩散）
 
-输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$\tau_\theta$
+输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$$\tau_\theta$$
 
-$z_T$在$\tau_\theta$的指导下不断去噪（反向扩散），得到新的z，再通过解码器得到最终生成的图像
+$$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新的z，再通过解码器得到最终生成的图像
 
 
 # LLM+推荐
