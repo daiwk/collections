@@ -2,7 +2,7 @@
 
 #cat ./posts/full.md | python3 trans_format.py >> ./pdfs/collections-pdf.md
 cat ./posts/full.md.raw | python3 ./posts/change_format_pdf.py > ./pdfs/collections-pdf.md
-cat ./posts/full.md.raw | python3 ./posts/change_format_md.py > ./pdfs/collections.md
+cat ./posts/full.md.raw | python3 ./posts/change_format_md.py > ./posts/collections.md
 cat ./posts/llm_aigc.md.raw | python3 ./posts/change_format_pdf.py > ./pdfs/llm_aigc-pdf.md
 cat ./posts/llm_aigc.md.raw | python3 ./posts/change_format_md.py > ./posts/llm_aigc.md
 
