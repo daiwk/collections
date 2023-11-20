@@ -913,7 +913,7 @@ key_layer = transpose_for_scores(key_layer, batch_size, num_attention_heads,
         to_seq_length, size_per_head)
 ```
 
-然后就算 $$ QK^T $$ 了，注意这里对key取了转置，也就是```[batch, head_num, from_seq, per_head]```乘以```[batch, head_num, per_head, to_seq]```，得到的结果是```[batch, head_num, from_seq, to_seq]```：
+然后就算$$QK^T$$了，注意这里对key取了转置，也就是```[batch, head_num, from_seq, per_head]```乘以```[batch, head_num, per_head, to_seq]```，得到的结果是```[batch, head_num, from_seq, to_seq]```：
 
 ```python
 attention_scores = tf.matmul(query_layer, key_layer, transpose_b=True)
@@ -961,7 +961,7 @@ context_layer = tf.matmul(attention_probs, value_layer)
 context_layer = tf.transpose(context_layer, [0, 2, 1, 3])
 ```
 
-再确认一点， $$ softmax(QK^T) $$ 是```[batch, head_num, from_seq, to_seq]```，而 $$ V $$ 是```[batch, head_num, to_seq, per_head]```，所以context_layer是```[batch, head_num, from_seq, per_head]```
+再确认一点，$$softmax(QK^T)$$是```[batch, head_num, from_seq, to_seq]```，而$$V$$是```[batch, head_num, to_seq, per_head]```，所以context_layer是```[batch, head_num, from_seq, per_head]```
 
 最后，再搞一下，变回```[batch, from_seq, head_num * per_head]```：
 
@@ -978,7 +978,7 @@ else:
         [batch_size, from_seq_length, num_attention_heads * size_per_head])
 ```
 
-如上过程是 $$ Concat(head_1, ..., head_h) $$ ，其中 $$ head_i = Attention(QW_i^Q, KW_i^K, VW_i^V) $$ 。包装在了函数```attention_layer```之中，我们注意到原文还有一个大小为$$hd_v \times d_{model}$$的 $$ W^O $$ ，也就是大小为 $$d_{model}\times d_{model}$$ ，再看看源码。。也就是说，正常的bert里，```attention_heads```就只有一个元素，然后接了个```hidden_size```的fc，而前面的代码里也提到了```hidden_size```正好就是 $$ d_{model} $$ ，所以这就是 $$ W^O $$ 。
+如上过程是$$Concat(head_1, ..., head_h)$$，其中$$head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)$$。包装在了函数```attention_layer```之中，我们注意到原文还有一个大小为$$hd_v \times d_{model}$$的$$W^O$$，也就是大小为$$d_{model}\times d_{model}$$，再看看源码。。也就是说，正常的bert里，```attention_heads```就只有一个元素，然后接了个```hidden_size```的fc，而前面的代码里也提到了```hidden_size```正好就是$$d_{model}$$，所以这就是$$W^O$$。
 
 ```python
 attention_heads = []
@@ -1019,7 +1019,7 @@ with tf.variable_scope("self"):
 [https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/run_pretraining.py#L240](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/run_pretraining.py#L240)
 
 
-如下，其中```hidden_size```就是是 $$ d_{model} $$：
+如下，其中```hidden_size```就是是$$d_{model}$$：
 
 ```python
 def get_masked_lm_output(bert_config, input_tensor, output_weights, positions,
@@ -1798,8 +1798,8 @@ batch内shuffle采样（有放回）
 
 预训练时没有\[TCL\]，fintune时加上。
 
-+ 原domain $$S$$：有大量用户交互行为的图文或视频推荐。一条样本包括$$\left(u, x^{u}\right) \in \mathcal{S}$$，其中，$$x^{u}=\left\{x_{1}^{u}, \ldots, x_{n}^{u}\right\}\left(x_{i}^{u} \in X\right)$$表示用户的点击历史
-+ 目标domain $$T$$：可以是用户label很少的一些预测任务。例如用户可能喜欢的item、用户性别、用户年龄分桶等。一条样本包括$$(u, y) \in \mathcal{T}$$，其中$$y \in \mathcal{Y}$$是一个有监督的标签。
++ 原domain$$S$$：有大量用户交互行为的图文或视频推荐。一条样本包括$$\left(u, x^{u}\right) \in \mathcal{S}$$，其中，$$x^{u}=\left\{x_{1}^{u}, \ldots, x_{n}^{u}\right\}\left(x_{i}^{u} \in X\right)$$表示用户的点击历史
++ 目标domain$$T$$：可以是用户label很少的一些预测任务。例如用户可能喜欢的item、用户性别、用户年龄分桶等。一条样本包括$$(u, y) \in \mathcal{T}$$，其中$$y \in \mathcal{Y}$$是一个有监督的标签。
 
 
 ## 召回
