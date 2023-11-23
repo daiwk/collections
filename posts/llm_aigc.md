@@ -78,7 +78,7 @@
 | N | [PanGU-$$\Sigma$$](https://arxiv.org/pdf/2303.10845.pdf) | 2023.03 | 1085B | 3290亿tokens | 512 Ascend 910 | 100天 |
 | Y | [Pythia](https://arxiv.org/pdf/2304.01373.pdf) | 2023.04 | 12B | 3000亿tokens | 256 40G A100 | - |
 
-
+可以直接把对应的md丢给gpt，叫它导出一个excel，然后就可以自定义排序或者画散点图看了
 
 
 ## 一些综述
@@ -655,6 +655,12 @@ CLIP
 
 # pathways
 
+[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
+
+下载了，[pdf](../assets/LLM/pathways.pdf)
+
+这个回答分析得不错
+[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
 
 ## Google的大规模稀疏模型设计
 
