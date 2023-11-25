@@ -27,6 +27,9 @@
 
 ## LLM列表（持续更新中）
 
++ 百亿：除了LLaMA（最大650亿）和NLLB（最大545亿），大多数在100亿-200亿之间，通常需要**数百甚至上千**个GPU或TPU。
++ 千亿：OPT、OPT-IML、BLOOM和BLOOMZ与GPT-3(175B)大致相同，GLM有1300亿，Galactica有1200亿，通常需要**数千**个GPU或者TPU。
+
 | ckpt? | 模型 |发布时间 | 大小 | 预训练数据规模 | 硬件 | 训练时间  |
 |---|---|---|---|---|---|---|
 | Y | [T5](https://arxiv.org/pdf/1910.10683.pdf) | 2019.10| 11B |  1万亿tokens | 1024 TPU v3  |  - |
@@ -79,6 +82,40 @@
 | Y | [Pythia](https://arxiv.org/pdf/2304.01373.pdf) | 2023.04 | 12B | 3000亿tokens | 256 40G A100 | - |
 
 可以直接把对应的md丢给gpt，叫它导出一个excel，然后就可以自定义排序或者画散点图看了
+
+
+
+## LLM数据集
+
+llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
+
++ Books：
+    + [BookCorpus](https://arxiv.org/pdf/1506.06724.pdf)：超过11000本电子书，用于GPT和GPT-2。
+    + [Gutenberg](https://www.gutenberg.org/)：超过70000本文学作品，包括小说、散文、诗歌、戏剧、历史、科学、哲学和其他公共领域，用于MT-NLG和LLaMA。
+    + Books1和Books2：比BookCorpus大得多，但未公开，用于GPT-3。
++ CommonCrawl：最大的开源网络爬虫数据库之一，**百万亿字节**，有大量噪音和低质信息，需要过滤，有如下4个子集：
+    + [C4](https://www.tensorflow.org/datasets/catalog/c4)：包括en（806G，训练T5、LaMDA、Gopher、UL2）、en.noclean（6T）、realnewslike（36G）、webtextlike（17G）、multilingual（38T，训练mT5）。
+    + [CC-Stories](https://arxiv.org/pdf/1806.02847.pdf)：31G，内容以故事的形式展示
+    + [CC-News](https://arxiv.org/pdf/1907.11692.pdf)：76G
+    + [RealNews](https://arxiv.org/pdf/1905.12616.pdf)：120G
++ Reddit Links：Reddit上的帖子，高赞通常比较有用，可以拿来创建高质量数据集。
+    + [WebText](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)：由Reddit上的高赞链接组成，未公开，对应的开源版是[OpenWebText](https://skylion007.github.io/OpenWebTextCorpus/)。
+    + [Pushshift.io](https://arxiv.org/pdf/2001.08435.pdf)：实时更新的数据集，包括Reddit自创建以来的历史数据，有数据存储，也有实用工具，供用户搜索、总结和统计分析。
++ Wikipedia：大部分文章使用写作风格，并支持引用，英语版本用于大多数LLM，如GPT-3、LaMDA、LLaMA，还有多语言版。
++ Code：包括开源许可证的公共代码库（如github）和与代码相关的问答平台（如StackOverflow）,Google公开了[BigQuery](https://cloud.google.com/bigquery?hl=zh-cn)数据集，CodeGen用的BIGQUERY是其的一个子集。
++ 其他：
+    + [The Pile](https://arxiv.org/pdf/2101.00027.pdf)有800G，包括书籍、网站、代码、科学论文和社交媒体平台，有22个子集，用于GPT-J(6B)、CodeGen(16B)、Megatron-Turing NLG（530B）。
+    + [ROOTS](https://arxiv.org/pdf/2303.03915.pdf)由各种小数据集组成，共1.6T，包括59种语言（自然语言和编程语言），用于BLOOM。
+
+## LLM开源库
+
++ transformers：huggingface的库
++ [deepspeed](https://github.com/microsoft/DeepSpeed)：微软的库，与pytorch兼容，训练了MT-NLG、BLOOM等模型，包括各种分布式训练优化技术，如**内存优化**（**ZeRO**、**梯度检查点**等）和**管道并行**。
++ megatron-lm：英伟达的库，同样包括各种分布式训练技术，包括**模型和数据并行**、**混合精度**训练和**FlashAttention**。（[Megatron-lm: Training multi-billion parameter language models using model parallelism](https://arxiv.org/pdf/1909.08053.pdf)、[Efficient large-scale language model training on GPU clusters using megatron-lm](https://arxiv.org/pdf/2104.04473.pdf)和[Reducing activation recomputation in large transformer models](https://arxiv.org/pdf/2205.05198.pdf)）
++ [jax](https://github.com/google/jax)：google的库，允许用户在**带有硬件加速（GPU或TPU）**的情况下进行**数组的高效运算**，可以在**各种设备**高效计算，支持**自动微分**和**即时编译**等功能。
++ [colossal-AI](https://arxiv.org/pdf/2110.14883.pdf)：HPC-AI Tech的库，基于pytorch，可以使用[PatrickStar](Patrickstar: Parallel training of pre-trained models via a chunk-based memory management)提出的方法优化异构内存管理，分布了基于LLaMA的[ColossalChat](https://medium.com/pytorch/colossalchat-an-open-source-solution-for-cloning-chatgpt-with-a-complete-rlhf-pipeline-5edf08fb538b)
++ [BMTrain](https://github.com/OpenBMB/BMTrain)：openBMB的库，强调代码简洁、低资源占用和高可用性
++ [FastMoE](Fastmoe: A fast mixture-of-expert training system)：专门用于MoE模型的训练库，基于pytorch，简化了将transformer转换为MoE模型的过程
 
 
 ## 一些综述
@@ -201,6 +238,207 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 + [Toolformer: Language models can teach themselves to use tools](https://arxiv.org/pdf/2302.04761.pdf)能利用计算器进行准确计算
 + [Webgpt: Browser-assisted question-answering with human feed- back](https://arxiv.org/pdf/2112.09332.pdf)能利用搜索引擎检索未知信息
 
+
+# 预训练
+
+## 数据收集
+
+### 数据获取
+
++ 通用文本数据：
+    + 网页：
+    + 对话文本：
+    + 书籍：
++ 专用文本数据：
+    + 多语言文本：
+    + 科学文本：
+    + 代码：
+
+### 数据预处理
+
++ 质量过滤：
++ 隐私去除：
++ 分词：
+
+## 架构
+
+### 主流框架
+
++ 编码器-解码器架构：
++ 因果解码器架构：
++ 前缀解码器架构：
+
+### 组件配置
+
++ 标准化（norm）：
++ 激活函数：
++ 位置编码：
++ 注意力机制和Bias:
+
+### 预训练任务
+
++ 语言建模：
++ 去噪自编码：
+
+## 模型训练
+
+### 优化设置
+
++ 批量训练：
++ 学习率：
++ 优化器：
++ 稳定训练：
+
+### 可扩展的训练
+
++ 3D并行
+    + 数据并行
+    + 流水线并行
+    + 张量并行
++ ZeRO
++ 混合精度训练
+
+# 微调
+
+## 指令微调
+
+### 构建格式化实例
+
++ 格式化已有数据集：
++ 格式化人类需求：
+
+构建实例的关键：
++ 增加指令：
++ 设计格式：
+
+### 指令微调策略
+
++ 平衡数据分布：
++ 结合指令微调和训练：
+
+### 指令微调效果
+
++ 性能改进：
++ 任务泛化性：
+
+## 对齐微调
+
+### 对齐的标准
+
++ 有用性：
++ 诚实性：
++ 无害性：
+
+### 收集人类反馈
+
++ 选择标注人员：
++ 收集反馈：
+    + 基于排序的方法：
+    + 基于问题的方法：
+    + 基于规则的方法：
+
+### RLHF
+
+详见RLHF章节，这里简单讲下
+
+
+## 高效微调
+
++ 适配器（adapter）微调：
++ 前缀微调：
++ 提示微调：
++ 低秩适配（LoRA）：
+
+
+# 使用
+
+## 上下文学习
+
+### 上下文学习形式
+
+### 示范设计
+
++ 示范选择
+    + 启发式方法：
+    + 基于LLM的方法：
++ 示范格式：
++ 示范顺序：
+
+#### 底层机制
+
++ 预训练如何影响ICL：
++ LLM如何实现ICL：
+
+## 思维链提示
+
++ 小样本思维链
+    + 思维链提示设计：
+    + 增强的思维链策略：
++ 零样本思维链
+
+进一步讨论
+
++ 思维链何时适用于LLM：
++ LLM为何能进行思维链推理：
+    + 思维链能力的来源：
+    + 提示中组成部分的影响：
+
+# 能力评测
+
+## 基础评测
+
+### 语言生成
+
+#### 语言建模
+
+#### 条件文本生成
+
+#### 代码合成
+
+#### 存在问题
+
++ 可控生成
++ 专业化生成
+
+### 知识利用
+
+#### 闭卷问答
+
+#### 开卷问答
+
+#### 知识补全
+
+#### 存在问题
+
++ 幻觉（Hallucination）
++ 知识实时性
+
+### 复杂推理
+
+#### 知识推理
+
+#### 符号推理
+
+#### 数学推理
+
+#### 存在问题
+
++ 不一致性
++ 数值计算
+
+## 高级评估
+
+### 与人类对齐
+
+### 与外部环境互动
+
+### 工具使用
+
+## 公开基准
+
++ MMLU：
++ BIG-bench：
++ HELM：
 
 
 # RLHF & instructGPT
@@ -738,10 +976,6 @@ $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新�
 
 ### 模型
 
-
-### 数据集
-
-llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin.cn/post/7238921093553438779)
 
 
 ## RETRO Transformer
