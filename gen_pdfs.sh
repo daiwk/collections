@@ -12,7 +12,7 @@ python3 gen_dot_sub.py
 
 cd pdfs
 pandoc -N -s --toc --toc-depth=5 --pdf-engine=xelatex -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures ./collections-pdf.md -o ./collections.pdf
-pandoc -N -s --toc --toc-depth=5 --template=template.tex --pdf-engine=xelatex -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures --highlight-style tango ./llm_aigc-pdf.md -o ./llm_aigc.pdf
+pandoc -N -s --toc --toc-depth=5 --css=custom.css --pdf-engine=xelatex -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures --highlight-style tango ./llm_aigc-pdf.md -o ./llm_aigc.pdf
 cd -
 
 rm -rf pdfs/*.md
