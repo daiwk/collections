@@ -442,19 +442,87 @@ XXX
 
 ### 优化设置
 
-+ 批量训练：
-+ 学习率：
++ batchsize：通常用比较大的batchsize，提高训练**稳定性**和**吞吐量**。GPT-3和PaLM在训练时动态增加batshzie，最终达到百万级别，batchsize**从3.2w逐渐增加到320w个token**。
 + 优化器：
+    + Adam和[AdamW](https://arxiv.org/pdf/1711.05101v2.pdf)：基于**一阶梯度优化的低阶矩自适应估计**，用于GPT-3等，超参$$\beta_1=0.9, \beta_2=0.95, \epsilon=10^{-8}$$。
+    + [Adafactor](https://arxiv.org/pdf/1804.04235.pdf)：在训练过程中节省显存，用于PaLM、T5等，超参$$\beta_1=0.9, \beta_2=1.0-k^{-0.8}$$
++ 学习率：
+    + 预热（warm-up）：在训练的**初始0.1%到0.5%**的steps中，用**线性预热策略**逐渐增加学习率到最大值（$$5 \times 10^{-5}$$到$$1 \times 10^{-4}$$之间，GPT-3是$$6 \times 10^{-5}$$）
+    + 衰减（decay）：后续steps中**余弦衰减**，逐渐降低到**最大值的约10%**，直到收敛
 + 稳定训练：
+    + 权重衰减和梯度裁剪：**权重衰减率**设为0.1，**梯度裁剪阈值**设为1.0
+    + 梯度检查点：容易出现loss突增，PaLM和OPT从**发生突增前的一个ckpt重新开始训练**，并**跳过可能有问题的数据**
+    + 缩减emb梯度：GLM发现emb的异常梯度通常会导致loss突增，故**缩减emb梯度**以缓解
 
 ### 可扩展的训练
 
-+ 3D并行
-    + 数据并行
-    + 流水线并行
-    + 张量并行
-+ ZeRO
-+ 混合精度训练
+需要**提高训练吞吐量**和**加载更大模型到显存中**，
+
+#### 3D并行
+
+&nbsp;
+
+如下三种并行的组合
+
+##### 数据并行
+
+&nbsp;
+
+将**模型参数和优化器状态复制**到多个GPU上，每个GPU只处理分给它的数据，不同GPU算出的梯度进行聚合得到batch的梯度，再更新所有GPU上的模型。高度可扩展，增加GPU数就能提高训练吞吐。
+
+##### 流水线并行
+
+&nbsp;
+
+将LLM的**不同层**分配到多个GPU上，一般Transformer模型中会**将连续的层加载到同一GPU上**，以减少在GPU间传输已计算的隐层状态或梯度的成本。简单的实现会导致**GPU利用率降低**，因为每个GPU要**等前一个完成计算**，导致不必要的**气泡开销**，如下方法可以提高流水线效率：
++ GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
++ PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
+
+##### 张量并行
+
+&nbsp;
+
+分解LLM的张量（参数矩阵），例如矩阵乘法$$Y=X A$$，$$A$$可以按列分成两个子矩阵$$A_1$$和$$A_2$$，从而改为$$Y=\left[X A_1, X A_2\right]$$，将$$A_1$$和$$A_2$$放到不同GPU上，然后就可能通过跨GPU通信将两个GPU的结果merge。
++ Megatron-LM：能扩展到更高维度的张量
++ Colossal-AI：
+    + 为更高维度的张量实现了张量并行，[An efficient 2d method for training super-large deep learning models](https://arxiv.org/pdf/2104.05343.pdf)、[Tesseract: Parallelize the tensor parallelism efficiently](https://arxiv.org/pdf/2105.14500.pdf)和[Maximizing Parallelism in Distributed Training for Huge Neural Networks](https://arxiv.org/pdf/2105.14450.pdf)
+    + 特别针对序列数据提出序列并行([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
+
+
+#### ZeRO
+
+&nbsp;
+
+ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并行**中的**内存冗余**问题。数据并行其实并不需要每个GPU都存整个模型、梯度和优化器参数，ZeRO在每个GPU仅保存部分数据，当需要其余数据时从其他GPU检索。3种解决方案：
++ 优化器状态分区：
++ 梯度分区：
++ 参数分区：
+
+前两种方案不会增加通信开销，第三种方案增加约50%通信开销，但能节省和gpu数成比例的内存。facebook的开源库FSDP(full sharded data parallel)([Fairscale: A general purpose modular pytorch library for high performance and large scale training](https://github.com/facebookresearch/fairscale))里基于pytorch实现了类似ZeRO的技术。
+
+还有一些paper也能降低内存，如
+
+[Reducing activation recomputation in large transformer models](https://arxiv.org/pdf/2205.05198.pdf)
+
+[Training deep nets with sublinear memory cost](https://arxiv.org/pdf/1604.06174.pdf)
+
+
+### 混合精度训练
+
+&nbsp;
+
+[Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
+
+但FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
+
+## 推理速度优化
+
+### 量化
+
+[ZeroQuant-V2: Exploring Post-training Quantization in LLMs from Comprehensive Study to Low Rank Compensation](https://arxiv.org/pdf/2303.08302.pdf)和[Compression of generative pre- trained language models via quantization](https://arxiv.org/pdf/2203.10705.pdf)
+
++ int8量化：[LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale](https://arxiv.org/pdf/2208.07339.pdf)
++ int4量化：GLM中用了
 
 # 微调
 
