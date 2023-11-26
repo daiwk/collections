@@ -414,8 +414,17 @@ sublayer表示FFN或self-attention模块
 
 ### 预训练任务
 
-+ 语言建模：
-+ 去噪自编码：
+#### 语言建模
+
+&nbsp;
+
+仅解码器LLM的常见目标，给定token序列$$\mathbf{x}=\left\{x_1, \ldots, x_n\right\}$$，旨在基于序列中前面的$$\text { token } x_{\lt i}$$，自回归地预估 目标token $$x_{i}$$
+
+#### 去噪自编码
+
+&nbsp;
+
+
 
 ## 模型训练
 
