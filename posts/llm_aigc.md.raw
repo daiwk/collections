@@ -296,6 +296,7 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 
 #### 标准化（norm）
 
+
 LN(layer norm)能缓解LLM训练不稳定的问题，其位置很重要。
 
 ![pre-ln](../assets/pre-ln.jpeg)
@@ -310,7 +311,9 @@ LN(layer norm)能缓解LLM训练不稳定的问题，其位置很重要。
 
 #### 激活函数
 
+
 FFN中的激活函数：
+
 + [GeLU](https://arxiv.org/pdf/1606.08415.pdf)：大部分都是这个
 + [GLU(gated linear units)的变体](https://arxiv.org/pdf/2002.05202.pdf)：应用在PaLM和LaMDA等模型中，如SwiGLU和GeGLU有更好的效果，但在FFN中的参数量比GeLU要大50%
 
@@ -363,6 +366,7 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 #### 小结
 
 ##### 归一化位置
+
 
 sublayer表示FFN或self-attention模块
 
