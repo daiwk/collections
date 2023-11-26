@@ -311,6 +311,7 @@ LN(layer norm)能缓解LLM训练不稳定的问题，其位置很重要。
 
 #### 激活函数
 
+<br>
 
 FFN中的激活函数：
 
@@ -344,6 +345,8 @@ $$\operatorname{FFN}_{\text {SwiGLU }}\left(x, W, V, W_2\right)=\left(\operatorn
 
 
 #### 位置编码
+
+<br>
 
 Transformer的self-attention有转换不变性，故要位置编码以引入绝对或相对位置信息来建模序列。
 
