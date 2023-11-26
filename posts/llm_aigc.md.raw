@@ -17,7 +17,7 @@
     + 仅无监督与监督微调的SOTA相比效果还是不太行。虽然GPT2模型规模相对较小，但如对话等任务在其基础上做微调还是能拿到很好的效果的，例如[DIALOGPT : Large-scale generative pre-training for conversational response generation](https://arxiv.org/pdf/1911.00536.pdf)、[End-to-end neural pipeline for goal-oriented dialogue systems using GPT-2](https://aclanthology.org/2020.acl-main.54.pdf)
 + 2020年的gpt3：[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165.pdf)，175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning（这点在**3.3亿的BERT和15亿的gpt2中看不到**）。**预训练和ICL有相同的语言建模范式**：预训练预测给定上下文条件下的后续文本序列，ICL预测正确的任务解决方案，其可被格式化为给定任务描述和示范下的文本序列。
 + GPT-3的两种改进方法：
-    + 使用代码数据训练：GPT-3主要问题是缺乏对复杂任务的推理能力，2021年openai提出了Codex（[Evaluating Large Language Models Trained on Code](https://arxiv.org/pdf/2107.03374.pdf)），在github代码上微调的GPT。[A neural network solves and generates mathematics problems by program synthesis: Calculus, differential equations, linear alge- bra, and more](https://arxiv.org/pdf/2112.15594.pdf)发现Codex能解决非常困难的编程问题，还能在数学问题上有显著提升。[Text and code embeddings by contrastive pre-training](https://arxiv.org/pdf/2201.10005.pdf)提出了训练文本和代码emb的对比学习，在线性探测分类、文本搜索、代码搜索等任务上有所提升。GPT-3.5就是在基于代码的GPT（code-davinci-002）的基础上开发的。
+    + 使用代码数据训练：GPT-3主要问题是缺乏对复杂任务的推理能力，2021年openai提出了Codex（[Evaluating Large Language Models Trained on Code](https://arxiv.org/pdf/2107.03374.pdf)），在github代码上微调的GPT。[A neural network solves and generates mathematics problems by program synthesis: Calculus, differential equations, linear algebra, and more](https://arxiv.org/pdf/2112.15594.pdf)发现Codex能解决非常困难的编程问题，还能在数学问题上有显著提升。[Text and code embeddings by contrastive pre-training](https://arxiv.org/pdf/2201.10005.pdf)提出了训练文本和代码emb的对比学习，在线性探测分类、文本搜索、代码搜索等任务上有所提升。GPT-3.5就是在基于代码的GPT（code-davinci-002）的基础上开发的。
     + 与人类对齐：2017年openai就在[learning from human preference](https://openai.com/research/learning-from-human-preferences)的博客中提出了应用强化学习来学习由人类标的偏好比较，此后2021年7月openai发表了PPO。2020年GPT-2用RL进行微调，[Deep reinforcement learning from human preferences](https://arxiv.org/pdf/1706.03741.pdf)，[Learning to summarize from human feedback](https://arxiv.org/pdf/2009.01325.pdf)也做了相似工作。2022年提出了RLHF的InstructGPT([Training language models to follow instructions with human feedback](https://arxiv.org/pdf/2203.02155.pdf))，其中的**SFT就对应于常说的指令微调**。在openai的博客[Our approach to alignment research](https://openai.com/blog/our-approach-to-alignment-research)中提出了训练AI系统的3个有前途的方向：**使用人类反馈、协助人类评估、做对齐研究**。
 + 2022年的ChatGPT：用类似InstructGPT的方式进行训练，专门**对对话能力进行优化**，将人类生成的对话（**扮演用户和AI两个角色**）与InstructGPT数据集结合起来**以对话形式生成**。
 + 2023年的GPT-4：将文本输入扩展到**多模态信号**。此外，
@@ -177,7 +177,7 @@ XXX
 涌现能力：在小型模型中不存在而在大型模型中产生的能力，当规模达到一定程度时，性能显著提升，超出随机水平（参考
 [Emergent Abilities of Large Language Models](https://arxiv.org/pdf/2206.07682.pdf)）。与物理学中的**相变**现象类似（物质从一种相（状态）转变为另一种相的过程，通常伴随着能量的吸收或释放，并且涉及不同的物理性质，例如固体、液体和气体之间的转变）。
 
-![](../assets/emergent%20ability.png)
+![涌现](../assets/emergent%20ability.png)
 
 LLM的3种典型涌现能力及其对应代表模型：
 
@@ -257,28 +257,151 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 ### 数据预处理
 
 + 质量过滤：有一些基于分类器的方法，例如维基百科的数据为正样本，负采样其他数据训练二分类器，但这种方法会删除方言、口语和社会语言的高质量文本，可能导致有偏、减少多样性。还有启发式的方法，主要包括：
-    + 基于语言的过滤：
-    + 基于度量的过滤：
-    + 基于统计的过滤：
-    + 基于关键词的过滤：
-+ 去重：
-+ 隐私去除：
-+ 分词：
+    + 基于语言的过滤：如果该llm主要用于某种语言，可以把其他语言删了
+    + 基于度量的过滤：利用生成文本的评估度量（如**perplexity**）来检测和删除不自然的句子
+    + 基于统计的过滤：如**标点符号分布**、**符号和单词比例**、**句子长度**等
+    + 基于关键词的过滤：删除噪声或无用元素，如**HTML标签**、**超链接**、**模板**、**攻击性词语**等。
++ 去重：[Scaling laws and interpretability of learning from repeated data](https://arxiv.org/pdf/2205.10487.pdf)中发现重复数据会降低多样性，可能导致训练不稳定。下面3个级的去重都很有用
+    + 句子级：删掉包含重复单词和短语的句子，因为可能在语言建模中引入**重复模式**（[The curious case of neural text degeneration](https://arxiv.org/pdf/1904.09751.pdf)）(后面的章节会讲)
+    + 文档级：通过文档间的表层特征（如n-gram或单词重合率）来删掉重复文档
+    + 数据集级：训练集中删掉测试集可能出现的重复文本，防止训练集和评估集间的重叠
++ 隐私去除：删掉可识别个人信息（PII），如基于关键词（姓名、地址、电话号码）识别。另外，[Deduplicating Training Data Mitigates Privacy Risks in Language Models](https://arxiv.org/pdf/2202.06539.pdf)发现LLM在隐私攻击下的脆弱性可能归因于预训练语料中存在**重复PII数据**。
++ 分词：可以直接利用已有分词器，也可以使用专门为预训练语料库设计的分词器，如SentencePiece，而且**BPE**(byte pair encoding)能**确保分词后的信息不会丢失**，但其中的如NFKC([Unicode normalization forms](https://unicode.org/reports/tr15/))的**归一化技术**可能会**降低分词的性能**。
+
+### 预训练语料的重要性
+
++ 混合来源：不同领域和场景的数据能让LLM有更强大的泛化能力。需要**仔细设置数据分布**，Gopher对数据分布消融，发现增加书籍数据可以提升捕捉长期依赖的能力，增加c4数据集比例可以提升其在c4验证集上的效果，但单独训练过多的某个领域数据会影响LLM在其他领域的泛化能力。
++ 数据量：模型性能方面，**数据大小**也能看到与模型大小类似的**扩展法则**。LLaMA发现，用更多数据训练更长时间，较小的模型也能实现良好性能。
++ 数据质量：Gopher、GLaM和T5都发现，在清理后的数据上训练能提升llm效果。数据的重复可能导致『双下降现象』（[Scaling laws and interpretability of learning from repeated data](https://arxiv.org/pdf/2205.10487.pdf)和[Deep double descent: Where bigger models and more data hurt](https://arxiv.org/pdf/1912.02292.pdf)），甚至会导致训练不稳定。此外，[Scaling laws and interpretability of learning from repeated data](https://arxiv.org/pdf/2205.10487.pdf)还发现，**重复数据会降低LLM从上下文复制的能力**，从而影响**ICL中的泛化能力**。
+
+注：**双下降**指的是随着模型复杂性的增加，可能**loss先下降，然后再升高，最后又下降**：
++ 当模型的复杂性低于数据的复杂性时，增加模型的复杂性可以帮助减少训练误差。
++ 当模型的复杂性超过数据的复杂性时，增加模型的复杂性反而可能导致训练误差增加。这是因为模型开始过拟合数据，捕获数据中的噪声而非实际的模式。
++ 当模型的复杂性远大于数据的复杂性时，训练误差可能再次开始减少。这是因为模型有足够的能力来对数据的噪声进行平滑，同时仍然能够捕获数据的实际模式。
+
 
 ## 架构
 
 ### 主流框架
 
-+ 编码器-解码器架构：
-+ 因果解码器架构：
-+ 前缀解码器架构：
++ 编码器-解码器架构：标准Transformer，如T5、BART，**只有少数LLLM还用这种结构**，如Flan-T5
++ 因果解码器架构：**单向注意力掩码**，输入和输出token通过解码器以相同方式进行处理，以GPT系列为代表，现有大部分LLM都是这种架构，如OPT、BLOOM、Gopher等。
++ 前缀解码器架构：修正因果解码器的掩码机制，使其能**对前缀token执行双向注意力**，并且**仅对生成的token执行单向注意力**（和encoder-decoder类似），即[Unified language model pre-training for natural language understanding and generation](https://arxiv.org/pdf/1905.03197.pdf)提出的uni-lm。[What language model architecture and pretraining objective works best for zero-shot generalization?](https://arxiv.org/pdf/2204.05832.pdf)建议不从头开始预训练，而是**继续训练因果编码器，然后将其转换成前缀编码器以加速收敛**。例如U-PaLM从PaLM演化而来，还有GLM-130B也是这种架构。
+
+![uni-lm](../assets/uni-lm.png)
+
+对于这3种架构，都可以用**MoE**进行扩展，每个输入的**一小部分神经网络权重**被**稀疏激活**，如[Switch Transformer](https://arxiv.org/pdf/2101.03961.pdf)和GLaM。[Unified scaling laws for routed language models](https://arxiv.org/pdf/2202.01169.pdf)发现，通过**增加专家数量或总参数大小**，性能会有显著改进。
 
 ### 组件配置
 
-+ 标准化（norm）：
-+ 激活函数：
-+ 位置编码：
-+ 注意力机制和Bias:
+#### 标准化（norm）
+
+LN(layer norm)能缓解LLM训练不稳定的问题，其位置很重要。
+
+![pre-ln](../assets/pre-ln.jpeg)
+
++ 前置LN：最初Transformer使用后置LN，但大多数LLM采用前置LN以实现更稳定的训练，尽管会有一些性能损失([On layer normalization in the transformer architecture](https://arxiv.org/pdf/2002.04745.pdf))。[Sandwich-LN](https://arxiv.org/pdf/2105.13290.pdf)在残差连接前添加额外的LN，虽然能避免数值爆炸，但有时会无法稳定LLM的训练，可能导致训练崩溃（[GLM-130B: an open bilingual pre-trained model](https://arxiv.org/pdf/2210.02414.pdf)）
++ [RMS Norm](https://arxiv.org/pdf/1910.07467.pdf)：训练和性能都不错，在Gopher和Chinchilla里使用
++ [Deep Norm](https://arxiv.org/pdf/2203.00555.pdf)：比LN有更好的训练稳定性，和后标准化一起用在GLM-130B里
+
+![deep-norm](../assets/deep%20norm.png)
+
+此外，**在emb后直接加额外的LN**能提升训练稳定性，但会导致**显著的性能下降**([What language model to train if you have one million GPU hours?](https://arxiv.org/pdf/2210.15424.pdf))，在后来的LLM中**被移除**（[BLOOM: A 176b-parameter open-access multilingual language model](https://arxiv.org/pdf/2211.05100.pdf)）。
+
+#### 激活函数
+
+FFN中的激活函数：
++ [GeLU](https://arxiv.org/pdf/1606.08415.pdf)：大部分都是这个
++ [GLU(gated linear units)的变体](https://arxiv.org/pdf/2002.05202.pdf)：应用在PaLM和LaMDA等模型中，如SwiGLU和GeGLU有更好的效果，但在FFN中的参数量比GeLU要大50%
+
+
+原始Transformer中
+
+XXX\operatorname{FFN}\left(x, W_1, W_2, b_1, b_2\right)=\max \left(0, x W_1+b_1\right) W_2+b_2XXX
+
+T5中把bias干掉了
+
+XXX\operatorname{FFN}_{\operatorname{ReLU}}\left(x, W_1, W_2\right)=\max \left(x W_1, 0\right) W_2XXX
+
+然后，$\operatorname{GELU}(x)=x \Phi(x)$，同时$\operatorname{Swish}_\beta(x)=x \sigma(\beta x)$，接下来
+
+XXX\operatorname{GLU}(x, W, V, b, c)=\sigma(x W+b) \otimes(x V+c)XXX
+XXX\operatorname{Bilinear}(x, W, V, b, c)=(x W+b) \otimes(x V+c)XXX
+XXX\operatorname{ReGLU}(x, W, V, b, c)=\max (0, x W+b) \otimes(x V+c)XXX
+XXX\operatorname{GEGLU}(x, W, V, b, c)=\operatorname{GELU}(x W+b) \otimes(x V+c)XXX
+XXX\operatorname{SwiGLU}(x, W, V, b, c, \beta)=\operatorname{Swish}_\beta(x W+b) \otimes(x V+c)XXX
+
+对应起来就是
+
+XXX\operatorname{FFN}_{\mathrm{GLU}}\left(x, W, V, W_2\right)=(\sigma(x W) \otimes x V) W_2XXX
+XXX\operatorname{FFN}_{\text {Bilinear }}\left(x, W, V, W_2\right)=(x W \otimes x V) W_2XXX
+XXX\operatorname{FFN}_{\operatorname{ReGLU}}\left(x, W, V, W_2\right)=(\max (0, x W) \otimes x V) W_2XXX
+XXX\operatorname{FFN}_{\text {GEGLU }}\left(x, W, V, W_2\right)=(\operatorname{GELU}(x W) \otimes x V) W_2XXX
+XXX\operatorname{FFN}_{\text {SwiGLU }}\left(x, W, V, W_2\right)=\left(\operatorname{Swish}_1(x W) \otimes x V\right) W_2XXX
+
+
+#### 位置编码
+
+Transformer的self-attention有转换不变性，故要位置编码以引入绝对或相对位置信息来建模序列。
+
++ 绝对位置编码：
+    + 正弦函数：原始Transformer中使用
+    + 可学习的位置编码：LLM中常用
++ 相对位置编码：[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)提出，根据**k和q之间的偏移量**生成emb
++ Alibi：[Train short, test long: Attention with linear biases enables input length extrapolation](https://arxiv.org/pdf/2108.12409.pdf)提出，使用**k和q之间距离的惩罚**来给注意力分数加bias，[What language model architecture and pretraining objective works best for zero-shot generalization](https://arxiv.org/pdf/2204.05832.pdf)发现其有更好的**零样本泛化能力**和更强的**外推能力**，能够在**比训练序列更长的序列**上表现良好。
++ RoPE：[Roformer: Enhanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)提出，**k和q之间的分数用相对位置信息计算**，利于建模长序列，在PaLM、LLaMA、GLM-130B中都有应用。
+
+
+#### 注意力机制和Bias
+
++ 稀疏注意力：[Generating long sequences with sparse transformers](https://arxiv.org/pdf/1904.10509.pdf))，**计算复杂度更低**，GPT-3用了
++ FlashAttention：[Flashattention: Fast and memory-efficient exact attention with IO-awareness](https://arxiv.org/pdf/2205.14135.pdf)，考虑显存访问
++ 其他attention：如[Random feature attention](https://arxiv.org/pdf/2103.02143.pdf)、[Big bird: Transformers for longer sequences](https://arxiv.org/pdf/2007.14062.pdf)
++ 移除bias：PaLM和Galactica中将bias删了，能够增加训练稳定性。
+
+
+#### 小结
+
+##### 归一化位置
+
+sublayer表示FFN或self-attention模块
+
+| 方法 | 公式 | 
+|---|---|
+| post Norm | $\operatorname{Norm}(\mathbf{x}+\operatorname{Sulayerb}(\mathbf{x}))$ |
+| pre Norm | $\mathbf{x}+\operatorname{Sublayer}(\operatorname{Norm}(\mathbf{x}))$ |
+| Sandwich Norm | $\mathbf{x}+\operatorname{Norm}(\operatorname{Sublayer}(\operatorname{Norm}(\mathbf{x})))$ |
+
+##### 归一化方法
+
+| 方法 | 公式 | 
+|---|---|
+|Layer Norm| $\frac{\mathrm{x}-\mu}{\sqrt{\sigma}} \cdot \gamma+\beta, \quad \mu=\frac{1}{d} \sum_{i=1}^d x_i, \quad \sigma=\sqrt{\frac{1}{d} \sum_{i=1}^d(x_i-\mu)^2}$ |
+|RMSNorm| $\frac{\mathrm{x}}{\operatorname{RMS}(\mathrm{x})} \cdot \gamma, \quad \operatorname{RMS}(\mathbf{x})=\sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2}$ |
+|Deep Norm| $LayerNorm (\alpha \cdot \mathbf{x}+\operatorname{Sublayer}(\mathbf{x}))$ |
+
+##### 激活函数
+
+| 方法 | 公式 | 
+|---|---|
+|ReLU| $\operatorname{ReLU}(\mathbf{x})=\max (\mathbf{x}, \mathbf{0})$ |
+| GeLU | $\operatorname{GeLU}(\mathbf{x})=0.5 \mathrm{x} \otimes[1+\operatorname{erf}(\mathbf{x} / \sqrt{2})], \quad \operatorname{erf}(x)=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} d t$ |
+|Swish | $\operatorname{Swish}(\mathbf{x})=\mathbf{x} \otimes \operatorname{sigmoid}(\mathbf{x})$ |
+|SwiGLU|$\operatorname{SwiGLU}\left(\mathbf{x}_1, \mathbf{x}_2\right)=\operatorname{Swish}\left(\mathbf{x}_1\right) \otimes \mathbf{x}_2$ |
+|GeGLU|$\operatorname{GeGLU}\left(\mathbf{x}_1, \mathbf{x}_2\right)=\operatorname{GeLU}\left(\mathbf{x}_1\right) \otimes \mathbf{x}_2$|
+
+##### 位置嵌入
+
++ $A_{ij}$：**q和k之间**的**注意力分数**
++ $r_{i-j}$：基于**q和k之间偏移**的可学习标量
++ $R_{\theta,t}$：旋转角度为$t\dot \theta$的旋转矩阵
+
+| 方法 | 公式 | 
+|---|---|
+|绝对位置编码| $\mathbf{x}_i=\mathbf{x}_i+\mathbf{p}_i$ |
+|相对位置编码|$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{x}_j^T \mathbf{W}_k^T+r_{i-j}$|
+|RoPE|$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{R}_{\theta, i-j} \mathbf{x}_j^T \mathbf{W}_k^T$|
+|Alibi|$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{R}_{\theta, i-j} \mathbf{x}_j^T \mathbf{W}_k^T A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{x}_j^T \mathbf{W}_k^T-m(i-j)$|
 
 ### 预训练任务
 
