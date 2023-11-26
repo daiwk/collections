@@ -418,17 +418,25 @@ sublayer表示FFN或self-attention模块
 
 &nbsp;
 
-仅解码器LLM的常见目标，给定token序列$$\mathbf{x}=\left\{x_1, \ldots, x_n\right\}$$，旨在基于序列中前面的token，自回归地预估目标token：
+语言建模是仅解码器LLM的常见目标，给定token序列$$\mathbf{x}=\left\{x_1, \ldots, x_n\right\}$$，旨在基于序列中前面的token，自回归地预估目标token：
 
 XXX
 \mathcal{L}_{L M}(\mathbf{x})=\sum_{i=1}^n \log P\left(x_i \mid x_{<i}\right)
 XXX
 
+前缀解码器架构使用的是前缀语言建模任务，其loss**不使用随机选择的前缀内的token**。因此，预训练时**涉及的序列中token较少**，故当预训练token数相同时，前缀语言模型的**性能往往略低**于传统语言模型任务。
+
 #### 去噪自编码
 
 &nbsp;
 
+DAE是BERT待模型的常见任务，输入$$\mathbf{x}_{\backslash \tilde{\mathbf{x}}}$$是一些**有随机替换区间的损坏文本**，目标是恢复被替换的token $$\tilde{\mathbf{x}}$$：
 
+XXX
+\mathcal{L}_{D A E}(\mathbf{x})=\log P\left(\tilde{\mathbf{x}} \mid \mathbf{x}_{\backslash \tilde{\mathbf{x}}}\right)
+XXX
+
+在T5和GLM-130B中使用，**自回归地恢复替换区间**。
 
 ## 模型训练
 
