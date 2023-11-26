@@ -346,7 +346,8 @@ $$\operatorname{FFN}_{\text {SwiGLU }}\left(x, W, V, W_2\right)=\left(\operatorn
 
 #### 位置编码
 
-<br>
+<<<
+>>>
 
 Transformer的self-attention有转换不变性，故要位置编码以引入绝对或相对位置信息来建模序列。
 
