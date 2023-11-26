@@ -403,7 +403,7 @@ sublayer表示FFN或self-attention模块
 
 + $A_{ij}$：**q和k之间**的**注意力分数**
 + $r_{i-j}$：基于**q和k之间偏移**的可学习标量
-+ $R_{\theta,t}$：旋转角度为$t\dot \theta$的旋转矩阵
++ $\mathbf{R}_{\theta, i-j}$：旋转角度为$t\cdot \theta$的旋转矩阵
 
 | 方法 | 公式 | 
 |---|---|
