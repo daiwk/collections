@@ -392,7 +392,7 @@ sublayer表示FFN或self-attention模块
 ##### 激活函数
 
 | 方法 | 公式 | 
-|------|---------------|
+|------|-----------------------|
 |ReLU| $$\operatorname{ReLU}(\mathbf{x})=\max (\mathbf{x}, \mathbf{0})$$ |
 | GeLU | $$\operatorname{GeLU}(\mathbf{x})=0.5 \mathrm{x} \otimes[1+\operatorname{erf}(\mathbf{x} / \sqrt{2})], \quad \operatorname{erf}(x)=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} d t$$ |
 |Swish | $$\operatorname{Swish}(\mathbf{x})=\mathbf{x} \otimes \operatorname{sigmoid}(\mathbf{x})$$ |
@@ -595,7 +595,7 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 + 训练目标函数：如seq2seq的loss
 + 优化参数设置：更小的batchsize和学习率
-+ 平衡数据分布：多种 任务
++ 平衡数据分布：平衡不同任务间的比例，常用的是**实例比例混合策略**（[Exploring the limits of transfer learning with a unified text-to-text transformer]()）
 + 结合指令微调和训练：
 
 ### 指令微调效果
