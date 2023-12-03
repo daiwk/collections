@@ -605,18 +605,39 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 ### 指令微调效果
 
-+ 性能改进：
-    + 不同规模的模型都能从指令微调中受益，随着参数规模增加，性能也有提升。[Multitask prompted training enables zero-shot task generalization](https://arxiv.org/pdf/2110.08207.pdf)发现，**指令微调后的小模型**甚至能比**未经微调的大模型效果更好**
-    + 指令微调在**不同模型架构**、**预训练目标**和**模型适配方法**上都有稳定改进效果，发现
-+ 任务泛化性：
+#### 性能改进
+
+&nbsp;
+
++ 不同规模的模型都能从指令微调中受益，**随着参数规模增加，性能也有提升**。[Multitask prompted training enables zero-shot task generalization](https://arxiv.org/pdf/2110.08207.pdf)发现，**指令微调后的小模型**甚至能比**未经微调的大模型效果更好**
++ 指令微调在**不同模型架构**、**预训练目标**和**模型适配方法**上都有稳定改进效果，由[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)发现
++ 指令微调是**提升现有LM（包括小型PLM）能力**的一个通用方法，同样由[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)发现
++ LLM所需的**指令数据数量明显少于预训练数据**，故指令微调的**成本较低**。
+
+#### 任务泛化性
+
+&nbsp;
+
++ 赋予LLM**遵循人类指令执行特定任务的能力**（通常被视为一种涌现能力）：[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)发现，指令微调鼓励LLM**理解**用于完成任务的**自然语言指令**，，即**在未见过的任务上也能执行**。
++ 使LLM具有更强的**解决现实世界任务**的能力：指令微调能帮助LLM**缓解一些弱点**（如**生成重复内容**或**补全输入但完不成成相应任务**），由[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)和[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)发现。
++ 指令微调后的LLM能**泛化**到**其他语言**的相关任务上：[Crosslingual generalization through multitask finetuning](https://arxiv.org/pdf/2211.01786.pdf)提出的BLOOMZ-P3基于BLOOM在**纯英文**的P3任务集合上进行微调，在多语言的句子实例任务中，相比BLOOM有超过50%的性能提升，同时仅用英文指令就能产生不错效果，**减少针对特定语言的指令工程的工作量**。
+
 
 ## 对齐微调
 
+[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)和[Alignment of language agents](https://arxiv.org/pdf/2103.14659.pdf)提出，LLM可能**编造虚假信息**、产生**有害**的、**误导性**的和**有偏见**的表达，因为LLM在预训练时没有考虑人类的价值观或偏好。
+
+[Improving alignment of dialogue agents via targeted human judgements](https://arxiv.org/pdf/2209.14375.pdf)和[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)提出了人类对齐，使LLM的行为能够符合人类期望。
+
+[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)、[A general language assistant as a laboratory for alignment](https://arxiv.org/pdf/2112.00861.pdf)和[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)发现，和适配微调（如指令微调）相比，对齐微调要考虑的标准并不同，这可能会在某种程度上**损害LLM的通用能力**，即**对齐税**。
+
 ### 对齐的标准
 
-+ 有用性：
-+ 诚实性：
-+ 无害性：
++ **有用性**：以**简洁**且**高效**的方式帮助用户解决任务或回答问题。需要进一步阐明问题时，应该有通过**提出恰当的问题**来**获取额外信息**的能力，并有合适的**敏感**度、**洞察**力和**审慎**度（from [A general language assistant as a laboratory for alignment](https://arxiv.org/pdf/2112.00861.pdf)）。
++ **诚实性**：提供准确内容，传达**适当的不确定性**很重要，**避免任何形式的欺骗或信息误传**。LLM了解其能力和知识水平（**知道自己不知道什么**）。[A general language assistant as a laboratory for alignment](https://arxiv.org/pdf/2112.00861.pdf)）认为，与有用性和无害性相比，诚实性是一个**更客观**的标准，故诚实性对齐**依赖的人力可能更少**。
++ **无害性**：生成的语言不得是冒犯性或者歧视性的，能**检测**到**隐蔽的出于恶意目的的请求**。当**被诱导去执行危险行为**（如犯罪）时，应该**礼貌拒绝**。[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出，某个行为**是否有害**及**有害程度**因**个人**和**社会**而异。
+
+对齐的标准**很主观**，难以直接作为LLM的优化目标。比较有前景的方法是[Red teaming language models to reduce harms: Methods, scaling behaviors, and lessons learned](https://arxiv.org/pdf/2209.07858.pdf)和[Red teaming language models with language models](https://arxiv.org/pdf/2202.03286.pdf)提出的**红队攻防**，用**对抗**的方式**手动**或**自动**地**探测LLM**，使其**生成有害输出**，再**更新模型防止此类输出**。
 
 ### 收集人类反馈
 
@@ -1163,6 +1184,10 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 [https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
 
 
+# 几篇需要再看下的论文
+
+[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)
+
 
 # Anthropic的一些工作
 
@@ -1337,15 +1362,3 @@ print(raw_text)
 
 ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) 密码：5yyf
 
-
-
-# 参考文献
-
-
-我从[Google](http://google.com/) (1)得到的流量是[Yahoo](http://search.yahoo.com/) (2)或[MSN](http://search.msn.com/) (3)的十倍。
-
-## 参考文献
-
-1. Google - http://google.com/
-2. Yahoo Search - http://search.yahoo.com/
-3. MSN Search - http://search.msn.com/
