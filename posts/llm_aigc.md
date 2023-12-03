@@ -1343,8 +1343,6 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 
 
 
-I get 10 times more traffic from [Google][1] than for [Yahoo][2] or [MSN][3].
+I get 10 times more traffic from [^1] than for
 
-[1]: http://google.com/         (Google)
-[2]: http://search.yahoo.com/   (Yahoo Search)
-[3]: http://search.msn.com/     (MSN Search)
+[^1]: [google](http://google.com/)
