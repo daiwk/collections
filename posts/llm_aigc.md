@@ -376,7 +376,7 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 sublayer表示FFN或self-attention模块
 
 | 方法 | 公式 | 
-|---|---|
+|------|------|
 | post Norm | $$\operatorname{Norm}(\mathbf{x}+\operatorname{Sulayerb}(\mathbf{x}))$$ |
 | pre Norm | $$\mathbf{x}+\operatorname{Sublayer}(\operatorname{Norm}(\mathbf{x}))$$ |
 | Sandwich Norm | $$\mathbf{x}+\operatorname{Norm}(\operatorname{Sublayer}(\operatorname{Norm}(\mathbf{x})))$$ |
@@ -384,7 +384,7 @@ sublayer表示FFN或self-attention模块
 ##### 归一化方法
 
 | 方法 | 公式 | 
-|---|---|
+|------|------|
 |Layer Norm| $$\frac{\mathrm{x}-\mu}{\sqrt{\sigma}} \cdot \gamma+\beta, \quad \mu=\frac{1}{d} \sum_{i=1}^d x_i, \quad \sigma=\sqrt{\frac{1}{d} \sum_{i=1}^d(x_i-\mu)^2}$$ |
 |RMSNorm| $$\frac{\mathrm{x}}{\operatorname{RMS}(\mathrm{x})} \cdot \gamma, \quad \operatorname{RMS}(\mathbf{x})=\sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2}$$ |
 |Deep Norm| $$LayerNorm (\alpha \cdot \mathbf{x}+\operatorname{Sublayer}(\mathbf{x}))$$ |
@@ -392,7 +392,7 @@ sublayer表示FFN或self-attention模块
 ##### 激活函数
 
 | 方法 | 公式 | 
-|---|---|
+|------|------|
 |ReLU| $$\operatorname{ReLU}(\mathbf{x})=\max (\mathbf{x}, \mathbf{0})$$ |
 | GeLU | $$\operatorname{GeLU}(\mathbf{x})=0.5 \mathrm{x} \otimes[1+\operatorname{erf}(\mathbf{x} / \sqrt{2})], \quad \operatorname{erf}(x)=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} d t$$ |
 |Swish | $$\operatorname{Swish}(\mathbf{x})=\mathbf{x} \otimes \operatorname{sigmoid}(\mathbf{x})$$ |
