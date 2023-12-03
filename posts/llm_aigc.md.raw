@@ -607,7 +607,7 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 + 性能改进：
     + 不同规模的模型都能从指令微调中受益，随着参数规模增加，性能也有提升。[Multitask prompted training enables zero-shot task generalization](https://arxiv.org/pdf/2110.08207.pdf)发现，**指令微调后的小模型**甚至能比**未经微调的大模型效果更好**
-    + 指令微调在**不同模型架构**、**预训练目标**和**模型适配方法**上都有稳定改进效果，[引用1][1]发现
+    + 指令微调在**不同模型架构**、**预训练目标**和**模型适配方法**上都有稳定改进效果，xx发现
 + 任务泛化性：
 
 ## 对齐微调
@@ -1341,6 +1341,5 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 
 # 参考文献
 
-
-[1]: https://arxiv.org/pdf/2210.11416.pdf "Scaling instruction-finetuned language models"
+参考[@scaling]
 
