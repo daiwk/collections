@@ -1342,7 +1342,10 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 # 参考文献
 
 
+我从[Google](http://google.com/) (1)得到的流量是[Yahoo](http://search.yahoo.com/) (2)或[MSN](http://search.msn.com/) (3)的十倍。
 
-I get 10 times more traffic from [^1] than for
+## 参考文献
 
-[^1]: [google](http://google.com/)
+1. Google - http://google.com/
+2. Yahoo Search - http://search.yahoo.com/
+3. MSN Search - http://search.msn.com/
