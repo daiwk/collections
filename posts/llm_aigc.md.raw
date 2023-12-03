@@ -1342,4 +1342,5 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 # 参考文献
 
 
-[1]: <https://arxiv.org/pdf/2210.11416.pdf> (Scaling instruction-finetuned language models)
+[1]: https://arxiv.org/pdf/2210.11416.pdf "Scaling instruction-finetuned language models"
+
