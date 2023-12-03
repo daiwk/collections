@@ -519,6 +519,8 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 ### 量化
 
+&nbsp;
+
 [ZeroQuant-V2: Exploring Post-training Quantization in LLMs from Comprehensive Study to Low Rank Compensation](https://arxiv.org/pdf/2303.08302.pdf)和[Compression of generative pre- trained language models via quantization](https://arxiv.org/pdf/2203.10705.pdf)
 
 + int8量化：[LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale](https://arxiv.org/pdf/2208.07339.pdf)
@@ -526,19 +528,72 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 # 微调
 
++ 指令微调（instruct tuning）：增强/解锁LLM的能力，
++ 对齐微调（alignment tuning）：将LLM的行为与为类的价值观或偏好对齐。
++ 高效微调方法：用于模型快速适配
+
 ## 指令微调
+
++ 收集或构建指令格式(instruction-formatted)的实例
++ 使用这些示例进行**有监督微调**
+
+详见综述[Is prompt all you need? no. A comprehensive and broader view of instruction learning](https://arxiv.org/pdf/2303.10475.pdf)
 
 ### 构建格式化实例
 
-+ 格式化已有数据集：
-+ 格式化人类需求：
+&nbsp;
 
-构建实例的关键：
+指令格式的实例包括一个任务描述（即**指令**）、一对输入输出和少量示例（可选）
+
+
+#### 格式化已有数据集
+
+&nbsp;
+
++ **收集来自不同领域（文本摘要、文本分类、翻译等）的实例**来创建有监督的多任务训练数据集。用自然语言的任务描述来格式化这些数据集是很方便的。
++ 使用**人类撰写的任务描述**来增广带标的数据集，通过**解释任务目标**来指导LLM理解任务。
++ 众包平台（如PromptSource）有效地他那、共享和难不同数据集的任务描述
++ 通过指令微调特殊设计的任务描述，**反转**已有实例的输入-输出对，例如“请基于以下答案生成一个问题”，如
++ 利用**启发式任务模板**将大量**无标注的文本**转换为**带标注的实例**。如[Learning instructions with unlabeled data for zero-shot cross-task generalization](https://arxiv.org/pdf/2210.09175.pdf)
+
+#### 格式化人类需求
+
+&nbsp;
+
+来自公共NLP数据集的训练实例虽然进行了格式化，但**任务描述缺乏多样性**或**与人类真实需求不匹配**，故InstructGPT采用真实用户提交给其API的查询作为任务描述。此外，为了丰富任务多样性，通常
+
++ 标注者为**真实生活中的任务**编写指令，如开放式生成、开放式问答、头脑风暴、聊天等
++ 另一组**标注人员**直接对这些指令进行**回答**
++ 将**指令（采集的用户查询）**和**期望输出（人工编写的答案）**pair对作为一个训练实例
+
+还有一些**半自动化**的方法将**现有实例**输入到LLM中生成多样的任务描述和实例来构建实例，如
++ [Self-instruct: Aligning language model with self generated instructions](https://arxiv.org/pdf/2212.10560.pdf)，引用数好几百
++ [Unnatural instructions: Tuning language models with (almost) no human labor](https://aclanthology.org/2023.acl-long.806.pdf)，meta的论文
++ [Stanford alpaca: An instruction-following llama model](https://crfm.stanford.edu/2023/03/13/alpaca.html)
+
+
+#### 构建实例的关键
+
+&nbsp;
+
 + 增加指令：
+    + **扩大任务数量**：可以极大提高LLM的泛化能力。但随着任务增加，模型性能最初是连续增长，但**任务数量达到一定水平时，性能基本不提升了**。[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)猜测，一定数量的代表性性任务就能够提供足够充足的知识了。
+    + 增强**任务描述的多样性**：从如长度、结构、创造力等方面入手，如[Multitask prompted training enables zero-shot task generalization](https://arxiv.org/pdf/2110.08207.pdf)
+    + **每个任务的实例数量**：通常**少量实例**就可以让模型有不错的泛化能力，当某些任务的实例数量进一步增加（至数百个）时可能会**过拟合**。如[Super-NaturalInstructions: Generalization via Declarative Instructions on 1600+ NLP Tasks](https://arxiv.org/pdf/2204.07705.pdf)
 + 设计格式：
+    + **任务描述**：LLM理解任务的**最关键部分**
+    + **适当数量的示例**：能产生**实质性的改进**，也减轻对指令工程的敏感性。如[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)
+    + 指令中的其他部分：如避免事项、原因、建议，**影响很小，甚至有负面影响**，如[Cross-task generalization via natural language crowd- sourcing instructions](https://arxiv.org/pdf/2104.08773.pdf)
+    + 包含**推理数据集**的**CoT实例**：[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)和[OPT-IML: scaling language model instruction meta learning through the lens of generalization](https://arxiv.org/pdf/2212.12017.pdf)提到同时用包含和不包含CoT的样本微调，能在各种下游任务取得好的效果，包括需要多级推理能力的任务（常识问答、算术推理）和不需要多级推理的任务（如情感分析和抽取式问答）。
 
 ### 指令微调策略
 
+&nbsp;
+
+相比预训练而言，指令微调有多个不同：
+
++ 训练目标函数：如seq2seq的loss
++ 优化参数设置：更小的batchsize和学习率
 + 平衡数据分布：
 + 结合指令微调和训练：
 
