@@ -413,17 +413,6 @@ sublayer表示FFN或self-attention模块
 |Alibi|$$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{R}_{\theta, i-j} \mathbf{x}_j^T \mathbf{W}_k^T A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{x}_j^T \mathbf{W}_k^T-m(i-j)$$|
 
 
-\begin{tabular}{|l|l|}
-\hline
-方法 & 公式 \\
-\hline
-绝对位置编码 & $\mathbf{x}_i=\mathbf{x}_i+\mathbf{p}_i$ \\
-相对位置编码 & $A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{x}_j^T \mathbf{W}_k^T+r_{i-j}$ \\
-RoPE & $A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{R}_{\theta, i-j} \mathbf{x}_j^T \mathbf{W}_k^T$ \\
-Alibi & $A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{R}_{\theta, i-j} \mathbf{x}_j^T \mathbf{W}_k^T A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{x}_j^T \mathbf{W}_k^T-m(i-j)$ \\
-\hline
-\end{tabular}
-
 ### 预训练任务
 
 #### 语言建模
