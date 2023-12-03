@@ -553,7 +553,7 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 + **收集来自不同领域（文本摘要、文本分类、翻译等）的实例**来创建有监督的多任务训练数据集。用自然语言的任务描述来格式化这些数据集是很方便的。
 + 使用**人类撰写的任务描述**来增广带标的数据集，通过**解释任务目标**来指导LLM理解任务。
-+ 众包平台（如PromptSource）有效地他那、共享和难不同数据集的任务描述
++ 众包平台（如PromptSource）有效地创建、共享和难不同数据集的任务描述
 + 通过指令微调特殊设计的任务描述，**反转**已有实例的输入-输出对，例如“请基于以下答案生成一个问题”，如
 + 利用**启发式任务模板**将大量**无标注的文本**转换为**带标注的实例**。如[Learning instructions with unlabeled data for zero-shot cross-task generalization](https://arxiv.org/pdf/2210.09175.pdf)
 
@@ -595,12 +595,19 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 + 训练目标函数：如seq2seq的loss
 + 优化参数设置：更小的batchsize和学习率
-+ 平衡数据分布：平衡不同任务间的比例，常用的是**实例比例混合策略**（[Exploring the limits of transfer learning with a unified text-to-text transformer]()）
-+ 结合指令微调和训练：
++ 平衡数据分布：平衡不同任务间的比例：
+    + **实例比例混合策略**（[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)），把所有数据集合并，然后从混合数据集中**按比例采样**每种实例。
+    + **提高高质量数据集的采样比例**能提升效果，如[Finetuned language models are zero-shot learners](https://arxiv.org/pdf/2109.01652.pdf)的FLAN和[Promptsource: An integrated development environ- ment and repository for natural language prompts](https://arxiv.org/pdf/2202.01279.pdf)的P3。
+    + 设置**最大容量**：限制**数据集中能包含的最大实例数**，防止较大数据集挤占整个采样集合，通常设置为几千或几万，如[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)和[OPT-IML: scaling language model instruction meta learning through the lens of generalization](https://arxiv.org/pdf/2212.12017.pdf)。
++ 结合指令微调和预训练：
+    + 在**指令微调时加入预训练数据**：，如OPT-IML， 可以看成是**对模型的正则化**。
+    + **混合预训练数据（纯文本）和指令微调（指令格式）数据**，用多任务方式**从头训练**：[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)和[Ext5: Towards extreme multi-task scaling for transfer learning](https://arxiv.org/pdf/2111.10952.pdf)。将指令格式数据集作为预训练语料库的一小部分来预训练，同时获得预训练和指令微调的优势，如GLM-130B和Galactica。
 
 ### 指令微调效果
 
 + 性能改进：
+    + 不同规模的模型都能从指令微调中受益，随着参数规模增加，性能也有提升。[Multitask prompted training enables zero-shot task generalization](https://arxiv.org/pdf/2110.08207.pdf)发现，**指令微调后的小模型**甚至能比**未经微调的大模型效果更好**
+    + 指令微调在**不同模型架构**、**预训练目标**和**模型适配方法**上都有稳定改进效果，[^1]发现
 + 任务泛化性：
 
 ## 对齐微调
@@ -1329,3 +1336,10 @@ print(raw_text)
 [https://developer.aliyun.com/live/248332](https://developer.aliyun.com/live/248332)
 
 ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) 密码：5yyf
+
+
+
+# 参考文献
+
+
+[^1] [Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)
