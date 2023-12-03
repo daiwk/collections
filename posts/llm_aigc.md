@@ -376,7 +376,7 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 sublayer表示FFN或self-attention模块
 
 | 方法 | 公式 | 
-|------|------|
+|------|---------------|
 | post Norm | $$\operatorname{Norm}(\mathbf{x}+\operatorname{Sulayerb}(\mathbf{x}))$$ |
 | pre Norm | $$\mathbf{x}+\operatorname{Sublayer}(\operatorname{Norm}(\mathbf{x}))$$ |
 | Sandwich Norm | $$\mathbf{x}+\operatorname{Norm}(\operatorname{Sublayer}(\operatorname{Norm}(\mathbf{x})))$$ |
@@ -384,7 +384,7 @@ sublayer表示FFN或self-attention模块
 ##### 归一化方法
 
 | 方法 | 公式 | 
-|------|------|
+|------|---------------|
 |Layer Norm| $$\frac{\mathrm{x}-\mu}{\sqrt{\sigma}} \cdot \gamma+\beta, \quad \mu=\frac{1}{d} \sum_{i=1}^d x_i, \quad \sigma=\sqrt{\frac{1}{d} \sum_{i=1}^d(x_i-\mu)^2}$$ |
 |RMSNorm| $$\frac{\mathrm{x}}{\operatorname{RMS}(\mathrm{x})} \cdot \gamma, \quad \operatorname{RMS}(\mathbf{x})=\sqrt{\frac{1}{d} \sum_{i=1}^d x_i^2}$$ |
 |Deep Norm| $$LayerNorm (\alpha \cdot \mathbf{x}+\operatorname{Sublayer}(\mathbf{x}))$$ |
@@ -392,7 +392,7 @@ sublayer表示FFN或self-attention模块
 ##### 激活函数
 
 | 方法 | 公式 | 
-|------|------|
+|------|---------------|
 |ReLU| $$\operatorname{ReLU}(\mathbf{x})=\max (\mathbf{x}, \mathbf{0})$$ |
 | GeLU | $$\operatorname{GeLU}(\mathbf{x})=0.5 \mathrm{x} \otimes[1+\operatorname{erf}(\mathbf{x} / \sqrt{2})], \quad \operatorname{erf}(x)=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} d t$$ |
 |Swish | $$\operatorname{Swish}(\mathbf{x})=\mathbf{x} \otimes \operatorname{sigmoid}(\mathbf{x})$$ |
@@ -406,7 +406,7 @@ sublayer表示FFN或self-attention模块
 + $$\mathbf{R}_{\theta, i-j}$$：旋转角度为$$t\cdot \theta$$的旋转矩阵
 
 | 方法 | 公式 | 
-|------|----------|
+|------|--------------|
 |绝对位置编码| $$\mathbf{x}_i=\mathbf{x}_i+\mathbf{p}_i$$ |
 |相对位置编码|$$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{x}_j^T \mathbf{W}_k^T+r_{i-j}$$|
 |RoPE|$$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{R}_{\theta, i-j} \mathbf{x}_j^T \mathbf{W}_k^T$$|
@@ -595,7 +595,7 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 + 训练目标函数：如seq2seq的loss
 + 优化参数设置：更小的batchsize和学习率
-+ 平衡数据分布：
++ 平衡数据分布：多种 任务
 + 结合指令微调和训练：
 
 ### 指令微调效果
