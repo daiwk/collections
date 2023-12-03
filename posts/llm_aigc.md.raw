@@ -406,7 +406,7 @@ sublayer表示FFN或self-attention模块
 + $$\mathbf{R}_{\theta, i-j}$$：旋转角度为$$t\cdot \theta$$的旋转矩阵
 
 | 方法 | 公式 | 
-|---|---|
+|------|----------|
 |绝对位置编码| $$\mathbf{x}_i=\mathbf{x}_i+\mathbf{p}_i$$ |
 |相对位置编码|$$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{x}_j^T \mathbf{W}_k^T+r_{i-j}$$|
 |RoPE|$$A_{i j}=\mathbf{W}_q \mathbf{x}_i \mathbf{R}_{\theta, i-j} \mathbf{x}_j^T \mathbf{W}_k^T$$|
