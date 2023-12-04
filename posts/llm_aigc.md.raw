@@ -634,22 +634,38 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 ### 对齐的标准
 
 + **有用性**：以**简洁**且**高效**的方式帮助用户解决任务或回答问题。需要进一步阐明问题时，应该有通过**提出恰当的问题**来**获取额外信息**的能力，并有合适的**敏感**度、**洞察**力和**审慎**度（from [A general language assistant as a laboratory for alignment](https://arxiv.org/pdf/2112.00861.pdf)）。
-+ **诚实性**：提供准确内容，传达**适当的不确定性**很重要，**避免任何形式的欺骗或信息误传**。LLM了解其能力和知识水平（**知道自己不知道什么**）。[A general language assistant as a laboratory for alignment](https://arxiv.org/pdf/2112.00861.pdf)）认为，与有用性和无害性相比，诚实性是一个**更客观**的标准，故诚实性对齐**依赖的人力可能更少**。
++ **诚实性**：又称为**正确性**，提供准确内容，传达**适当的不确定性**很重要，**避免任何形式的欺骗或信息误传**。LLM了解其能力和知识水平（**知道自己不知道什么**）。[A general language assistant as a laboratory for alignment](https://arxiv.org/pdf/2112.00861.pdf)）认为，与有用性和无害性相比，诚实性是一个**更客观**的标准，故诚实性对齐**依赖的人力可能更少**。
 + **无害性**：生成的语言不得是冒犯性或者歧视性的，能**检测**到**隐蔽的出于恶意目的的请求**。当**被诱导去执行危险行为**（如犯罪）时，应该**礼貌拒绝**。[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出，某个行为**是否有害**及**有害程度**因**个人**和**社会**而异。
 
 对齐的标准**很主观**，难以直接作为LLM的优化目标。比较有前景的方法是[Red teaming language models to reduce harms: Methods, scaling behaviors, and lessons learned](https://arxiv.org/pdf/2209.07858.pdf)和[Red teaming language models with language models](https://arxiv.org/pdf/2202.03286.pdf)提出的**红队攻防**，用**对抗**的方式**手动**或**自动**地**探测LLM**，使其**生成有害输出**，再**更新模型防止此类输出**。
 
 ### 收集人类反馈
 
-+ 选择标注人员：
-+ 收集反馈：
-    + 基于排序的方法：
-    + 基于问题的方法：
-    + 基于规则的方法：
+#### 选择标注人员
+
+&nbsp;
+
++ **教育水平要求高**：Sparrow要求本科学历的英国人，[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)中的高优任务有一半是美国硕士
++ **意图一致性筛选**：InstructGPT通过**标注人员和研究人员**意图一致性来选择标人员。研究者先自己标少量数据，然后衡量自己和标注人员间标的一致性，选择一致性最高的标注人员来进行后续标注。
++ **选择优秀标注者**：[Teaching language models to support answers with verified quotes](https://arxiv.org/pdf/2203.11147.pdf)中，研究人员评估标注人员的表现，选出如高一致性之类的一组优秀标注人员继续合作，[Learning to summarize from human feedback](https://arxiv.org/pdf/2009.01325.pdf)发现，在标注时提供**详细的标注指令**和**实时的指导**是有帮助的。
+
+#### 收集反馈
+
+&nbsp;
+
++ 基于排序的方法：
+    + **只选最佳候选**：[Fine-tuning language models from human preferences](https://arxiv.org/pdf/1909.08593.pdf)和[Recursively summarizing books with human feedback](https://arxiv.org/pdf/2109.10862.pdf)在这种早期工作中，标注人员用比较粗略的方式评估模型生成的结果，如只选择最佳候选。一方面不同人意见不同，另一方面这种方法忽略了没被选中的样本。
+    + **elo评分系统**：[Improving alignment of dialogue agents via targeted human judgements](https://arxiv.org/pdf/2209.14375.pdf)和[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出了elo评分系统，两两比较所有候选输出结果，生成一个偏好排序。
++ 基于问题的方法：回答**研究人员设计的特定问题**，这些问题覆盖**不同的对齐标准**以及其他**对LLM的约束**条件。例如WebGPT中，标注人员要回答关于检索到的文档**对回答给定输入是否有帮助**的选择题。
++ 基于规则的方法：
+    + Sparrow不仅选择**标注人员挑选的最佳回复**，还设计**一系列规则**来**测试模型生成的回复**是否符合**有用**、**正确**、**无害**的标准，让**标注者**对模型生成的回复**违反规则的程度进行打分**。
+    + GPT-4用一组基于GPT-4的**zero-shot分类器**作为**基于规则的奖励模型**，**自动**确定模型生成的**输出是否违反一组人类编写的规则**。
 
 ### RLHF
 
 详见RLHF章节，这里简单讲下
+
+
 
 
 ## 高效微调
