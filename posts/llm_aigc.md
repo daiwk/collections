@@ -711,7 +711,7 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 &nbsp;
 
-[Lora: Low-rank adaptation of large language models](https://arxiv.org/pdf/2106.09685.pdf)通过增加低秩约束来近似每层的更新矩阵，假设参数矩阵\mathbf{W} \in \mathbb{R}^{m \times n}，一般是
+[Lora: Low-rank adaptation of large language models](https://arxiv.org/pdf/2106.09685.pdf)通过增加低秩约束来近似每层的更新矩阵，假设参数矩阵$$\mathbf{W} \in \mathbb{R}^{m \times n}$$，一般是
 
 $$
 \mathbf{W}=\mathbf{W}+\Delta \mathbf{W}
