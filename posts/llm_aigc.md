@@ -663,17 +663,55 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 ### RLHF
 
-详见RLHF章节，这里简单讲下
-
-
-
+详见RLHF章节
 
 ## 高效微调
 
-+ 适配器（adapter）微调：
-+ 前缀微调：
-+ 提示微调：
-+ 低秩适配（LoRA）：
+全量参数都微调成本很大，有更高效的方法，称为**参数高效微调**（**parameter-efficient fine-tuning**）。
+
+### 适配器微调（adapter tuning）
+
+&nbsp;
+
+[Parameter-efficient transfer learning for NLP](https://arxiv.org/pdf/1902.00751.pdf)提出，在Transformer中引入一个**小型神经网络模块**（**适配器**），[LLM-Adapters: An Adapter Family for Parameter-Efficient Fine-Tuning of Large Language Models](https://arxiv.org/pdf/2304.01933.pdf)也提出了瓶颈架构：
+
++ 将原始特征压缩到**较小维度**（然后进行非线性变换）
++ 恢复到**原始维度**
+
+一般是**串行插入**的方式，集成到**每个Transformer层里**，分别放到**注意力层**和**前馈层之后**。[Towards a unified view of parameter- eﬀicient transfer learning](https://arxiv.org/pdf/2110.04366.pdf)提出了**并行适配器**，即与**注意力层和前馈层并行**。
+
+微调时，**原参数不变**，**仅更新适配器模块参数**。
+
+
+### 前缀微调（prefix tuning）
+
+&nbsp;
+
+[Prefix-tuning: Optimizing continuous prompts for generation](https://arxiv.org/pdf/2101.00190.pdf)。
+
++ 在每个**Transformer层前**添加一系列前缀，即一组**可训练的连续向量**。前缀向量具有**任务的特异性**，可以看作**虚拟的token emb**。
++ **重参数化**技巧：
+    + 学习一个将**较小矩阵映射到前缀参数矩阵**的**MLP函数**，而不是直接优化前缀，有助于**稳定训练**。
+    + 优化后，**舍弃映射函数**，只保留派生的前缀向量以增强与特定任务相关的性能。
+    + 由于只训练前缀参数，故能实现参数高效的模型优化
+
+[P-tuning v2: Prompt tuning can be comparable to fine- tuning universally across scales and tasks](https://arxiv.org/pdf/2110.07602.pdf)提出了p-tuning v2，为了自然语言理解在Transformer中引入**逐层提示向量**，还利用**多任务学习**来**联合优化共享的提示**。
+
+
+### 提示微调（prompt tuning）
+
+&nbsp;
+
+在**输入层**加入**可训练**的**提示向量**，基于离散提示方法（[How can we know what language models know?](https://arxiv.org/pdf/1911.12543.pdf)和[Autoprompt: Eliciting knowledge from lan- guage models with automatically generated prompts](https://arxiv.org/pdf/2010.15980.pdf)），通过包含一组**软提示token**来扩充输入文本，再用扩充后的输入来解决特定的下游任务。将**任务特定的提示emb**与**输入文本的emb**相结合，输入模型中。
+
++ [GPT understands, too](https://arxiv.org/pdf/2103.10385.pdf)：提出了P-tuning，用**自由形式**来组合**上下文**、**提示**和**目标token**，用**双向LSTM**学习**软提示token的表示**，适用于自然语言理解和生成的架构。
++ [The power of scale for parameter-efficient prompt tuning](https://arxiv.org/pdf/2104.08691.pdf)：提示微调，直接在**输入前**加入**前缀提示**。训练时**只有提示emb**会根据特定任务进行监督学习。这种方法在**输入层**只包含**少量可训练参数**，故其效果**高度依赖底层语言模型的能力**。
+
+
+### 低秩适配（LoRA）
+
+&nbsp;
+
 
 
 # 使用
@@ -804,21 +842,27 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 
 ![rlhf-sft](../assets/rlhf-sft.png)
 
+确保任务多样性的情况下，由标注人员编写prompt和一些生成式任务的期望输出。
+
 + openai：instructGPT使用小版本的GPT-3，并对“更可取”（preferable）的人工生成文本微调
 + Anthropic：1000w-520亿参数的transformer，并按“有用、诚实和无害”的标准在上下文线索上蒸馏原始LM
-+ DeepMind：2800亿的模型Gopher
++ DeepMind：在[Teaching language models to support answers with verified quotes](https://arxiv.org/pdf/2203.11147.pdf)提出的GopherCite模型中，用的是2800亿的模型Gopher([Scaling language models: Methods, analysis & insights from training gopher](https://arxiv.org/pdf/2112.11446.pdf))
 
 ## rm
 
 ![rlhf-rm](../assets/rlhf-rm.png)
 
-接收一系列文本并返回一个标量奖励，数值上对应人的偏好。我们可以用端到端的方式用 LM 建模，或者用模块化的系统建模 (比如对输出进行排名，再将排名转换为奖励) 。
+接收一系列文本并返回一个**标量奖励**，数值上对应人的偏好。我们可以用端到端的方式用LM建模，或者用模块化的系统建模 (比如**对输出进行排名**，再**将排名转换为奖励**) 。
 
-+ **模型选择**：RM 可以是另一个经过微调的 LM，也可以是根据偏好数据从头开始训练的 LM。Anthropic 提出了一种特殊的预训练方式，即用偏好模型预训练 (Preference Model Pretraining，PMP) 来替换一般预训练后的微调过程。因为前者被认为对样本数据的利用率更高。
++ **模型选择**：RM可以是另一个经过微调的LM，也可以是根据偏好数据从头开始训练的LM。Anthropic 提出了一种特殊的预训练方式，即用**偏好模型预训练** (Preference Model Pretraining，PMP) 来替换一般预训练后的微调过程，PMP**对样本的利用率更高**。
 + **训练文本**：RM 的提示 - 生成对文本是从预定义数据集中采样生成的，并用初始的 LM 给这些提示生成文本。Anthropic 的数据主要是通过 Amazon Mechanical Turk 上的聊天工具生成的，并在 [Hub](https://huggingface.co/datasets/Anthropic/hh-rlhf) 上 可用，而 OpenAI 使用了用户提交给 GPT API 的 prompt。
-+ **训练奖励数值**：人工对 LM 生成的回答进行排名。起初我们可能会认为应该直接对文本标注分数来训练 RM，但是由于标注者的价值观不同导致这些分数未经过校准并且充满噪音，通过排名可以比较多个模型的输出并构建更好的规范数据集，这些不同的排名结果将被归一化为用于训练的标量奖励值。
++ **训练奖励数值**：人工对 LM 生成的回答进行**排名**。起初我们可能会认为应该直接对文本标注分数来训练 RM，但是由于标注者的价值观不同导致这些分数未经过校准并且充满噪音，通过排名可以**比较多个模型各自的输出**并构建更好的规范数据集，这些不同的排名结果将被**归一化**为用于训练的标量奖励值。
 
-目前成功的 RLHF 系统使用了和生成模型具有 不同 大小的 LM，OpenAI 使用了 175B 的 LM 和 6B 的 RM，Anthropic 使用的 LM 和 RM 从 10B 到 52B 大小不等，DeepMind 使用了 70B 的 Chinchilla 模型分别作为 LM 和 RM
+目前成功的RLHF使用了和**要对齐的LM**具有**不同大小**的LM：
+
++ OpenAI：175B的LM和6B的RM
++ Anthropic：使用的 LM 和 RM 从 10B 到 52B 大小不等
++ DeepMind：使用了 70B 的 Chinchilla 模型分别作为 LM 和 RM
 
 
 ## rl
@@ -1202,7 +1246,9 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 # 几篇需要再看下的论文
 
-[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)
+[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf) 引用数800+
+
+[How can we know what language models know?](https://arxiv.org/pdf/1911.12543.pdf) 引用数800+
 
 
 # Anthropic的一些工作
