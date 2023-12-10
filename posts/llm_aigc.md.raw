@@ -726,18 +726,51 @@ XXX
 其中$$\mathbf{A} \in \mathbb{R}^{m \times k}$$和$$\mathbf{B} \in \mathbb{R}^{n \times k}$$是用于任务适配的可训练参数，$$r \ll \min (m, n)$$是**降低后的秩**。
 
 LoRA的优点：
+
 + 大大**节省内存和存储**（如VRAM，Video Random Access Memory）
 + 可以只**保留一个大型模型副本**，同时**保留多个**用于**适配不同下游任务**的**特定低秩分解矩阵**。
 
 用更有原则的方法设置秩：
-+ 基于**重要性分数**的分配：[Adaptive budget allocation for parameter-efficient fine-tuning](https://arxiv.org/pdf/2303.10512.pdf)
+
++ 基于**重要性分数**的分配：[Adaptive budget allocation for parameter-efficient fine-tuning](https://arxiv.org/pdf/2303.10512.pdf)提出的AdaLoRA
 + **无需搜索**的**最优秩选择**：[Dylora: Parameter efficient tuning of pre-trained models using dynamic search-free low- rank adaptation](https://arxiv.org/pdf/2210.07558.pdf)
+
+### 小结
+
+LoRA已经有广泛的应用，如LLaMA和BLOOM，
+
++ Alpaca-LoRA：[Instruct-tune llama on consumer hardware](https://github.com/tloen/alpaca-lora)，通过LoRA训练的Alpaca的轻量级微调版本。
++ LLaMA-Adapter：[Llama-adapter: Efficient fine-tuning of language models with zero-init attention](https://arxiv.org/pdf/2303.16199.pdf)将**可学习的提示向量**插入每个Transformer层中，提出**零初始化的注意力**，通过**减轻欠拟合提示向量的影响**以改善训练，还能扩展到**多模态设置**，如视觉问答。
+
+[LLM-Adapters: An Adapter Family for Parameter-Efficient Fine-Tuning of Large Language Models](https://arxiv.org/pdf/2304.01933.pdf)比较了串行适配器微调、并行适配器微调和LoRA，在GPT-J(6B)、BLOOM(7.1B)和LLaMA(7B)上评估：这些方法在**困难任务上效果不如GPT-3.5**，但**在简单任务上表现相当**，**LoRA**表现相对较好且使用的可训练参数明显较少。
+
+huggingface开源了[Peft: State-of-the-art parameter-efficient fine- tuning methods](https://github.com/huggingface/peft)，包括LoRA/AdaLoRA、前缀微调、P-Tuning、提示微调，支持GPT-2和LLaMA，还支持视觉Transformer如ViT和Swin Transformer。
+
 
 # 使用
 
 ## 上下文学习
 
+GPT-3提出ICL，将**任务描述**和（或）**示范（demonstration）**以**自然语言文本形式**表达。
+
 ### 上下文学习形式
+
++ 以**任务描述**作为开始，从任务数据集中**选择一些样例**作为**示范**。
++ 以特别设计的**模板形式**将它们按照**特定的顺序**组合成**自然语言提示**。
++ 将**测试样例**添加到LLM的输入中以生成输出。
+
+形式化地看，$$D_k=\left\{f\left(x_1, y_1\right), \ldots, f\left(x_k, y_k\right)\right\}$$表示由$$k$$个样例组成的一组示范，$$f\left(x_k, y_k\right)$$表示把第$$k$$个**任务样例转换为自然语言提示**的函数。给定任务描述$$I$$、示范$$D_k$$和新的输入查询$$x_{k+1}$$，LLM生成的输出$$\hat{y}_{k+1}$$如下：
+
+XXX
+\operatorname{LLM}(I, \underbrace{f\left(x_1, y_1\right), \ldots, f\left(x_k, y_k\right)}_{\text {示范 }}, f(\underbrace{x_{k+1}}_{\text {输入 }}, \underbrace{\_\_\_}_{\text {答案 }})) \rightarrow \hat{y}_{k+1} \text {. }
+XXX
+
+真实答案$$y_{k+1}$$留白，由LLM预测。
+
+更多的可以参考综述[A survey for in-context learning](https://arxiv.org/pdf/2301.00234.pdf)
+
+**指令微调**可以**提高LLM执行目标任务的ICL能力**，尤其是**零样本场景**（仅使用任务描述）。
+
 
 ### 示范设计
 
@@ -1268,6 +1301,8 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 [Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf) 引用数800+
 
 [How can we know what language models know?](https://arxiv.org/pdf/1911.12543.pdf) 引用数800+
+
+[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)引用1800+
 
 
 # Anthropic的一些工作
