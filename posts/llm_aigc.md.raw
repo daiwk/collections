@@ -678,7 +678,7 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 + 将原始特征压缩到**较小维度**（然后进行非线性变换）
 + 恢复到**原始维度**
 
-一般是**串行插入**的方式，集成到**每个Transformer层里**，分别放到**注意力层**和**前馈层之后**。[Towards a unified view of parameter- eﬀicient transfer learning](https://arxiv.org/pdf/2110.04366.pdf)提出了**并行适配器**，即与**注意力层和前馈层并行**。
+一般是**串行插入**的方式，集成到**每个Transformer层里**，分别放到**注意力层**和**前馈层之后**。[Towards a unified view of parameter- efficient transfer learning](https://arxiv.org/pdf/2110.04366.pdf)提出了**并行适配器**，即与**注意力层和前馈层并行**。
 
 微调时，**原参数不变**，**仅更新适配器模块参数**。
 
@@ -707,12 +707,31 @@ ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并�
 + [GPT understands, too](https://arxiv.org/pdf/2103.10385.pdf)：提出了P-tuning，用**自由形式**来组合**上下文**、**提示**和**目标token**，用**双向LSTM**学习**软提示token的表示**，适用于自然语言理解和生成的架构。
 + [The power of scale for parameter-efficient prompt tuning](https://arxiv.org/pdf/2104.08691.pdf)：提示微调，直接在**输入前**加入**前缀提示**。训练时**只有提示emb**会根据特定任务进行监督学习。这种方法在**输入层**只包含**少量可训练参数**，故其效果**高度依赖底层语言模型的能力**。
 
-
 ### 低秩适配（LoRA）
 
 &nbsp;
 
+[Lora: Low-rank adaptation of large language models](https://arxiv.org/pdf/2106.09685.pdf)通过增加低秩约束来近似每层的更新矩阵，假设参数矩阵\mathbf{W} \in \mathbb{R}^{m \times n}，一般是
 
+XXX
+\mathbf{W}=\mathbf{W}+\Delta \mathbf{W}
+XXX
+
+冻结$$\mathbf{W}$$，通过低秩分解矩阵来近似更新
+
+XXX
+\Delta \mathbf{W}=\mathbf{A} \cdot \mathbf{B}^{\top}
+XXX
+
+其中$$\mathbf{A} \in \mathbb{R}^{m \times k}$$和$$\mathbf{B} \in \mathbb{R}^{n \times k}$$是用于任务适配的可训练参数，$$r \ll \min (m, n)$$是**降低后的秩**。
+
+LoRA的优点：
++ 大大**节省内存和存储**（如VRAM，Video Random Access Memory）
++ 可以只**保留一个大型模型副本**，同时**保留多个**用于**适配不同下游任务**的**特定低秩分解矩阵**。
+
+用更有原则的方法设置秩：
++ 基于**重要性分数**的分配：[Adaptive budget allocation for parameter-efficient fine-tuning](https://arxiv.org/pdf/2303.10512.pdf)
++ **无需搜索**的**最优秩选择**：[Dylora: Parameter efficient tuning of pre-trained models using dynamic search-free low- rank adaptation](https://arxiv.org/pdf/2210.07558.pdf)
 
 # 使用
 
