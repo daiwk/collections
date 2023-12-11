@@ -790,15 +790,48 @@ $$
     + **RL方法**：[Active example selection for in-context learning](https://arxiv.org/pdf/2211.04486.pdf)，将示范选择任务建模为RL问题，**LLM是奖励函数**，为训练策略模型提供反馈。
     + 用**LLM**来**生成**示范：[Chatgpt outperforms crowd-workers for text-annotation tasks](https://arxiv.org/pdf/2303.15056.pdf)发现LLM在文本标方面表现很好，故可以直接将LLM作为**无人工干预**的**示范生成器**，如[Self-generated in-context learning: Leveraging auto-regressive language models as a demonstration generator](https://arxiv.org/pdf/2206.08082.pdf)和[Selective in-context data augmentation for intent detection using pointwise v-information](https://arxiv.org/pdf/2302.05096.pdf)
 
+[An explanation of in-context learning as implicit bayesian inference](https://arxiv.org/pdf/2111.02080.pdf)提到，ICL中选择的示范样例应该包含**足够的有关待解决任务的信息**，并**与测试查询相关**。
+
 #### 示范格式
+
+&nbsp;
+
+将选择的示范进行**整合**以及**格式化**：
+
++ 用相应的**输入输出对**来**实例化预定义的模板**：[Pre-train, prompt, and predict: A systematic survey of prompting methods in natural language processing](https://arxiv.org/pdf/2107.13586.pdf)
++ 增强LLM的**推理能力**
+    + **添加任务描述**：[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf) 
+    + 通过**CoT提示**：[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)
++ 收集**包含人工编写的任务描述**的**大规模数据集**：[Cross-task generalization via natural language crowd- sourcing instructions](https://arxiv.org/pdf/2104.08773.pdf)，能够提升**已见任务**的性能，也能在一定程度泛化到**未见任务**。
++ **半自动化**方法：[Self-instruct: Aligning language model with self generated instructions](https://arxiv.org/pdf/2212.10560.pdf)使用由**人工编写的任务描述**组成的**种子集合**来指导LLM**为新任务生成任务描述**。
++ **自动生成**高质量的示范格式：
+    + **Auto-CoT**：[Automatic chain of thought prompting in large language models](https://arxiv.org/pdf/2210.03493.pdf)使用零样本提示（**let's think step by step**）以生成中间推理步骤
+    + **least-to-most提示**：[Least-to-most prompting enables complex reasoning in large language models](https://arxiv.org/pdf/2205.10625.pdf)先询问LLM来**执行问题分解**，再利用LLM**根据已解决的中间答案**依次**解决子问题**。
 
 
 #### 示范顺序
 
-#### 底层机制
+&nbsp;
 
-+ 预训练如何影响ICL：
-+ LLM如何实现ICL：
+LLM有时会被**顺序偏差**影响，例如[Calibrate before use: Improving few-shot performance of language models](https://arxiv.org/pdf/2102.09690.pdf)提出LLM会倾向于**重复示范结尾附近的答案**===>**结尾很重要！！**
+
++ **启发式**方法：[What makes good in-context examples for gpt-3?](https://arxiv.org/pdf/2101.06804.pdf)根据在emb空间中**示范**与**查询**的**相似度**来排列，相似度越高，**距离结尾越近**。
++ **基于信息论**的方法：
+    + [Self-adaptive in-context learning](https://arxiv.org/pdf/2212.10375.pdf)使用**最小化压缩和传输任务标签所需的码长**来整合更多任务信息，需要**额外的标记数据**作为用来**评估**特定示范**顺序性能**的**验证集**。
+    + [Fantastically ordered prompts and where to find them: Overcoming few-shot prompt order sensitivity](https://arxiv.org/pdf/2104.08786.pdf)使用**全局**和**局部熵度量**来为不同的示范顺序打分，且为了消除对额外标注数据的需要，这篇文章**从LLM本身采样**来获取验证集。
+
+
+### 底层机制
+
+#### 预训练如何影响ICL
+
+&nbsp;
+
+
+#### LLM如何实现ICL
+
+&nbsp;
+
 
 ## 思维链提示
 
