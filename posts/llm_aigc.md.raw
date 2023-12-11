@@ -774,11 +774,26 @@ XXX
 
 ### 示范设计
 
-+ 示范选择
-    + 启发式方法：
-    + 基于LLM的方法：
-+ 示范格式：
-+ 示范顺序：
+&nbsp;
+
+#### 示范选择
+
+&nbsp;
+
++ 启发式方法：
+    + 基于**knn的检索器**来选择与**查询**语义相关的样例：如[What makes good in-context examples for gpt-3?](https://arxiv.org/pdf/2101.06804.pdf)和[Does GPT-3 generate empathetic dialogues? A novel in-context example selection method and automatic evaluation metric for empathetic dialogue generation](https://aclanthology.org/2022.coling-1.56.pdf)。但只是**针对每个样例单独选择**，而**不是对整个样例集合**进行评估。
+    + 基于**多样性**的选择策略：[Diverse demonstrations improve in-context compositional generalization](https://arxiv.org/pdf/2212.06800.pdf)和[Selective annotation makes language mod- els better few-shot learners](https://arxiv.org/pdf/2209.01975.pdf)
+    + 同时考虑**相关性**和**多样性**的选择策略：[Complementary Explanations for Effective In-Context Learning](https://arxiv.org/pdf/2211.13892.pdf)
++ 基于LLM的方法：
+    + **直接用LLM**来**选择**：[Finding supporting examples for in-context learning](https://arxiv.org/pdf/2302.13539.pdf)：LLM可以直接根据**添加样例后**的**性能提升**评估**每个样例的信息量**，以进行选择。
+    + **两阶段检索**：[Learning to retrieve prompts for in-context learning](https://arxiv.org/pdf/2112.08633.pdf)：提出EPR，先用无监督方法召回相似样例，再用密集检索器（用LLM标记的正负样例训练）进行排序。
+    + **RL方法**：[Active example selection for in-context learning](https://arxiv.org/pdf/2211.04486.pdf)，将示范选择任务建模为RL问题，**LLM是奖励函数**，为训练策略模型提供反馈。
+    + 用**LLM**来**生成**示范：[Chatgpt outperforms crowd-workers for text-annotation tasks](https://arxiv.org/pdf/2303.15056.pdf)发现LLM在文本标方面表现很好，故可以直接将LLM作为**无人工干预**的**示范生成器**，如[Self-generated in-context learning: Leveraging auto-regressive language models as a demonstration generator](https://arxiv.org/pdf/2206.08082.pdf)和[Selective in-context data augmentation for intent detection using pointwise v-information](https://arxiv.org/pdf/2302.05096.pdf)
+
+#### 示范格式
+
+
+#### 示范顺序
 
 #### 底层机制
 
