@@ -9,6 +9,8 @@
 
 ## LLM简史
 
+PLM（pretrained language models）
+
 + 2017年的[Learning to generate reviews and discovering sentiment](https://arxiv.org/pdf/1704.01444.pdf)尝试用rnn来实现智能系统
 + 2018年的gpt1：[Improving language understanding by generative pre-training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)，生成式预训练（Generative pre-training, gpt），用transformer的decoder，参数量117m（0.1b），无监督预训练和有监督微调。确定对自然语言文本建模的基本原则为**预测下一个单词**。
 + 2019年的gpt2：[Language models are unsupervised multitask learners](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)模型结构小改，增加数据，参数量变大为15亿（1.5b），无监督语言建模，**无需使用标记数据进行显式微调**。
@@ -827,10 +829,20 @@ LLM有时会被**顺序偏差**影响，例如[Calibrate before use: Improving f
 
 &nbsp;
 
++ ICL与**预训练任务设计**：GPT-3发现ICL能力随模型增大而增强，但[Metaicl: Learning to learn in context](https://arxiv.org/pdf/2110.15943.pdf)发现**小规模的PLM**也能通过**特别设计的训练任务**从而表现出强大的ICL能力（例如输入是**任务实例+查询**，**预测标签**），甚至能超越规模更大的模型。
++ ICL与**预训练语料**：
+    + [On the effect of pretraining corpora on in-context learning by a large-scale language model](https://arxiv.org/pdf/2204.13509.pdf)发现ICL的性能主要取决于**预训练语料的来源**而非规模
+    + [Data Distributional Properties Drive Emergent In-Context Learning in Transformers](https://arxiv.org/pdf/2205.05055.pdf)分析训练数据分布的影响，发现当训练数据可以**被聚类成多个不常见的类**，而**不是均匀分布**时，模型会有ICL能力
+    + [An explanation of in-context learning as implicit bayesian inference](https://arxiv.org/pdf/2111.02080.pdf)从理论上解释，认为ICL是在具备**长程连贯性的文档**上进行预训练的产物。
+
+
 
 #### LLM如何实现ICL
 
 &nbsp;
+
++ 将ICL视为**隐式微调**：[Why can GPT learn in-context? language models secretly perform gradient descent as meta-optimizers](https://arxiv.org/pdf/2212.10559.pdf)和[Transformers learn in-context by gradient descent](https://arxiv.org/pdf/2212.07677.pdf)
++ 将ICL视为**算法学习过程**：
 
 
 ## 思维链提示
