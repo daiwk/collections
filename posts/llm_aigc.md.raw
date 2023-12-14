@@ -842,7 +842,11 @@ LLM有时会被**顺序偏差**影响，例如[Calibrate before use: Improving f
 &nbsp;
 
 + 将ICL视为**隐式微调**：[Why can GPT learn in-context? language models secretly perform gradient descent as meta-optimizers](https://arxiv.org/pdf/2212.10559.pdf)和[Transformers learn in-context by gradient descent](https://arxiv.org/pdf/2212.07677.pdf)
-+ 将ICL视为**算法学习过程**：
+    + ICL可以看成是通过**前向计算**，LLM生成**关于示范**的**元梯度**，并通过**注意力**机制**隐式**地**梯度下降**。
+    + LLM的**某些注意力头**能执行**与ICL能力密切相关**的**任务无关**的**原子操作**（如**复制**、**前缀匹配**等）
++ 将ICL视为**算法学习过程**：[Transformers as algorithms: Generalization and implicit model selection in in-context learning](https://arxiv.org/pdf/2301.07067.pdf)、[What learning algorithm is in-context learning? investigations with linear models]()
+    + 预训练阶段：
+    + 前向计算阶段：
 
 
 ## 思维链提示
