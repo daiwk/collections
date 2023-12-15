@@ -938,6 +938,11 @@ LLM有时会被**顺序偏差**影响，例如[Calibrate before use: Improving f
 + BIG-bench：
 + HELM：
 
+# 比较有用的数据集
+
+
+[https://huggingface.co/BelleGroup](https://huggingface.co/BelleGroup) 里有很多中文的instruct和输出的数据集
+
 
 # RLHF & instructGPT
 
