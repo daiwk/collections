@@ -844,12 +844,17 @@ LLM有时会被**顺序偏差**影响，例如[Calibrate before use: Improving f
 + 将ICL视为**隐式微调**：[Why can GPT learn in-context? language models secretly perform gradient descent as meta-optimizers](https://arxiv.org/pdf/2212.10559.pdf)和[Transformers learn in-context by gradient descent](https://arxiv.org/pdf/2212.07677.pdf)
     + ICL可以看成是通过**前向计算**，LLM生成**关于示范**的**元梯度**，并通过**注意力**机制**隐式**地**梯度下降**。
     + LLM的**某些注意力头**能执行**与ICL能力密切相关**的**任务无关**的**原子操作**（如**复制**、**前缀匹配**等）
-+ 将ICL视为**算法学习过程**：[Transformers as algorithms: Generalization and implicit model selection in in-context learning](https://arxiv.org/pdf/2301.07067.pdf)、[What learning algorithm is in-context learning? investigations with linear models]()
-    + 预训练阶段：
-    + 前向计算阶段：
++ 将ICL视为**算法学习过程**：[Transformers as algorithms: Generalization and implicit model selection in in-context learning](https://arxiv.org/pdf/2301.07067.pdf)、[What learning algorithm is in-context learning? investigations with linear models](https://arxiv.org/pdf/2211.15661.pdf)，基于这个解释框架，LLM能通过ICL有效地学习简单的线性函数，甚至是如决策树的复杂函数
+    + 预训练阶段：LLM本质上通过其参数**对隐式模型进行编码**
+    + 前向计算阶段：通过ICL中提供的示例，LLM可以**实现如sgd的学习算法**，或者**直接计算出闭式解**以更新这些模型
+
+
 
 
 ## 思维链提示
+
+
+
 
 + 小样本思维链
     + 思维链提示设计：
