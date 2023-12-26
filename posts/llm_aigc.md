@@ -1412,8 +1412,6 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 [Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)引用1800+
 
-
-
 # 多智能体
 
 [https://zhuanlan.zhihu.com/p/656676717](https://zhuanlan.zhihu.com/p/656676717)
