@@ -1,3 +1,9 @@
 {
-        "plugins": ["mathjax"]
+        "plugins": ["mathjax"],
+  "pluginsConfig": {
+        "meta-single": {
+            "name": "google-site-verification",
+            "content": "0qcy8GQkagehLcsUgmwFwiE_XlSQzGXKrjJD_hBldkY"
+        }
+    }
 }
