@@ -850,18 +850,52 @@ LLM有时会被**顺序偏差**影响，例如[Calibrate before use: Improving f
 
 
 
+## 思维链提示（CoT）
 
-## 思维链提示
+CoT是一种改进的提示策略，旨在提高LLM在**复杂推理任务**中的性能，如算术推理（[Training verifiers to solve math word problems]()、[Are NLP models really able to solve simple math word problems?](https://arxiv.org/pdf/2110.14168.pdf)和[A diverse corpus for evaluating and developing english math word problem solvers](https://arxiv.org/pdf/2106.15772.pdf)）、常识推理（[Commonsenseqa: A question answering challenge targeting commonsense knowledge](https://arxiv.org/pdf/1811.00937.pdf)和[Did aristotle use a laptop? A question answering benchmark with implicit reasoning strategies](https://arxiv.org/pdf/2101.02235.pdf)）、符号推理（[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)）。
+
+ICL**只使用输入输出对**来构造提示，而CoT将最终输出的**中间推理步骤**加入提示。
+
+### 使用CoT的ICL
+
+&nbsp;
+
+一般在小样本和零样本这两种设置下和ICL一起用
+
+#### 小样本思维链
+
+&nbsp;
+
+将每个示范```<输入，输出>```替换为```<输入，CoT，输出>```。小样本CoT可以看成ICL的一种特殊提示，但相比ICL的标准提示，**示范的顺序**对性能**影响相对较小**。
+
++ **思维链提示设计**：
+    + 使用**多样的CoT推理路径**：[Making Large Language Models Better Reasoners with Step-Aware Verifier](https://arxiv.org/pdf/2206.02336.pdf)，对**每个问题**给出**多个推理路径**。
+    + 使用具有**复杂推理路径**的提示：[Complexity-based prompting for multi-step reasoning](https://arxiv.org/pdf/2210.00720.pdf)
+    + Auto-CoT：上述方法都需要标注CoT，[Automatic chain of thought prompting in large language models](https://arxiv.org/pdf/2210.03493.pdf)利用[Large language models are zero-shot reasoners](https://arxiv.org/pdf/2205.11916.pdf)提出的zero-shot-CoT
+        + 通过**特别提示**LLM来生成CoT推理路径（例如“**Let’s think step by step**”）
+        + 将训练集里的问题**分成不同簇**，选择**最接近每个簇质心的问题**，就可以代表整个训练集里的问题。
+
++ **增强的思维链策略**：如何生成多个推理路径，并在得到的答案中寻找一致性
+    + **self-consistency**：[Self-consistency improves chain of thought reasoning in language models](https://arxiv.org/pdf/2203.11171.pdf)，在生成CoT和最终答案时新的**解码策略**。先**用LLM生成多个推理路径**，再对所有答案进行**集成**(例如投票)。
+    + **更通用的集成框架**：[Rationale-Augmented Ensembles in Language Models](https://arxiv.org/pdf/2207.00747.pdf)发现多样化的推理路径是COT推理性能提高的关键，因此将self-consistency延伸至**提示的集成**。
+    + 通过**训练打分模型**来**衡量生成的推理路径的可靠性**，如[On the advance of making language models better reasoners](https://arxiv.org/pdf/2206.02336.pdf)
+    + **持续**地**利用LLM自己生成的推理路径**进行训练，如[Star: Self-taught reasoner bootstrapping reason- ing with reasoning](https://arxiv.org/pdf/2203.14465.pdf)和[Large language models can self-improve](https://arxiv.org/pdf/2210.11610.pdf)
 
 
+#### 零样本思维链
 
+&nbsp;
 
-+ 小样本思维链
-    + 思维链提示设计：
-    + 增强的思维链策略：
-+ 零样本思维链
+不在提示中加入人工标注的示范，而是直接生成推理步骤，再利用生成的CoT来得出答案。[Large language models are zero-shot reasoners](https://arxiv.org/pdf/2205.11916.pdf)。
 
-进一步讨论
++ 先通过“**Let’s think step by step**”来提示LLM生成步骤
++ 再通过“**Therefore, the answer is**”来提示得到最终答案
+
+这种方法在**模型规模超过一定大小**时可以**显著提高性能**，但在**小规模的模型**中**效果不佳**，即涌现能力。
+
+Flan-T5和Flan-PaLM（[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)）进一步地使用CoT进行指令调整，有效增强了在**未见任务**上的零样本性能。
+
+### 进一步讨论CoT
 
 + 思维链何时适用于LLM：
 + LLM为何能进行思维链推理：
@@ -1378,6 +1412,10 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 [Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)引用1800+
 
+
+# 多智能体
+
+[https://zhuanlan.zhihu.com/p/656676717](https://zhuanlan.zhihu.com/p/656676717)
 
 # Anthropic的一些工作
 
