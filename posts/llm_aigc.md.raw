@@ -119,6 +119,7 @@ llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin
 + [BMTrain](https://github.com/OpenBMB/BMTrain)：openBMB的库，强调代码简洁、低资源占用和高可用性
 + [FastMoE](Fastmoe: A fast mixture-of-expert training system)：专门用于MoE模型的训练库，基于pytorch，简化了将transformer转换为MoE模型的过程
 
+![AI的4场景战役](../assets/4wars-in-aistck.png)
 
 ## 一些综述
 
