@@ -118,6 +118,7 @@ llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin
 + [colossal-AI](https://arxiv.org/pdf/2110.14883.pdf)：HPC-AI Tech的库，基于pytorch，可以使用[PatrickStar](Patrickstar: Parallel training of pre-trained models via a chunk-based memory management)提出的方法优化异构内存管理，分布了基于LLaMA的[ColossalChat](https://medium.com/pytorch/colossalchat-an-open-source-solution-for-cloning-chatgpt-with-a-complete-rlhf-pipeline-5edf08fb538b)
 + [BMTrain](https://github.com/OpenBMB/BMTrain)：openBMB的库，强调代码简洁、低资源占用和高可用性
 + [FastMoE](Fastmoe: A fast mixture-of-expert training system)：专门用于MoE模型的训练库，基于pytorch，简化了将transformer转换为MoE模型的过程
++ [semantic-kernel](https://github.com/microsoft/semantic-kernel)：微软的开源库
 
 ![AI的4场景战役](../assets/4wars-in-aistck.png)
 
@@ -137,6 +138,7 @@ llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin
 + [Reasoning with language model prompting: A survey](https://arxiv.org/pdf/2212.09597.pdf)
 + [Dense Text Retrieval based on Pretrained Language Models: A Survey](https://arxiv.org/pdf/2211.14876.pdf)
 + [Fine-tune之后的NLP新范式：Prompt越来越火，CMU华人博士后出了篇综述文章](https://zhuanlan.zhihu.com/p/395795968)
++ [如何高效部署大模型？CMU最新万字综述纵览LLM推理MLSys优化技术](https://mp.weixin.qq.com/s/Uue0SxH6W_tI8K4Zb0igLQ)：[Towards Efficient Generative Large Language Model Serving: A Survey from Algorithms to Systems](https://arxiv.org/abs/2312.15234)
 
 ## 扩展法则
 
