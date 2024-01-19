@@ -861,7 +861,7 @@ attention的复杂度分析：
 
 总共就是$$3\times b\times s\times d\times d_v + b\times s^2\times (d_k + d_v)$$
 
-因为$$d_k=d_v=d_q$$，所以有$$3\times b\times s\times d\times d_v + b\times 2\times s^2\times d_k$$，所以，如果$$d$$比较大，那是$$d^2$$的复杂度，如果$$s$$比较大，那就是$$s^2$$。
+因为$$d_k=d_v=d_q$$，所以有$$3\times b\times s\times d\times d_v + b\times 2\times s^2\times d_k$$，而且往往有$$d_v=d$$，所以，如果$$d$$比较大，那是$$d^2$$的复杂度，如果$$s$$比较大，那就是$$s^2$$。
 
 输入原始的query(即from_tensor)之后, 把```[batch, from_seq, emb]```变成```[?, emb]```，其中```?=batch*from_seq```
 
