@@ -701,6 +701,9 @@ Facebook将该方法称为“半弱监督”(semi-weak supervision)，是结合�
 整个词表，是word数+bucket这么大，其中bucket表示可容纳的subwords和wordNgrams的数量，默认200w
 
 
+[为什么Word2Vec训练中, 需要对负采样权重开3/4次幂？](https://zhuanlan.zhihu.com/p/144563199?utm_id=0)
+
+通过对权重开3/4次幂，可以提升低频词被抽到的概率。在保证高频词容易被抽到的大方向下，通过权重3/4次幂的方式，适当提升低频词、罕见词被抽到的概率。如果不这么做，低频词，罕见词很难被抽到，以至于不被更新到对应的Embedding。
 
 ## 分词
 
