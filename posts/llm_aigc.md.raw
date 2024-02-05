@@ -1531,7 +1531,21 @@ $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新�
 
 [推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
 
-# 其他
+[Exploring the Upper Limits of Text-Based Collaborative Filtering Using Large Language Models: Discoveries and Insights](http://arxiv.org/abs/2305.11700)
+
+
+[知乎的讨论](https://www.zhihu.com/question/630016669/answer/3380909598)
+
+SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
+
+[Where to Go Next for Recommender Systems? ID- vs. Modality-based Recommender Models Revisited](https://arxiv.org/abs/2303.13835)
+
+[https://github.com/westlake-repl/IDvs.MoRec](https://github.com/westlake-repl/IDvs.MoRec)
+
+[对应的ppt](https://github.com/westlake-repl/MicroLens/blob/master/MicroLens_DeepMind_Talk.pdf)
+
+
+
 
 ## 公开资源
 
