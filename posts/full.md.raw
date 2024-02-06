@@ -2072,6 +2072,16 @@ delay feedback
 
 [Deconfounding Duration Bias in Watch-time Prediction for Video Recommendation](https://arxiv.org/pdf/2206.06003.pdf)
 
+[短视频推荐视频时长bias问题](https://cloud.tencent.com/developer/article/2141921)
+
+论文使用 XAUC、XGAUC 以及 MAE 等指标对时长回归效果进行评估。MAE 表示短视频预估时长与观看时长 label 的误差绝对值，表示模型回归精度，是回归任务的常用评估指标。
+
++ XAUC：将测试集中的样本两两组合，若组合的标签和预估值的序一致则为正序，否则为逆序，XAUC 是正序对数与总组合数的比值；
++ XGAUC：用户维度计算的 XAUC。
+
+由于推荐系统主要优化候选集的排序，评估指标 XAUC 能够更加直观的反映预估时长序的好坏，与论文的优化目标更加适配。
+
+
 ### APG
 
 APG: 面向CTR预估的自适应参数生成网络
