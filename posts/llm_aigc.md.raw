@@ -446,6 +446,48 @@ XXX
 
 ## 模型训练
 
+mfu(Model Flops Utilization)模型算力利用率是分布式训练效率的优化目标。
+
+一个模型定义好之后，前向和反向的**计算量**就是固定（不考虑动态图的话）的，除以**每个step的latency**就是mfu。以nanoGPT中的代码为例：
+
+```python
+def estimate_mfu(self, fwdbwd_per_iter, dt):
+    """ estimate model flops utilization (MFU) in units of A100 bfloat16 peak FLOPS """
+    # first estimate the number of flops we do per iteration.
+    # see PaLM paper Appendix B as ref: https://arxiv.org/abs/2204.02311
+    N = self.get_num_params()
+    cfg = self.config
+    L, H, Q, T = cfg.n_layer, cfg.n_head, cfg.n_embd//cfg.n_head, cfg.block_size
+    flops_per_token = 6*N + 12*L*H*Q*T
+    flops_per_fwdbwd = flops_per_token * T # 计算量（T是序列长度）
+    flops_per_iter = flops_per_fwdbwd * fwdbwd_per_iter # 每个step的flops * 每一次更新梯度要多少个step
+    # express our flops throughput as ratio of A100 bfloat16 peak flops
+    flops_achieved = flops_per_iter * (1.0/dt) # per second 一轮的计算量/一轮的耗时
+    flops_promised = 312e12 # A100 GPU bfloat16 peak flops is 312 TFLOPS
+    mfu = flops_achieved / flops_promised
+    return mfu
+
+##...
+def xxx():
+    # timing and logging
+    t1 = time.time()
+    dt = t1 - t0 ## 一次gradient_accumulation_steps后 更新梯度
+    t0 = t1
+    if iter_num % log_interval == 0 and master_process:
+        # get loss as float. note: this is a CPU-GPU sync point
+        # scale up to undo the division above, approximating the true total loss (exact would have been a sum)
+        lossf = loss.item() * gradient_accumulation_steps
+        if local_iter_num >= 5: # let the training loop settle a bit
+            mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
+            running_mfu = mfu if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu
+        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%")
+    iter_num += 1
+    local_iter_num += 1
+
+```
+
+一般分布式训练参数量越多->卡数越多->通信占比越高->MFU越低，所以要优化通信效率。
+
 ### 优化设置
 
 + batchsize：通常用比较大的batchsize，提高训练**稳定性**和**吞吐量**。GPT-3和PaLM在训练时动态增加batshzie，最终达到百万级别，batchsize**从3.2w逐渐增加到320w个token**。
@@ -462,19 +504,65 @@ XXX
 
 ### 可扩展的训练
 
-需要**提高训练吞吐量**和**加载更大模型到显存中**，
+需要**提高训练吞吐量**和**加载更大模型到显存中**
 
 #### 3D并行
 
 &nbsp;
 
-如下三种并行的组合
+如下三种并行（数据并行、流水线并行、张量并行）的组合
 
 ##### 数据并行
 
 &nbsp;
 
-将**模型参数和优化器状态复制**到多个GPU上，每个GPU只处理分给它的数据，不同GPU算出的梯度进行聚合得到batch的梯度，再更新所有GPU上的模型。高度可扩展，增加GPU数就能提高训练吞吐。
+将**模型参数和优化器状态复制**到多个GPU上，每个GPU只处理分给它的数据，不同GPU算出的梯度进行**聚合**得到batch的梯度，再更新**所有GPU上的模型**。高度可扩展，增加GPU数就能提高训练吞吐。
+
+torch的ddp
+
+```python
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+ddp = int(os.environ.get('RANK', -1)) != -1 # is this a ddp run?
+if ddp:
+    init_process_group(backend=backend)
+    ddp_rank = int(os.environ['RANK'])
+    ddp_local_rank = int(os.environ['LOCAL_RANK'])
+    device = f'cuda:{ddp_local_rank}'
+    torch.cuda.set_device(device)
+    master_process = ddp_rank == 0 # this process will do logging, checkpointing etc.
+    seed_offset = ddp_rank # each process gets a different seed
+
+# wrap model into DDP container
+if ddp:
+    model = DDP(model, device_ids=[ddp_local_rank])
+```
+
+可以一起搞的技巧——**梯度累积**，当显存不够跑较大的batchsize时，训练效果可能会很差，可以先跑**多个mini-batch的前向和反向**，把梯度累积起来，再**更新一次参数**，在数学上等价于**跑一个较大的batchsize**。
+
+```python
+# forward backward update, with optional gradient accumulation to simulate larger batch size
+# and using the GradScaler if data type is float16
+for micro_step in range(gradient_accumulation_steps):
+    if ddp:
+        # in DDP training we only need to sync gradients at the last micro step.
+        model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps - 1)
+    with ctx:
+        logits, loss = model(X, Y)
+    loss.backward()
+optimizer.step()
+optimizer.zero_grad(set_to_none=True)
+```
+
+也可以用torch的no_sync()：
+
+```python
+ddp = torch.nn.parallel.DistributedDataParallel(model, pg)
+with ddp.no_sync():
+    for input in inputs:
+        ddp(input).backward()  # no synchronization, accumulate grads
+ddp(another_input).backward()  # synchronize grads
+```
 
 ##### 流水线并行
 
@@ -1598,6 +1686,9 @@ print(encoding_res)
 raw_text = enc.decode(encoding_res)
 print(raw_text)
 ```
+
+
+
 
 ## 达摩院大模型技术交流
 
