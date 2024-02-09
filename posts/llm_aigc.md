@@ -2,7 +2,7 @@
 
 各种学习相关代码
 
-[https://github.com/daiwk/llms](https://github.com/daiwk/llms)
+[https://github.com/daiwk/llms_new](https://github.com/daiwk/llms_new)
 
 # 概述
 
@@ -530,7 +530,8 @@ if ddp:
     ddp_local_rank = int(os.environ['LOCAL_RANK'])
     device = f'cuda:{ddp_local_rank}'
     torch.cuda.set_device(device)
-    master_process = ddp_rank == 0 # this process will do logging, checkpointing etc.
+    # this process will do logging, checkpointing etc.
+    master_process = ddp_rank == 0
     seed_offset = ddp_rank # each process gets a different seed
 
 # wrap model into DDP container
@@ -546,10 +547,11 @@ if ddp:
 for micro_step in range(gradient_accumulation_steps):
     if ddp:
         # in DDP training we only need to sync gradients at the last micro step.
+        # 最后一个micro step才要sync梯度
         model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps - 1)
     with ctx:
         logits, loss = model(X, Y)
-    loss.backward()
+    loss.backward() # 只是计算梯度，并不真的更新
 optimizer.step()
 optimizer.zero_grad(set_to_none=True)
 ```
@@ -564,7 +566,7 @@ with ddp.no_sync():
 ddp(another_input).backward()  # synchronize grads
 ```
 
-##### 流水线并行
+##### 流水线并行（Pipeline Parallelism）
 
 &nbsp;
 
@@ -572,7 +574,33 @@ ddp(another_input).backward()  # synchronize grads
 + GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
 + PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
 
-##### 张量并行
+###### GPipe
+
+&nbsp;
+
+![gpipe](../assets/gpipe.png)
+
+Gpipe主要思想：
++ 图a：把模型不同layers顺序放在4张卡上，0->3卡流水线前向计算loss，3->0再反向计算gradients
++ 图b：从时间顺序上看，**每张卡有3/4时间是空闲的**，GPU利用率非常低
++ 图c：配合**梯度累积**，多个mini-batch可以同时跑在流水线里面，每张卡则有3/(3+4)的时间空闲（Bubble）
+
+流水线并行的问题是中间有**Bubble**。当卡数$$K$$，梯度累积次数$$M$$，则$$Bubble=(K-1)/(K-1+M)$$
+
+GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效果，输入和输出共享vocab embedding
+
+###### 重计算
+
+&nbsp;
+
+重计算(recomputation)是对于pipeline parallelism非常重要的一个优化，最开始在[Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/pdf/1604.06174.pdf)一文中提到，在**flash attention**中也用了。
+
+因为要做pipeline+梯度累积，前向过程中的**激活值**要保存，以留给反向过程使用，保存很多份的激活值对显存造成了很大压力。recomputation(也叫**checkpointing**)用时间来换空间（反向的时候进行一次激活值的重计算)，可以缓解显存问题。
+
+pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/checkpoint.py)。大致逻辑是包了一个```autograd.Function```，前向时保存一些inputs/rng_state(RNG state是Random Number Generator state的缩写，意味着**随机数生成器的状态**。在深度学习和其他计算任务中，随机数生成器用于初始化参数、决定正则化技术如dropout的行为，以及在训练过程中选择样本等。RNG状态是指随机数生成器当前的内部状态，它可以用来在需要时重现或恢复特定的随机数序列，确保实验或模型训练的可重复性)，反向时重新计算
+
+
+##### 张量并行（Tensor Parallelism）
 
 &nbsp;
 
