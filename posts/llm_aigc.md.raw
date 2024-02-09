@@ -571,6 +571,7 @@ ddp(another_input).backward()  # synchronize grads
 &nbsp;
 
 将LLM的**不同层**分配到多个GPU上，一般Transformer模型中会**将连续的层加载到同一GPU上**，以减少在GPU间传输已计算的隐层状态或梯度的成本。简单的实现会导致**GPU利用率降低**，因为每个GPU要**等前一个完成计算**，导致不必要的**气泡开销**，如下方法可以提高流水线效率：
+
 + GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
 + PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
 
@@ -581,6 +582,7 @@ ddp(another_input).backward()  # synchronize grads
 ![gpipe](../assets/gpipe.png)
 
 Gpipe主要思想：
+
 + 图a：把模型不同layers顺序放在4张卡上，0->3卡流水线前向计算loss，3->0再反向计算gradients
 + 图b：从时间顺序上看，**每张卡有3/4时间是空闲的**，GPU利用率非常低
 + 图c：配合**梯度累积**，多个mini-batch可以同时跑在流水线里面，每张卡则有3/(3+4)的时间空闲（Bubble）
