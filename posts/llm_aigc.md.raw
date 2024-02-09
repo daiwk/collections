@@ -575,7 +575,7 @@ ddp(another_input).backward()  # synchronize grads
 + GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
 + PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
 
-###### GPipe
+###### 1)GPipe
 
 &nbsp;
 
@@ -591,7 +591,7 @@ Gpipe主要思想：
 
 GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效果，输入和输出共享vocab embedding
 
-###### 重计算
+###### 2)重计算
 
 &nbsp;
 
