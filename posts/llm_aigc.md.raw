@@ -617,12 +617,82 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
 
 &nbsp;
 
+对于一个fp16的模型训练，adam优化器里通常要保存：
+
++ 一份**fp32的梯度**和**参数**来做loss scale，
++ 一份**fp32**的**Variance**和**Momentum**
+
+而这些显存占用，在**前向**和**反向**的时候都**不用**，只有最后**optimizer step**的时候才用。
+
+===>zero的思想：把optimizer state**分shard存在不同的卡上**，只在**最后gather时才用**。
+
 ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并行**中的**内存冗余**问题。数据并行其实并不需要每个GPU都存整个模型、梯度和优化器参数，ZeRO在每个GPU仅保存部分数据，当需要其余数据时从其他GPU检索。3种解决方案：
+
 + 优化器状态分区：
 + 梯度分区：
 + 参数分区：
 
 前两种方案不会增加通信开销，第三种方案增加约50%通信开销，但能节省和gpu数成比例的内存。facebook的开源库FSDP(full sharded data parallel)([Fairscale: A general purpose modular pytorch library for high performance and large scale training](https://github.com/facebookresearch/fairscale))里基于pytorch实现了类似ZeRO的技术。
+
+![zero](../assets/zero.png)
+
+
+[ZeRO & DeepSpeed: New system optimizations enable training models with over 100 billion parameters](https://www.microsoft.com/en-us/research/blog/zero-deepspeed-new-system-optimizations-enable-training-models-with-over-100-billion-parameters/)
+
+```python
+import deepspeed
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--local_rank", type=int, default=0)
+deepspeed.add_config_arguments(parser)
+args = parser.parse_args()
+
+model, optimizer, _, _ = deepspeed.initialize(args=args,
+                                              model=model,
+                                              model_parameters=model.parameters())
+X, Y = get_batch('train')
+logits, loss = model(X, Y)
+model.backward(loss)
+model.step()
+```
+
+需要指定deepspeed的配置：
+
+```python
+{
+  "train_batch_size": 64,
+  "gradient_accumulation_steps": 1,
+  "optimizer": {
+    "type": "Adam",
+    "params": {
+      "lr": 6e-4,
+      "weight_decay": 1e-2,
+      "betas": [0.9, 0.95]
+    }
+  },
+  "scheduler": {
+    "type": "WarmupLR",
+    "params": {
+        "warmup_min_lr": 6e-5,
+        "warmup_max_lr": 6e-4,
+        "warmup_num_steps": 2000
+    }
+  },
+  "bf16": {
+    "enabled": true
+  },
+  "zero_optimization": {
+    "stage": 1
+  }
+}
+```
+
+启动：
+
+```shell
+deepspeed --num_gpus=8 train.py --deepspeed_config xx.json
+```
+
 
 还有一些paper也能降低内存，如
 
