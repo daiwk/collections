@@ -622,22 +622,31 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
 + 一份**fp32的梯度**和**参数**来做loss scale，
 + 一份**fp32**的**Variance**和**Momentum**
 
+
+对于每1个参数来说，占用20bytes显存，包括
+
++ fp16的参数：2bytes
++ fp16的梯度：2bytes
++ 优化器状态（optimizer state)：16bytes = fp32 梯度 + fp32 variance + fp32 momentum + fp32参数
+
+对应1.3B参数量的gpt2-xl，占用26GB
+
 而这些显存占用，在**前向**和**反向**的时候都**不用**，只有最后**optimizer step**的时候才用。
 
 ===>zero的思想：把optimizer state**分shard存在不同的卡上**，只在**最后gather时才用**。
 
 ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并行**中的**内存冗余**问题。数据并行其实并不需要每个GPU都存整个模型、梯度和优化器参数，ZeRO在每个GPU仅保存部分数据，当需要其余数据时从其他GPU检索。3种解决方案：
 
-+ 优化器状态分区：
-+ 梯度分区：
-+ 参数分区：
++ 优化器状态分区：zero1，对显存最大开销的部分进行shard
++ 梯度分区：zero2
++ 参数分区：zero3
 
-前两种方案不会增加通信开销，第三种方案增加约50%通信开销，但能节省和gpu数成比例的内存。facebook的开源库FSDP(full sharded data parallel)([Fairscale: A general purpose modular pytorch library for high performance and large scale training](https://github.com/facebookresearch/fairscale))里基于pytorch实现了类似ZeRO的技术。
+前两种方案不会增加通信开销，第三种方案增加约50%通信开销，但能节省和gpu数成比例的内存。
 
 ![zero](../assets/zero.png)
 
 
-[ZeRO & DeepSpeed: New system optimizations enable training models with over 100 billion parameters](https://www.microsoft.com/en-us/research/blog/zero-deepspeed-new-system-optimizations-enable-training-models-with-over-100-billion-parameters/)
+详见官方博客：[ZeRO & DeepSpeed: New system optimizations enable training models with over 100 billion parameters](https://www.microsoft.com/en-us/research/blog/zero-deepspeed-new-system-optimizations-enable-training-models-with-over-100-billion-parameters/)
 
 ```python
 import deepspeed
@@ -693,6 +702,13 @@ model.step()
 deepspeed --num_gpus=8 train.py --deepspeed_config xx.json
 ```
 
+facebook的开源库**FSDP(full sharded data parallel)**([Fairscale: A general purpose modular pytorch library for high performance and large scale training](https://github.com/facebookresearch/fairscale))里基于pytorch实现了类似ZeRO的技术。
+
+```python
+from torch.distributed.fsdp import FullyShardedDataParallel as FSDP, ShardingStrategy
+model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
+```
+
 
 还有一些paper也能降低内存，如
 
@@ -708,6 +724,12 @@ deepspeed --num_gpus=8 train.py --deepspeed_config xx.json
 [Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
 
 但FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
+
+### 编译优化
+
+pytorch的TorchDynamo
+
+[https://pytorch.org/docs/stable/torch.compiler_deepdive.html](https://pytorch.org/docs/stable/torch.compiler_deepdive.html)
 
 ## 推理速度优化
 
