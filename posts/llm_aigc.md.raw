@@ -613,10 +613,18 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
     + 为更高维度的张量实现了张量并行，[An efficient 2d method for training super-large deep learning models](https://arxiv.org/pdf/2104.05343.pdf)、[Tesseract: Parallelize the tensor parallelism efficiently](https://arxiv.org/pdf/2105.14500.pdf)和[Maximizing Parallelism in Distributed Training for Huge Neural Networks](https://arxiv.org/pdf/2105.14450.pdf)
     + 特别针对序列数据提出序列并行([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
 
+参考[https://zhuanlan.zhihu.com/p/622036840](https://zhuanlan.zhihu.com/p/622036840)
+
+![tensor parallelism](../assets/tensor-parallelism.png)
+
 原始矩阵乘法是```[m,k], [k, n] -> [m, n]```，有如下两种矩阵分解的等效：
 
 + 列并行（column parallelism）：
-+ 行并行（row parallelism）：
+    + ```[m,k], [k, n/2] -> [m, n/2]```
+    + ```concat([m, n/2], [m, n/2]) -> [m, n]```
++ 行并行（row parallelism）：其实就是**split-k算法**，把两个矩阵都分成k个小块，两两相乘后，最后reduce_sum一下。因为每个线程计算的矩阵更小了，开销小，可以通过加大线程数来提升并行效率。
+    + ```[m, k/2], [k/2, n] -> [m, n]```
+    + ```elemwise_add([m, n], [m, n]) -> [m, n]```
 
 
 
