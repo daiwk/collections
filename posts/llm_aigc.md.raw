@@ -606,11 +606,18 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
 
 &nbsp;
 
-分解LLM的张量（参数矩阵），例如矩阵乘法$$Y=X A$$，$$A$$可以按列分成两个子矩阵$$A_1$$和$$A_2$$，从而改为$$Y=\left[X A_1, X A_2\right]$$，将$$A_1$$和$$A_2$$放到不同GPU上，然后就可能通过跨GPU通信将两个GPU的结果merge。
+**分解LLM的张量（参数矩阵）**，例如矩阵乘法$$Y=X A$$，$$A$$可以按列分成两个子矩阵$$A_1$$和$$A_2$$，从而改为$$Y=\left[X A_1, X A_2\right]$$，将$$A_1$$和$$A_2$$**放到不同GPU上**，然后就可能通过跨GPU通信将两个GPU的结果merge。
+
 + Megatron-LM：能扩展到更高维度的张量
 + Colossal-AI：
     + 为更高维度的张量实现了张量并行，[An efficient 2d method for training super-large deep learning models](https://arxiv.org/pdf/2104.05343.pdf)、[Tesseract: Parallelize the tensor parallelism efficiently](https://arxiv.org/pdf/2105.14500.pdf)和[Maximizing Parallelism in Distributed Training for Huge Neural Networks](https://arxiv.org/pdf/2105.14450.pdf)
     + 特别针对序列数据提出序列并行([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
+
+原始矩阵乘法是```[m,k], [k, n] -> [m, n]```，有如下两种矩阵分解的等效：
+
++ 列并行（column parallelism）：
++ 行并行（row parallelism）：
+
 
 
 #### ZeRO
@@ -730,6 +737,12 @@ model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 pytorch的TorchDynamo
 
 [https://pytorch.org/docs/stable/torch.compiler_deepdive.html](https://pytorch.org/docs/stable/torch.compiler_deepdive.html)
+
+最简单的用法```torch.compile()```
+
+![TorchDynamo](../assets/TorchDynamo.png)
+
+
 
 ## 推理速度优化
 
