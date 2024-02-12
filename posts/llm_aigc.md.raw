@@ -619,10 +619,10 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
 
 原始矩阵乘法是```[m,k], [k, n] -> [m, n]```，有如下两种矩阵分解的等效：
 
-+ 列并行（column parallelism）：
++ 列并行（column parallelism）：第一个矩阵不变，第二个矩阵**竖着劈成两半**，即$$B=[B_1, B_2]$$
     + ```[m,k], [k, n/2] -> [m, n/2]```
     + ```concat([m, n/2], [m, n/2]) -> [m, n]```
-+ 行并行（row parallelism）：其实就是**split-k算法**，把两个矩阵都分成k个小块，两两相乘后，最后reduce_sum一下。因为每个线程计算的矩阵更小了，开销小，可以通过加大线程数来提升并行效率。
++ 行并行（row parallelism）：两个矩阵都横着劈成两半，即$$A=\left[\begin{array}{l}A_1 \\A_2\end{array}\right]$$。推广到k部分，其实就是**split-k算法**，把两个矩阵都分成k个小块，两两相乘后，最后reduce_sum一下。因为每个线程计算的矩阵更小了，开销小，可以通过加大线程数来提升并行效率。
     + ```[m, k/2], [k/2, n] -> [m, n]```
     + ```elemwise_add([m, n], [m, n]) -> [m, n]```
 
