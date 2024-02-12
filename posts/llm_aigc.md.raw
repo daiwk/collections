@@ -619,26 +619,30 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
 
 原始矩阵乘法是```[m,k], [k, n] -> [m, n]```，有如下两种矩阵分解的等效：
 
-+ 列并行（column parallelism）：第一个矩阵不变，第二个矩阵**竖着劈成两半**，即$$B=[B_1, B_2]$$
++ **列并行（column parallelism）**：第一个矩阵不变，第二个矩阵**竖着劈成两半**，即$$B=[B_1, B_2]$$
     + ```[m,k], [k, n/2] -> [m, n/2]```
     + ```concat([m, n/2], [m, n/2]) -> [m, n]```
-+ 行并行（row parallelism）：两个矩阵都横着劈成两半，即$$A=\left[\begin{array}{l}A_1 \\A_2\end{array}\right]$$。推广到k部分，其实就是**split-k算法**，把两个矩阵都分成k个小块，两两相乘后，最后reduce_sum一下。因为每个线程计算的矩阵更小了，开销小，可以通过加大线程数来提升并行效率。
++ **行并行（row parallelism）**：两个矩阵都横着劈成两半，即$$A=\left[\begin{array}{l}A_1 \\A_2\end{array}\right],B=\left[\begin{array}{l}B_1 \\B_2\end{array}\right]$$。从2推广到k，其实就是**split-k算法**，把两个矩阵都分成k个小块，两两相乘后，最后reduce_sum一下。因为每个线程计算的矩阵更小了，开销小，可以通过加大线程数来提升并行效率。
     + ```[m, k/2], [k/2, n] -> [m, n]```
     + ```elemwise_add([m, n], [m, n]) -> [m, n]```
 
-行并行还可以扩展到**推荐**里，假设user有k/2维，item也是k/2维，concat在一起，然后过一个k*d的mlp，即```[1,k] * [k, d] -->[1,d]```，那么可以按行并行的方法，拆成2个```[1, k/2]```和```[k/2,d]```相乘，再相加。这样item侧的```[k/2,d]```可以把全库缓存过来，在线实时算user，排序时把对应item向量抽出来，和user加起来就行
+**行并行**还可以扩展到**推荐**里，假设user有k/2维，item也是k/2维，concat在一起，然后过一个k*d的mlp，即```[1,k] * [k, d] -->[1,d]```，那么可以按行并行的方法，拆成2个```[1, k/2]```和```[k/2,d]```相乘，再相加。这样item侧的```[k/2,d]```可以把全库缓存过来，在线实时算user，排序时把对应item向量抽出来，和user加起来就行
 
 ![megatron-transformer](../assets/megatron-transformer.png)
 
 megatron对transformer进行了如下优化：
 
-+ MLP第一个nn按列分割，第二个nn按行分割，中间省了一次通信
-+ Attention按照head来分割，后面接的nn按row分割，中间也省了一次通信
++ MLP第一个nn按**列分割**，第二个nn按**行分割**，中间省了一次通信
++ Attention按照head来分割(类似**列分割**)，后面接的nn按**行分割**，中间也省了一次通信
 
 图里面的通信算子
 
-+ f是前向identity，反向all-reduce
-+ g是前向all-reduce，反向identity
++ $$f$$是前向identity，反向all-reduce
++ $$g$$是前向all-reduce，反向identity
+
+具体的计算量可以参考[https://colossalai.org/docs/features/1D_tensor_parallel/#introduction](https://colossalai.org/docs/features/1D_tensor_parallel/#introduction)：
+
+![clossal-ai-efficiency](../assets/clossal-ai-efficiency.png)
 
 #### ZeRO
 
