@@ -475,7 +475,8 @@ def xxx():
     t0 = t1
     if iter_num % log_interval == 0 and master_process:
         # get loss as float. note: this is a CPU-GPU sync point
-        # scale up to undo the division above, approximating the true total loss (exact would have been a sum)
+        # scale up to undo the division above, approximating the true total loss
+        # (exact would have been a sum)
         lossf = loss.item() * gradient_accumulation_steps
         if local_iter_num >= 5: # let the training loop settle a bit
             mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
@@ -755,11 +756,7 @@ model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 
 | 并行方法 | 显存效率 | 计算效率 | 限制 | 
 |---|---|---|---|
-| DP（数据并行） | params/gradients/optimizer states都复制在每张卡上，显存效率很低| 
-+ 计算和通信可以overlap，通常在一个minipod内扩展性很好；
-+ 梯度累积可以进一步提高计算效率| 
-+ batchsize不能太大，否则模型效果有损
-+ batchsize/dp不能太小，不然打不满tensorcore |
+| DP（数据并行） | params/gradients/optimizer states都复制在每张卡上，显存效率很低| <ul><li>计算和通信可以overlap，通常在一个minipod内扩展性很好；</li><li>梯度累积可以进一步提高计算效率</li></ul>| <ul><li>batchsize不能太大，否则模型效果有损；</li><li>batchsize/dp不能太小，不然打不满tensorcore</li></ul> |
 | Zero | xx| xx| xx |
 | PP（流水线并行） | xx| xx| xx |
 | TP（张昊并行） | xx| xx| xx |
