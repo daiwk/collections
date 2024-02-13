@@ -640,6 +640,10 @@ megatron对transformer进行了如下优化：
 + $$f$$是前向identity，反向all-reduce
 + $$g$$是前向all-reduce，反向identity
 
+综合来看，一层transformer layer如下
+
+![megatron-transformer-1layer](../assets/megatron-transformer-1layer.png)
+
 具体的计算量可以参考[https://colossalai.org/docs/features/1D_tensor_parallel/#introduction](https://colossalai.org/docs/features/1D_tensor_parallel/#introduction)：
 
 ![clossal-ai-efficiency](../assets/clossal-ai-efficiency.png)
@@ -747,6 +751,18 @@ model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 
 [Training deep nets with sublinear memory cost](https://arxiv.org/pdf/1604.06174.pdf)
 
+#### 综合对比各种并行
+
+| 并行方法 | 显存效率 | 计算效率 | 限制 | 
+|---|---|---|---|
+| DP（数据并行） | params/gradients/optimizer states都复制在每张卡上，显存效率很低| 
++ 计算和通信可以overlap，通常在一个minipod内扩展性很好；
++ 梯度累积可以进一步提高计算效率| 
++ batchsize不能太大，否则模型效果有损
++ batchsize/dp不能太小，不然打不满tensorcore |
+| Zero | xx| xx| xx |
+| PP（流水线并行） | xx| xx| xx |
+| TP（张昊并行） | xx| xx| xx |
 
 ### 混合精度训练
 
