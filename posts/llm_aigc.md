@@ -503,6 +503,26 @@ def xxx():
     + 梯度检查点：容易出现loss突增，PaLM和OPT从**发生突增前的一个ckpt重新开始训练**，并**跳过可能有问题的数据**
     + 缩减emb梯度：GLM发现emb的异常梯度通常会导致loss突增，故**缩减emb梯度**以缓解
 
+### 混合精度训练
+
+&nbsp;
+
+[Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
+
++ **推理**：所有参数都是fp16，相对fp32，存储变成一半，速度提升1倍。
++ **训练**：参数和梯度用**fp32存储**，但是在**计算前**会**转成fp16**，**计算后**再**转回fp32**。主要为了**防止溢出**，在fp16的grad上有一个scale的参数。
+
+但FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
+
+#### FP16
+
+&nbsp;
+
+#### BF16
+
+&nbsp;
+
+
 ### 可扩展的训练
 
 需要**提高训练吞吐量**和**加载更大模型到显存中**
@@ -513,7 +533,7 @@ def xxx():
 
 如下三种并行（数据并行、流水线并行、张量并行）的组合
 
-##### 数据并行
+##### 数据并行（Data Parallelism）
 
 &nbsp;
 
@@ -600,7 +620,7 @@ GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效
 
 因为要做pipeline+梯度累积，前向过程中的**激活值**要保存，以留给反向过程使用，保存很多份的激活值对显存造成了很大压力。recomputation(也叫**checkpointing**)用时间来换空间（反向的时候进行一次激活值的重计算)，可以缓解显存问题。
 
-pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/checkpoint.py)。大致逻辑是包了一个```autograd.Function```，前向时保存一些inputs/rng_state(RNG state是Random Number Generator state的缩写，意味着**随机数生成器的状态**。在深度学习和其他计算任务中，随机数生成器用于初始化参数、决定正则化技术如dropout的行为，以及在训练过程中选择样本等。RNG状态是指随机数生成器当前的内部状态，它可以用来在需要时重现或恢复特定的随机数序列，确保实验或模型训练的可重复性)，反向时重新计算
+pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/checkpoint.py)。大致逻辑是包了一个```autograd.Function```，前向时保存一些inputs/rng_state(RNG state是Random Number Generator state的缩写，**随机数生成器的状态**。在深度学习和其他计算任务中，随机数生成器用于初始化参数、决定正则化技术如dropout的行为，以及在训练过程中选择样本等。RNG状态是指随机数生成器当前的内部状态，它可以用来在需要时重现或恢复特定的随机数序列，确保实验或模型训练的可重复性)，反向时重新计算
 
 
 ##### 张量并行（Tensor Parallelism）
@@ -784,13 +804,7 @@ SP：
 
 ![megatron-results](../assets/megatron-results.png)
 
-### 混合精度训练
 
-&nbsp;
-
-[Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
-
-但FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
 
 ### 编译优化
 
