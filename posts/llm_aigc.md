@@ -507,20 +507,38 @@ def xxx():
 
 &nbsp;
 
-[Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
-
-+ **推理**：所有参数都是fp16，相对fp32，存储变成一半，速度提升1倍。
-+ **训练**：参数和梯度用**fp32存储**，但是在**计算前**会**转成fp16**，**计算后**再**转回fp32**。主要为了**防止溢出**，在fp16的grad上有一个scale的参数。
-
-但FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
-
 #### FP16
 
 &nbsp;
 
+[Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
+
++ **推理（预测）**：所有参数都是fp16，相对fp32，存储变成一半，速度提升1倍。
++ **训练**：参数和梯度用**fp32存储**，但是在**计算前**会**转成fp16**，**计算后**再**转回fp32**。主要为了**防止溢出**，loss要乘一个scale，然后在fp16的梯度要除以scale。
+
+对于一个fp16的模型训练，adam优化器里通常要保存：
+
++ 一份**fp32的梯度**和**参数**来做loss scale，
++ 一份**fp32**的**Variance**和**Momentum**
+
+对于每1个参数来说，占用20bytes显存，包括
+
++ fp16的参数：2bytes
++ fp16的梯度：2bytes（其实不一定是必须的，在ZeRO的[论文](https://arxiv.org/pdf/1910.02054v2.pdf)中有分析）
++ 优化器状态（optimizer state)：16bytes = fp32梯度（4bytes） + fp32 variance【历史梯度平方和】（4bytes） + fp32 momentum【历史梯度滑动平均】（4bytes） + fp32参数（4bytes）
+
+而在预测时只要存一个fp16的参数就行了，2bytes，所以**预测的显存是训练的1/10**，对应1.3B参数量的gpt2-xl，训练要占用26GB，预测只要2.6GB
+
+
 #### BF16
 
 &nbsp;
+
+FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
+
+[https://blog.csdn.net/orangerfun/article/details/133106913](https://blog.csdn.net/orangerfun/article/details/133106913)
+
+![fp16-bf16](../assets/fp16-bf16.png)
 
 
 ### 可扩展的训练
@@ -675,21 +693,9 @@ megatron对transformer进行了如下优化：
 
 &nbsp;
 
-对于一个fp16的模型训练，adam优化器里通常要保存：
+[ZeRO: Memory Optimization Towards Training A Trillion Parameter Models](https://arxiv.org/pdf/1910.02054v2.pdf)
 
-+ 一份**fp32的梯度**和**参数**来做loss scale，
-+ 一份**fp32**的**Variance**和**Momentum**
-
-
-对于每1个参数来说，占用20bytes显存，包括
-
-+ fp16的参数：2bytes
-+ fp16的梯度：2bytes
-+ 优化器状态（optimizer state)：16bytes = fp32 梯度 + fp32 variance + fp32 momentum + fp32参数
-
-对应1.3B参数量的gpt2-xl，占用26GB
-
-而这些显存占用，在**前向**和**反向**的时候都**不用**，只有最后**optimizer step**的时候才用。
+fp16那一节中，optimizer state的显存占用，在**前向**和**反向**的时候都**不用**，只有最后**optimizer step**的时候才用。
 
 ===>zero的思想：把optimizer state**分shard存在不同的卡上**，只在**最后gather时才用**。
 
@@ -735,7 +741,7 @@ model.step()
       "lr": 6e-4,
       "weight_decay": 1e-2,
       "betas": [0.9, 0.95]
-    }
+    }zer
   },
   "scheduler": {
     "type": "WarmupLR",
