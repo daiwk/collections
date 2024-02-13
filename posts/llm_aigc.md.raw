@@ -754,12 +754,14 @@ model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 
 #### 综合对比各种并行
 
+&nbsp;
+
 几个缩写：params（p）/gradients(g)/optimizer states(os)/activation(a)
 
 | 并行方法 | 显存效率 | 计算效率 | 限制 | 
 |---|---|---|---|
 | DP（数据并行） | p/g/os都复制在每张卡上，显存效率很低| 计算和通信可以overlap，如果都在一个minipod内扩展性很好；梯度累积可以提高计算效率| batchsize不能太大，否则模型效果有损；batchsize/dp不能太小，不然打不满tensorcore|
-| ZeRO（解决dp的显存冗余） |zero1/2/3把os/g/p分别shard到每张卡上，显存效率很高| 需要做prefetch来减少通信对计算效率的影响| 同DP |
+| ZeRO（解决DP的显存冗余） |zero1/2/3把os/g/p分别shard到每张卡上，显存效率很高| 需要做prefetch来减少通信对计算效率的影响| 同DP |
 | PP（流水线并行） | 切分p，提高显存效率；a需要存多次，降低显存效率| 通信次数最少，只发生在多层之间的切分点，但是有Bubble| 每个Stage之间需要负载均衡，对模型结构和卡数有限制|
 | TP（张量并行） | p/g/os/a被shard在每张卡上，显存效率也很高；有些层是复制的，比如layernorm，可以用sequence parallel优化（[Reducing Activation Recomputation in Large Transformer Models](https://arxiv.org/pdf/2205.05198.pdf)）| 梯度不需要同步，提高计算效率；每层插入了4次通信，而且是跟计算有依赖的，会降低计算效率；每层的计算量进行了切分，也会降低计算效率| 一般是单机内8卡nvlink会用TP |
 
