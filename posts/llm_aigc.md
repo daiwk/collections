@@ -607,12 +607,14 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
 
 &nbsp;
 
+[Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/pdf/1909.08053.pdf)
+
 **分解LLM的张量（参数矩阵）**，例如矩阵乘法$$Y=X A$$，$$A$$可以按列分成两个子矩阵$$A_1$$和$$A_2$$，从而改为$$Y=\left[X A_1, X A_2\right]$$，将$$A_1$$和$$A_2$$**放到不同GPU上**，然后就可能通过跨GPU通信将两个GPU的结果merge。
 
 + Megatron-LM：能扩展到更高维度的张量
 + Colossal-AI：
     + 为更高维度的张量实现了张量并行，[An efficient 2d method for training super-large deep learning models](https://arxiv.org/pdf/2104.05343.pdf)、[Tesseract: Parallelize the tensor parallelism efficiently](https://arxiv.org/pdf/2105.14500.pdf)和[Maximizing Parallelism in Distributed Training for Huge Neural Networks](https://arxiv.org/pdf/2105.14450.pdf)
-    + 特别针对序列数据提出序列并行([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
+    + 特别针对序列数据提出**序列并行**([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，详见下一节
 
 参考[https://zhuanlan.zhihu.com/p/622036840](https://zhuanlan.zhihu.com/p/622036840)
 
@@ -745,12 +747,25 @@ from torch.distributed.fsdp import FullyShardedDataParallel as FSDP, ShardingStr
 model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 ```
 
-
 还有一些paper也能降低内存，如
 
 [Reducing activation recomputation in large transformer models](https://arxiv.org/pdf/2205.05198.pdf)
 
 [Training deep nets with sublinear memory cost](https://arxiv.org/pdf/1604.06174.pdf)
+
+#### 序列并行
+
+**序列并行**([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
+
+[Reducing Activation Recomputation in Large Transformer Models](https://arxiv.org/pdf/2205.05198.pdf)这个也是
+
+对比TP：
+
+![tensor-parallel](../assets/tensor-parallel.png)
+
+SP：
+
+![sequence-parallel](../assets/sequence-parallel.png)
 
 #### 综合对比各种并行
 
@@ -763,7 +778,7 @@ model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 | DP（数据并行） | p/g/os都复制在每张卡上，显存效率很低| 计算和通信可以overlap，如果都在一个minipod内扩展性很好；梯度累积可以提高计算效率| batchsize不能太大，否则模型效果有损；batchsize/dp不能太小，不然打不满tensorcore|
 | ZeRO（解决DP的显存冗余） |zero1/2/3把os/g/p分别shard到每张卡上，显存效率很高| 需要做prefetch来减少通信对计算效率的影响| 同DP |
 | PP（流水线并行） | 切分p，提高显存效率；a需要存多次，降低显存效率| 通信次数最少，只发生在多层之间的切分点，但是有Bubble| 每个Stage之间需要负载均衡，对模型结构和卡数有限制|
-| TP（张量并行） | p/g/os/a被shard在每张卡上，显存效率也很高；有些层是复制的，比如layernorm，可以用sequence parallel优化（[Reducing Activation Recomputation in Large Transformer Models](https://arxiv.org/pdf/2205.05198.pdf)）| 梯度不需要同步，提高计算效率；每层插入了4次通信，而且是跟计算有依赖的，会降低计算效率；每层的计算量进行了切分，也会降低计算效率| 一般是单机内8卡nvlink会用TP |
+| TP（张量并行） | p/g/os/a被shard在每张卡上，显存效率也很高；有些层如layernorm是复制的，可以用sequence parallel优化| 梯度不需要同步，提高计算效率；每层插入了4次通信，而且是跟计算有依赖的，会降低计算效率；每层的计算量进行了切分，也会降低计算效率| 一般是单机内8卡nvlink会用TP |
 
 整体对比可以看
 
