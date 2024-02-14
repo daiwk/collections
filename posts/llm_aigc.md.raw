@@ -444,7 +444,7 @@ XXX
 
 在T5和GLM-130B中使用，**自回归地恢复替换区间**。
 
-## attention的复杂度分析
+## Transformer的FLOPS
 
 [https://zhuanlan.zhihu.com/p/624740065](https://zhuanlan.zhihu.com/p/624740065)
 
@@ -452,18 +452,57 @@ $$A$$的shape是$$m\times k$$，$$B$$的shape是$$k\times n$$，那么矩阵乘�
 
 假设batchsize是$$b$$，序列长度$$s$$，原来的emb是$$d$$，即输入的是$$[b,s,d]$$，假设$$d_k=d_v=d_q$$，对应的Q、K、V矩阵都是$$s\times d_v$$，有$$head\_num$$个头，每个头的维度$$per\_head\_d=\frac{d}{head\_num}$$
 
+### attention的FLOPS
+
+attention的公式：
+
+XXX
+\begin{aligned}
+&Q=x W_Q, K=x W_K, V=x W_V\\
+&x_{\text {out }}=\operatorname{softmax}\left(\frac{Q K^T}{\sqrt{h}}\right) \cdot V \cdot W_o+x
+\end{aligned}
+XXX
+
+
 + 计算3个Q、K、V：要算三次$s\times d$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times s\times d\times d_v$$
+    + 输入：$$[b, s, d]$$和3个$$[b, d, d_v]$$
+    + 输出：$$[b, s, d_v]$$，再把最后一维$$d_v$$拆成$$head\_num$$份，再把中间两维互换一下，得到$$[b, head\_num, s, per\_head\_d]$$
 + 计算Q和K的相似度：要算一次$$s\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times s^2\times d_k$$
     + 输入：$$[b, head\_num, s, per\_head\_d]$$和$$[b, head\_num, per\_head\_d, s]$$
-    + 输出：
+    + 输出：$$[b, head\_num, s, s]$$
 + 把相似度用到V上：要算一次$$s\times s$$和$$s\times d_v$$的矩阵乘法，，$$2\times b\times s^2 \times d_v$$
-+ 还有一个线性映射(多头后的那个linear)：要算一次$$s\times d_v$$的和$$d_v\times d_v$$的矩阵乘法，$$2\times b\times s\times d_v\times d_v$$
+    + 输入：$$[b, head\_num, s, s]$$和$$[b, head\_num, s, per\_head\_d]$$
+    + 输出：$$[b, head\_num, s, per\_head\_d]$$
++ 最后过一个线性映射：要算一次$$s\times d_v$$的和$$d_v\times d_v$$的矩阵乘法，$$2\times b\times s\times d_v\times d_v$$
+    + 输入：$$[b, s, d_v]$$和$$[d_v, d_v]$$
+    + 输出：$$[b, s, d_v]$$
 
-因为$$d_k=d_v=d_q=d$$，单纯计算attention总共就是$$8\times b\times s\times d^2 + 4\times b\times s^2\times d$$
-
-如果$$d$$比较大，那是$$d^2$$的复杂度，如果$$s$$比较大，那就是$$s^2$$。
+因为$$d_k=d_v=d_q=d$$，单纯计算attention总共就是$$8bsd^2 + 4bs^2d$$
 
 
+### FFN的FLOPS
+
+FFN的公式：
+
+XXX
+x=f_{\text {gelu }}\left(x_{\text {out }} W_1\right) W_2+x_{\text {out }}
+XXX
+
+在原始Transformer中，$$W_1$$的shape是$$[d,4d]$$，$$W_2$$的shape是$$[4d,d]$$，
+
++ 第一个线性层：$$2\times b\times s\times\ d\times 4d=8\times b\times s\times\ d^2$$
+    + 输入：$$[b, s, d]$$和$$[d,4d]$$
+    + 输出：$$[b, s, 4d]$$
++ 第二个线性层：$$2\times b\times s\times\ 4d\times d=8\times b\times s\times\ d^2$$
+    + 输入：$$[b, s, 4d]$$和$$[4d,d]$$
+    + 输出：$$[b, s, d]$$
+
+所以一层Transformer，即attention+FFN的计算量为$$(8bsd^2 + 4bs^2d)+16bsd^2=24bsd^2+4bs^d$$
+
+有两点需要注意的：
+
++ 对NLP任务来讲，一般$$d$$是个比较固定的值，如512，而$$s$$变大，效果会更好，所以一般是$$s>d$$，所以复杂度取决于$$s$$的大小。
++ 但有些模型的初始设置不是这样的，例如GPT3的175B模型里，$$s=2048,d=12288$$，当然，算力够的话也可以把$$s$$变大
 
 ## 模型训练
 
