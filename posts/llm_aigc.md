@@ -497,7 +497,7 @@ $$
     + 输入：$$[b, s, 4d]$$和$$[4d,d]$$
     + 输出：$$[b, s, d]$$
 
-所以一层Transformer，即attention+FFN的计算量为$$(8bsd^2 + 4bs^2d)+16bsd^2=24bsd^2+4bs^d$$
+所以一层Transformer，即attention+FFN的计算量为$$(8bsd^2 + 4bs^2d)+16bsd^2=24bsd^2+4bs^2d$$
 
 有两点需要注意的：
 
