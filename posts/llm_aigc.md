@@ -675,7 +675,7 @@ ddp(another_input).backward()  # synchronize grads
 + GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
 + PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
 
-###### 1)GPipe
+###### 1) GPipe
 
 &nbsp;
 
@@ -691,7 +691,7 @@ Gpipe主要思想：
 
 GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效果，输入和输出共享vocab embedding
 
-###### 2)重计算
+###### 2) 重计算
 
 &nbsp;
 
@@ -841,6 +841,8 @@ model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 [Training deep nets with sublinear memory cost](https://arxiv.org/pdf/1604.06174.pdf)
 
 #### 序列并行
+
+&nbsp;
 
 **序列并行**([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
 
