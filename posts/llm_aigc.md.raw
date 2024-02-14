@@ -450,7 +450,7 @@ XXX
 
 $$A$$的shape是$$m\times k$$，$$B$$的shape是$$k\times n$$，那么矩阵乘法$$AB$$需要$$m\times k\times n$$次的乘法，也需要同样多次的加法，所以FLOPS是$$2\times m\times k\times n$$
 
-假设batchsize是$$b$$，序列长度$$s$$，原来的emb是$$d$$，即输入的是$$[b,s,d]$$，假设$$d_k=d_v=d_q$$，对应的Q、K、V矩阵都是$$s\times d_v$$，有$$head\_num$$个头，每个头的维度$$per\_head\_d=\frac{d}{head\_num}$$
+假设batchsize是$$b$$，序列长度$$s$$，原来的emb是$$d$$，即输入的是$$[b,s,d]$$，一般$$d=d_k=d_v=d_q$$，对应的Q、K、V矩阵都是$$s\times d_v$$，有$$head\_num$$个头，每个头的维度$$per\_head\_d=\frac{d}{head\_num}$$
 
 ### attention的FLOPS
 
