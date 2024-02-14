@@ -444,6 +444,25 @@ $$
 
 在T5和GLM-130B中使用，**自回归地恢复替换区间**。
 
+## attention的复杂度分析
+
+[https://zhuanlan.zhihu.com/p/624740065](https://zhuanlan.zhihu.com/p/624740065)
+
+$$A$$的shape是$$m\times k$$，$$B$$的shape是$$k\times n$$，那么矩阵乘法$$AB$$的需要$$m\times k\times n$$次的乘法，也需要同样多次的加法，所以FLOPS是$$2\times m\times k\times n$$
+
+假设batchsize是$$b$$，序列长度$$s$$，原来的emb是$$d$$，即输入的是$$[b,s,d]$$，假设$$d_k=d_v=d_q$$，对应的Q、K、V矩阵都是$$s\times d_v$$，
+
++ 计算3个Q、K、V：要算三次$s\times d$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times s\times d\times d_v$$
++ 计算Q和K的相似度：要算一次$$s\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times s^2\times d_k$$
++ 把相似度用到V上：要算一次$$s\times s$$和$$s\times d_v$$的矩阵乘法，，$$2\times b\times s^2 \times d_v$$
++ 还有一个线性映射(多头后的那个linear)：要算一次$$s\times d_v$$的和$$d_v\times d_v$$的矩阵乘法，$$2\times b\times s\times d_v\times d_v$$
+
+因为$$d_k=d_v=d_q=d$$，单纯计算attention总共就是$$8\times b\times s\times d^2 + 4\times b\times s^2\times d$$
+
+如果$$d$$比较大，那是$$d^2$$的复杂度，如果$$s$$比较大，那就是$$s^2$$。
+
+
+
 ## 模型训练
 
 mfu(Model Flops Utilization)模型算力利用率是分布式训练效率的优化目标。
