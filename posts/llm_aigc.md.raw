@@ -449,7 +449,7 @@ XXX
 
 在T5和GLM-130B中使用，**自回归地恢复替换区间**。
 
-## Transformer的FLOPS
+## Transformer的FLOPS和访存带宽
 
 [https://zhuanlan.zhihu.com/p/624740065](https://zhuanlan.zhihu.com/p/624740065)
 
@@ -535,6 +535,39 @@ XXX
     + 输出：$$[b, 1, d]$$
 
 总共是$$6bd^2+2bds+2bds+2bd^2+8bd^2+8bd^2=24bd^2+4bds$$
+
+### Transformer的访存
+
+参考[https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/](https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/)
+
+
+GPU的显存分成两部分：
+
++ Global Memory：比如A100 80G，用的HBM2存储，2TB/s带宽，访问速度比较慢
++ Shared Memory：比如A100，每个SM有192KB，共108个SM，访问速度比较快
+
+从图中可见，A100的FP16有312T的FLOPS
+
+![A100-tensorcore-performance](../assets/A100-tensorcore-performance.png)
+
+以矩阵乘为例，输入```[M, K] x [K, N] -> [M,N]```，
+
++ 计算时间：$$2MKN/FLOPS$$
++ 访存时间为：$$(MN+MK+KN)/memory\_bandwidth$$，因为首先要**读取**$$MK$$和$$NK$$这两个矩阵，然后结果还要**写入**$$MN$$这个矩阵里。假设是fp16，占2bytes，那就还要乘以2
+
+假设$b=1,s=4096,d=d_k=2048$$$，以计算Q和K的相似度为例，对比一下训练和预测时的**计算耗时**和**访存耗时**
+
++ **训练时**：$$M=4096,N=2048,K=4096$$==>**计算是瓶颈**
+    + FLOPS：$$2\times b\times s^2\times d_k=2\times 1\times 4096^2\times 2048=68719476736$$
+    + 计算耗时：$$FLOPS/max\_FLOPS=68719476736/(312\times 10^12)=0.00022s=220\times 10^{-6}s=220us$$
+    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (4096\times 2048+4096\times 4096+4096\times 2048)/(2\times 10^12)=3.35544\teims 10^{-5}s=33.544\times 10^{-6}=33.5544us$$
+
++ **预测时**：$$M=1,N=2048,K=4096$$==>**访存是瓶颈**
+    + FLOPS：$$2\times b\times 1\times d_k\times s=2\times 1\times 2048\times 4096=16777216$$ 
+    + 计算耗时：$$FLOPS/max\_FLOPS=16777216/(312\times 10^12)=5.38\times 10^{-8}s=0.0538\times 10^{-6}s=0.0538us$$
+    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (1\times 2048+1\times 4096+4096\times 2048)/(2\times 10^12)=8.3948\teims 10^{-6}s=8.3948us$$
+
+
 
 ## 模型训练
 
