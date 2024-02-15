@@ -921,13 +921,23 @@ pytorch的TorchDynamo
 
 ![TorchDynamo](../assets/TorchDynamo.png)
 
+### flash attention
+
+[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)
+
+FlashAttention其实是对$$softmax(QK^T)V$$的一种加速实现。
+
+一般的实现：需要先 用矩阵$$C$$存$$QK^T$$的结果，然后对$$C$$按行做softmax得到新的$$C$$，再用$$C$$乘以$$V$$得到最后结果。
+
+FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量，通过分块计算，**让临时变量总是可以放在cache里**，从而
+
++ 减少Global Memory的大小
++ 加速attenttion的计算，因为读cache比访问Global Memory快多了。
 
 
 ## 推理速度优化
 
 ### 量化
-
-&nbsp;
 
 [ZeroQuant-V2: Exploring Post-training Quantization in LLMs from Comprehensive Study to Low Rank Compensation](https://arxiv.org/pdf/2303.08302.pdf)和[Compression of generative pre- trained language models via quantization](https://arxiv.org/pdf/2203.10705.pdf)
 
