@@ -530,7 +530,7 @@ $$
 + 第一个线性层：$$2\times b\times 1\times\ d\times 4d=8\times b\times 1\times\ d^2$$
     + 输入：$$[b, 1, d]$$和$$[d,4d]$$
     + 输出：$$[b, 1, 4d]$$
-+ 第二个线性层：$$2\times b\times s\times\ 4d\times d=8\times b\times 1\times\ d^2$$
++ 第二个线性层：$$2\times b\times 1\times\ 4d\times d=8\times b\times 1\times\ d^2$$
     + 输入：$$[b, 1, 4d]$$和$$[4d,d]$$
     + 输出：$$[b, 1, d]$$
 
