@@ -550,7 +550,7 @@ GPU的显存分成两部分：
 
 ![A100-tensorcore-performance](../assets/A100-tensorcore-performance.png)
 
-以矩阵乘为例，输入```[M, K] x [K, N] -> [M,N]```，
+以矩阵乘法为例，$$[M, K] \times [K, N] -> [M,N]$$，
 
 + 计算时间：$$2MKN/FLOPS$$
 + 访存时间为：$$(MN+MK+KN)/memory\_bandwidth$$，因为首先要**读取**$$MK$$和$$NK$$这两个矩阵，然后结果还要**写入**$$MN$$这个矩阵里。假设是fp16，占2bytes，那就还要乘以2
