@@ -484,7 +484,6 @@ $$
 
 因为$$d_k=d_v=d_q=d$$，单纯计算attention总共就是$$8bsd^2 + 4bs^2d$$
 
-
 ### FFN的FLOPS
 
 FFN的公式：
@@ -508,6 +507,34 @@ $$
 
 + 对NLP任务来讲，一般$$d$$是个比较固定的值，如512，而$$s$$变大，效果会更好，所以一般是$$s>d$$，所以复杂度取决于$$s$$的大小。
 + 但有些模型的初始设置不是这样的，例如GPT3的175B模型里，$$s=2048,d=12288$$，当然，算力够的话也可以把$$s$$变大
+
+
+### DIN的FLOPS
+
+特殊地，对于推荐中的DIN那种，看当前item和历史s个item的相关性，即q的序列长度只有1，不考虑多头，而这其实也是decoder预测下一个词时过一层Transformer的复杂度
+
+已经有3个序列长度为$$s-1$$的QKV的cache，要算第$$s$$个词和这$$s-1$$个词的attention
+
++ 计算第$$s$$个词的3个Q、K、V：要算三次$1\times d$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times 1\times d\times d_v$$
+    + 输入：$$[b, 1, d]$$和3个$$[b, d, d_v]$$
+    + 输出：$$[b, 1, d_v]$$
++ 计算Q和K的相似度：要算一次$$1\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times 1\times d_k\times s$$【这里的K是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去年当前词，这里先忽略这个】
+    + 输入：$$[b, 1, d_v]$$和$$[b, d_v, s]$$
+    + 输出：$$[b, 1, s]$$
++ 把相似度用到V上：要算一次$$1\times s$$和$$s\times d_v$$的矩阵乘法，，$$2\times b\times 1 \times d_v \times s$$【同样地，这里的V是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去年当前词，这里先忽略这个】
+    + 输入：$$[b, 1, s]$$和$$[b, s, d_v]$$
+    + 输出：$$[b, 1, d_v]$$
++ 最后过一个线性映射：要算一次$$1\times d_v$$的和$$d_v\times d_v$$的矩阵乘法，$$2\times b\times 1\times d_v\times d_v$$
+    + 输入：$$[b, 1, d_v]$$和$$[d_v, d_v]$$
+    + 输出：$$[b, 1, d_v]$$
++ 第一个线性层：$$2\times b\times 1\times\ d\times 4d=8\times b\times 1\times\ d^2$$
+    + 输入：$$[b, 1, d]$$和$$[d,4d]$$
+    + 输出：$$[b, 1, 4d]$$
++ 第二个线性层：$$2\times b\times s\times\ 4d\times d=8\times b\times 1\times\ d^2$$
+    + 输入：$$[b, 1, 4d]$$和$$[4d,d]$$
+    + 输出：$$[b, 1, d]$$
+
+总共是$$6bd^2+2bds+2bds+2bd^2+8bd^2+8bd^2=24bd^2+4bds$$
 
 ## 模型训练
 
@@ -872,13 +899,17 @@ SP：
 | DP（数据并行） | p/g/os都复制在每张卡上，显存效率很低| 计算和通信可以overlap，如果都在一个minipod内扩展性很好；梯度累积可以提高计算效率| batchsize不能太大，否则模型效果有损；batchsize/dp不能太小，不然打不满tensorcore|
 | ZeRO（解决DP的显存冗余） |zero1/2/3把os/g/p分别shard到每张卡上，显存效率很高| 需要做prefetch来减少通信对计算效率的影响| 同DP |
 | PP（流水线并行） | 切分p，提高显存效率；a需要存多次，降低显存效率| 通信次数最少，只发生在多层之间的切分点，但是有Bubble| 每个Stage之间需要负载均衡，对模型结构和卡数有限制|
-| TP（张量并行） | p/g/os/a被shard在每张卡上，显存效率也很高；有些层如layernorm是复制的，可以用sequence parallel优化| 梯度不需要同步，提高计算效率；每层插入了4次通信，而且是跟计算有依赖的，会降低计算效率；每层的计算量进行了切分，也会降低计算效率| 一般是单机内8卡nvlink会用TP |
+| TP（张量并行） | p/g/os/a被shard在每张卡上，显存效率也很高；有些层如layernorm是复制的，可以用sequence parallel优化| 梯度不需要同步，提高计算效率；每层插入了4次通信，而且是跟计算有依赖的，会降低计算效率；每层的计算量进行了切分，也会降低计算效率| 一般是单机内8卡使用nvlink时用TP |
 
 整体对比可以看
 
 ![megatron-results](../assets/megatron-results.png)
 
+一般这么整合：
 
++ 把机器分成N组，**不同组之间用DP**
++ 一组机器有M台机器，**不同机器之间用PP**
++ 一台机器有K张卡，**不同卡之间用TP**
 
 ### 编译优化
 
