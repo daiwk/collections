@@ -559,13 +559,13 @@ GPU的显存分成两部分：
 
 + **训练时**：$$M=4096,N=2048,K=4096$$==>**计算是瓶颈**
     + FLOPS：$$2\times b\times s^2\times d_k=2\times 1\times 4096^2\times 2048=68719476736$$
-    + 计算耗时：$$FLOPS/max\_FLOPS=68719476736/(312\times 10^12)=0.00022s=220\times 10^{-6}s=220us$$
-    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (4096\times 2048+4096\times 4096+4096\times 2048)/(2\times 10^12)=3.35544\times 10^{-5}s=33.544\times 10^{-6}=33.5544us$$
+    + 计算耗时：$$FLOPS/max\_FLOPS=68719476736/(312\times 10^{12})=0.00022s=220\times 10^{-6}s=220us$$
+    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (4096\times 2048+4096\times 4096+4096\times 2048)/(2\times 10^{12})=3.35544\times 10^{-5}s=33.544\times 10^{-6}=33.5544us$$
 
 + **预测时**：$$M=1,N=2048,K=4096$$==>**访存是瓶颈**
     + FLOPS：$$2\times b\times 1\times d_k\times s=2\times 1\times 2048\times 4096=16777216$$ 
-    + 计算耗时：$$FLOPS/max\_FLOPS=16777216/(312\times 10^12)=5.38\times 10^{-8}s=0.0538\times 10^{-6}s=0.0538us$$
-    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (1\times 2048+1\times 4096+4096\times 2048)/(2\times 10^12)=8.3948\times 10^{-6}s=8.3948us$$
+    + 计算耗时：$$FLOPS/max\_FLOPS=16777216/(312\times 10^{12})=5.38\times 10^{-8}s=0.0538\times 10^{-6}s=0.0538us$$
+    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (1\times 2048+1\times 4096+4096\times 2048)/(2\times 10^{12})=8.3948\times 10^{-6}s=8.3948us$$
 
 
 
