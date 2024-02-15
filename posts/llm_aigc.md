@@ -469,7 +469,7 @@ $$
 $$
 
 
-+ 计算3个Q、K、V：要算三次$s\times d$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times s\times d\times d_v$$
++ 计算3个Q、K、V：要算三次$$s\times d$$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times s\times d\times d_v$$
     + 输入：$$[b, s, d]$$和3个$$[b, d, d_v]$$
     + 输出：$$[b, s, d_v]$$，再把最后一维$$d_v$$拆成$$head\_num$$份，再把中间两维互换一下，得到$$[b, head\_num, s, per\_head\_d]$$
 + 计算Q和K的相似度：要算一次$$s\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times s^2\times d_k$$
@@ -555,7 +555,7 @@ GPU的显存分成两部分：
 + 计算时间：$$2MKN/FLOPS$$
 + 访存时间为：$$(MN+MK+KN)/memory\_bandwidth$$，因为首先要**读取**$$MK$$和$$NK$$这两个矩阵，然后结果还要**写入**$$MN$$这个矩阵里。假设是fp16，占2bytes，那就还要乘以2
 
-假设$b=1,s=4096,d=d_k=2048$$$，以计算Q和K的相似度为例，对比一下训练和预测时的**计算耗时**和**访存耗时**
+假设$$b=1,s=4096,d=d_k=2048$$，以计算Q和K的相似度为例，对比一下训练和预测时的**计算耗时**和**访存耗时**
 
 + **训练时**：$$M=4096,N=2048,K=4096$$==>**计算是瓶颈**
     + FLOPS：$$2\times b\times s^2\times d_k=2\times 1\times 4096^2\times 2048=68719476736$$
