@@ -182,6 +182,12 @@ $$
 涌现能力：在小型模型中不存在而在大型模型中产生的能力，当规模达到一定程度时，性能显著提升，超出随机水平（参考
 [Emergent Abilities of Large Language Models](https://arxiv.org/pdf/2206.07682.pdf)）。与物理学中的**相变**现象类似（物质从一种相（状态）转变为另一种相的过程，通常伴随着能量的吸收或释放，并且涉及不同的物理性质，例如固体、液体和气体之间的转变）。
 
+[普林斯顿DeepMind用数学证明：LLM不是随机鹦鹉！「规模越大能力越强」有理论根据](https://mp.weixin.qq.com/s/oYYuqbelBfCCSLW4Qo4POA)
+
+[A Theory for Emergence of Complex Skills in Language Models](https://arxiv.org/abs/2307.15936)：
+
+
+
 ![涌现](../assets/emergent%20ability.png)
 
 LLM的3种典型涌现能力及其对应代表模型：
@@ -1461,7 +1467,7 @@ Flan-T5和Flan-PaLM（[Scaling instruction-finetuned language models](https://ar
 + BIG-bench：
 + HELM：
 
-# 比较有用的数据集
+## 比较有用的数据集
 
 
 [https://huggingface.co/BelleGroup](https://huggingface.co/BelleGroup) 里有很多中文的instruct和输出的数据集
@@ -1821,7 +1827,9 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 [https://github.com/allenai/RL4LMs](https://github.com/allenai/RL4LMs)
 
 
-# llama
+# llama系列
+
+## llama
 
 [LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)
 
@@ -1833,7 +1841,7 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 llama只用公开数据训练，而Chinchilla、PaLM、GPT-3都有自己的未公开数据集。其他的OPT、GPT-NeoX、BLOOM、GLM虽然也只用公开数据集，但打不过PaLM-62B或者Chinchilla
 
-## 预训练数据
+### 预训练数据
 
 + English CommonCrawl(67%)：使用CCNet pipeline，去重、用fasttext把非英文的页面删了，用n-gram把低质内容删了。此外，还训了一个线性模型，对页面进行分类：作为维基百科的引用 vs 随机采样的页面，最后把不属于引用这个类别的页面删了
 + C4(15%)：与CCNet类似，主要区别在质量过滤是基于启发式的规则，如标点符号的存在，或者词数和句子数
@@ -1857,7 +1865,7 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 ![一些大模型](../assets/LLM/WechatIMG322.jpg)
 
 
-## 网络结构
+### 网络结构
 
 + pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))
 + SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
@@ -1865,14 +1873,14 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%。0.1的weight decay和1.0的gradient cliping，使用2000steps的warmup
 
-## 训练加速
+### 训练加速
 
 + 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $$o(n^2)$$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
     + 不存储attention weights
     + 不计算被mask的key/query得分
 + 减少xxx：
 
-## 衍生：Alpaca
+### 衍生：Alpaca
 
 [Alpaca: A Strong, Replicable Instruction-Following Model](https://crfm.stanford.edu/2023/03/13/alpaca.html?trk=cndc-detail)
 
@@ -1880,14 +1888,26 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 ![Alpaca](../assets/alpaca.jpeg)
 
-# llama2
+## llama2
 
 [Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
 
 [https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
 
 
-# 几篇需要再看下的论文
+# gemini系列
+
+## Gemini1.5
+
+[谷歌Gemini 1.5深夜爆炸上线，史诗级多模态硬刚GPT-5！最强MoE首破100万极限上下文纪录](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652444347&idx=1&sn=51ae7e3e100e24fd49b0f75924e74695&chksm=f093b48285369da37b6148803e41fb272c51c013bc31ac1ba6b09672ff1efd38269af1192b53&scene=132&exptype=timeline_recommend_article_extendread_samebiz#wechat_redirect)
+
+# 多智能体
+
+[https://zhuanlan.zhihu.com/p/656676717](https://zhuanlan.zhihu.com/p/656676717)
+
+# 一些其他比较重要的工作
+
+## 几篇出现频率比较高的论文
 
 [Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf) 引用数800+
 
@@ -1895,11 +1915,7 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 [Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)引用1800+
 
-# 多智能体
-
-[https://zhuanlan.zhihu.com/p/656676717](https://zhuanlan.zhihu.com/p/656676717)
-
-# Anthropic的一些工作
+## Anthropic的一些工作
 
 [Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
 
@@ -1908,32 +1924,16 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 [Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
 
 
-# ChatGLM
+## ChatGLM
 
 ACL22 [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/abs/2103.10360)
 
 iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
 
 
-# PALM-E
+# 训练&预测架构
 
-[【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
-
-[Multimodal Intelligence: Representation  Learning, Information Fusion, and Applications](https://arxiv.org/abs/1911.03977)
-
-[BERT在多模态领域中的应用](https://mp.weixin.qq.com/s/THxlQX2MPXua0_N0Ug0EWA)
-
-CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
-
-CLIP
-
-
-[PaLM-E: An Embodied Multimodal Language Model](https://arxiv.org/abs/2303.03378)
-
-
-
-
-# pathways
+## pathways
 
 [Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
 
@@ -1942,28 +1942,26 @@ CLIP
 这个回答分析得不错
 [https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
 
-## Google的大规模稀疏模型设计
+### Google的大规模稀疏模型设计
 
 [DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
 
 代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
 
-
-# megatron-lm
+## megatron-lm
 
 [https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
 
-# deepspeed
+## deepspeed
 
 [https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
 
 
-# ray-llm
+## ray-llm
 
 [https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
 
-# medusa-llm
-
+## medusa-llm
 
 decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
 
@@ -1982,7 +1980,19 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 [https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
 
 
-# stable diffusion
+# 多模态大模型
+
+
+[【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
+
+[Multimodal Intelligence: Representation  Learning, Information Fusion, and Applications](https://arxiv.org/abs/1911.03977)
+
+[BERT在多模态领域中的应用](https://mp.weixin.qq.com/s/THxlQX2MPXua0_N0Ug0EWA)
+
+CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
+
+
+## stable diffusion
 
 [High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
 
@@ -1995,10 +2005,23 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新的z，再通过解码器得到最终生成的图像
 
 
-# LLM+推荐
+## PALM-E
+
+[PaLM-E: An Embodied Multimodal Language Model](https://arxiv.org/abs/2303.03378)
+
+## pika
+
+## gen-2
+
+## sora
+
+[OpenAI首个AI视频模型炸裂登场，彻底端掉行业饭碗！60秒一镜到底惊人，世界模型真来了？](https://mp.weixin.qq.com/s/93z4Ta91yLv7PB1pnBM9mg)
+
+[https://openai.com/sora](https://openai.com/sora)
+
+# LLM与推荐结合
 
 ## 综述
-
 
 [https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
 
@@ -2026,13 +2049,7 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 [对应的ppt](https://github.com/westlake-repl/MicroLens/blob/master/MicroLens_DeepMind_Talk.pdf)
 
 
-
-
-## 公开资源
-
-### 模型
-
-
+# 其他
 
 ## RETRO Transformer
 
@@ -2079,9 +2096,6 @@ print(encoding_res)
 raw_text = enc.decode(encoding_res)
 print(raw_text)
 ```
-
-
-
 
 ## 达摩院大模型技术交流
 
