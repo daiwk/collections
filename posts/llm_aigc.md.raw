@@ -546,15 +546,37 @@ XXX
 
 ### Transformer的访存
 
-GPU架构的介绍参考[https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/](https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/)和[https://www.zhihu.com/question/319355296/answer/2193938981](https://www.zhihu.com/question/319355296/answer/2193938981)
+GPU架构的介绍参考[https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/](https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/)和[https://www.zhihu.com/question/319355296/answer/2193938981](https://www.zhihu.com/question/319355296/answer/2193938981)，GPU对比CPU如下：
 
++ 任务模式
+    + CPU由专为顺序串行处理而优化的几个核心组成
+    + GPU则拥有一个由数以千计的更小、更高效的核心（专为同时处理多重任务而设计）组成的大规模并行计算架构。同时CPU相当的一部分时间在执行外设的中断、进程的切换等任务，而GPU有更多的时间并行计算。
++ 功能定位
+    + CPU不但要承担计算任务还有承担逻辑控制等任务。
+    + GPU在渲染画面时需要同时渲染数以百万记的顶点或三角形，故GPU的设计是可以充分支持并行计算。
++ 系统集成
+    + GPU作为一类外插设备，在尺寸、功率、散热、兼容性等方面的限制远远小于CPU，这样可以让GPU有较大的显存和带宽。
+
+以A100为例，整体架构如下
+
+![ga100-full-gpu-128-sms](../assets/ga100-full-gpu-128-sms.png)
+
+1. PCIE层：通过PCIE接口以外设的方式集成到服务器上。
+2. 中间一坨绿色的部分是GPU的计算核心**SM(Streaming Multiprocessor)**，在A100中，一个SM有64个用于计算的Core，共108个SM(图里是GA100,有128个SM)，故共6192个Core。
+3. 中间蓝色部分是L2缓存
+4. NVLink：**多个GPU间进行通信**的组件，会优化GPU间的通信，提升传输效率。
+5. 两侧的HBM2是显存，目前的A100的显存有两种40G and 80G
+
+A100的SM如图所示，
+
+![a100-sm](../assets/a100-sm.png)
 
 GPU的显存分成两部分：
 
-+ Global Memory：比如A100 80G，用的HBM2存储，2TB/s带宽，访问速度比较慢
-+ Shared Memory：比如A100，每个SM有192KB，共108个SM，访问速度比较快
++ Global Memory：整体架构图中的**两侧HBM2**部分，例如A100 80G就有80G的global memory，**2TB/s带宽**，访问速度比较慢
++ Shared Memory：SM图中**浅蓝色**的L1 Data Cache，例如A100中每个SM中有**192KB**，访问速度比较快
 
-从图中可见，A100的FP16有312T的FLOPS
+从图中可见，A100的**FP16**有**312T的FLOPS**
 
 ![A100-tensorcore-performance](../assets/A100-tensorcore-performance.png)
 
