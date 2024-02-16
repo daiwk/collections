@@ -290,7 +290,7 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 ### 主流框架
 
 + **编码器-解码器架构(encoder-decoder)**：标准Transformer，如T5、BART，**只有少数LLLM还用这种结构**，如Flan-T5
-+ **因果解码器架构(causual decoder)**：**单向注意力掩码**，输入和输出token通过解码器以相同方式进行处理，以GPT系列为代表，现有大部分LLM都是这种架构，如OPT、BLOOM、Gopher等。
++ **因果解码器架构(causual decoder)**：也叫**decoder-only**，**单向注意力掩码**，输入和输出token通过解码器以相同方式进行处理，以GPT系列为代表，现有大部分LLM都是这种架构，如OPT、BLOOM、Gopher等。
 + **前缀解码器架构(prefix decoder)**：修正因果解码器的掩码机制，使其能**对前缀token执行双向注意力**，并且**仅对生成的token执行单向注意力**（和encoder-decoder类似），即[Unified language model pre-training for natural language understanding and generation](https://arxiv.org/pdf/1905.03197.pdf)提出的uni-lm。[What language model architecture and pretraining objective works best for zero-shot generalization?](https://arxiv.org/pdf/2204.05832.pdf)建议不从头开始预训练，而是**继续训练因果编码器，然后将其转换成前缀编码器以加速收敛**。例如U-PaLM从PaLM演化而来，还有GLM-130B也是这种架构。
 
 ![uni-lm](../assets/uni-lm.png)
@@ -303,7 +303,11 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 
 [https://www.zhihu.com/question/588325646/answer/2940298964](https://www.zhihu.com/question/588325646/answer/2940298964)
 
-![why-decoder-only-better](../assets/why-decoder-only-better.png)
++ **泛化性能强**：ICML 22的[What language model architecture and pretraining objective works best for zero-shot generalization](https://arxiv.org/pdf/2204.05832.pdf).在最大5B参数量、170B token数据量的规模下做了一些列实验，发现用next token prediction预训练的decoder-only模型在**各种下游任务上zero-shot泛化性能最好**；另外，ACL23的[Why Can GPT Learn In-Context? Language Models Implicitly Perform Gradient Descent as Meta-Optimizers](https://arxiv.org/pdf/2212.10559.pdf)等工作表明，decoder-only模型相当于基于给出的几个示例**隐式地进行梯度下降**，对应的in-context learning泛化能力更强，
++ **秩**的讨论：[Attention is not all you need: pure attention loses rank doubly exponentially with depth](https://arxiv.org/pdf/2103.03404.pdf)的讨论，$$n\times d$$和$$d\times n$$相乘后（$$n\gg d$$）再加上softmax后，秩不超过$$d$$，而decoder-only中有一个下三角矩阵的mask，所以输入的是一个下三角矩阵，而下三角矩阵的行列式是对角线之积，且有softmax，对角线肯定大于0，所以是满秩的(行列式不为0-->矩阵经过变换后不会有一行或者一列全为0-->当前矩阵满秩)
++ 预训练**任务难度**更大：相比encoder-decoder，decoder-only架构里**每个位置能接触到的信息更少**，故难度更高，当模型大小和数据量够的时候，上限更高
++ 隐式学习了**位置信息**：[Transformer Language Models without Positional Encodings Still Learn Positional Information](https://aclanthology.org/2022.findings-emnlp.99.pdf)，encoder里对语序的区分能力较弱，需要结合position encoding，而causual attention隐式地具备了这种建模位置的能力。
++ **工程效率**：支持**复用kv-cache**，对多轮对话更友好，**『DIN的FLOPS』**一节里有讲
 
 ### 组件配置
 
