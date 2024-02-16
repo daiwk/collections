@@ -297,6 +297,14 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 
 对于这3种架构，都可以用**MoE**进行扩展，每个输入的**一小部分神经网络权重**被**稀疏激活**，如[Switch Transformer](https://arxiv.org/pdf/2101.03961.pdf)和GLaM。[Unified scaling laws for routed language models](https://arxiv.org/pdf/2202.01169.pdf)发现，通过**增加专家数量或总参数大小**，性能会有显著改进。
 
+#### 讨论：为什么现在的LLM都是Decoder only的架构？
+
+&nbsp;
+
+[https://www.zhihu.com/question/588325646/answer/2940298964](https://www.zhihu.com/question/588325646/answer/2940298964)
+
+![why-decoder-only-better](../assets/why-decoder-only-better.png)
+
 ### 组件配置
 
 #### 标准化（norm）
