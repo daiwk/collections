@@ -546,7 +546,7 @@ $$
 
 ### Transformer的访存
 
-参考[https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/](https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/)
+GPU架构的介绍参考[https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/](https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/)和[https://www.zhihu.com/question/319355296/answer/2193938981](https://www.zhihu.com/question/319355296/answer/2193938981)
 
 
 GPU的显存分成两部分：
