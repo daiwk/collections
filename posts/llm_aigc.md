@@ -1998,11 +1998,9 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 
 ![stable-diffusion](../assets/stable-diffusion.png)
 
-输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$$z_T$$（正向扩散）
-
-输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$$\tau_\theta$$
-
-$$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新的z，再通过解码器得到最终生成的图像
++ 输入图像，经过编码器得到z，z通过前向扩散不断加噪声得到$$z_T$$（正向扩散）
++ 输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$$\tau_\theta$$
++ $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新的$$z$$，再通过解码器得到最终生成的图像
 
 
 ## PALM-E
