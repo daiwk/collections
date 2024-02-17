@@ -2002,6 +2002,54 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 + 输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$$\tau_\theta$$
 + $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新的$$z$$，再通过解码器得到最终生成的图像
 
+代码库：[https://github.com/CompVis/latent-diffusion/tree/main](https://github.com/CompVis/latent-diffusion/tree/main)
+
+粗略看了下代码，带condition的训练原理大概是训练语料中有图+文本（例如imagenet的class_label，这里可以映射到一个classid也可以直接拿明文），然后condition和图片一起作为输入去训练auto-eocnder和ldm
+
+在```/latent-diffusion/ldm/data/imagenet.py```这个代码里，把class_label加进来了
+
+```python
+    def _load(self):
+        with open(self.txt_filelist, "r") as f:
+            self.relpaths = f.read().splitlines()
+            l1 = len(self.relpaths)
+            self.relpaths = self._filter_relpaths(self.relpaths)
+            print("Removed {} files from filelist during filtering.".format(l1 - len(self.relpaths)))
+
+        self.synsets = [p.split("/")[0] for p in self.relpaths]
+        self.abspaths = [os.path.join(self.datadir, p) for p in self.relpaths]
+
+        unique_synsets = np.unique(self.synsets)
+        class_dict = dict((synset, i) for i, synset in enumerate(unique_synsets))
+        if not self.keep_orig_class_label:
+            self.class_labels = [class_dict[s] for s in self.synsets]
+        else:
+            self.class_labels = [self.synset2idx[s] for s in self.synsets]
+
+        with open(self.human_dict, "r") as f:
+            human_dict = f.read().splitlines()
+            human_dict = dict(line.split(maxsplit=1) for line in human_dict)
+
+        self.human_labels = [human_dict[s] for s in self.synsets]
+
+        labels = {
+            "relpath": np.array(self.relpaths),
+            "synsets": np.array(self.synsets),
+            "class_label": np.array(self.class_labels),
+            "human_label": np.array(self.human_labels),
+        }
+
+        if self.process_images:
+            self.size = retrieve(self.config, "size", default=256)
+            self.data = ImagePaths(self.abspaths,
+                                   labels=labels,
+                                   size=self.size,
+                                   random_crop=self.random_crop,
+                                   )
+        else:
+            self.data = self.abspaths
+```
+
 
 ## PALM-E
 
@@ -2016,6 +2064,18 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 [OpenAI首个AI视频模型炸裂登场，彻底端掉行业饭碗！60秒一镜到底惊人，世界模型真来了？](https://mp.weixin.qq.com/s/93z4Ta91yLv7PB1pnBM9mg)
 
 [https://openai.com/sora](https://openai.com/sora)
+
+[https://openai.com/research/video-generation-models-as-world-simulators](https://openai.com/research/video-generation-models-as-world-simulators)
+
+[一锤降维！解密OpenAI超级视频模型Sora技术报告，虚拟世界涌现了](https://mp.weixin.qq.com/s/ODsebK3fEc-adRDwRVDhQA)
+
+整体感觉：
+
++ latent diffusion的隐空间
++ vit和swin transformer的patch
+
+
+
 
 # LLM与推荐结合
 
