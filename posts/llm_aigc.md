@@ -2150,7 +2150,49 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 + magvit：[MAGVIT: Masked Generative Video Transformer](https://arxiv.org/pdf/2212.05199.pdf)
 + magvitv2：[Language Model Beats Diffusion -- Tokenizer is Key to Visual Generation](https://arxiv.org/pdf/2310.05737.pdf)，[语言模型战胜扩散模型！谷歌提出MAGVIT-v2：视频和图像生成上实现双SOTA！](https://blog.csdn.net/amusi1994/article/details/133917909)
 
-### 
+预估时，可以通过在一个合适大小的grid里排列随机初始化的patches（we can control the size of generated videos by arranging randomly-initialized patches in an appropriately-sized grid.）来控制生成视频的大小。。。没看懂
+
+### Diffusion Transformer
+
+[Scalable diffusion models with transformers](https://arxiv.org/pdf/2212.09748.pdf)提出了DiT，替换stable diffusion中的u-net
+
+![Dit](../assets/Dit.png)
+
+sora是一个扩散模型，输入加了噪声的patches，还可以加上一些如text prompt的条件，预测原本『干净』的patches。
+
+之前的做法大多将视频全裁成相同长度和大小的，例如4s的$$256\times 256$$，sora可以直接用原始视频
+
+### 语言理解
+
+参考DALL-E3 ([Improving Image Generation with Better Captions](https://cdn.openai.com/papers/dall-e-3.pdf))，训练了一个highly descriptive的视频描述生成器，拿这个生成器给训练集中的所有视频重新生成描述，再拿来训练。
+
+此外，还用上了GPT，将用户输入的短的prompt改写成更长更详细的视频描述用于生成。
+
+### 使用图像/视频作为prompt
+
++ **图像转动画**：可以让静止的图像动起来
++ **扩展视频**：可以对视频进行扩展（extend），在时间轴上向前或者向后进行延展（比如同样是一个石头落地，能生成4个视频，每个视频里的石头从不同的地方飞过来，落在同一个地面上）
++ **编辑视频**：输入视频和一个文本prompt，能够对视频进行编辑，例如把场景从沙漠替换成树林，类似[Sdedit: Guided image synthesis and editing with stochastic differential equations](https://arxiv.org/pdf/2108.01073.pdf)
++ **连接视频**：输入两个看似毫不相关的视频，能通过很自然的方式把这两个视频衔接在一起
+
+### 生成图像
+
+ 图像就是一帧的视频，可以通过在时间范围为一帧的空间grid中排列高斯噪声patches（arranging patches of Gaussian noise in a spatial grid with a temporal extent of one frame）来生成图像，同样能生成不同分辨率的图像，最多$$2048\times 2048$$
+
+### 涌现的模拟能力
+
++ **3D一致性**：随着镜头的移动，视频中的人物或物体在3d空间中能在移动中保持一致
++ **Long-range coherence and object permanence（远程连贯性和物体持久性）**：sora能对短期和长期依赖关系进行建模，例如：
+  + 可以保留人物体，即使它们被遮挡或离开当前帧。
+  + 可以在单个样本中生成同一角色的多个镜头，并在整个视频中保持其外观的不变
++ **与世界交互**：例如画家可以在画布上留下新的笔触，并随着时间的推移而持续存在，人吃东西能留下齿痕
++ **模拟数字世界**：可以同时通过基本策略控制《我的世界》中的玩家，同时以高保真度渲染世界及其动态，只需要在prompt里提到“我的世界”的标题就可以实现。
+
+### 存在的问题
+
++ 不能准确地模拟许多基本相互作用的物理过程，例如玻璃破碎。
++ 其他交互（例如吃食物）并不总是会产生对象状态的正确变化，例如长时间样本中出现的不连贯性或对象的自发出现。
+
 
 # LLM与推荐结合
 
