@@ -2093,7 +2093,29 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 + latent diffusion的隐空间
 + vit和swin transformer的patch
 
-### 视频patch
+### 现有方法
+
+现有的视频生成方法大多只能用于少数分类的视频、比较短的视频，或者固定长度的视频。
+
++ recurrent networks
+  + 2015年的[Unsupervised learning of video representations using lstms](https://arxiv.org/pdf/1502.04681.pdf)
+  + 2017年的[Recurrent environment simulators](https://arxiv.org/pdf/1704.02254.pdf)
+  + 2018年的[World models](https://arxiv.org/pdf/1803.10122.pdf)
++ generative adversarial networks
+  + 2016年的[Generating videos with scene dynamics](https://arxiv.org/pdf/1609.02612.pdf)
+  + 2018年的[Mocogan: Decomposing motion and content for video generation](https://arxiv.org/pdf/1707.04993.pdf)
+  + 2019年的[Adversarial video generation on complex datasets](https://arxiv.org/pdf/1907.06571.pdf)
+  + 2022年的[Generating long videos of dynamic scenes](https://arxiv.org/pdf/2206.03429.pdf)
++ autoregressive transformers
+  + 2021年的[Videogpt: Video generation using vq-vae and transformers]((https://arxiv.org/pdf/2104.10157.pdf))
+  + 2022年的[Nüwa: Visual synthesis pre-training for neural visual world creation](https://arxiv.org/pdf/2111.12417.pdf)
++ diffusion models
+  + 2022年的[Imagen video: High definition video generation with diffusion models](https://arxiv.org/pdf/2210.02303.pdf)
+  + 2023年的[Align your latents: High-resolution video synthesis with latent diffusion models](https://arxiv.org/pdf/2304.08818.pdf)
+  
+前两类太古老了，sora把后面两个（autogressive transformers和diffusion models）结合在一起了，而且能同时处理不同时长、分辨率的**视频和图像**
+
+### 将视频转成spacetime latent patches
 
 #### Vivit
 
@@ -2122,8 +2144,13 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 + 将视频映射成**隐空间**(latent space)的表示
 + 把隐空间的表示切分成**spacetime patches**
 
+其实类似的思想已经有不少工作了
 
++ VideoGPT：[Videogpt: Video generation using vq-vae and transformers](https://arxiv.org/pdf/2104.10157.pdf)，结合了VQ-VAE，而且是自回归的transformer
++ magvit：[MAGVIT: Masked Generative Video Transformer](https://arxiv.org/pdf/2212.05199.pdf)
++ magvitv2：[Language Model Beats Diffusion -- Tokenizer is Key to Visual Generation](https://arxiv.org/pdf/2310.05737.pdf)，[语言模型战胜扩散模型！谷歌提出MAGVIT-v2：视频和图像生成上实现双SOTA！](https://blog.csdn.net/amusi1994/article/details/133917909)
 
+### 
 
 # LLM与推荐结合
 
