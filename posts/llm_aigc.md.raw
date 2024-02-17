@@ -1991,6 +1991,15 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 
+## ViT&Swin-Transformer
+
+[SwinTransformer与Vit细节总结](https://blog.csdn.net/taoqick/article/details/131362590)
+
+[An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale](https://arxiv.org/pdf/2010.11929.pdf)
+
+对于一张$$224\times 224\times 3$$的图像，假设每个patch是$$16\times 16$$，那就分成$$\frac{224\times 224}{16\times 16}=196$$个patch(即$$seq\_length=196$$)，每个patch的维度是$$16\times 16\times 3=768$$，最后加上```[CLS]```这个token，就是$$seq\_length=197$$。
+
+
 
 ## stable diffusion
 
@@ -2050,6 +2059,16 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
             self.data = self.abspaths
 ```
 
+## DALL-E3
+
+[Improving Image Generation with Better Captions](https://cdn.openai.com/papers/dall-e-3.pdf)
+
+现有的文本->图像模型面临的一个基本问题是：训练数据集中的文本-图像pair对中的**文本质量较差**。
+
++ 学习一个图像文本生成器，可以生成详细、准确的图像描述
++ 将此文本生成器应用到数据集以生成更详细的文本
++ 在改进的数据集上训练文本 - 图像模型
+
 
 ## PALM-E
 
@@ -2073,6 +2092,35 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 
 + latent diffusion的隐空间
 + vit和swin transformer的patch
+
+### 视频patch
+
+#### Vivit
+
+&nbsp;
+
+[Vivit: A video vision transformer](https://arxiv.org/pdf/2103.15691.pdf)
+
+整体受ViT的启发
+
+![vivit](../assets/vivit.png)
+
+先分patch，再分别过时间的transformer（temporal transformer）和空间的transformer（spatial transformer）
+
+![tubelet-embedding](../assets/tubelet-embedding.png)
+
+具体的分patch方式如上图
+
+#### latent空间上的patch
+
+&nbsp;
+
+![spacetime-patches](../assets/spacetime-patches.png)
+
+参考stable-diffusion，即[High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)，把patch切分改成在latent空间上进行
+
++ 将视频映射成**隐空间**(latent space)的表示
++ 把隐空间的表示切分成**spacetime patches**
 
 
 
