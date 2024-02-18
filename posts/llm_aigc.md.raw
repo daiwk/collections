@@ -187,7 +187,6 @@ XXX
 [A Theory for Emergence of Complex Skills in Language Models](https://arxiv.org/abs/2307.15936)：
 
 
-
 ![涌现](../assets/emergent%20ability.png)
 
 LLM的3种典型涌现能力及其对应代表模型：
@@ -2011,6 +2010,8 @@ CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
 + 输入条件，经过条件编码器(原文是BERT，到了DALL-E2就改成CLIP了)得到$$\tau_\theta$$
 + $$z_T$$在$$\tau_\theta$$的指导下不断去噪（反向扩散），得到新的$$z$$，再通过解码器得到最终生成的图像
 
+其中的正向扩散和反向扩散一般用U-Net
+
 代码库：[https://github.com/CompVis/latent-diffusion/tree/main](https://github.com/CompVis/latent-diffusion/tree/main)
 
 粗略看了下代码，带condition的训练原理大概是训练语料中有图+文本（例如imagenet的class_label，这里可以映射到一个classid也可以直接拿明文），然后condition和图片一起作为输入去训练auto-eocnder和ldm
@@ -2087,6 +2088,8 @@ DALL-E3：
 [https://openai.com/research/video-generation-models-as-world-simulators](https://openai.com/research/video-generation-models-as-world-simulators)
 
 [一锤降维！解密OpenAI超级视频模型Sora技术报告，虚拟世界涌现了](https://mp.weixin.qq.com/s/ODsebK3fEc-adRDwRVDhQA)
+
+[Sora爆火48小时：杨立昆揭秘论文，参数量或仅30亿](https://new.qq.com/rain/a/20240217A05YVR00)
 
 整体感觉：
 
@@ -2226,6 +2229,16 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 # 其他
 
+## 一些比较好的模型
+
+### 文本匹配
+
+大多是基于sentence-bert的，m3e-base在电商语料上试过，效果不错
+
+[https://huggingface.co/moka-ai/m3e-base](https://huggingface.co/moka-ai/m3e-base)
+
+[https://huggingface.co/shibing624/text2vec-base-chinese](https://huggingface.co/shibing624/text2vec-base-chinese)
+
 ## RETRO Transformer
 
 [参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
@@ -2239,6 +2252,10 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 [WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
 
 [https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
+
+## 本地知识库
+
+[https://github.com/chatchat-space/Langchain-Chatchat](https://github.com/chatchat-space/Langchain-Chatchat)
 
 ## llm应用合辑
 
