@@ -2153,13 +2153,17 @@ DALL-E3：
 + magvit：[MAGVIT: Masked Generative Video Transformer](https://arxiv.org/pdf/2212.05199.pdf)
 + magvitv2：[Language Model Beats Diffusion -- Tokenizer is Key to Visual Generation](https://arxiv.org/pdf/2310.05737.pdf)，[语言模型战胜扩散模型！谷歌提出MAGVIT-v2：视频和图像生成上实现双SOTA！](https://blog.csdn.net/amusi1994/article/details/133917909)
 
-预估时，可以通过在一个合适大小的grid里排列随机初始化的patches（we can control the size of generated videos by arranging randomly-initialized patches in an appropriately-sized grid.）来控制生成视频的大小。。。没看懂
+预估时，可以通过在一个合适大小的grid里排列随机初始化的patches（we can control the size of generated videos by arranging randomly-initialized patches in an appropriately-sized grid.）来控制生成视频的大小。估计是参考了下面这篇：
+
+论文参考了这个[Patch n'Pack: NaViT, a Vision Transformer for any Aspect Ratio and Resolution](https://arxiv.org/pdf/2307.06304.pdf)，可以使下面提到的DiT适应各种分辨率/持续时间/宽高比。
 
 ### Diffusion Transformer
 
 [Scalable diffusion models with transformers](https://arxiv.org/pdf/2212.09748.pdf)提出了DiT，替换stable diffusion中的u-net
 
 ![Dit](../assets/Dit.png)
+
+**DiT=VAE编码器+ ViT + DDPM + VAE解码器**
 
 sora是一个扩散模型，输入加了噪声的patches，还可以加上一些如text prompt的条件，预测原本『干净』的patches。
 
