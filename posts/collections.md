@@ -1824,6 +1824,16 @@ batch内shuffle采样（有放回）
 
 ![](../assets/mind-comirec.png)
 
+## 内积、余弦和L2
+
+![](../assets/L2-innerproduct-hnsw.png)
+
+给定a，找到和它最像的b
+
+$$ab=||a||cos\theta ||b||$$
+
+如果用内积，会找$$cos\theta ||b||$$最大的b出来，可能是夹角小，也可能是模大的b，所以可能偏热门
+
 ## JTM
 
 [下一代深度召回与索引联合优化算法JTM](https://mp.weixin.qq.com/s/heiy74_QriwxpZRyTUEgPg)

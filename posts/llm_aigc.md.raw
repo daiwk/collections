@@ -606,7 +606,10 @@ GPU的显存分成两部分：
     + 计算耗时：$$FLOPS/max\_FLOPS=16777216/(312\times 10^{12})=5.38\times 10^{-8}s=0.0538\times 10^{-6}s=0.0538us$$
     + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (1\times 2048+1\times 4096+4096\times 2048)/(2\times 10^{12})=8.3948\times 10^{-6}s=8.3948us$$
 
+一些常见的名词：
 
++ H2D：host to device，从cpu拷贝到gpu
++ D2H：device to host，从gpu拷贝到cpu
 
 ## 模型训练
 
@@ -1900,6 +1903,11 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 [谷歌Gemini 1.5深夜爆炸上线，史诗级多模态硬刚GPT-5！最强MoE首破100万极限上下文纪录](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652444347&idx=1&sn=51ae7e3e100e24fd49b0f75924e74695&chksm=f093b48285369da37b6148803e41fb272c51c013bc31ac1ba6b09672ff1efd38269af1192b53&scene=132&exptype=timeline_recommend_article_extendread_samebiz#wechat_redirect)
 
+[Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
+
++ 上下文窗口：此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理
++ 
+
 # 多智能体
 
 [https://zhuanlan.zhihu.com/p/656676717](https://zhuanlan.zhihu.com/p/656676717)
@@ -2206,6 +2214,10 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 ## 综述
 
 [https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
+
+[A Survey on Large Language Models for Recommendation](https://arxiv.org/pdf/2305.19860.pdf)
+[How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817.pdf)
+[Recommender Systems in the Era of Large Language Models (LLMs)](https://arxiv.org/pdf/2307.02046.pdf)
 
 
 ## P5
