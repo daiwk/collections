@@ -1899,14 +1899,26 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 # gemini系列
 
-## Gemini1.5
+## Gemini 1.0
+
+[Gemini: a family of highly capable multimodal models](https://arxiv.org/pdf/2312.11805.pdf)
+
+
+
+## Gemini 1.5
 
 [谷歌Gemini 1.5深夜爆炸上线，史诗级多模态硬刚GPT-5！最强MoE首破100万极限上下文纪录](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652444347&idx=1&sn=51ae7e3e100e24fd49b0f75924e74695&chksm=f093b48285369da37b6148803e41fb272c51c013bc31ac1ba6b09672ff1efd38269af1192b53&scene=132&exptype=timeline_recommend_article_extendread_samebiz#wechat_redirect)
 
 [Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
 
-+ 上下文窗口：此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理
-+ 
+### 更大的上下文窗口
+
+此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
+
+### 架构&训练方法
+
++ moe：
+    + 
 
 # 多智能体
 
