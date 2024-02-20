@@ -1745,6 +1745,8 @@ batch内shuffle采样（有放回）
 
 [https://www.tensorflow.org/extras/candidate_sampling.pdf](https://www.tensorflow.org/extras/candidate_sampling.pdf)
 
+下载了一份：[https://github.com/daiwk/collections/blob/master/assets/candidate_sampling.pdf](https://github.com/daiwk/collections/blob/master/assets/candidate_sampling.pdf)
+
 [推荐系统遇上深度学习(七十二)-[谷歌]采样修正的双塔模型](https://www.lizenghai.com/archives/38343.html)
 
 ## 序列建模
