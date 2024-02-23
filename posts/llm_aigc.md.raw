@@ -1911,6 +1911,12 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 [Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
 
+## gemma
+
+[https://blog.google/technology/developers/gemma-open-models/](https://blog.google/technology/developers/gemma-open-models/)
+
+[Gemma: Open Models Based on Gemini Research and Technology](https://storage.googleapis.com/deepmind-media/gemma/gemma-report.pdf)
+
 ### 更大的上下文窗口
 
 此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
@@ -2231,6 +2237,9 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 [How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817.pdf)
 [Recommender Systems in the Era of Large Language Models (LLMs)](https://arxiv.org/pdf/2307.02046.pdf)
 
+## Recommender Systems with Generative Retrieval
+
+[Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
 
 ## P5
 
