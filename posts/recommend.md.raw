@@ -236,12 +236,12 @@ XXX
 
 原始矩阵$$d$$维，降到$$k$$维，所以对应的矩阵是$$A\in R^{d\times k}$$。所以$$A$$中有$$k$$个映射，每个映射$$A_i$$都将$$X$$映射到$$Y_i$$，输出的$$Y_i\in R^k$$。计算方式如下：
 
-$$
+XXX
 Y_i=\left\{\begin{matrix}
 1,&if\ A_iX\ge 0\\ 
 0,&else
 \end{matrix}\right.
-$$
+XXX
 
 计算$$X_1$$，$$X_2$$的cos相似度是$$cos(\frac{H(Y_1,Y_2)}{k}\pi)$$，其中，$$X_1,X_2\in R^d$$。$$H(Y_1,Y_2)$$是LSH输出向量的汉明距离。为了保持cos相似度的高准确率，需要把$$k$$设得比较大，这里和k-means一样，$$k=10000$$。
 
