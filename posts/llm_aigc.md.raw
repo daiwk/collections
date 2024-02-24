@@ -12,7 +12,6 @@
 [超生动图解LSTM和GRU，一文读懂循环神经网络！](https://mp.weixin.qq.com/s/vVDAB2U7478yOXUT9ByjFw)
 
 
-
 ## fasttext&word2vec
 
 注：w2v训练时的内积不是2个emb-in的内积，而是emb-in和emb-out的内积
