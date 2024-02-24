@@ -4,12 +4,745 @@
 
 [https://github.com/daiwk/llms_new](https://github.com/daiwk/llms_new)
 
-# 概述
 
+# 从word2v到Transformer
+
+## LSTM
+
+[超生动图解LSTM和GRU，一文读懂循环神经网络！](https://mp.weixin.qq.com/s/vVDAB2U7478yOXUT9ByjFw)
+
+
+
+## fasttext&word2vec
+
+注：w2v训练时的内积不是2个emb-in的内积，而是emb-in和emb-out的内积
+
+[fasttext源码解析](https://my.oschina.net/u/3800567/blog/2877570)
+
++ ```Dictionary::readWord```：空格分割，一次读出来一个word
++ ```Dictionary::add```：每个word求个hash，加进词典时，id就是从0开始的序号，同时记录一下词频
++ ```Dictionary::threshold```：按词频排序，扔掉低频词
++ ```Dictionary::initNgrams```：每个词，加上前缀BOW（<）和后缀（>），然后先扔进这个词的subwords里，然后再调用``` Dictionary::computeSubwords```把这个词的ngrams也扔进它的subwords里
+
+整个词表，是word数+bucket这么大，其中bucket表示可容纳的subwords和wordNgrams的数量，默认200w
+
+
+[为什么Word2Vec训练中, 需要对负采样权重开3/4次幂？](https://zhuanlan.zhihu.com/p/144563199?utm_id=0)
+
+[Distributed Representations of Words and Phrases and their Compositionality](https://arxiv.org/pdf/1310.4546.pdf)里提到
+
+![](../assets/word2vec_3_4_sample.jpeg)
+
+通过对权重开3/4次幂，可以提升低频词被抽到的概率。在保证高频词容易被抽到的大方向下，通过权重3/4次幂的方式，适当提升低频词、罕见词被抽到的概率。如果不这么做，低频词，罕见词很难被抽到，以至于不被更新到对应的Embedding。
+
+## BPE/WordPiece分词
+
+[【Subword】深入理解NLP Subword算法：BPE、WordPiece、ULM](https://mp.weixin.qq.com/s/U9F8G-OUCb9kunTk_tZYFw)
+
+
+## Transformer原理
+
+[从三大顶会论文看百变Self-Attention](https://mp.weixin.qq.com/s/R9FoceRsPB3ceqKpnYPvbQ)
+
+[包学包会，这些动图和代码让你一次读懂「自注意力」](https://mp.weixin.qq.com/s/Z0--eLLiFwfSuMvnddKGPQ)
+
+[http://jalammar.github.io/illustrated-transformer/](http://jalammar.github.io/illustrated-transformer/)
+
+[从熵不变性看Attention的Scale操作](https://kexue.fm/archives/8823)
+
+[Transformers Assemble（PART I）](https://mp.weixin.qq.com/s/NZM05zyUkldOwpNIbsOtDQ) 讲了3篇
+
+[Transformers Assemble（PART II）](https://mp.weixin.qq.com/s/JdUVaQ3IyrflHvxIk5jYbQ) 又讲了三篇
+
+### 为什么层次化softmax没人用了
+
+[Transformer 结构中最后一层 softmax 为什么不再使用 层次化softmax了呢？](https://www.zhihu.com/question/310845030/answer/595573391?hb_wx_block=0&utm_source=wechat_session&utm_medium=social&utm_oi=632586637935251456)
+
+主要还是计算资源的问题。
+
+Mikolov发明word2vec的几个版本大概在13-14年前后。那个时候GPU非常少见，印象里面CMU的NLP组没有GPU，Stanford NLP lab只有6块K40。
+
+大规模直接算 softmax 是在google的14年那篇seq2seq做MT的文章。为了快，把一个softmax 并行在4️块GPU上，每个GPU负责四分之一。那个年代，大多数NLP组全组都不会有4块GPU。
+
+hierarchical softmax是softmax的近似，suboptimal的。当如今计算资源足够大的时候，当然包括时间和显存 (BERT 和 Elmo 都没有用hierarchical)，hierarchical softmax就逐渐退出了历史舞台。
+
+# 理解内容的仅编码器框架
+
+## BERT
+
+[BERT小学生级上手教程，从原理到上手全有图示，还能直接在线运行](https://mp.weixin.qq.com/s/ltVuXZ4nJh8Cb5X2UhB6tQ)
+
+[BERT源码分析（PART I）](https://mp.weixin.qq.com/s/sSmTQ_cOLyAUV0aV0FkDvw)
+
+[BERT源码分析（PART II）](https://mp.weixin.qq.com/s/1NDxWfBu_csu8qHV2tmmVQ)
+
+[Dive into BERT：语言模型与知识](https://mp.weixin.qq.com/s/NjQtSKY85Np5IodRiKsrvg)
+
+[关于BERT，面试官们都怎么问](https://mp.weixin.qq.com/s/c2PktKruzq_teXm3GAwe1Q)
+
+主要讲了下面3篇：
+
+[Language Models as Knowledge Bases?](https://arxiv.org/abs/1909.01066)
+
+[Linguistic Knowledge and Transferability of Contextual Representations](https://arxiv.org/abs/1903.08855)
+
+[What does BERT learn about the structure of language?](https://hal.inria.fr/hal-02131630/document)
+
+
+[A Primer in BERTology: What we know about how BERT works](https://arxiv.org/pdf/2002.12327.pdf)
+
+摘要：目前，基于 Transformer 的模型已经广泛应用于自然语言处理中，但我们依然对这些模型的内部工作机制知之甚少。在本文中，来自麻省大学洛威尔分校的研究者对流行的 BERT 模型进行综述，并综合分析了 40 多项分析研究。他们还概览了对模型和训练机制提出的改进，然后描画了未来的研究方向。
+
+[Pre-trained Models for Natural Language Processing: A Survey](https://arxiv.org/abs/2003.08271)
+
+
+[BERT系列文章汇总导读](https://mp.weixin.qq.com/s/oT2dtmfEQKyrpDTOrpzhWw)
+
+[ALBERT、XLNet，NLP技术发展太快，如何才能跟得上节奏？](https://mp.weixin.qq.com/s/Toth-XKn2WKYkyDw6j5F3A)
+
+[绝对干货！NLP预训练模型：从transformer到albert](https://mp.weixin.qq.com/s/Jgx9eHk9xiSOWEy0Ty3LoA)
+
+[ALBERT一作蓝振忠：预训练模型应用已成熟，ChineseGLUE要对标GLUE基准](https://mp.weixin.qq.com/s/mvkFDy09BdKJC4Cja11PAA)
+
+[有哪些令你印象深刻的魔改Transformer？](https://mp.weixin.qq.com/s/HS2tlT7t18cFytZVIsOXUg)
+
+[BERT模型超酷炫，上手又太难？请查收这份BERT快速入门指南！](https://mp.weixin.qq.com/s/jVSW0KDhaXuaIeOzoPmCJA)
+
+
+### multi-head att 实现
+
+输入原始的query(即from_tensor)之后, 把```[batch, from_seq, emb]```变成```[?, emb]```，其中```?=batch*from_seq```
+
+```python
+from_tensor_2d = reshape_to_matrix(from_tensor)
+
+def reshape_to_matrix(input_tensor):
+    """Reshapes a >= rank 2 tensor to a rank 2 tensor (i.e., a matrix)."""
+    ndims = input_tensor.shape.ndims
+    if ndims < 2:
+        raise ValueError("Input tensor must have at least rank 2. Shape = %s" %
+            (input_tensor.shape))
+    if ndims == 2:
+        return input_tensor
+    width = input_tensor.shape[-1]
+output_tensor = tf.reshape(input_tensor, [-1, width])
+    return output_tensor
+```
+
+然后再接一个fc，把```[?, emb]```变成```[?, head_num * per_head]```，一般```head_num * per_head=emb```。
+
+```python
+query_layer = tf.layers.dense(
+        from_tensor_2d,
+        num_attention_heads * size_per_head,
+        activation=query_act,
+        name="query",
+        kernel_initializer=create_initializer(initializer_range))
+```
+
+因为```?=batch*from_seq```，所以可以直接做如下变换
+
+```python
+query_layer = transpose_for_scores(query_layer, batch_size,
+        num_attention_heads, from_seq_length,
+        size_per_head)
+```
+
+实际就是把```?```拆开成```batch, from_seq```，整个变成```[batch, from_seq, head_num, per_head]```，然后做了个 transpose，把1和2互换了下，得到```[batch, head_num, from_seq, per_head]```
+
+```python
+def transpose_for_scores(input_tensor, batch_size, num_attention_heads,
+        seq_length, width):
+    output_tensor = tf.reshape(
+            input_tensor, [batch_size, seq_length, num_attention_heads, width])
+
+    output_tensor = tf.transpose(output_tensor, [0, 2, 1, 3])
+    return output_tensor
+```
+
+然后key也做完全一样的操作(不过处理的是to_tensor，如果是self-attention，那to_tensor=from_tensor), 得到```[batch, head_num, to_seq, per_head]```：
+
+```python
+to_tensor_2d = reshape_to_matrix(to_tensor)
+key_layer = tf.layers.dense(
+        to_tensor_2d,
+        num_attention_heads * size_per_head,
+        activation=key_act,
+        name="key",
+        kernel_initializer=create_initializer(initializer_range))
+
+key_layer = transpose_for_scores(key_layer, batch_size, num_attention_heads,
+        to_seq_length, size_per_head)
+```
+
+然后就算$$QK^T$$了，注意这里对key取了转置，也就是```[batch, head_num, from_seq, per_head]```乘以```[batch, head_num, per_head, to_seq]```，得到的结果是```[batch, head_num, from_seq, to_seq]```：
+
+```python
+attention_scores = tf.matmul(query_layer, key_layer, transpose_b=True)
+attention_scores = tf.multiply(attention_scores,
+    1.0 / math.sqrt(float(size_per_head)))
+
+if attention_mask is not None:
+    # `attention_mask` = [B, 1, F, T]
+    attention_mask = tf.expand_dims(attention_mask, axis=[1])
+
+    # Since attention_mask is 1.0 for positions we want to attend and 0.0 for
+    # masked positions, this operation will create a tensor which is 0.0 for
+    # positions we want to attend and -10000.0 for masked positions.
+    adder = (1.0 - tf.cast(attention_mask, tf.float32)) * -10000.0
+
+    # Since we are adding it to the raw scores before the softmax, this is
+    # effectively the same as removing these entirely.
+    attention_scores += adder
+attention_probs = tf.nn.softmax(attention_scores)
+attention_probs = dropout(attention_probs, attention_probs_dropout_prob)
+```
+
+然后看下value的操作：
+
+```python
+value_layer = tf.layers.dense(
+        to_tensor_2d,
+        num_attention_heads * size_per_head,
+        activation=value_act,
+        name="value",
+        kernel_initializer=create_initializer(initializer_range))
+
+# `value_layer` = [batch, to_seq, head_num, per_head]
+value_layer = tf.reshape(
+            value_layer,
+            [batch_size, to_seq_length, num_attention_heads, size_per_head])
+
+# `value_layer` = [batch, head_num, to_seq, per_head]
+value_layer = tf.transpose(value_layer, [0, 2, 1, 3])
+
+# `context_layer` = [batch, head_num, from_seq, per_head]
+context_layer = tf.matmul(attention_probs, value_layer)
+
+# `context_layer` = [batch, from_seq, head_num, per_head]
+context_layer = tf.transpose(context_layer, [0, 2, 1, 3])
+```
+
+再确认一点，$$softmax(QK^T)$$是```[batch, head_num, from_seq, to_seq]```，而$$V$$是```[batch, head_num, to_seq, per_head]```，所以context_layer是```[batch, head_num, from_seq, per_head]```
+
+最后，再搞一下，变回```[batch, from_seq, head_num * per_head]```：
+
+```python
+if do_return_2d_tensor:
+# `context_layer` = [B*F, N*H]
+    context_layer = tf.reshape(
+        context_layer,
+        [batch_size * from_seq_length, num_attention_heads * size_per_head])
+else:
+# `context_layer` = [B, F, N*H]
+    context_layer = tf.reshape(
+        context_layer,
+        [batch_size, from_seq_length, num_attention_heads * size_per_head])
+```
+
+如上过程是$$Concat(head_1, ..., head_h)$$，其中$$head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)$$。包装在了函数```attention_layer```之中，我们注意到原文还有一个大小为$$hd_v \times d_{model}$$的$$W^O$$，也就是大小为$$d_{model}\times d_{model}$$，再看看源码。。也就是说，正常的bert里，```attention_heads```就只有一个元素，然后接了个```hidden_size```的fc，而前面的代码里也提到了```hidden_size```正好就是$$d_{model}$$，所以这就是$$W^O$$。
+
+```python
+attention_heads = []
+with tf.variable_scope("self"):
+    attention_head = attention_layer(xxxxx)
+    attention_heads.append(attention_head)
+    attention_output = None
+    if len(attention_heads) == 1:
+        attention_output = attention_heads[0]
+    else:
+        # In the case where we have other sequences, we just concatenate
+        # them to the self-attention head before the projection.
+        attention_output = tf.concat(attention_heads, axis=-1)
+    # Run a linear projection of `hidden_size` then add a residual
+    # with `layer_input`.
+    with tf.variable_scope("output"):
+        attention_output = tf.layers.dense(
+            attention_output,
+            hidden_size,
+            kernel_initializer=create_initializer(initializer_range))
+        attention_output = dropout(attention_output, hidden_dropout_prob)
+        attention_output = layer_norm(attention_output + layer_input)
+
+```
+
+关于 mask，可以看看这个[https://juejin.im/post/5b9f1af0e51d450e425eb32d](https://juejin.im/post/5b9f1af0e51d450e425eb32d)
+
+摘抄一下：
+
+什么是padding mask呢？回想一下，我们的每个批次输入序列长度是不一样的！也就是说，我们要对输入序列进行对齐！具体来说，就是给在较短的序列后面填充0。因为这些填充的位置，其实是没什么意义的，所以我们的attention机制不应该把注意力放在这些位置上，所以我们需要进行一些处理。
+具体的做法是，把这些位置的值加上一个非常大的负数(可以是负无穷)，这样的话，经过softmax，这些位置的概率就会接近0！
+
+而sequence mask是为了使得decoder不能看见未来的信息。也就是对于一个序列，在time_step为t的时刻，我们的解码输出应该只能依赖于t时刻之前的输出，而不能依赖t之后的输出。因此我们需要想一个办法，把t之后的信息给隐藏起来。
+那么具体怎么做呢？也很简单：产生一个上三角矩阵，上三角的值全为1，下三角的值权威0，对角线也是0。把这个矩阵作用在每一个序列上，就可以达到我们的目的啦。
+
+### masked-language-model的实现
+
+[https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/run_pretraining.py#L240](https://github.com/google-research/bert/blob/eedf5716ce1268e56f0a50264a88cafad334ac61/run_pretraining.py#L240)
+
+
+如下，其中```hidden_size```就是是$$d_{model}$$：
+
+```python
+def get_masked_lm_output(bert_config, input_tensor, output_weights, positions,
+                         label_ids, label_weights):
+  """Get loss and log probs for the masked LM."""
+  input_tensor = gather_indexes(input_tensor, positions)
+
+  with tf.variable_scope("cls/predictions"):
+    # We apply one more non-linear transformation before the output layer.
+    # This matrix is not used after pre-training.
+    with tf.variable_scope("transform"):
+      input_tensor = tf.layers.dense(
+          input_tensor,
+          units=bert_config.hidden_size,
+          activation=modeling.get_activation(bert_config.hidden_act),
+          kernel_initializer=modeling.create_initializer(
+              bert_config.initializer_range))
+      input_tensor = modeling.layer_norm(input_tensor)
+
+    # The output weights are the same as the input embeddings, but there is
+    # an output-only bias for each token.
+    output_bias = tf.get_variable(
+        "output_bias",
+        shape=[bert_config.vocab_size],
+        initializer=tf.zeros_initializer())
+    logits = tf.matmul(input_tensor, output_weights, transpose_b=True)
+    logits = tf.nn.bias_add(logits, output_bias)
+    log_probs = tf.nn.log_softmax(logits, axis=-1)
+
+    label_ids = tf.reshape(label_ids, [-1])
+    label_weights = tf.reshape(label_weights, [-1])
+
+    one_hot_labels = tf.one_hot(
+        label_ids, depth=bert_config.vocab_size, dtype=tf.float32)
+
+    # The `positions` tensor might be zero-padded (if the sequence is too
+    # short to have the maximum number of predictions). The `label_weights`
+    # tensor has a value of 1.0 for every real prediction and 0.0 for the
+    # padding predictions.
+    per_example_loss = -tf.reduce_sum(log_probs * one_hot_labels, axis=[-1])
+    numerator = tf.reduce_sum(label_weights * per_example_loss)
+    denominator = tf.reduce_sum(label_weights) + 1e-5
+    loss = numerator / denominator
+
+  return (loss, per_example_loss, log_probs)
+```
+
+其中的gather如下：
+
+```python
+def gather_indexes(sequence_tensor, positions):
+  """Gathers the vectors at the specific positions over a minibatch."""
+  sequence_shape = modeling.get_shape_list(sequence_tensor, expected_rank=3)
+  batch_size = sequence_shape[0]
+  seq_length = sequence_shape[1]
+  width = sequence_shape[2]
+
+  flat_offsets = tf.reshape(
+      tf.range(0, batch_size, dtype=tf.int32) * seq_length, [-1, 1])
+  flat_positions = tf.reshape(positions + flat_offsets, [-1])
+  flat_sequence_tensor = tf.reshape(sequence_tensor,
+                                    [batch_size * seq_length, width])
+  output_tensor = tf.gather(flat_sequence_tensor, flat_positions)
+  return output_tensor
+```
+
+注意调用时传的是如下参数
+
+```python
+    (masked_lm_loss,
+     masked_lm_example_loss, masked_lm_log_probs) = get_masked_lm_output(
+         bert_config, model.get_sequence_output(), model.get_embedding_table(),
+         masked_lm_positions, masked_lm_ids, masked_lm_weights)
+```
+
+### BERT的可解释性
+
+[ACL 2019 \| 理解 BERT 每一层都学到了什么](https://mp.weixin.qq.com/s/w2Cwo--GTKp5o8YKRtbl7g)
+
+[What does BERT learn about the structure of language?](https://hal.inria.fr/hal-02131630/document)
+
+探索BERT深层次的表征学习是一个非常有必要的事情，一是这可以帮助我们更加清晰地认识BERT的局限性，从而改进BERT或者搞清楚它的应用范围；二是这有助于探索BERT的可解释性
+
+## 更复杂的BERT
+
+[站在BERT肩膀上的NLP新秀们（PART III）](https://mp.weixin.qq.com/s/CxcyX5V9kBQDW8A4g0uGNA)
+
+[BERT时代与后时代的NLP](https://mp.weixin.qq.com/s/U_pYc5roODcs_VENDoTbiQ)
+
+[美团BERT的探索和实践](https://mp.weixin.qq.com/s/qfluRDWfL40E5Lrp5BdhFw)
+
+[Bert时代的创新（应用篇）：Bert在NLP各领域的应用进展](https://mp.weixin.qq.com/s/dF3PtiISVXadbgaG1rCjnA)
+
+### 中文BERT
+
+#### WWM
+
+[哈工大讯飞联合实验室发布基于全词覆盖的中文BERT预训练模型](https://mp.weixin.qq.com/s?__biz=MzIxMjAzNDY5Mg==&mid=2650794872&idx=1&sn=dccd856283bdd4edcdad08cf75506697&chksm=8f477e93b830f7850e6c0ffe684264f704c6fcc4e126a6300b5ae33916aa676a279206e1e4ce&mpshare=1&scene=1&srcid=0701DAFsQt28gF1hGzH4llaM&pass_ticket=8wChBZeeRNV5mWLFKMXfVyWjwTb94XookbbSJiYpmEClqUrpybiGPpfilXkL5UQN#rd)
+
+[https://github.com/ymcui/Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm)
+
+论文：[Pre-Training with Whole Word Masking for Chinese BERT](https://arxiv.org/abs/1906.08101)
+
+#### ERNIE
+
+参考[中文任务全面超越BERT：百度正式发布NLP预训练模型ERNIE](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650758722&idx=1&sn=6742b0f86982890d78cb3ec3be9865b3&scene=0#wechat_redirect)
+
+[ERNIE: Enhanced Representation through Knowledge Integration](https://arxiv.org/pdf/1904.09223.pdf)
+
+使用entity-level masking和phrase-level masking两种mask方法
+
+输入的每个样本由5个 ';' 分隔的字段组成，数据格式：
+
++ token_ids
++ sentence_type_ids：两句话，第一句都是0，第二句都是1
++ position_ids
++ seg_labels：分词边界信息: 0表示词首、1表示非词首、-1为占位符, 其对应的词为 CLS 或者 SEP；
++ next_sentence_label
+
+例如：
+
+```shell
+1 1048 492 1333 1361 1051 326 2508 5 1803 1827 98 164 133 2777 2696 983 121 4 19 9 634 551 844 85 14 2476 1895 33 13 983 121 23 7 1093 24 46 660 12043 2 1263 6 328 33 121 126 398 276 315 5 63 44 35 25 12043 2;0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1;0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55;-1 0 0 0 0 1 0 1 0 0 1 0 0 1 0 1 0 0 0 0 0 0 1 0 1 0 0 1 0 1 0 0 0 0 1 0 0 0 0 -1 0 0 0 1 0 0 1 0 1 0 0 1 0 1 0 -1;0
+```
+
+和bert在mask上的区别：
+
+![ernie-bert-masking-diff](../assets/ernie-bert-masking-diff.png)
+
+一个句子的不同level的mask方式：
+
+![ernie-different-mask-level](../assets/ernie-different-mask-level.png)
+
+
+[ERNIE 2.0: A CONTINUAL PRE-TRAINING FRAMEWORK FOR LANGUAGE UNDERSTANDING](https://arxiv.org/pdf/1907.12412v1.pdf)
+
+![ernie-2.0-loss](../assets/ernie-2.0-loss.png)
+
+### 跨语言
+
+#### XLM
+
+[Massively Multilingual Sentence Embeddings for Zero-Shot Cross-Lingual Transfer and Beyond](https://arxiv.org/abs/1812.10464)，XLM的主要思想还是来自于这片文章，借用了BERT的框架最后成了XLM。本文提出了LASER（Language-Agnostic SEntence Representations）
+
+
+XLM：facebook提出[Cross-lingual Language Model Pretraining](https://arxiv.org/abs/1901.07291)
+
+[Facebook最新语言模型XLM-R：多项任务刷新SOTA，超越单语BERT](https://mp.weixin.qq.com/s/6oK-gevKLWDwdOy4aI7U7g)
+
+XLM-R
+
+[Unsupervised Cross-lingual Representation Learning at Scale](https://arxiv.org/abs/1911.02116)
+
+来自facebook。针对多种跨语言的传输任务，大规模地对多语言语言模型进行预训练可以显著提高性能。在使用超过 2TB 的已过滤 CommonCrawl 数据的基础上，研究者在 100 种语言上训练了基于 Transformer 的掩模语言模型。该模型被称为 XLM-R，在各种跨语言基准测试中，其性能显著优于多语言 BERT（mBERT），其中 XNLI 的平均准确度为+ 13.8％，MLQA 的平均 F1 得分为+ 12.3％，而 FQ 的平均 F1 得分为+ 2.1％ NER。XLM-R 在低资源语言上表现特别出色，与以前的 XLM 模型相比，斯瓦希里语（Swahili）的 XNLI 准确性提升了 11.8％，乌尔都语（Urdu）的准确性提升了 9.2％。研究者还对获得这些提升所需的关键因素进行了详细的实证评估，包括（1）积极转移和能力稀释；（2）大规模资源资源的高低性能之间的权衡。最后，他们首次展示了在不牺牲每种语言性能的情况下进行多语言建模的可能性。XLM-Ris 在 GLUE 和 XNLI 基准测试中具有强大的单语言模型，因此非常具有竞争力。
+
+#### MASS
+
+[MASS: Masked Sequence to Sequence Pre-training for Language Generation](https://arxiv.org/abs/1905.02450v5)
+
+bert只使用了Transformer的encoder部分，其下游任务也主要是适用于自然语言理解（NLU），对于类似文本摘要、机器翻译、对话应答生成等自然语言生成（NLG）任务显然是不太合适的。MASS 采用了编码器-解码器框架，并尝试在给定部分句子的情况下修复整个句子。如下所示为 MASS 的框架图，其输入句子包含了一些连续的 Token，并且中间会带有一些连续的 Mask，模型的任务是预测出被 Mask 掉的词是什么。相比 BERT 只有编码器，MASS 联合训练编码器与解码器，能获得更适合机器翻译的表征能力。
+
+
+受到bert的启发，作者们提出联合训练encoder和decoder的模型
+
+训练步骤主要分为两步：
+
++ Encoder： 输入为被随机mask掉连续部分token的句子，使用Transformer对其进行编码；这样处理的目的是可以使得encoder可以更好地捕获没有被mask掉词语信息用于后续decoder的预测；
++ Decoder： 输入为与encoder同样的句子，但是mask掉的正好和encoder相反，和翻译一样，使用attention机制去训练，但只预测encoder端被mask掉的词。该操作可以迫使decoder预测的时候更依赖于source端的输入而不是前面预测出的token，防止误差传递。
+
+
+### UNILM(microsoft)
+
+[Unified Language Model Pre-training for Natural Language Understanding and Generation](https://arxiv.org/abs/1905.03197)
+
+使用的核心框架还是 Transformer，不同的是预训练的目标函数结合了以下三个： 
+
++ 单向语言模型（同 ELMO/GPT） 
++ 双向语言模型（同 BERT） 
++ seq2seq 语言模型（同上一篇）
+
+这里的 Transformer 是同一个，即三个 LM 目标参数共享，有点 multi-task learning 的感觉，可以学习到更 genneral 的文本表示。
+
+### 更长序列
+
+#### XLNet
+
+[XLNet : 运行机制及和 Bert 的异同比较](https://mp.weixin.qq.com/s/VCCZOKJOhCEjxfnoLSuRKA)
+
+[Transformer-XL与XLNet笔记](https://mp.weixin.qq.com/s/g7I_V5a3Puy9uK11A--Xqw)
+
+[什么是XLNet中的双流自注意力](https://mp.weixin.qq.com/s/9QmhN4KfukCtAxzprKDbAQ)
+
+[Stabilizing Transformers for Reinforcement Learning](https://arxiv.org/abs/1910.06764)
+
+摘要：得益于预训练语言模型强大的能力，这些模型近来在NLP任务上取得了一系列的成功。这需要归功于使用了transformer架构。但是在强化学习领域，transformer并没有表现出同样的能力。本文说明了为什么标准的transformer架构很难在强化学习中优化。研究者同时提出了一种架构，可以很好地提升 transformer架构和变体的稳定性，并加速学习。研究者将提出的架构命名为Gated Transformer-XL(GTrXL)，该架构可以超过LSTM，在多任务学习 DMLab-30 基准上达到 SOTA 的水平。
+
+推荐：本文是DeepMind的一篇论文，将强化学习和Transformer结合是一种新颖的方法，也许可以催生很多相关的交叉研究。
+
+
+[20项任务全面碾压BERT，CMU全新XLNet预训练模型屠榜（已开源）](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650764408&idx=1&sn=92196097be1a5f993ef02de0bac8128d&chksm=871ab006b06d3910ec88e57598d6c8b1a38dead073b3f417b793ba71ac4750ae2a8263537fa2&mpshare=1&scene=1&srcid=&pass_ticket=%2BD9Ask8qPVeDCkEHTF8NEBVBQX9YmDDkPy9VdMIfOYJ2VtpyHOOhIYdS3wUnvPjn#rd)
+
+参考[拆解XLNet模型设计，回顾语言表征学习的思想演进](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650765039&idx=3&sn=5f21b702a06b2b3c12c1e5f327c0b744&chksm=871ab291b06d3b87a7b35ff2e69bbaa6863e7737510783f0d7913bc575e759a6662242e6b97a&scene=0&xtrack=1&pass_ticket=6OQo9SLhUprzhz9WVqt5LanZi%2Bu5pLbXWpLouCtQ6gkfTHAGY5Li3M%2BDR0n3drA2#rd)
+
+[他们创造了横扫NLP的XLNet：专访CMU博士杨植麟](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650767073&idx=1&sn=3a1014852f0ba8caaee9fdfadd344503&chksm=871aba9fb06d33891731e38d7ca2010516a73cff72c1569c89962160d0fc15ef0b747f9ff7f5&scene=0&xtrack=1&pass_ticket=Kz97uXi0CH4ceADUC3ocCNkjZjy%2B0DTtVYOM7n%2FmWttTt5YKTC2DQT9lqCel7dDR#rd)
+
+[XLNet: Generalized Autoregressive Pretraining for Language Understanding](https://arxiv.org/pdf/1906.08237.pdf)
+
+预训练模型：[https://github.com/zihangdai/xlnet](https://github.com/zihangdai/xlnet)
+
+BERT 这样基于去噪自编码器的预训练模型可以很好地建模双向语境信息，性能优于基于自回归语言模型的预训练方法。然而，由于需要 mask 一部分输入，BERT 忽略了被 mask 位置之间的依赖关系，因此出现预训练和微调效果的差异（pretrain-finetune discrepancy）。
+
+基于这些优缺点，该研究提出了一种泛化的自回归预训练模型XLNet。XLNet可以：
+
++ 通过最大化所有可能的因式分解顺序的对数似然，学习双向语境信息；
++ 用自回归本身的特点克服BERT的缺点。此外，XLNet 还融合了当前最优自回归模型 Transformer-XL 的思路。
+
+来，看一下transformer-xl：[https://daiwk.github.io/posts/nlp-transformer-xl.html](https://daiwk.github.io/posts/nlp-transformer-xl.html).。。。原来transformer-xl也是这几个作者提出的。。。
+
+XLNet 在 20 个任务上超过了 BERT 的表现，并在 18 个任务上取得了当前最佳效果（state-of-the-art），包括机器问答、自然语言推断、情感分析和文档排序。
+
+作者从自回归（autoregressive, AR）和自编码（autoencoding, AE）两大范式分析了当前的预训练语言模型，并发现它们虽然各自都有优势，但也都有难以解决的困难。为此，研究者提出 XLNet，并希望结合大阵营的优秀属性。
+
+AR主要的论文有这几篇：[Semi-supervised sequence learning](https://arxiv.org/abs/1511.01432)、[Deep contextualized word representations](https://arxiv.org/abs/1802.05365)、[Improving language understanding by generative pre-training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)。通过一个autoregressive的模型来估计文本语料库的概率分布。也就是给定一个文本序列$$\mathbf{x}=\left(x_{1}, \cdots, x_{T}\right)$$，AR将likelihood因式分解(factorize)成一个前向的乘积$$p(\mathbf{x})=\prod_{t=1}^{T} p\left(x_{t} | \mathbf{x}_{<t}\right)$$，或者是一个后向的乘积$$p(\mathbf{x})=\prod_{t=T}^{1} p\left(x_{t} | \mathbf{x}_{>t}\right)$$。由于 AR 语言模型仅被训练用于编码**单向(uni-directional)语境（前向或后向）**，因而在深度双向语境建模中效果不佳。而下游语言理解任务通常需要双向语境信息。这导致 AR 语言建模无法实现有效预训练。
+
+而AE相关的预训练模型不会进行明确的密度估计(explicit density estimation)，而是从残缺的(corrupted)输入中**重建原始数据**。例如bert，使用一定比例的```[MASK]```，然后预测被mask掉的是什么东西。由于目标并不是密度估计，所以在重建的时候，可以考虑双向的上下文信息。但存在如下两个问题：
+
++ **finetune**时的真实数据**缺少**预训练期间使用的```[MASK]```这些**mask信息**，这导致**预训练和微调之间存在差异**。
++ 输入中要预测的token是被mask掉的，所以无法像AR那样使用乘积rule来建立联合概率分布。也就是说，给定未mask的 token，BERT**假设预测的token**之间**彼此独立**，这其实是对自然语言中普遍存在的**高阶、长期依赖关系**的一种**过度简化**。
+
+另外，在[拆解XLNet模型设计，回顾语言表征学习的思想演进](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650765039&idx=3&sn=5f21b702a06b2b3c12c1e5f327c0b744&chksm=871ab291b06d3b87a7b35ff2e69bbaa6863e7737510783f0d7913bc575e759a6662242e6b97a&scene=0&xtrack=1&pass_ticket=6OQo9SLhUprzhz9WVqt5LanZi%2Bu5pLbXWpLouCtQ6gkfTHAGY5Li3M%2BDR0n3drA2#rd)
+中也提到了：
+
+BERT 中 "MASK" 字符的加入，使得非目标词表征的建模都会依赖于人造的 "MASK" 字符，这会使模型学出虚假的依赖关系 (比如 "MASK" 可以作为不同词信息交换的桥梁) -- 但 "MASK" 在下游任务中并不会出现。
+
+同时除了位置编码的区别外，同一句话内所有目标词依赖的语境信息完全相同，这除了忽略被替换的词间的依赖关系外，随着网络层数的加深，作为输入的位置编码 的信息也可能被过多的计算操作抹去 (类似于上述循环神经网络难以建模长程依赖的原因)。
+
+### 更多的任务
+
+#### MT-DNN
+
+[Multi-Task Deep Neural Networks for Natural Language Understanding](https://arxiv.org/abs/1901.11504)
+
+
+### RoBERTa
+
+参考[重回榜首的BERT改进版开源了，千块V100、160GB纯文本的大模型](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650766934&idx=2&sn=54c479dd8e8e69cd9617b9a1962443e1&chksm=871aba28b06d333e0d5dc64754b7280776ba5c17577831077dc5cd2caa4c2335beec3afd8d34&scene=0&xtrack=1&pass_ticket=zAXdHORK5tTx549e9RwAgNcm7bjJrH4ENwbbTYVrAZDqpsE%2Fu1hY63b%2FoRfnZQdM#rd)
+
+[RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/pdf/1907.11692.pdf)
+
+
+[RoBERTa中文预训练模型，你离中文任务的「SOTA」只差个它](https://mp.weixin.qq.com/s/EKFa40rLQlnEVuu9V7GDmg)
+
+[https://github.com/brightmart/roberta_zh](https://github.com/brightmart/roberta_zh)
+
+
+### ELECTRA
+
+[2019最佳预训练模型：非暴力美学，1/4算力超越RoBERTa](https://mp.weixin.qq.com/s/_R-Bp5lLov-QIoPRl6fFMA)
+
+[ELECTRA: 超越BERT, 19年最佳NLP预训练模型](https://mp.weixin.qq.com/s/fR5OrqxCv0udKdyh6CHOjA)
+
+[ELECTRA: pre-training text encoders as discriminators rather than generators](https://openreview.net/pdf?id=r1xmh1btvb)
+
+
+## 更小的BERT
+
+[BERT 瘦身之路：Distillation，Quantization，Pruning](https://mp.weixin.qq.com/s/ir3pLRtIaywsD94wf9npcA)
+
+### albert
+
+[刚刚，Google发布24个小型BERT模型，直接通过MLM损失进行预训练](https://mp.weixin.qq.com/s/s0ysFH4CRvsHY1Gp3b4DPQ)
+
+[ALBERT：用于语言表征自监督学习的轻量级 BERT](https://mp.weixin.qq.com/s/0V-051qkTk9EYiuEWYE3jQ)
+
+[谷歌ALBERT模型V2+中文版来了：之前刷新NLP各大基准，现在GitHub热榜第二](https://mp.weixin.qq.com/s/nusSlw28h4bOlw5hDsc-Iw)
+
+[超小型BERT中文版横空出世！模型只有16M，训练速度提升10倍](https://mp.weixin.qq.com/s/eVlNpejrxdE4ctDTBM-fiA)
+
+[https://github.com/brightmart/albert_zh](https://github.com/brightmart/albert_zh)
+
+
+[预训练小模型也能拿下13项NLP任务，谷歌ALBERT三大改造登顶GLUE基准](https://mp.weixin.qq.com/s/kvSoDr0E_mvsc7lcLNKmgg)
+
+ALBERT 模型在 GLUE、RACE 和 SQuAD 基准测试上都取得了新的 SOTA 效果，并且参数量还少于 BERT-large。
+
+[ALBERT: a lite bert for self-supervised learning of language representations](https://openreview.net/pdf?id=H1eA7AEtvS)
+
+通过对词嵌入矩阵进行因式分解，再为下游任务共享不同层的所有参数，这样可以大大降低 BERT 的参数量。
+
+还提出了一种新型句间连贯性损失函数，它可以强迫模型学习句间的连贯性表达，从而有利于各种下游 NLP 任务。
+
+ALBERT 通过两个参数削减技术克服了扩展预训练模型面临的主要障碍。第一个技术是对嵌入参数化进行因式分解。研究者将大的词汇嵌入矩阵分解为两个小的矩阵，从而将隐藏层的大小与词汇嵌入的大小分离开来。这种分离使得隐藏层的增加更加容易，同时不显著增加词汇嵌入的参数量。
+
+第二种技术是跨层参数共享。这一技术可以避免参数量随着网络深度的增加而增加。两种技术都显著降低了 BERT 的参数量，同时不对其性能造成明显影响，从而提升了参数效率。ALBERT 的配置类似于 BERT-large，但参数量仅为后者的 1/18，训练速度却是后者的 1.7 倍。这些参数削减技术还可以充当某种形式的正则化，可以使训练更加稳定，而且有利于泛化。
+
+为了进一步提升 ALBERT 的性能，研究者还引入了一个自监督损失函数，用于句子级别的预测（SOP）。SOP 主要聚焦于句间连贯，用于解决原版 BERT 中下一句预测（NSP）损失低效的问题。
+
+albert_tiny：
+
+input_ids先查word_embeddings(`\(V\times E=21118*128)`)，得到dim=128的表示，再查word_embeddings_2(`\(E\times M =128*312\)`)，得到dim=312的表示。
+
+搞positionembedding时，并不用输入0 1 2...，只需要做一些slice的变换就行了
+
+```python
+    with tf.control_dependencies([assert_op]):
+      full_position_embeddings = tf.get_variable(
+          name=position_embedding_name,
+          shape=[max_position_embeddings, width],
+          initializer=create_initializer(initializer_range))
+      # Since the position embedding table is a learned variable, we create it
+      # using a (long) sequence length `max_position_embeddings`. The actual
+      # sequence length might be shorter than this, for faster training of
+      # tasks that do not have long sequences.
+      #    
+      # So `full_position_embeddings` is effectively an embedding table
+      # for position [0, 1, 2, ..., max_position_embeddings-1], and the current
+      # sequence has positions [0, 1, 2, ... seq_length-1], so we can just
+      # perform a slice.
+      position_embeddings = tf.slice(full_position_embeddings, [0, 0],
+                                     [seq_length, -1]) 
+      num_dims = len(output.shape.as_list())
+
+      # Only the last two dimensions are relevant (`seq_length` and `width`), so
+      # we broadcast among the first dimensions, which is typically just
+      # the batch size.
+      position_broadcast_shape = [] 
+      for _ in range(num_dims - 2):
+        position_broadcast_shape.append(1)
+      position_broadcast_shape.extend([seq_length, width])
+      position_embeddings = tf.reshape(position_embeddings,
+                                       position_broadcast_shape)
+      output += position_embeddings
+```
+
+然后会通过create_attention_mask_from_input_mask把input_ids和input_mask搞一下，得到attention_mask去和attention做mask，主要是算loss啥的，把后面的mask掉不算
+
+### distillbert
+
+参考[小版BERT也能出奇迹：最火的预训练语言库探索小巧之路](https://mp.weixin.qq.com/s/a0d0b1jSm5HxHso9Lz8MSQ)
+
+1.4w个stars。。
+
+[https://huggingface.co/transformers](https://huggingface.co/transformers)
+
+[DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter](https://arxiv.org/abs/1910.01108)
+
+
+### tinybert
+
+[TinyBERT：模型小7倍，速度快8倍，华中科大、华为出品](https://mp.weixin.qq.com/s/VL7TSHmZPKD-xGdOxNmnHw)
+
+[TinyBERT: Distilling BERT for Natural Language Understanding](https://arxiv.org/abs/1909.10351)
+
+提出了一个two-stage learning framework，在pre-training阶段和task-specific阶段都进行distill。
+
+相比baseline，只有28% parameters和31%的inference时间
+
+在glue上，7.5x小，infer上有9.4x快。
+
+[哪吒”出世！华为开源中文版BERT模型](https://mp.weixin.qq.com/s/He6Xujoe5Ieo95Tshx7PnA)
+
+[NEZHA: Neural Contextualized Representation for Chinese Language Understanding](https://arxiv.org/abs/1909.00204)
+
+[https://github.com/huawei-noah/Pretrained-Language-Model](https://github.com/huawei-noah/Pretrained-Language-Model)
+
+[华为诺亚方舟开源哪吒、TinyBERT模型，可直接下载使用](https://mp.weixin.qq.com/s/cqYWllVCgWwGfAL-yX7Dww)
+
+
+### reformer
+
+[哈希革新Transformer：这篇ICLR高分论文让一块GPU处理64K长度序列](https://mp.weixin.qq.com/s/QklCVuukfElVDBFNxLXNKQ)
+
+[Reformer: The Efficient Transformer](https://openreview.net/forum?id=rkgNKkHtvB)
+
+[https://github.com/google/trax/blob/master/trax/models/research/reformer.py](https://github.com/google/trax/blob/master/trax/models/research/reformer.py)
+
+大型的 Transformer 往往可以在许多任务上实现 sota，但训练这些模型的成本很高，尤其是在序列较长的时候。在 ICLR 的入选论文中，我们发现了一篇由谷歌和伯克利研究者发表的优质论文。文章介绍了两种提高 Transformer 效率的技术，最终的 Reformer 模型和 Transformer 模型在性能上表现相似，并且在长序列中拥有更高的存储效率和更快的速度。论文最终获得了「8，8，6」的高分。在最开始，文章提出了将点乘注意力（dot-product attention）替换为一个使用局部敏感哈希（locality-sensitive hashing）的点乘注意力，将复杂度从 O(L2 ) 变为 O(L log L)，此处 L 指序列的长度。此外，研究者使用可逆残差（reversible residual layers）代替标准残差（standard residuals），这使得存储在训练过程中仅激活一次，而不是 n 次（此处 n 指层数）。最终的 Reformer 模型和 Transformer 模型在性能上表现相同，同时在长序列中拥有更高的存储效率和更快的速度。
+
+[大幅减少GPU显存占用：可逆残差网络(The Reversible Residual Network)](https://mp.weixin.qq.com/s/j6-x9ANF9b3Q1I_os_LJSw)
+
+### LTD-bert
+
+[内存用量1/20，速度加快80倍，腾讯QQ提出全新BERT蒸馏框架，未来将开源](https://mp.weixin.qq.com/s/W668zeWuNsBKV23cVR0zZQ)
+
+### Q-bert
+
+[AAAI 2020 \| 超低精度量化BERT，UC伯克利提出用二阶信息压缩神经网络](https://mp.weixin.qq.com/s/0qBlnsUqI2I-h-pFSgcQig)
+
+[Q-BERT: Hessian Based Ultra Low Precision Quantization of BERT](https://arxiv.org/pdf/1909.05840.pdf)
+
+### Adabert
+
+[推理速度提升29倍，参数少1/10，阿里提出AdaBERT压缩方法](https://mp.weixin.qq.com/s/mObuD4ijUCjnebYIrjvVdw)
+
+[AdaBERT: Task-Adaptive BERT Compression with Differentiable Neural Architecture Search](https://arxiv.org/pdf/2001.04246v1.pdf)
+
+
+
+
+# 生成内容的仅解码器or编码+解码器
+
+[AI也能精彩表达：几种经典文本生成模型一览](https://mp.weixin.qq.com/s/GfP76I-BzzQcyLqQJoeXxw)
+
+## GPT
+
+
+
+## GPT2
+
+[15亿参数最强通用NLP模型面世！Open AI GPT-2可信度高于所有小模型](https://mp.weixin.qq.com/s/nu2egJuG_yxIVfW9GfdlCw)
+
+中文GPT2
+
+[只需单击三次，让中文GPT-2为你生成定制故事](https://mp.weixin.qq.com/s/FpoSNNKZSQOE2diPvJDHog)
+
+[https://github.com/imcaspar/gpt2-ml](https://github.com/imcaspar/gpt2-ml)
+
+[https://colab.research.google.com/github/imcaspar/gpt2-ml/blob/master/pretrained_model_demo.ipynb](https://colab.research.google.com/github/imcaspar/gpt2-ml/blob/master/pretrained_model_demo.ipynb)
+
+
+[语言模型秒变API，一文了解如何部署DistilGPT-2](https://mp.weixin.qq.com/s/5B8bN2kplB4t1ctYJjN1zw)
+
+huggingface的distill gpt-2：[https://github.com/huggingface/transformers](https://github.com/huggingface/transformers)
+
+## GPT3
+
+## encoder+decoder的方法
+
+### T5
+
+[谷歌T5模型刷新GLUE榜单，110亿参数量，17项NLP任务新SOTA](https://mp.weixin.qq.com/s/YOMWNV5BMI9hbB6Nr_Qj8w)
+
+[谷歌最新T5模型17项NLP任务霸榜SuperGLUE，110亿参数量！](https://mp.weixin.qq.com/s/rFT37D7p0MiS8XGZM35bYA)
+
+### UniLM
+
+[NeurIPS 2019 \| 既能理解又能生成自然语言，微软提出统一预训练新模型UniLM](https://mp.weixin.qq.com/s/J96WjZhnf_1vBRHbbGwtyg)
+
+[Unified Language Model Pre-training for Natural Language Understanding and Generation](https://arxiv.org/abs/1905.03197)
+
+[https://github.com/microsoft/unilm](https://github.com/microsoft/unilm)
+
+### BART
+
+[多项NLP任务新SOTA，Facebook提出预训练模型BART​](https://mp.weixin.qq.com/s/1-EJ36-lY9YZSLBG5c2aaQ)
+
+[BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension](https://arxiv.org/pdf/1910.13461.pdf)
+
+自监督方法在大量NLP任务中取得了卓越的成绩。近期研究通过改进masked token的分布（即masked token被预测的顺序）和替换masked token的可用语境，性能获得提升。然而，这些方法通常聚焦于特定类型和任务（如span prediction、生成等），应用较为有限。
+
+Facebook的这项研究提出了新架构BART，它结合双向和自回归Transformer对模型进行预训练。BART是一个适用于序列到序列模型的去噪自编码器，可应用于大量终端任务。预训练包括两个阶段：1）使用任意噪声函数破坏文本；2）学得序列到序列模型来重建原始文本。BART使用基于Tranformer的标准神经机器翻译架构，可泛化BERT、GPT等近期提出的预训练模型。
+
+
+
+[新预训练模型CodeBERT出世，编程语言和自然语言都不在话下，哈工大、中山大学、MSRA出品](https://mp.weixin.qq.com/s/wmAu4810wrK2n-pDezAo0w)
+
+# LLM概述
+
+PLM（pretrained language models），即bert等
 
 ## LLM简史
-
-PLM（pretrained language models）
 
 + 2017年的[Learning to generate reviews and discovering sentiment](https://arxiv.org/pdf/1704.01444.pdf)尝试用rnn来实现智能系统
 + 2018年的gpt1：[Improving language understanding by generative pre-training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)，生成式预训练（Generative pre-training, gpt），用transformer的decoder，参数量117m（0.1b），无监督预训练和有监督微调。确定对自然语言文本建模的基本原则为**预测下一个单词**。
@@ -1471,6 +2204,52 @@ Flan-T5和Flan-PaLM（[Scaling instruction-finetuned language models](https://ar
 
 ## 比较有用的数据集
 
+### 中文glue
+
+[ChineseGLUE：为中文NLP模型定制的自然语言理解基准](https://mp.weixin.qq.com/s/14XQqFcLG1wMyB2tMABsCA)
+
+[超30亿中文数据首发！首个专为中文NLP打造的GLUE基准发布](https://mp.weixin.qq.com/s/9yxYErAMy9o3BOEDzsgvPw)
+
+[https://github.com/CLUEbenchmark/CLUE](https://github.com/CLUEbenchmark/CLUE)
+
+[https://www.cluebenchmarks.com/](https://www.cluebenchmarks.com/)
+
+[https://github.com/brightmart/nlp_chinese_corpus](https://github.com/brightmart/nlp_chinese_corpus)
+
+[http://thuctc.thunlp.org/#%E4%B8%AD%E6%96%87%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E9%9B%86THUCNews](http://thuctc.thunlp.org/#%E4%B8%AD%E6%96%87%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E9%9B%86THUCNews)
+
+### 中文阅读理解数据集
+
+[首个中文多项选择阅读理解数据集：BERT最好成绩只有68%，86%问题需要先验知识](https://mp.weixin.qq.com/s/Jr8ALNxD1Uw7O8sQdFpX_g)
+
+[Investigating Prior Knowledge for Challenging Chinese Machine Reading Comprehension](https://arxiv.org/abs/1904.09679)
+
+[https://github.com/nlpdata/c3](https://github.com/nlpdata/c3)
+
+### 物理常识推理任务数据集
+
+[PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/pdf/1911.11641.pdf)
+
+「在不使用刷子涂眼影的情况下，我应该用棉签还是牙签？」类似这种需要物理世界常识的问题对现今的自然语言理解系统提出了挑战。虽然最近的预训练模型 (如 BERT) 在更抽象的如新闻文章和百科词条这种具有丰富文本信息的领域问答方面取得了进展，但在更现实的领域，由于报导的偏差，文本本质上是有限的，类似于「用牙签涂眼影是一个坏主意」这样的事实很少得到直接报道。人工智能系统能够在不经历物理世界的情况下可靠地回答物理常识问题吗？是否能够捕获有关日常物品的常识知识，包括它们的物理特性、承受能力以及如何操纵它们。
+
+在本文中，研究者介绍了一个关于物理常识推理任务和相应的基准数据集 PIQA（Physical Interaction：Question Answering）进行评估。虽然人类应对这一数据集很容易 (95% 的准确率)，但是大型的预训模型很难 (77%)。作者分析了现有模型所缺乏的知识为未来的研究提供了重要的机遇。
+
+### 常识推理数据集WinoGrande
+
+[WinoGrande: An Adversarial Winograd Schema Challenge at Scale](https://arxiv.org/abs/1907.10641)
+
+研究者提出了 WINOGRANDE，一个有着 44k 个问题的大规模数据集。该数据集在规模和难度上较之前的数据集更大。该数据集的构建包括两个步骤：首先使用众包的方式设计问题，然后使用一个新的 AFLITE 算法缩减系统偏见（systematic bias），使得人类可以察觉到的词汇联想转换成机器可以检测到的嵌入联想（embedding association）。现在最好的 SOTA 模型可以达到的性能是 59.4 – 79.1%，比人脸性能水平（94%）低 15-35%（绝对值）。这种性能波动取决于训练数据量（2% 到 100%）。
+
+本论文荣获了 AAAI 2020 最佳论文奖，文中提出的 WINOGRANDE 是一个很好的迁移学习资源；但同时也说明我们现在高估了模型的常识推理的能力。研究者希望通过这项研究能够让学界重视减少算法的偏见。
+
+
+### 对话数据集
+
+[谷歌发布世界最大任务型对话数据集SGD，让虚拟助手更智能](https://mp.weixin.qq.com/s/hNghBThK4FX0ON4Ypp2HzQ)
+
+[Towards Scalable Multi-domain Conversational Agents: The Schema-Guided Dialogue Dataset](https://arxiv.org/abs/1909.05855)
+
+### BelleGroup
 
 [https://huggingface.co/BelleGroup](https://huggingface.co/BelleGroup) 里有很多中文的instruct和输出的数据集
 
@@ -2012,9 +2791,47 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 [Multimodal Intelligence: Representation  Learning, Information Fusion, and Applications](https://arxiv.org/abs/1911.03977)
 
+## 多模态BERT
+
 [BERT在多模态领域中的应用](https://mp.weixin.qq.com/s/THxlQX2MPXua0_N0Ug0EWA)
 
 CV领域：VisualBert, Unicoder-VL, VL-Bert, ViLBERT, LXMERT。
+
+### videobert
+
+
+[通过未标记视频进行跨模态时间表征学习](https://mp.weixin.qq.com/s/5qC70NoTBQ95vjI4cGl66g)
+
+[VideoBERT: A Joint Model for Video and Language Representation Learning](https://arxiv.org/abs/1904.01766)，VideoBert模型。
+
+
+### vilbert
+
+[ViLBERT: Pretraining Task-Agnostic Visiolinguistic Representations for Vision-and-Language Tasks](https://arxiv.org/pdf/1908.02265.pdf)
+
+研究人员提出了一种名为 ViLBERT（图文 BERT）模型。这是一个可以学习任务未知的、图像内容和自然语言联合表征的模型。研究人员将流行的 BERT 架构扩展成一个 multi-modal two-stream 模型上。在这个模型上，模型用两个分开的流处理图像和文本输入，但他们彼此用联合注意力层交互。研究人员在两个代理任务上，使用 Conceptual Captions 数据集（数据集很大，而且是自动收集的数据）预训练这个模型，然后将模型秦阿姨到多个建立好的图像-文本任务上。这些任务包括图像问答、图像常识推理、引述表达、指称成分，以及基于捕捉的图像提取。这些只需要在基本架构上进行微小的补充。研究人员观察到，相比现有的针对任务的特定模型，新模型在这些任务上都有了相助的性能提升——在每个任务上都取得了 SOTA。
+
+### VLbert
+
+Visual-Linguistic BERT，简称 VL-BERT
+
+[微软亚研提出VL-BERT：通用的视觉-语言预训练模型](https://mp.weixin.qq.com/s/RaYwdMXT0UKN8_bni-DpWw)
+
+此预训练过程可以显著提高下游的视觉-语言任务的效果，包含视觉常识推理、视觉问答与引用表达式理解等。值得一提的是，在视觉常识推理排行榜中，VL-BERT 取得了当前单模型的最好效果。
+
+[VL-BERT: Pre-training of Generic Visual-Linguistic Representations](https://arxiv.org/abs/1908.08530)
+
+之前的视觉-语言模型分别使用计算机视觉或自然语言处理领域中的预训练模型进行初始化，但如果目标任务数据量不足，模型容易过拟合从而损失性能。并且对于不同的视觉-语言任务，其网络架构一般是经过特殊设计的，由此很难通过视觉-语言联合预训练的过程帮助下游任务。
+
+VL-BERT 的主干网络使用 TransformerAttention 模块，并将视觉与语言嵌入特征作为输入，其中输入的每个元素是来自句子中的单词、或图像中的感兴趣区域（Region of Interests，简称 RoIs）。在模型训练的过程中，每个元素均可以根据其内容、位置、类别等信息自适应地聚合来自所有其他元素的信息。在堆叠多层 TransformerAttention 模块后，其特征表示即具有更为丰富的聚合与对齐视觉和语言线索的能力。
+
+为了更好地建模通用的视觉-语言表示，作者在大规模视觉-语言语料库中对 VL-BERT 进行了预训练。采用的预训练数据集为图像标题生成数据集，Conceptual Captions，其中包含了大约 330 万个图像标题对。
+
+VL-BERT 的预训练主要采用三个任务：a) 屏蔽语言模型（Masked Language Modeling），即随机屏蔽掉语句中的一些词，并预测当前位置的词是什么；b) 屏蔽 RoI 分类（MaskedRoIClassification），即随机屏蔽掉视觉输入中的一些 RoIs，并预测此空间位置对应 RoI 的所属类别；c) 图像标题关联预测（Sentence-Image Relationship Prediction），即预测图像与标题是否属于同一对。
+
+在预训练结束后，使用微调来进行下游任务的训练。本文中主要在三个视觉-语言下游任务中进行微调，即视觉常识推理（VisualCommonsenseReasoning）、视觉问答（VisualQuestionAnswering）与引用表达式理解（ReferringExpressionComprehension），下面将分别介绍。
+
+视觉常识推理任务即给定图片与相关问题，机器不仅需要回答问题，还需要提供理由来证明答案的正确性。此任务（Q->AR）被分解为两个子任务，即视觉问答（Q->A，给定图片与问题，输出正确答案），以及视觉推理（QA->R，给定图片、问题与答案，输出正确的理由）。
 
 ## ViT&Swin-Transformer
 
@@ -2247,7 +3064,6 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 
 ## llm vs ID
 
-
 [推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
 
 [Exploring the Upper Limits of Text-Based Collaborative Filtering Using Large Language Models: Discoveries and Insights](http://arxiv.org/abs/2305.11700)
@@ -2332,3 +3148,10 @@ print(raw_text)
 
 ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) 密码：5yyf
 
+
+
+## 回译
+
+通过单语数据提升 NMT 模型最高效的方法之一是回译（back-translation）。如果我们的目标是训练一个英语到德语的翻译模型，那么可以首先训练一个从德语到英语的翻译模型，并利用该模型翻译所有的单语德语数据。然后基于原始的英语到德语数据，再加上新生成的数据，我们就能训练一个英语到德语的最终模型。
+
+[Understanding Back-Translation at Scale](https://arxiv.org/pdf/1808.09381v2.pdf)
