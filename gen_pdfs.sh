@@ -6,12 +6,17 @@ cat ./posts/full.md.raw | python3 ./posts/change_format_md.py > ./posts/collecti
 cat ./posts/llm_aigc.md.raw | python3 ./posts/change_format_pdf.py > ./pdfs/llm_aigc-pdf.md
 cat ./posts/llm_aigc.md.raw | python3 ./posts/change_format_md.py > ./posts/llm_aigc.md
 
+
+cat ./posts/recommend.md.raw | python3 ./posts/change_format_pdf.py > ./pdfs/recommend-pdf.md
+cat ./posts/recommend.md.raw | python3 ./posts/change_format_md.py > ./posts/recommend.md
+
 python3 gen_dot_sub.py
 
 ##pandoc -N -s --toc --smart  --pdf-engine=xelatex -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in -f markdown+markdown_in_html_blocks+raw_html-implicit_figures ./collections-pdf.md -o ./pdfs/collections.pdf
 
 cd pdfs
 pandoc -N -s --toc --toc-depth=5 --pdf-engine=xelatex -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures ./collections-pdf.md -o ./collections.pdf
+pandoc -N -s --toc --toc-depth=5 --pdf-engine=xelatex -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures ./recommend-pdf.md -o ./recommend.pdf
 pandoc -N -s --toc --toc-depth=5 --pdf-engine=xelatex --columns=30 --standalone --html-q-tags -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures --highlight-style tango ./llm_aigc-pdf.md -o ./llm_aigc.pdf
 cd -
 
