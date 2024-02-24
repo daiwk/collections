@@ -36,7 +36,7 @@
 
 [稠密特征加入CTR预估模型的方法汇总](https://mp.weixin.qq.com/s/xhxBbSYva4g9wUvQ5RIdVA)
 
-# 工程优化
+# 预估架构
 
 ## HugeCTR
 
@@ -53,13 +53,13 @@ HugeCTR 是首个全部解决以上问题的开源 GPU 训练框架，与现有 
 
 [Distributed Hierarchical GPU Parameter Server for Massive Scale Deep Learning Ads Systems](https://arxiv.org/pdf/2003.05622.pdf)
 
-## 索引
+# 索引架构
 
-### ANN索引
+## ANN索引
 
 annoy hnsw faiss pq
 
-### 暴力召回ANN加速
+## 暴力召回ANN加速
 
 [https://kexue.fm/archives/9336](https://kexue.fm/archives/9336)
 
@@ -89,9 +89,10 @@ annoy hnsw faiss pq
 
 [精准推荐的秘术：阿里解耦域适应无偏召回模型详解](https://mp.weixin.qq.com/s/0Cbc3aAYTeFqLDutLBXJmA?notreplace=true)对应[Co-training Disentangled Domain Adaptation Network for Leveraging Popularity Bias in Recommenders](https://ir.webis.de/anthology/2022.sigirconf_conference-2022.10/)
 
-[推荐系统 多兴趣召回论文解读](https://zhuanlan.zhihu.com/p/404281900)
 
-![](../assets/mind-comirec.png)
+[谈谈文本匹配和多轮检索](https://mp.weixin.qq.com/s/uoEX0TjJZmyquNch5Wikvg)
+
+[搜索中的深度匹配模型](https://mp.weixin.qq.com/s/lcyw_kHNxPB-DUfNzTaj5g)
 
 ## 内积、余弦和L2
 
@@ -103,6 +104,275 @@ $$ab=||a||cos\theta ||b||$$
 
 如果用内积，会找$$cos\theta ||b||$$最大的b出来，可能是夹角小，也可能是模大的b，所以可能偏热门
 
+## DSSM
+
+参考[Modeling Interestingness with Deep Neural Networks](https://www.microsoft.com/en-us/research/wp-content/uploads/2014/10/604_Paper.pdf)
+
+对应的ppt：
+[ppt](../assets/Modeling Interestingness with Deep Neural Networks_ppt.pdf)
+
+### 2013年CIKM的dssm
+
+[Learning Deep Structured Semantic Models for Web Search using Clickthrough Data](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/cikm2013_DSSM_fullversion.pdf)
+
+相当于一个q，和每个d分别算cos。
+
+$$
+R(Q,D)=cosine(y_Q,y_D)=\frac{y_Q^Ty_D}{\left \| y_Q \right \|\left \| y_D \right \|}
+$$
+
+所以given Q点击D的概率就是：
+
+$$
+P(D|Q)=\frac{exp(\gamma R(Q,D))}{\sum _{D'\in \textbf{D}}exp(\gamma R(Q,D'))}
+$$
+
+其中的$$\gamma$$是平滑因子。这里的$$\textbf{D}$$是需要rank的Documents的集合，理想情况肯定是全集了。实际上定义$$(Q,D^+)$$为一个query和点击文档的pair对，通过一个$$D^+$$和N个随机选的未点击的文档$$D_j^-,j=1,...,N$$近似。
+
+所以训练时，在训练集上，给定query，有点击doc的概率最大化就是我们的目标(其中的$$\Lambda$$是网络参数)：
+
+$$
+L(\Lambda)=-\log \prod _{(Q,D^+)}P(D^+|Q)
+$$
+
+Word Hashing：例如，一个英文单词是”good”，那么会先在头尾各补上一个”#”，处理成”#good#”，然后拆成n-gram（假设n=3，也就是tri-gram，那就是”#go”，“goo”，”ood”，”od#”这么多个”新”词）。这样，可以把原来500k的词典缩到300k，可以有效缓解词典太大的问题，而且因为英文就26个字母，这样做也解决了新单词的OOV问题。
+
+![dssm_2013cikm](../assets/dssm_2013cikm.png)
+
+[https://blog.csdn.net/zjrn1027/article/details/80170966](https://blog.csdn.net/zjrn1027/article/details/80170966)
+
+相似度衡量可以使用cos，而最终的loss可以用hinge loss：
+
+设置一个margin $$m$$，query $$V_Q$$，正样本$$V_{A^+}$$，负样本$$V_{A^-}$$，如果**正负样本的相似度之差**小于边界值，那就还需要优化，如果**已经大于等于边界值**了，说明**模型已经能区分**了，所以用hinge loss：
+
+$$
+L=max(0, m - (cos(V_Q,V_{A^+} - cos(V_Q, V_{A^-}))))
+$$
+
+tf算cos
+
+```python
+    def getCosineSimilarity(q, a):
+        q1 = tf.sqrt(tf.reduce_sum(tf.multiply(q, q), 1))
+        a1 = tf.sqrt(tf.reduce_sum(tf.multiply(a, a), 1))
+        mul = tf.reduce_sum(tf.multiply(q, a), 1)
+        cosSim = tf.div(mul, tf.multiply(q1, a1))
+        return cosSim
+```
+
+tf算hinge
+
+```python
+    def getLoss(trueCosSim, falseCosSim, margin):
+        zero = tf.fill(tf.shape(trueCosSim), 0.0)
+        tfMargin = tf.fill(tf.shape(trueCosSim), margin)
+        with tf.name_scope("loss"):
+            losses = tf.maximum(zero, tf.subtract(tfMargin, tf.subtract(trueCosSim, falseCosSim)))
+            loss = tf.reduce_sum(losses)
+        return loss
+```
+
+使用
+
+```python
+        self.trueCosSim = self.getCosineSimilarity(question2, trueAnswer2)
+        self.falseCosSim = self.getCosineSimilarity(question2, falseAnswer2)
+        self.loss = self.getLoss(self.trueCosSim, self.falseCosSim, self.margin)
+```
+
+### multiview dssm
+
+[A Multi-View Deep Learning Approach for Cross Domain User Modeling in Recommendation Systems](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/frp1159-songA.pdf)
+
+[https://blog.csdn.net/shine19930820/article/details/78810984](https://blog.csdn.net/shine19930820/article/details/78810984)
+
+现在很多公司都不仅仅只有一个产品，而是有**多个产品线**。比如微软可能就有搜索、新闻、appstore、xbox等产品，如果将用户在这些产品上的行为（反馈）统一在一起训练一个深度学习网络，就能很好的解决**单个产品上**（用户）**冷启动、稀疏**等问题。
+
+#### 概述
+
+![multiview-dnn](../assets/multiview-dnn.png)
+
+一个产品线就是一个view，一条训练样本只有user+1个view，其他view置0。
+
+总体的优化目标是保证在所有视图上user和正向反馈的item的相似度大于随机选取的无反馈或者负向反馈的相似度，并且越大越好。
+
+$$
+p=\underset{W_u,W_1,...W_v}{argmax}\sum ^N_{j=1}\frac{exp(\alpha _a cos(Y_u,Y_{a,j})}{\sum _{X'\in R^{d_a}}exp(\alpha cos(Y_u,f_a(X',W_a)))}
+$$
+
+其中的$$f_i(X_i,W_i)$$是$$X_i$$到$$Y_i$$的变换。有一个用户view，加上$$v$$个辅助(auxiliary)的item view。$$X_i\in R^{d_i}$$，即每个view有自己的特征空间。对于第$$j$$条样本，它只有第$$i$$个auxiliary view是有值的，其他view都是0。
+
+tf代码：[https://github.com/InsaneLife/dssm/blob/master/multi_view_dssm_v3.py](https://github.com/InsaneLife/dssm/blob/master/multi_view_dssm_v3.py)
+
+### 降维
+
+#### top features
+
+对于user features，选取top-k最频繁的features。并通过TF-IDF过滤掉最常用的特征。
+
+#### k means
+
+kmeans的公式如下：
+
+$$
+\underset{C_1,...,C_k}{argmin}\sum ^N _{i=1} \min _{C_j\in \{C_1,...,C_k\}}distance(X_i,C_j)
+$$
+
+通过K-means对相似的特征群分组为同一个cluster并生成新的特征，共生成k个新特征。生成的特征向量$$Y_i$$是一个$$K$$维的向量，第$$i$$维是第$$i$$个cluster中features的出现数。
+
+具体地，使用一个长度为$$U$$的vector $$f_i$$，$$U$$是训练集中的用户数，$$f_i(j)$$表示用户$$i$$有feature $$j$$的次数。将每个$$f_i$$进行归一化。这样，对于每一个用户向量$$f_i$$，可以产生它的降维了的用户向量$$Y_i$$（假设feature $$a$$分配给了cluster $$Cls(a)$$，$$1\le Cls(a)\le K$$）：
+
+$$
+Y_i(j)=\sum _{a:X_i(a)>0 \& Cls(a) = j}f_i(a)
+$$
+
+想要抽出reasonable的feature数目，需要比较大的cluster数$$K$$。因为如果cluster数比较少，那一个cluster里就会有非常多的用户feature，很难学到有用的pattern。在本文中，设置$$K=10000$$，平均每个cluster里大概有350个feature。因为cluster数比较大，所以用mr版的kmeans。
+
+#### Local sensitive Hashing
+
+通过一个随机的矩阵将数据映射到低维向量空间上，并且**保持原始空间上的pairwis cos距离**在**新的空间上**仍然获得**保留**。
+
+原始矩阵$$d$$维，降到$$k$$维，所以对应的矩阵是$$A\in R^{d\times k}$$。所以$$A$$中有$$k$$个映射，每个映射$$A_i$$都将$$X$$映射到$$Y_i$$，输出的$$Y_i\in R^k$$。计算方式如下：
+
+$$
+Y_i=\left\{\begin{matrix}
+1,&if\ A_iX\ge 0\\ 
+0,&else
+\end{matrix}\right.
+$$
+
+计算$$X_1$$，$$X_2$$的cos相似度是$$cos(\frac{H(Y_1,Y_2)}{k}\pi)$$，其中，$$X_1,X_2\in R^d$$。$$H(Y_1,Y_2)$$是LSH输出向量的汉明距离。为了保持cos相似度的高准确率，需要把$$k$$设得比较大，这里和k-means一样，$$k=10000$$。
+
+因为对每个向量算LSH是相互独立的，所以这一步是可以高度并行化的。但是，在我们的case里，有10000的$$k$$，有3.5M的$$d$$，所以相当于要把包括了$$3.5M\times 10^4$$个服从$$N(0,1)$$浮点数的$$A$$存到每个节点的内存里，也就是300G的内存消耗，这是肯定不行的。有很多解决方法，大部分方法是生成一个sparse的矩阵$$A$$【kdd06的[Very sparse random projections](https://web.stanford.edu/~hastie/Papers/Ping/KDD06_rp.pdf)】。
+
+而本文用了[Online Generation of Locality Sensitive Hash Signatures](https://pdfs.semanticscholar.org/db21/730d2e0e2aa1f148a5411ea23ae7ceea574a.pdf)里提到的pooling trick。
+
+保存一个size是$$m$$的pool $$B$$，每个元素是从$$N(0,1)$$中随机出来的浮点数，m远小于transition matrix $$A$$的size。要获取$$A_{ij}$$的一条记录，就是使用关于$$i,j$$的一致性hash的方法在$$B$$中找到一个index，然后查出它的值。在本文中，设置$$m=1000000$$，将单节点的内存损耗从100G缩减到10M，可以直接用mr搞啦。
+
+#### 减少训练样本数
+
+每个用户在每个域都有大量的日志数据，将每个用户在每个域只选取一个user-item对，具体为用户特征-用户在**此域**喜欢的所有item的**平均分数**。
+
+## YoutubeDNN
+
+[https://daiwk.github.io/posts/dl-youtube-video-recommendation.html](https://daiwk.github.io/posts/dl-youtube-video-recommendation.html)
+
+参考[http://www.sohu.com/a/155797861_465975](http://www.sohu.com/a/155797861_465975)
+
+参考[https://zhuanlan.zhihu.com/p/25343518](https://zhuanlan.zhihu.com/p/25343518)
+
+[Deep neural networks for youtube recommendations](https://static.googleusercontent.com/media/research.google.com/zh-CN//pubs/archive/45530.pdf)
+
+YouTube是世界上最大的视频上传、分享和发现网站，YouTube推荐系统为超过10亿用户从不断增长的视频库中推荐个性化的内容。整个系统由两个神经网络组成：**候选生成网络**和**排序网络**。候选生成网络从**百万量级**的视频库中生成**上百个**候选，排序网络对候选进行打分排序，输出**排名最高的数十个结果**。
+
+### 候选生成网络（Candidate Generation Network）
+
+候选生成网络将推荐问题建模为一个**类别数极大的多分类问题**：对于一个Youtube用户，使用其观看历史（视频ID）、搜索词记录（search tokens）、人口学信息（如地理位置、用户登录设备）、二值特征（如性别，是否登录）和连续特征（如用户年龄）等，对视频库中所有视频进行多分类，得到每一类别的分类结果（即每一个视频的推荐概率），最终输出概率较高的几百个视频。===>即，【使用**用户特征**，对所有视频进行分类，得到**和这个用户最相关的几百个候选结果。**】
+
+将推荐看成分类问题，用户$$U$$在上下文$$C$$中，选择视频$$i$$的概率是：
+
+$$
+P(w_t=i|U,C)=\frac{e^{v_iu}}{\sum _{j\in V}e^{v_ju}}
+$$
+
+其中，$$v_i\in R^N$$是第i个视频的emb，$$u\in R^N$$是用户的emb，两个emb都是N维的，这里看起来是用内积$$v_iu$$把它们变成一个数。
+
+由于视频有百万量级，所以做这么一个超大规模的分类，需要，并且使用的是到的样本**通过importance sampling进行负采样**(参考[On using very large target vocabulary for neural machine translation](http://www.aclweb.org/anthology/P15-1001))。对每一个example而言，他的cross-entropy是在true label和采样的负类中求min。在实践中，采样了数千个负类，比传统的softmax有将近100倍的速度提升。
+
+另一种做法是hierarchical softmax(参考[Hierarchical probabilistic neural network language model](https://www.iro.umontreal.ca/~lisa/pointeurs/hierarchical-nnlm-aistats05.pdf))，但实践中效果没那么好。因为在hsoftmax中，遍历树里的每一个节点时，会引入对经常是毫无联系的类别的分辨，使得分类问题变得更困难以至于效果变差。
+
+在线serving时，由于低延迟的要求，需要有对类别数是sublinear的时间复杂度的近邻检索方法，之前youtube的系统使用的是hashing的方法，即[Label partitioning for sublinear ranking](http://www.thespermwhale.com/jaseweston/papers/label_partitioner.pdf)。因为在线的时候，softmax的输出没啥用，所以打分问题就变成了一个在点积的空间上进行最近邻检索的问题，有很多通用库可以用，例如基于LSH的ann算法：[ An Investigation of Practical Approximate Nearest Neighbor Algorithms](http://papers.nips.cc/paper/2666-an-investigation-of-practical-approximate-nearest-neighbor-algorithms.pdf)。
+
+注：
+
+item-embedding也可以参考[https://zhuanlan.zhihu.com/p/24339183?refer=deeplearning-surfing](https://zhuanlan.zhihu.com/p/24339183?refer=deeplearning-surfing)里说的[Item2vec: Neural Item Embedding for Collaborative Filtering](https://arxiv.org/abs/1603.04259)的想法，把item视为word，用户的行为序列视为一个集合，item间的共现为正样本，并按照item的频率分布进行负样本采样，相似度的计算还只是利用到了item共现信息，缺点是：忽略了user行为序列信息; 没有建模用户对不同item的喜欢程度高低。
+
+### Modeling Expected Watch Time
+
+训练用的是logistic regression加上cross-entropy，
+
+假设第i个正样本的播放时长是$$T_i$$，使用weighted logistic regression，将正样本的权重设为播放时长，而负样本的权重设为1，这样，假设总共有N个样本，有k个被点击了，就相当于有了$$\sum T_i$$个正样本，N-k个负样本。所以odds（注：一个事件的几率odds指该事件发生与不发生的概率比值）就是正样本数/负样本数=$$\frac{\sum T_i}{N-k}$$。
+
+而实际中，点击率P很低，也就是k很小，而播放时长的期望是$$E(T)=\frac{\sum T_i}{N}$$，所以$$E(T)$$约等于$$E(T)(1+P)$$，约等于odds，即$$\frac{\sum T_i}{N-k}$$
+
+最后在inference的serving中，直接使用$$e^{Wx+b}$$来产出odds，从而近似expected watch time。
+
+参考[https://en.wikipedia.org/wiki/Logistic_regression](https://en.wikipedia.org/wiki/Logistic_regression)
+
+odds是平均时长，训练时输入给sigmoid的是logit，
+
+$$
+wx+b = logit = log odds
+$$
+
+所以，infer的时候：
+
+$$
+E(T) = odds = e ^{logit} = e ^{log odds} = e^{wx+b}
+$$
+
+参考tf的weighted sigmoid：```weighted_cross_entropy_with_logits```: [https://www.tensorflow.org/api_docs/python/tf/nn/weighted_cross_entropy_with_logits](https://www.tensorflow.org/api_docs/python/tf/nn/weighted_cross_entropy_with_logits)
+
+正常的sigmoid：
+
+```python
+labels * -log(sigmoid(logits)) +
+    (1 - labels) * -log(1 - sigmoid(logits))
+```
+
+weighted sigmoid只对正样本加权：
+
+```python
+labels * -log(sigmoid(logits)) * pos_weight +
+    (1 - labels) * -log(1 - sigmoid(logits))
+```
+
+![youtube-dnn-recsys-architecture](../assets/youtube-dnn-recsys-architecture.png)
+
+### 代码实现
+
+[https://github.com/ogerhsou/Youtube-Recommendation-Tensorflow/blob/master/youtube_recommendation.py](https://github.com/ogerhsou/Youtube-Recommendation-Tensorflow/blob/master/youtube_recommendation.py)
+
+关于数据集：
+
+[https://github.com/ogerhsou/Youtube-Recommendation-Tensorflow/commit/e92bac1b8b5deb0e93e996b490561baaea60bae8](https://github.com/ogerhsou/Youtube-Recommendation-Tensorflow/commit/e92bac1b8b5deb0e93e996b490561baaea60bae8)
+
+使用的是[https://github.com/facebookresearch/fastText/blob/master/classification-example.sh](https://github.com/facebookresearch/fastText/blob/master/classification-example.sh)
+
+在init_data函数中，给每个__label__xx编了个号，如：
+
+```shell
+__label__6 0
+__label__12 1
+__label__14 2
+__label__7 3
+```
+
+然后read_data的时候，y就用这个编号来表示（假装是时长）：
+
+```python
+y.append(label_dict[line[0]])
+```
+
+而使用的是nce_loss(参考[https://daiwk.github.io/posts/knowledge-tf-usage.html#tfnnnceloss](https://daiwk.github.io/posts/knowledge-tf-usage.html#tfnnnceloss))：
+
+```python
+ce_weights = tf.Variable(
+    tf.truncated_normal([n_classes, n_hidden_1],
+                        stddev=1.0 / math.sqrt(n_hidden_1)))
+nce_biases = tf.Variable(tf.zeros([n_classes]))
+
+loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
+                     biases=nce_biases,
+                     labels=y_batch,
+                     inputs=pred,
+                     num_sampled=10,
+                     num_classes=n_classes))
+
+cost = tf.reduce_sum(loss) / batch_size
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+out_layer = tf.matmul(pred, tf.transpose(nce_weights)) + nce_biases
+```
 
 ## 采样
 
@@ -138,6 +408,11 @@ xx
 
 [Deep Retrieval: An End-to-End Learnable Structure Model for Large-Scale Recommendations](https://arxiv.org/abs/2007.07203)
 
+## 多兴趣召回
+
+[推荐系统 多兴趣召回论文解读](https://zhuanlan.zhihu.com/p/404281900)
+
+![](../assets/mind-comirec.png)
 
 
 ## 对比学习
@@ -167,6 +442,25 @@ v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/
 假设$$N_K(u)$$是节点$$u$$的$$K$$跳邻居，那么目标函数是最大化这些邻居的概率，即
 
 $$\max _f \sum_{u \in \mathcal{V}} \log \operatorname{Pr}\left(N_K(u) \mid f(u)\right)$$
+
+
+## transformer+召回
+
+ICLR2020 cmu+google：
+
+[Pre-training Tasks for Embedding-based Large-scale Retrieval](https://arxiv.org/abs/2002.03932)
+
+
+# 粗排
+
+## COLD
+
+## CAN
+
+## poly-encoder
+
+[https://zhuanlan.zhihu.com/p/119444637](https://zhuanlan.zhihu.com/p/119444637)
+
 
 # 精排
 
@@ -391,7 +685,6 @@ poso
 + 原domain$$S$$：有大量用户交互行为的图文或视频推荐。一条样本包括$$\left(u, x^{u}\right) \in \mathcal{S}$$，其中，$$x^{u}=\left\{x_{1}^{u}, \ldots, x_{n}^{u}\right\}\left(x_{i}^{u} \in X\right)$$表示用户的点击历史
 + 目标domain$$T$$：可以是用户label很少的一些预测任务。例如用户可能喜欢的item、用户性别、用户年龄分桶等。一条样本包括$$(u, y) \in \mathcal{T}$$，其中$$y \in \mathcal{Y}$$是一个有监督的标签。
 
-
 # GNN+推荐
 
 [https://zhuanlan.zhihu.com/p/323302898](https://zhuanlan.zhihu.com/p/323302898)
@@ -400,15 +693,7 @@ poso
 
 [Graph Neural Networks for Recommender Systems: Challenges, Methods, and Directions](https://arxiv.org/pdf/2109.12843.pdf)
 
-
-# 强化学习+推荐
-
-
-
-# LLM+推荐
-
-
-
+[https://daiwk.github.io/posts/dl-graph-representations.html](https://daiwk.github.io/posts/dl-graph-representations.html)
 
 # bias v.s. debias
 
