@@ -4,8 +4,14 @@
 
 [https://github.com/daiwk/llms_new](https://github.com/daiwk/llms_new)
 
-# 概述
 
+# 远古时期的NLP
+
+# 深度学习的NLP
+
+
+
+# LLM概述
 
 ## LLM简史
 
@@ -2246,7 +2252,6 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 [Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
 
 ## llm vs ID
-
 
 [推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
 
