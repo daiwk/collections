@@ -1826,6 +1826,24 @@ batch内shuffle采样（有放回）
 
 ![](../assets/mind-comirec.png)
 
+
+## qalign
+
+[Spherical Graph Embedding for Item Retrieval in Recommendation System](https://dl.acm.org/doi/abs/10.1145/3511808.3557704)
+
+[自己下载了](../assets/Q-align.pdf)
+
+代码：[https://github.com/WNQzhu/Q-align](https://github.com/WNQzhu/Q-align)
+
+自己的注释：[https://github.com/daiwk/llms_new/blob/main/demos/qalign.py](https://github.com/daiwk/llms_new/blob/main/demos/qalign.py)
+
+
+假设$$N_K(u)$$是节点$$u$$的$$K$$跳邻居，那么目标函数是最大化这些邻居的概率，即
+
+$$\max _f \sum_{u \in \mathcal{V}} \log \operatorname{Pr}\left(N_K(u) \mid f(u)\right)$$
+
+
+
 ## 内积、余弦和L2
 
 ![](../assets/L2-innerproduct-hnsw.png)
