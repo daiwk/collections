@@ -147,9 +147,9 @@ Word Hashing：例如，一个英文单词是”good”，那么会先在头尾�
 
 设置一个margin $$m$$，query $$V_Q$$，正样本$$V_{A^+}$$，负样本$$V_{A^-}$$，如果**正负样本的相似度之差**小于边界值，那就还需要优化，如果**已经大于等于边界值**了，说明**模型已经能区分**了，所以用hinge loss：
 
-$$
+XXX
 L=max(0, m - (cos(V_Q,V_{A^+} - cos(V_Q, V_{A^-}))))
-$$
+XXX
 
 tf算cos
 
@@ -313,9 +313,9 @@ item-embedding也可以参考[https://zhuanlan.zhihu.com/p/24339183?refer=deeple
 
 odds是平均时长，训练时输入给sigmoid的是logit，
 
-$$
+XXX
 wx+b = logit = log odds
-$$
+XXX
 
 所以，infer的时候：
 
@@ -441,8 +441,9 @@ v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/
 
 假设$$N_K(u)$$是节点$$u$$的$$K$$跳邻居，那么目标函数是最大化这些邻居的概率，即
 
-$$\max _f \sum_{u \in \mathcal{V}} \log \operatorname{Pr}\left(N_K(u) \mid f(u)\right)$$
-
+XXX
+\max _f \sum_{u \in \mathcal{V}} \log \operatorname{Pr}\left(N_K(u) \mid f(u)\right)
+XXX
 
 
 
