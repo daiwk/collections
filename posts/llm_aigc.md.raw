@@ -1422,7 +1422,7 @@ def xxx():
 
 + fp16的参数：2bytes
 + fp16的梯度：2bytes（其实不一定是必须的，在ZeRO的[论文](https://arxiv.org/pdf/1910.02054v2.pdf)中有分析）
-+ 优化器状态（optimizer state)：16bytes
++ 优化器状态（optimizer state）：16bytes
     + fp32参数（4bytes）
     + fp32梯度（4bytes）
     + fp32 variance【历史梯度平方和】（4bytes）
@@ -1537,7 +1537,7 @@ GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效
 
 重计算(recomputation)是对于pipeline parallelism非常重要的一个优化，最开始在[Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/pdf/1604.06174.pdf)一文中提到，在**flash attention**中也用了。
 
-因为要做pipeline+梯度累积，前向过程中的**激活值**要保存，以留给反向过程使用，保存很多份的激活值对显存造成了很大压力。recomputation(也叫**checkpointing**)用时间来换空间（反向的时候进行一次激活值的重计算)，可以缓解显存问题。
+因为要做pipeline+梯度累积，前向过程中的**激活值**要保存，以留给反向过程使用，保存很多份的激活值对显存造成了很大压力。recomputation(也叫**checkpointing**)用时间来换空间（反向的时候进行一次激活值的重计算），可以缓解显存问题。
 
 pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/checkpoint.py)。大致逻辑是包了一个```autograd.Function```，前向时保存一些inputs/rng_state(RNG state是Random Number Generator state的缩写，**随机数生成器的状态**。在深度学习和其他计算任务中，随机数生成器用于初始化参数、决定正则化技术如dropout的行为，以及在训练过程中选择样本等。RNG状态是指随机数生成器当前的内部状态，它可以用来在需要时重现或恢复特定的随机数序列，确保实验或模型训练的可重复性)，反向时重新计算
 
@@ -2827,7 +2827,10 @@ VL-BERT 的主干网络使用 TransformerAttention 模块，并将视觉与语�
 
 为了更好地建模通用的视觉-语言表示，作者在大规模视觉-语言语料库中对 VL-BERT 进行了预训练。采用的预训练数据集为图像标题生成数据集，Conceptual Captions，其中包含了大约 330 万个图像标题对。
 
-VL-BERT 的预训练主要采用三个任务：a) 屏蔽语言模型（Masked Language Modeling），即随机屏蔽掉语句中的一些词，并预测当前位置的词是什么；b) 屏蔽 RoI 分类（MaskedRoIClassification），即随机屏蔽掉视觉输入中的一些 RoIs，并预测此空间位置对应 RoI 的所属类别；c) 图像标题关联预测（Sentence-Image Relationship Prediction），即预测图像与标题是否属于同一对。
+VL-BERT 的预训练主要采用三个任务：
++ 屏蔽语言模型（Masked Language Modeling），即随机屏蔽掉语句中的一些词，并预测当前位置的词是什么；
++ 屏蔽 RoI 分类（MaskedRoIClassification），即随机屏蔽掉视觉输入中的一些 RoIs，并预测此空间位置对应 RoI 的所属类别；
++ 图像标题关联预测（Sentence-Image Relationship Prediction），即预测图像与标题是否属于同一对。
 
 在预训练结束后，使用微调来进行下游任务的训练。本文中主要在三个视觉-语言下游任务中进行微调，即视觉常识推理（VisualCommonsenseReasoning）、视觉问答（VisualQuestionAnswering）与引用表达式理解（ReferringExpressionComprehension），下面将分别介绍。
 
