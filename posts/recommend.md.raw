@@ -28,7 +28,7 @@
 
 [推荐工业界实战角度详解TensorFlow中Wide & Deep源码（三）](https://mp.weixin.qq.com/s/ur7xwdY86KlWU3qpmqUcog)
 
-# 特征工程
+# 特征、样本、数据流
 
 [浅谈微视推荐系统中的特征工程](https://mp.weixin.qq.com/s/NqVP0ksfLiRLSGkuWxiz5A)
 
@@ -192,6 +192,8 @@ tf算hinge
 
 #### 概述
 
+&nbsp;
+
 ![multiview-dnn](../assets/multiview-dnn.png)
 
 一个产品线就是一个view，一条训练样本只有user+1个view，其他view置0。
@@ -210,9 +212,13 @@ tf代码：[https://github.com/InsaneLife/dssm/blob/master/multi_view_dssm_v3.py
 
 #### top features
 
+&nbsp;
+
 对于user features，选取top-k最频繁的features。并通过TF-IDF过滤掉最常用的特征。
 
 #### k means
+
+&nbsp;
 
 kmeans的公式如下：
 
@@ -231,6 +237,8 @@ XXX
 想要抽出reasonable的feature数目，需要比较大的cluster数$$K$$。因为如果cluster数比较少，那一个cluster里就会有非常多的用户feature，很难学到有用的pattern。在本文中，设置$$K=10000$$，平均每个cluster里大概有350个feature。因为cluster数比较大，所以用mr版的kmeans。
 
 #### Local sensitive Hashing
+
+&nbsp;
 
 通过一个随机的矩阵将数据映射到低维向量空间上，并且**保持原始空间上的pairwis cos距离**在**新的空间上**仍然获得**保留**。
 
@@ -252,6 +260,8 @@ XXX
 保存一个size是$$m$$的pool $$B$$，每个元素是从$$N(0,1)$$中随机出来的浮点数，m远小于transition matrix $$A$$的size。要获取$$A_{ij}$$的一条记录，就是使用关于$$i,j$$的一致性hash的方法在$$B$$中找到一个index，然后查出它的值。在本文中，设置$$m=1000000$$，将单节点的内存损耗从100G缩减到10M，可以直接用mr搞啦。
 
 #### 减少训练样本数
+
+&nbsp;
 
 每个用户在每个域都有大量的日志数据，将每个用户在每个域只选取一个user-item对，具体为用户特征-用户在**此域**喜欢的所有item的**平均分数**。
 
@@ -376,6 +386,7 @@ optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 out_layer = tf.matmul(pred, tf.transpose(nce_weights)) + nce_biases
 ```
 
+
 ## 采样
 
 batch内shuffle采样（有放回）
@@ -392,34 +403,16 @@ batch内shuffle采样（有放回）
 
 [推荐系统遇上深度学习(七十二)-[谷歌]采样修正的双塔模型](https://www.lizenghai.com/archives/38343.html)
 
+## 召回常用Loss
+
+[表示学习中的7大损失函数梳理](https://mp.weixin.qq.com/s/XN-ugqsziXDjj1Ax8EJD0A)
+
+### Contrastive Loss
 
 
-## 突破双塔——TDM系列
+### Triplet Loss
 
-### TDM->JTM
-
-[下一代深度召回与索引联合优化算法JTM](https://mp.weixin.qq.com/s/heiy74_QriwxpZRyTUEgPg)
-
-### 二向箔
-
-xx
-
-## 突破双塔——DR
-
-[字节最新复杂召回模型，提出深度检索DR框架解决超大规模推荐系统中的匹配问题](https://cloud.tencent.com/developer/article/1698045)
-
-[Deep Retrieval: An End-to-End Learnable Structure Model for Large-Scale Recommendations](https://arxiv.org/abs/2007.07203)
-
-## 多兴趣召回
-
-[推荐系统 多兴趣召回论文解读](https://zhuanlan.zhihu.com/p/404281900)
-
-![](../assets/mind-comirec.png)
-
-
-## 对比学习
-
-### 自监督
+### InfoNce Loss
 
 [Self-supervised Learning for Large-scale Item Recommendations](https://arxiv.org/pdf/2007.12865.pdf)
 
@@ -429,6 +422,11 @@ v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/
 
 ![ssl1](../assets/ssl-2.png)
 
+
+### Focal Loss
+
+
+### Circle Loss
 
 ### qalign
 
@@ -444,6 +442,32 @@ v3有两个图：[https://arxiv.org/pdf/2007.12865v3.pdf](https://arxiv.org/pdf/
 假设$$N_K(u)$$是节点$$u$$的$$K$$跳邻居，那么目标函数是最大化这些邻居的概率，即
 
 $$\max _f \sum_{u \in \mathcal{V}} \log \operatorname{Pr}\left(N_K(u) \mid f(u)\right)$$
+
+
+
+
+## 突破双塔
+
+### TDM->JTM
+
+[下一代深度召回与索引联合优化算法JTM](https://mp.weixin.qq.com/s/heiy74_QriwxpZRyTUEgPg)
+
+### 二向箔
+
+xx
+
+### DR
+
+[字节最新复杂召回模型，提出深度检索DR框架解决超大规模推荐系统中的匹配问题](https://cloud.tencent.com/developer/article/1698045)
+
+[Deep Retrieval: An End-to-End Learnable Structure Model for Large-Scale Recommendations](https://arxiv.org/abs/2007.07203)
+
+## 多兴趣召回
+
+[推荐系统 多兴趣召回论文解读](https://zhuanlan.zhihu.com/p/404281900)
+
+![](../assets/mind-comirec.png)
+
 
 
 ## transformer+召回
