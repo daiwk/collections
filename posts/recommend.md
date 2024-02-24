@@ -100,7 +100,9 @@ annoy hnsw faiss pq
 
 给定a，找到和它最像的b
 
-$$ab=||a||cos\theta ||b||$$
+$$
+ab=||a||cos\theta ||b||
+$$
 
 如果用内积，会找$$cos\theta ||b||$$最大的b出来，可能是夹角小，也可能是模大的b，所以可能偏热门
 
