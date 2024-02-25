@@ -28,6 +28,51 @@
 
 [推荐工业界实战角度详解TensorFlow中Wide & Deep源码（三）](https://mp.weixin.qq.com/s/ur7xwdY86KlWU3qpmqUcog)
 
+# 常用机器学习基础
+
+## mse vs cross-entropy
+
+不一定回归就用mse，分类才用交叉熵
+
+[https://zhuanlan.zhihu.com/p/362496849](https://zhuanlan.zhihu.com/p/362496849)
+
+[https://www.zhihu.com/question/415245797/answer/1791746717](https://www.zhihu.com/question/415245797/answer/1791746717)
+
+[https://zhuanlan.zhihu.com/p/304462034](https://zhuanlan.zhihu.com/p/304462034)
+
+[https://blog.csdn.net/u011508640/article/details/72815981](https://blog.csdn.net/u011508640/article/details/72815981)
+
+各种分布：
+
+[https://github.com/graykode/distribution-is-all-you-need](https://github.com/graykode/distribution-is-all-you-need)
+
+## cross-entroy vs nllloss
+
+[聊一聊机器学习的MLE和MAP：最大似然估计和最大后验估计](https://mp.weixin.qq.com/s?__biz=MzI4MDYzNzg4Mw==&mid=2247552799&idx=3&sn=87cdfb929865571ec96738c42deb3240&chksm=ebb737cbdcc0bedd74395a68fb76796f1c102a6129ee2e81e0932da786ec58450d415a448a6e&scene=27)
+
+贝叶斯公式：
+
+XXX
+P(\theta \mid X)=\frac{P(X \mid \theta) \times P(\theta)}{P(X)}
+XXX
+
++ 先验（prior）：$$P(\theta)$$，没有观测到任数据时对$$\theta$$的预先判断，例如假设硬币很大概率是均匀的，很小概率不均匀；**随着数据量的增加，先验的影响力越来越小。**
++ 后验（posterior）：$$P(\theta \mid X)$$，最终的参数分布
++ 似然（likelihood）：$$P(X \mid \theta)$$，假设$$\theat$$已知后，我们观察到的数据应该是什么样的
+
+结论：
+
++ 最大似然估计（MLE, max likelihood estimation）：等价于NLL(negative log likelihood)，即交叉熵
++ 最大后验估计（MAP, max a posteriori）：假设参数服从高斯分布，等价于**MLE+L2正则**
+
+[https://blog.csdn.net/geter_CS/article/details/84857220](https://blog.csdn.net/geter_CS/article/details/84857220)
+
+[https://blog.csdn.net/qq_22210253/article/details/85229988](https://blog.csdn.net/qq_22210253/article/details/85229988)
+
+CrossEntropyLoss就是把Softmax–Log–NLLLoss合并成一步
+
+![cnllloss](../assets/ce-nllloss.png)
+
 # 特征、样本、数据流
 
 [浅谈微视推荐系统中的特征工程](https://mp.weixin.qq.com/s/NqVP0ksfLiRLSGkuWxiz5A)
