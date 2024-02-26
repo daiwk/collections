@@ -3003,6 +3003,24 @@ DALL-E3：
 
 论文参考了这个[Patch n'Pack: NaViT, a Vision Transformer for any Aspect Ratio and Resolution](https://arxiv.org/pdf/2307.06304.pdf)，可以使下面提到的DiT适应各种分辨率/持续时间/宽高比。
 
+#### 几种视频token方式的对比
+
+&nbsp;
+
+claude-2-100k的回答。。
+
++ [MAGVIT: Masked Generative Video Transformer](https://arxiv.org/pdf/2212.05199.pdf)：使用了3D向量量化(3D VQ)自动编码器来将视频量化为离散token
+  + 设视频$$V$$有$$T$$帧，其形状为$$T \times H \times W \times 3$$。
+  + 3D VQ编码器$$f_T$$会把视频量化为一个token序列$$z$$,其中$$z\in Z^T$$,$$Z$$是码本,$$T$$是token序列长度。
+  + 3D VQ解码器$$f^{-1}_T$$则可以从latent token $$z$$重构回视频像素。
++ [Genie: Generative Interactive Environments](https://arxiv.org/pdf/2402.15391.pdf)：使用了2D向量量化(2D VQ)方法
+  + 每一帧图像I先通过一个2D VQ编码器f编码为一个token序列$$z$$,其中$$z\in Z^N$$,$$Z$$是2D码本。
+  + 然后,对时间序列上的token $$z_1, z_2,..., z_T$$应用一个1D卷积网络,以捕获时间信息。
+  + 再通过2D VQ解码器$$f^{-1}$$解码回每一帧图像。
++ [Vivit: A video vision transformer](https://arxiv.org/pdf/2103.15691.pdf)：使用tubelet-embedding
+  + 均匀地在时间轴上抽样$$n_t$$个帧,然后把每帧处理成$$n_h \times n_w$$个patch,最终把所有patch连接起来
+
+
 ### Diffusion Transformer
 
 [Scalable diffusion models with transformers](https://arxiv.org/pdf/2212.09748.pdf)提出了DiT，替换stable diffusion中的u-net
