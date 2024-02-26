@@ -3057,6 +3057,9 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 [How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817.pdf)
 [Recommender Systems in the Era of Large Language Models (LLMs)](https://arxiv.org/pdf/2307.02046.pdf)
 
+中科大LDS实验室的tutorial：[XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf](https://github.com/daiwk/collections/blob/master/assets/XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf)
+
+
 ## Recommender Systems with Generative Retrieval
 
 [Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
