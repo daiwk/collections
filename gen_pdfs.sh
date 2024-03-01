@@ -24,7 +24,6 @@ rm -rf pdfs/*.md
 
 git add ./assets
 git add posts
-git add codes
 git add pdfs
 git add gen_pdfs.sh
 git add gen_dot_sub.py
