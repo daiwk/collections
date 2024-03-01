@@ -139,6 +139,20 @@ annoy hnsw faiss pq
 
 [搜索中的深度匹配模型](https://mp.weixin.qq.com/s/lcyw_kHNxPB-DUfNzTaj5g)
 
+## 协同
+
+### Swing
+
+[Large Scale Product Graph Construction for Recommendation in E-commerce](https://arxiv.org/pdf/2010.05525.pdf)
+
+score(i,j) = 0
+
++ 找到同时点过i和j的用户集合A，对集合A里的用户两两组合
+  + s=1/(这两个用户的共同点击数+1)（如果两个用户的交集很大，说明这个item并不独特，要惩罚，类似idf）
+  + score(i,j) += s （累加每个pair对的得分得到最终得分）
+
+![swing](../assets/swing.webp)
+
 ## 内积、余弦和L2
 
 ![](../assets/L2-innerproduct-hnsw.png)
@@ -155,8 +169,7 @@ XXX
 
 参考[Modeling Interestingness with Deep Neural Networks](https://www.microsoft.com/en-us/research/wp-content/uploads/2014/10/604_Paper.pdf)
 
-对应的ppt：
-[ppt](../assets/Modeling Interestingness with Deep Neural Networks_ppt.pdf)
+对应的[ppt](https://github.com/daiwk/collections/blob/master/assets/dssm_ppt.pdf)
 
 ### 2013年CIKM的dssm
 
