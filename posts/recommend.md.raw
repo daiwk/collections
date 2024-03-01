@@ -151,7 +151,7 @@ score(i,j) = 0
   + s=1/(这两个用户的共同点击数+1)（如果两个用户的交集很大，说明这个item并不独特，要惩罚，类似idf）
   + score(i,j) += s （累加每个pair对的得分得到最终得分）
 
-![swing](../assets/swing.webp)
+![swing](../assets/swing.png)
 
 ## 内积、余弦和L2
 
