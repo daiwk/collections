@@ -798,7 +798,39 @@ poso
 
 [推荐系统遇上深度学习(七十一)-\[华为\]一种消除CTR预估中位置偏置的框架](https://www.jianshu.com/p/37768b399cd8)
 
+### PAL
+
 [PAL: A Position-bias Aware Learning Framework for CTR Prediction in Live Recommender Systems](https://dl.acm.org/citation.cfm?id=3347033)
+
+参考2007年的[Predicting Clicks: Estimating the Click-Through Rate for New Ads](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/predictingclicks.pdf)一文中的推导，
+
+给定位置$$pos$$和对应的item $$x$$，用户点击的概率可以分解为：
+
++ 给定$$pos$$和$$x$$，用户看到的概率$$P(seen|x,pos)$$
++ 给定$$pos$$和$$x$$，用户看到后，点击的概率$$P(clk|seen, pos, x)$$
+
+所以
+
+XXX
+P(clk|x,pos) = P(seen|x,pos) * P(clk|seen, pos, x) 
+XXX
+
+假设：
+
++ 用户没看到item，那么点击概率为0
++ 用户是否点击item和位置无关，只取决于用户是否看到item，即$$P(clk|seen, pos, x)=P(clk|x,seen)$$
++ item被看到的概率只和位置有关，和item本身无关，即$$P(seen|x,pos) = P(seen|pos)$$
+
+XXX
+P(clk|x,pos)=P(seen|pos)P(clk|x, seen)
+XXX
+
+PAL就是搞两个塔：
+
++ **仅bias塔**：$$P(seen|pos)$$：输入pos等bias特征，预估用户会不会看到**仅训练时使用**
++ **无bias塔**：$$P(clk|x, seen)$$：输入item特征，预估**无bias的点击率**，**线上infer用**
++ **带bias预估值**：两个塔输出乘起来，预估**有bias的点击率**，**仅训练时使用**
+
 
 [推荐系统之Position-Bias建模](https://mp.weixin.qq.com/s/as8MWJZ2SAVZedx2v02fmA)
 
