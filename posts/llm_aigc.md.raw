@@ -2608,6 +2608,14 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 [https://github.com/allenai/RL4LMs](https://github.com/allenai/RL4LMs)
 
 
+# Claude系列
+
+[全球最强大模型一夜易主，GPT-4时代终结！Claude 3提前狙击GPT-5，3秒读懂万字论文理解力接近人类](https://mp.weixin.qq.com/s/WqQWS-hiQ1i1Ve6IPH3djw)
+
+[The Claude 3 Model Family: Opus, Sonnet, Haiku](https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf)
+
+
+
 # llama系列
 
 ## llama
@@ -2935,7 +2943,7 @@ DALL-E3：
 
 ![InstantID](../assets/InstantID.png)
 
-## sora
+## SORA
 
 [OpenAI首个AI视频模型炸裂登场，彻底端掉行业饭碗！60秒一镜到底惊人，世界模型真来了？](https://mp.weixin.qq.com/s/93z4Ta91yLv7PB1pnBM9mg)
 
