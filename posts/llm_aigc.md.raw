@@ -2610,11 +2610,15 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 # Claude系列
 
+## Claude3
+
 [全球最强大模型一夜易主，GPT-4时代终结！Claude 3提前狙击GPT-5，3秒读懂万字论文理解力接近人类](https://mp.weixin.qq.com/s/WqQWS-hiQ1i1Ve6IPH3djw)
 
 [The Claude 3 Model Family: Opus, Sonnet, Haiku](https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf)
 
-
++ 对齐：使用Constitutional AI([Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/pdf/2212.08073.pdf))， explicitly specifying rules and principles based on sources like the UN Declaration of Human Rights.
++ 基于Collective Constitutional AI([Collective Constitutional AI: Aligning a Language Model with Public Input](https://www.anthropic.com/news/collective-constitutional-ai-aligning-a-language-model-with-public-input))，added an additional principle to Claude’s constitution to encourage respect for disability rights
++ 公开了部分RHLF数据：[https://huggingface.co/datasets/Anthropic/hh-rlhf](https://huggingface.co/datasets/Anthropic/hh-rlhf)，对应的论文是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
 
 # llama系列
 
