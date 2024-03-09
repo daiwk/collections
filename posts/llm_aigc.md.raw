@@ -678,7 +678,9 @@ input_ids先查word_embeddings(`\(V\times E=21118*128)`)，得到dim=128的表�
 [AdaBERT: Task-Adaptive BERT Compression with Differentiable Neural Architecture Search](https://arxiv.org/pdf/2001.04246v1.pdf)
 
 
+## sentence Transformers
 
+[俄罗斯套娃 (Matryoshka) 嵌入模型概述](https://mp.weixin.qq.com/s/H3LWIs4hBQ-b_XLxICw7Dg)
 
 # 生成内容的仅解码器or编码+解码器
 
@@ -2254,7 +2256,7 @@ Flan-T5和Flan-PaLM（[Scaling instruction-finetuned language models](https://ar
 [https://huggingface.co/BelleGroup](https://huggingface.co/BelleGroup) 里有很多中文的instruct和输出的数据集
 
 
-# RLHF & instructGPT
+# RLHF & InstructGPT
 
 [OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
 
@@ -2608,6 +2610,74 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 [https://github.com/allenai/RL4LMs](https://github.com/allenai/RL4LMs)
 
 
+
+# LLM常见难题
+
+## 重复生成
+
+[https://www.zhihu.com/question/616130636](https://www.zhihu.com/question/616130636)
+
+[https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
+
+
+## 长上下文
+
+[LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
+
+以中文为例，大部分模型每个token对应的中文字数都>1.5个字，所以200k的token就对应30w字的上下文
+
+对长文本的几个要求：
+
++ 在文本比较长的时候，还能保证通顺，**ppl要足够低**
++ 能attention到前面提过的细节，**不能自我矛盾**
+
+注意：如果训练时是2k长度的语料，而推理设定8k窗口，那么PPL会急剧上升，因为
+
++ RoPE不能很好地处理没有训练过的**位置编码**
++ 推理时**注意力机制**所处理的token数量远超训练时的数量，导致注意力机制的崩坏
+
+### 直接训练
+
++ 直接输入连续长文本（如书籍）
++ 多个中等文本拼接，再通过attention mask来限制各段文本之间注意力，让它们可以在各自的位置上各训各的，互不干扰。甚至实际上即使不做attention mask，效果也挺好。
+
+如果简单地增加长度，例如从4k变到32k，长度增加8倍，为了加速计算需要缓存中间结果（如QK的结果是$$s^2$$的空间复杂度），所以显存会扩大$$8^2=64$$倍。一般的做法是2阶段：
+
++ 第一阶段：用2k或者4k训练一个基础模型，让模型学好**文本内容**和**短位置关系**
++ 第二阶段：用**比第一阶段小的数据量优化**模型在**长上下文的效果**，具体做法见下节
+
+
+### 插值类方法
+
+#### 线性插值
+
+&nbsp;
+
+[Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/pdf/2306.15595.pdf)
+
+#### NTK-Aware Interpolation
+
+&nbsp;
+
+#### NTK-by-parts
+
+&nbsp;
+
+#### Dynamically NTK Scaled RoPE
+
+&nbsp;
+
+### 其他方法
+
+#### YaRN
+
+&nbsp;
+
+#### logn
+
+&nbsp;
+
+
 # Claude系列
 
 ## Claude3
@@ -2702,15 +2772,17 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 [Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
 
+### 更大的上下文窗口
+
+此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
+
+
 ## gemma
 
 [https://blog.google/technology/developers/gemma-open-models/](https://blog.google/technology/developers/gemma-open-models/)
 
 [Gemma: Open Models Based on Gemini Research and Technology](https://storage.googleapis.com/deepmind-media/gemma/gemma-report.pdf)
 
-### 更大的上下文窗口
-
-此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
 
 ### 架构&训练方法
 
@@ -2786,14 +2858,6 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 用了tree-attention
 
-
-# 大模型的一些现象 
-
-## 重复生成
-
-[https://www.zhihu.com/question/616130636](https://www.zhihu.com/question/616130636)
-
-[https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
 
 
 # 多模态大模型
@@ -2965,6 +3029,8 @@ DALL-E3：
 [Sora爆火48小时：杨立昆揭秘论文，参数量或仅30亿](https://new.qq.com/rain/a/20240217A05YVR00)
 
 [微软37页论文逆向工程Sora，得到了哪些结论？](https://mp.weixin.qq.com/s/5-pySWU40omjBowsV2WCKA)
+
+[Sora: A Review on Background, Technology, Limitations, and Opportunities of Large Vision Models](https://arxiv.org/pdf/2402.17177.pdf)
 
 整体感觉：
 
