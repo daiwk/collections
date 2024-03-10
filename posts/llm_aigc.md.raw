@@ -3263,10 +3263,54 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 
 [Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
 
+### DSI
+
+参考知乎：[https://zhuanlan.zhihu.com/p/470182510](https://zhuanlan.zhihu.com/p/470182510)
+
+参考[Transformer memory as a differentiable search index](https://proceedings.neurips.cc/paper_files/paper/2022/file/892840a6123b5ec99ebaab8be1530fba-Paper-Conference.pdf)，提出的可微搜索索引（differentiable search index, **DSI**），拆成两个阶段：
+
++ indexing：建立**文档**和**doc_id**的**一一映射**
++ retrieval：根据query生成候选doc_ids
+
+#### Indexing方法
+
++ Inputs2Target：即doc_tokens->doc_id
++ Target2Inputs：即doc_id->doc_tokens
++ bidirectional：同时用上两面两个任务，并且在开始时加一个前缀，表明任务的方向
++ span corruption：类似T5，将doc_id当做前缀和doc_tokens拼起来，再用T5方式预训练，2个好处：
+    + 在索引时进行通用的预训练
+    + 实现doc_id作为去噪目标和输入的平衡
+
+#### 文档的表示
+
++ Direct Indexing：直接用文档的前L个单词当做文档的表示，并且保留单词的顺序。
++ Set Indexing：去掉文档中的重复的单词及停用词，然后和Direct Indexing一样的处理。
++ Inverted Index：随机对文档中的连续的k个单词（一个文档块）进行采样，并将它们与doc_id相关联
+
+#### doc_id的表示
+
++ 非结构化的原子标识符：直接对所有的文档使用一个随机但互不相同的的整数标识。假设一共有N篇文档需要检索，假设原来解码器输出有V个单词，现在有V+N个单词。
++ 朴素的结构化字符串标识符：也使用一个随机的整数，但将这个整数当做一个字符串输出，用受限的beam search搜索前k个文档，因为需要保证**输出的是数字**。
++ 语义结构化的标识符：先用BERT产出每个doc的emb，然后递归k-means，第一次得到0-k作为第1个数字，第二次的0-k作为第2个数字，可以得到一个树，树的叶子结点就是一篇文档，文档的最终标识符就是从根节点到当前结点的路径对应的编号组合。
+
+#### 训练方法
+
+&nbsp;
+
+用seq2seq，即**teacher forcing+交叉熵**，有如下两种方式：
+
++ 先对indexing进行预训练（memorization），再进行将query映射为doc的微调
++ 用多任务的方式**同时进行**，两个任务用**不同的标识符**，这样做效果会好很多
+
+### TIGER
+
+TIGER(Transformer Index for GEnerative Recommenders)
+
 ![tiger](../assets/tiger.png)
 
-参考[Transformer memory as a differentiable search index](https://proceedings.neurips.cc/paper_files/paper/2022/file/892840a6123b5ec99ebaab8be1530fba-Paper-Conference.pdf)
+![tiger-quant](../assets/tiger-quant.png)
 
+![tiger-personalized](../assets/tiger-personalized.jpg)
 
 
 ## P5
