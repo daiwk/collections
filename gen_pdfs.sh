@@ -9,6 +9,7 @@ cat ./posts/recommend.md.raw | python3 ./posts/change_format_md.py > ./posts/2.r
 
 cat ./posts/full.md.raw | python3 ./posts/change_format_pdf.py > ./pdfs/9.collections-pdf.md
 cat ./posts/full.md.raw | python3 ./posts/change_format_md.py > ./posts/9.collections.md
+cp ./posts/8.int-ml.md ./pdfs
 
 python3 gen_dot_sub.py
 
