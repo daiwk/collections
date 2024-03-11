@@ -3259,9 +3259,7 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 中科大LDS实验室的tutorial：[XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf](https://github.com/daiwk/collections/blob/master/assets/XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf)
 
 
-## Recommender Systems with Generative Retrieval
-
-[Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
+## 生成式召回
 
 ### DSI
 
@@ -3400,7 +3398,7 @@ class IndexingTrainer(Trainer):
 
 ```python
     # docid generation constrain, we only generate integer docids.
-    SPIECE_UNDERLINE = "▁"
+    SPIECE_UNDERLINE = "_"
     INT_TOKEN_IDS = []
     for token, id in tokenizer.get_vocab().items():
         if token[0] == SPIECE_UNDERLINE:
@@ -3417,6 +3415,8 @@ class IndexingTrainer(Trainer):
 ```
 
 ### TIGER
+
+[Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
 
 TIGER(Transformer Index for GEnerative Recommenders)
 
