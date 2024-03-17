@@ -3460,6 +3460,25 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 随便找一篇[Denoising Attention for Query-aware User Modeling in Personalized Search](https://arxiv.org/pdf/2308.15968.pdf)，来看看它的参考文献：
 
+学术界：
+
++ [A Transformer-based Embedding Model for Personalized Product Search](https://arxiv.org/pdf/2005.08936.pdf)，sigir20
++ [Learning a Fine-Grained Review-based Transformer Model for Personalized Product Search](https://arxiv.org/pdf/2004.09424.pdf)，sigir21
++ [RLPer: A Reinforcement Learning Model for Personalized Search](http://playbigdata.ruc.edu.cn/dou/publication/2020_WWW_RLPer.pdf)，www20
+
+
+工业界：
+
++ [A Zero Attention Model for Personalized Product Search](https://arxiv.org/pdf/1908.11322.pdf)，CIKM19，亚马逊
++ [Real-time Personalization using Embeddings for Search Ranking at Airbnb](https://github.com/daiwk/collections/blob/master/assets/airbnb-kdd18.pdf)，KDD18，airbnb
++ [End-to-End Deep Attentive Personalized Item Retrieval for Online Content-sharing Platforms](https://dl.acm.org/doi/pdf/10.1145/3366423.3380051)，www20，Google
++ [Towards Personalized and Semantic Retrieval: An End-to-End Solution for E-commerce Search via Embedding Learning](https://arxiv.org/pdf/2006.02282.pdf)，sigir20，京东
++ [Personalized Query Suggestions](https://guoweiwei.github.io/files/personalized-query-suggestion.pdf)，sigir20，LinkedIn
++ [A GNN-based Multi-task Learning Framework for Personalized Video Search](https://eprints.whiterose.ac.uk/181816/1/GNNVideoSearch_WSDM2022.pdf)，WSDM22，百度
+
+![gnn-personalized-video-search](../assets/gnn-personalized-video-search.png)
+
+
 
 
 # 其他
