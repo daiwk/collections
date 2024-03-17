@@ -61,7 +61,7 @@
 
 Mikolov发明word2vec的几个版本大概在13-14年前后。那个时候GPU非常少见，印象里面CMU的NLP组没有GPU，Stanford NLP lab只有6块K40。
 
-大规模直接算softmax是在google的14年那篇seq2seq做MT的文章。为了快，把一个softmax并行在4️块GPU上，每个GPU负责四分之一。那个年代，大多数NLP组全组都不会有4块GPU。
+大规模直接算softmax是在google的14年那篇seq2seq做MT的文章。为了快，把一个softmax并行在4块GPU上，每个GPU负责四分之一。那个年代，大多数NLP组全组都不会有4块GPU。
 
 hierarchical softmax是softmax的近似，suboptimal的。当如今计算资源足够大的时候，当然包括时间和显存 (BERT 和 Elmo 都没有用hierarchical)，hierarchical softmax就逐渐退出了历史舞台。
 
