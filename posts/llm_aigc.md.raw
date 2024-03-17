@@ -3476,10 +3476,35 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 + [Personalized Query Suggestions](https://guoweiwei.github.io/files/personalized-query-suggestion.pdf)，sigir20，LinkedIn
 + [A GNN-based Multi-task Learning Framework for Personalized Video Search](https://eprints.whiterose.ac.uk/181816/1/GNNVideoSearch_WSDM2022.pdf)，WSDM22，百度
 
+
+
+
+## gnn-based
+
+[A GNN-based Multi-task Learning Framework for Personalized Video Search](https://eprints.whiterose.ac.uk/181816/1/GNNVideoSearch_WSDM2022.pdf)，WSDM22，百度
+
+两张图：u-q和q-d
+
 ![gnn-personalized-video-search](../assets/gnn-personalized-video-search.png)
 
+3个塔：
 
++ user：
+    + user自己
+    + 一跳邻居（u->q）的q
+    + 二跳邻居（u->q->u）的u
++ query：
+    + query自己
+    + 一跳邻居（q->d）的doc
+    + 二跳邻居（q->d->q）的query
++ doc：
+    + doc自己的title向量和video向量
+    + 二跳邻居（d->q->d）的doc
 
+两个task：
+
++ u+q+d的ctr预估
++ q+d的相关性预估
 
 # 其他
 
