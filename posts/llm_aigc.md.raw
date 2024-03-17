@@ -3259,7 +3259,7 @@ sora是一个扩散模型，输入加了噪声的patches，还可以加上一些
 中科大LDS实验室的tutorial：[XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf](https://github.com/daiwk/collections/blob/master/assets/XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf)
 
 
-## 生成式召回
+## 生成式推荐
 
 ### DSI
 
@@ -3426,6 +3426,20 @@ TIGER(Transformer Index for GEnerative Recommenders)
 
 ![tiger-personalized](../assets/tiger-personalized.jpg)
 
+### HSTU
+
+[如何评价Meta最新推荐论文: 生成式推荐打败深度分层架构推荐？](https://mp.weixin.qq.com/s/MeH2drBIBML5OSfCujIJ0Q)
+
+[Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Generative Recommendations](https://arxiv.org/pdf/2402.17152.pdf)
+
+HSTU(Hierarchical Sequential Transduction Unit)
+
+![hstu-dlrm-vs-gr](../assets/hstu-dlrm-vs-gr.png)
+
+![hstu-arch](../assets/hstu-arch.png)
+
+
+
 
 ## P5
 
@@ -3477,11 +3491,36 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 + [A GNN-based Multi-task Learning Framework for Personalized Video Search](https://eprints.whiterose.ac.uk/181816/1/GNNVideoSearch_WSDM2022.pdf)，WSDM22，百度
 
 
+## q-i双塔的改进
+
+### 引入location+social
+
+[Embedding-based Retrieval in Facebook Search](https://arxiv.org/pdf/2006.11632.pdf)，KDD20
+
+q-d双塔结构，在两个塔的最底层均加入：
+
++ location：用户所处地理位置，如城市
++ social：facebook是社交网络，通过另一个基于graph的模型训练得到的user和item emb，直接加进来
+
+### 引入用户行为序列
+
+[Encoding History with Context-aware Representation Learning for Personalized Search](http://playbigdata.ruc.edu.cn/dou/publication/2020_sigir_context_ps.pdf)，sigir20，人大，提出HTPS
+
+![htps-disambiguate-query](../assets/htps-disambiguate-query.png)
+
+看着像是把用户历史的q-d pair对和当前query一起，过短期transformer和长期transformer得到输出，然后预估intent(这块具体逻辑要再看下)
+
+![htps-predict-intent](../assets/htps-predict-intent.png)
 
 
-## gnn-based
+### 三塔+gnn邻居+mtl
 
-[A GNN-based Multi-task Learning Framework for Personalized Video Search](https://eprints.whiterose.ac.uk/181816/1/GNNVideoSearch_WSDM2022.pdf)，WSDM22，百度
+[A GNN-based Multi-task Learning Framework for Personalized Video Search](https://eprints.whiterose.ac.uk/181816/1/GNNVideoSearch_WSDM2022.pdf)，WSDM22，百度，提出MGNN-PVS
+
+现有的PSM(g personalized search methods)大多使用用户反馈（如点击）进行训练，缺点：
+
++ 反馈信号大部分表达的是吸引力而非相关性
++ 用户的历史信号比较稀疏，很难学好PSM
 
 两张图：u-q和q-d
 
@@ -3498,13 +3537,13 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
     + 一跳邻居（q->d）的doc
     + 二跳邻居（q->d->q）的query
 + doc：
-    + doc自己的title向量和video向量
+    + doc自己的title向量（训练query-正title-负title的triplet loss）和video向量（训练video-正query-负query的triplet loss）
     + 二跳邻居（d->q->d）的doc
 
 两个task：
 
-+ u+q+d的ctr预估
-+ q+d的相关性预估
++ ctr预估：u和q拼一起过nn得到个性化的q，再和d过nn得到的向量算内积，得到预估值，用交叉熵
++ 相关性预估：q过另一个nn，d过另一个nn，内积，用mse
 
 # 其他
 
