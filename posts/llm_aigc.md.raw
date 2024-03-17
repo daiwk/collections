@@ -3543,7 +3543,7 @@ XXX
 + 反馈信号大部分表达的是吸引力而非相关性
 + 用户的历史信号比较稀疏，很难学好PSM
 
-两张图：u-q和q-d
+两张二部图：u-q和q-d
 
 ![gnn-personalized-video-search](../assets/gnn-personalized-video-search.png)
 
