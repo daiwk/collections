@@ -3456,6 +3456,12 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 [RNN效率媲美Transformer，谷歌新架构两连发：同等规模强于Mamba](https://mp.weixin.qq.com/s/RtAZiEzjRWgqQw3yu3lvcg)
 
+# 个性化搜索
+
+随便找一篇[Denoising Attention for Query-aware User Modeling in Personalized Search](https://arxiv.org/pdf/2308.15968.pdf)，来看看它的参考文献：
+
+
+
 # 其他
 
 ## 一些比较好的模型
