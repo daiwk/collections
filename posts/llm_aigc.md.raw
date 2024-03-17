@@ -3438,6 +3438,13 @@ HSTU(Hierarchical Sequential Transduction Unit)
 
 ![hstu-arch](../assets/hstu-arch.png)
 
+发现了scaling-law：
+
+![hstu-scaling-law](../assets/hstu-scaling-law.png)
+
+### Wukong
+
+[Wukong: Towards a Scaling Law for Large-Scale Recommendation](https://arxiv.org/pdf/2403.02545.pdf)
 
 
 
