@@ -3500,9 +3500,18 @@ class IndexingTrainer(Trainer):
 
 ### vq-vae
 
+[Neural discrete representation learning](https://proceedings.neurips.cc/paper_files/paper/2017/file/7a98af17e63a0ac09ce2e96d03992fbc-Paper.pdf)
+
+用在推荐：
+
 [Learning Vector-Quantized Item Representation for Transferable Sequential Recommenders](https://arxiv.org/pdf/2210.12316.pdf)
 
 [https://github.com/RUCAIBox/VQ-Rec](https://github.com/RUCAIBox/VQ-Rec)
+
+### rq-vae
+
+[Autoregressive Image Generation using Residual Quantization](https://arxiv.org/pdf/2203.01941.pdf)
+
 
 ### TIGER
 
