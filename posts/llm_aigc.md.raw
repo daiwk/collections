@@ -3502,6 +3502,8 @@ class IndexingTrainer(Trainer):
 
 [Neural discrete representation learning](https://proceedings.neurips.cc/paper_files/paper/2017/file/7a98af17e63a0ac09ce2e96d03992fbc-Paper.pdf)
 
+[https://github.com/zalandoresearch/pytorch-vq-vae](https://github.com/zalandoresearch/pytorch-vq-vae)
+
 用在推荐：
 
 [Learning Vector-Quantized Item Representation for Transferable Sequential Recommenders](https://arxiv.org/pdf/2210.12316.pdf)
