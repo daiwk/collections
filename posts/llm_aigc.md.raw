@@ -1353,10 +1353,10 @@ XXX
 + 计算第$$s$$个词的3个Q、K、V：要算三次$1\times d$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times 1\times d\times d_v$$
     + 输入：$$[b, 1, d]$$和3个$$[b, d, d_v]$$
     + 输出：$$[b, 1, d_v]$$
-+ 计算Q和K的相似度：要算一次$$1\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times 1\times d_k\times s$$【这里的K是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去年当前词，这里先忽略这个】
++ 计算Q和K的相似度：要算一次$$1\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times 1\times d_k\times s$$【这里的K是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去掉当前词，这里先忽略这个】
     + 输入：$$[b, 1, d_v]$$和$$[b, d_v, s]$$
     + 输出：$$[b, 1, s]$$
-+ 把相似度用到V上：要算一次$$1\times s$$和$$s\times d_v$$的矩阵乘法，，$$2\times b\times 1 \times d_v \times s$$【同样地，这里的V是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去年当前词，这里先忽略这个】
++ 把相似度用到V上：要算一次$$1\times s$$和$$s\times d_v$$的矩阵乘法，，$$2\times b\times 1 \times d_v \times s$$【同样地，这里的V是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去掉当前词，这里先忽略这个】
     + 输入：$$[b, 1, s]$$和$$[b, s, d_v]$$
     + 输出：$$[b, 1, d_v]$$
 + 最后过一个线性映射：要算一次$$1\times d_v$$的和$$d_v\times d_v$$的矩阵乘法，$$2\times b\times 1\times d_v\times d_v$$
@@ -3569,20 +3569,25 @@ XXX
 + 推荐系统使用**十亿规模的动态词表**，而nlp用的是10w的静态词表，要对上万候选进行target-aware操作（din、Cold等），训练和推理的代价很高。
 + 大规模序列模型的计算成本是瓶颈。GPT-3在300B token的数据集上用上千个GPU训练1-2个月，而在推荐场景一天就有十亿级的活跃用户和十亿级的候选进行交互，用户序列在极端情况下有近10w（[Twin: Two- stage interest network for lifelong user behavior modeling in ctr prediction at kuaishou](https://arxiv.org/pdf/2302.02352.pdf)），所以推荐系统每天要处理的tokens数量甚至比语言模型1-2个月处理的数量要大几个数量级
 
-本文将**用户行为（action）**看成一个新的模态，2个主要的insights：
+本文将**用户action**看成一个新的模态，2个主要的insights：
 
-+ 给定一个新的特征空间，核心的召回排序任务能被直接转换成生成式模型问题(序列传导任务，sequential transduction tasks)
++ 给定一个新的特征空间，核心的召回排序任务能被直接转换成生成式模型问题(序列直推任务，sequential transduction tasks)
 + 这种范式能够系统性地解决传统推荐中的特征冗余、计算冗余、推理冗余，提升效率
 
 #### Sequential Transduction Tasks
 
 &nbsp;
 
+transductive learning（直推式学习） vs inductive learning（归纳式学习）[https://www.zhihu.com/question/68275921/answer/529156908](https://www.zhihu.com/question/68275921/answer/529156908)：
+
++ 归纳式学习：训练只使用训练集，不使用测试集，训出的模型对测试集做预测，如监督学习。
++ 直推式学习：训练时使用训练集，还使用测试集的特征，但不使用测试集的label，
+
 ##### 异构特征的统一表示
 
 &nbsp;
 
-+ 稀疏特征：
++ 稀疏特征：itemid、类目、城市、语言、社区等
     + 先选出**最长**的时间序列作为**主时间序列**，例如用户的交互序列。
     + 剩下的特征随时间变化较慢，如关注作者的属性。对于连续出现的片段（consecutive segment），**只保留最开始的入口**，这样对于主时间序列而言，并不会增加太多的序列长度。
 + 数值型特征：这里指的是序列特征里**每个item的统计特征**，比如用户在时刻t对某个item的ctr。直接删了，因为DIN里提到随着序列长度增加，**target-aware**的序列建模方式能够捕捉到这种数值性特征
@@ -3601,9 +3606,37 @@ XXX
 
 &nbsp;
 
+输入token序列$$x_0, x_1, \ldots, x_{n-1}$$，输出的token序列$$y_0, y_1, \ldots, y_{n-1}$$是通过mask序列$$m_0, m_1, \ldots, m_{n-1}\left(m_i \in\{0,1\}\right)$$得到的。
+
+token对应的动态、非稳态词表是$$\mathbb{X}$$，用户交互的内容是$$\mathbb{X}_c \subseteq \mathbb{X}$$
+
++ 召回：预估$$p\left(x_{i+1} \mid u_i\right)$$，通过时间步i的用户特征预估$$x_{i+1} \in \mathbb{X}_c$$，一般是直接选择$$\arg \max _{x \in \mathbb{X}_c} p\left(x \mid u_i\right)$$来最大化**特定的reward**，和标准的自回归有两个不同：
+    + $$x_i,y_i$$的label并不一定是$$x_{i+1}$$，因为用户可以对$$x_{i+1}$$是负反馈
+    + $$y_i$$可能是比如人口属性等（因为是merge的序列，可能把城市之类的merge进来当做一个时间步），这个时候$$y_i$$未定义的，要把它mask掉，即$$m_i=0$$
++ 排序：推荐中的排序需要在尽量早的阶段进行target-aware的交互，而标准的自回归这种交互往往比较迟，例如在encoder的输出才用上了softmax。因此，
+    + 把action和x穿插起来得到新序列$$x_0, a_0, x_1, a_1, \ldots, x_{n-1}, a_{n-1}$$
+        + 对于action的位置，$$m_i=0$$
+        + 对于content位置，使用一个小的nn将预估值转换成多任务的预估值（不过这里并没有说还要不要自回归）
+
 ##### 生成式训练
 
 &nbsp;
+
+假设用户$$i$$有$$n_i$$个token，那么训练的复杂度就是$$\sum_i n_i\left(n_i^2 d+n_i d_{f f} d\right)$$，其中：
+
++ $$n_i^2 d$$是self-attention的复杂度，通过flash attention可以达到$$O(n^2)$$
++ $$n_i d_{f f} d$$是FFN的复杂度
++ 因为要自回归地算，可以理解为batch_size也是$$n_i$$，加一个下三角的mask，所以在$$\sum$$里还要乘一个$$n_i$$
+
+但其实可以发现（自己的理解），假设序列长度9，要预测第4个的时候，4-9的输入是mask掉的，但他们还是要进行后面的attention+ffn计算，其实是很浪费资源的，所以如上面“**异构特征的统一表示**”小节的那个图（生成主序列和辅助序列）所示，该模型直接只吐出x=x1-x3,y=x4作为训练样本就行了，这样既省掉了4-9的无用计算，也更便于并行（相比不拆batch的自回归）
+
+假设采样第$$i$$个用户的概率是$$s_u\left(n_i\right)$$，那么总的训练消耗就是
+
+XXX
+\sum_i s_u\left(n_i\right) n_i\left(n_i^2 d+n_i d^2\right)
+XXX
+
+如果设置$$s_u\left(n_i\right)=1/n_i$$，那消耗就降到了$$O\left(N^2 d+N d^2\right)$$。而在工业界中要实现这种采样其实很简单，在用户请求或者session结束的时候吐出训练样本就有$$\hat{s_u}\left(n_i\right) \propto 1 / n_i$$了
 
 #### 生成式推荐中的高性能自注意力编码器
 
