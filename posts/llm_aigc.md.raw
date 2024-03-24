@@ -3684,6 +3684,13 @@ DLRM的3部分：
 + 推荐中item的**强度**信息很重要，softmax会让这种强度失真，导致在预估（如时长）不准；如果只需要预估序，那其实softmax也可以，但推荐要**同时预估序和值**，所以要删掉softmax。
 + 虽然softmax对噪声有鲁棒性，但不太适用于流式setting下的非稳态词表。做了一个模拟流式数据的实验，发现只去掉relative attention bias比relative attention bias并加上softmax会好得多
 
+| Architecture              | HR @10 | HR @50 |
+|---------------------------|--------|--------|
+| Transformers              | .0442  | .2025  |
+| HSTU ($$-rab^p,t$$, Softmax) | .0617  | .2496  |
+| HSTU ($$-rab^p$$,t)          | .0893  | .3170  |
+
+
 ![hstu-softmax](../assets/hstu-softmax.png)
 
 ##### 增加稀疏性
@@ -3719,6 +3726,14 @@ XXX
 
 对稀疏性的改善如下，其中稀疏性指的是$$1-avg\_seq\_len/max\_seq\_len$$，越大表示短序列越多，即越稀疏($$\alpha=2$$表示不SL，即直接使用原序列)：
 
+| Alpha ($$\alpha$$) | 1,024 | 2,048 | 4,096 | 8,192 |
+|-----------|-------|-------|-------|-------|
+| 1.6       | 71.5% | 76.1% | 80.5% | 84.4% |
+| 1.7       | 56.1% | 63.6% | 69.8% | 75.6% |
+| 1.8       | 40.2% | 45.3% | 54.1% | 66.4% |
+| 1.9       | 17.2% | 21.0% | 36.3% | 64.1% |
+| 2.0       | 3.1%  | 6.6%  | 29.1% | 64.1% |
+
 ![hstu-sparsity](../assets/hstu-sparsity.png)
 
 ##### 最小化激活值的内存使用
@@ -3744,7 +3759,7 @@ XXX
 
 对比transformer，在attention后用了ffn和dropout，假设中间状态是$$3hd_v$$，那么ffn包括layer_norm、linear、激活、linear、dropout，中间状态占用的就是$$2 d+4 d_{f f}+2 d+1 d=4 d+4 d_{f f}$$，一般来说，$$h d_v \geq d$$，$$d_{f f}=4 d$$，
 
-自己的理解：输入x(2d)，linear(2d_{ff})，linear(2d)，dropout(约等于1d)，layernorm一般是发生在最开始吧，所以应该是第一个2d改成4d吧，感觉不是在linear那里变成4d_{ff}。。
+自己的理解：输入x($$2d$$)，linear($$2d_{ff}$$)，linear($$2d$$)，dropout(约等于$$1d$$)，layernorm一般是发生在最开始吧，所以应该是第一个$$2d$$改成$$4d$$吧，感觉不是在linear那里变成$$4d_{ff}$$。。
 
 然后，加上输入的input和input的layer_norm($$4d$$)，和qkv的映射，总的激活状态是$$33d$$---没懂
 
