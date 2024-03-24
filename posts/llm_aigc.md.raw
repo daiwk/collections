@@ -3713,12 +3713,19 @@ XXX
     + 以$$1-N^\alpha / n_i^2$$的概率只保留$$N^{\alpha / 2}$$长度的子序列
     + 以$$N^\alpha / n_i^2$$的概率保留原始序列
 
-
 对于$$\alpha \in(1,2]$$，原来的attention相关的复杂度是$$O\left(N^2 d\right)$$，现在可以降低到$$O\left({N^{\alpha /2}}^2 d\right)=O\left(N^\alpha d\right)$$。
+
+其中的$$\Gamma(n, L)$$经过离线实验（原文附录D里），采用了feature-weighted sampler，即以$$1-f_{n, i} /\left(\sum_{j=1}^L f_{j, i}\right)$$的概率进行采样，其中$$f_i=t_n-t_i$$表示用户和item $$x_i$$交互的时间和当前的时间差。
+
+对稀疏性的改善如下，其中稀疏性指的是$$1-avg\_seq\_len/max\_seq\_len$$，越大表示短序列越多，即越稀疏($$\alpha=2$$表示不SL，即直接使用原序列)：
+
+![hstu-sparsity](../assets/hstu-sparsity.png)
 
 ##### 最小化激活值的内存使用
 
 &nbsp;
+
+在[Software-hardware co-design for fast and scalable training of deep learning recommendation model](https://arxiv.org/pdf/2104.05158.pdf)一文中提出了
 
 ##### cost-amortization的预估scale up 
 
