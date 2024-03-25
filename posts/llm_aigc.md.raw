@@ -941,9 +941,9 @@ llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin
 
 ## 一些综述
 
-+ [Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](../assets/LLM/foundation%20models%20NLP.pdf)
++ [Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](https://github.com/daiwk/collections/blob/master/assets/LLM/foundation%20models%20NLP.pdf)
 + [大规模语言模型：从理论到实践](../assets/LLM/LLM-TAP.pdf)，[Pre-trained Models for Natural Language Processing: A Survey](https://arxiv.org/pdf/2003.08271.pdf)邱锡鹏等
-+ 人大的大模型综述：[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)，[自己存了一份pdf](../assets/LLM/LLM_Survey_Chinese.pdf)，（**！！！本文大部分内容按这个来组织！！！**）
++ 人大的大模型综述：[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)，[自己存了一份pdf](https://github.com/daiwk/collections/blob/master/assets/LLM/LLM_Survey_Chinese.pdf)，（**！！！本文大部分内容按这个来组织！！！**）
 + [Talking about large language models](https://arxiv.org/pdf/2212.03551.pdf)
 + [Pre-train, prompt, and predict: A systematic survey of prompting methods in natural language processing](https://arxiv.org/pdf/2107.13586.pdf)，引用数2k+
 + [A comprehensive survey on pretrained foundation models: A history from BERT to chatgpt](https://arxiv.org/pdf/2302.09419.pdf)，唐杰等
@@ -956,7 +956,7 @@ llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin
 + [Dense Text Retrieval based on Pretrained Language Models: A Survey](https://arxiv.org/pdf/2211.14876.pdf)
 + [Fine-tune之后的NLP新范式：Prompt越来越火，CMU华人博士后出了篇综述文章](https://zhuanlan.zhihu.com/p/395795968)
 + [如何高效部署大模型？CMU最新万字综述纵览LLM推理MLSys优化技术](https://mp.weixin.qq.com/s/Uue0SxH6W_tI8K4Zb0igLQ)：[Towards Efficient Generative Large Language Model Serving: A Survey from Algorithms to Systems](https://arxiv.org/abs/2312.15234)
-+ [一篇对大语言模型（LLMs）进行全面、深入分析的43页综述（Word2Vec作者出品）](https://mp.weixin.qq.com/s/5fbx0lM9V-Q7xYbeDauuHw)
++ [一篇对大语言模型（LLMs）进行全面、深入分析的43页综述（Word2Vec作者出品）](https://mp.weixin.qq.com/s/5fbx0lM9V-Q7xYbeDauuHw)==>[Large Language Models: A Survey](https://arxiv.org/pdf/2402.06196.pdf)，[自己存了一份](https://github.com/daiwk/collections/blob/master/assets/LLM/Large%20Language%20Models-%20A%20Survey.pdf)
 
 ## 扩展法则
 
@@ -1838,6 +1838,12 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 + int8量化：[LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale](https://arxiv.org/pdf/2208.07339.pdf)
 + int4量化：GLM中用了
+
+### vLLM
+
+[https://github.com/vllm-project/vllm](https://github.com/vllm-project/vllm)
+
+[Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/pdf/2309.06180.pdf)
 
 # 微调
 
@@ -3526,6 +3532,16 @@ class IndexingTrainer(Trainer):
 ### TIGER
 
 [Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
+
+序列推荐的一些paper：
+
++ [Session-based recommendations with recurrent neural networks](https://arxiv.org/pdf/1511.06939.pdf)
++ [Neural attentive session-based recommendation](https://arxiv.org/pdf/1711.04725.pdf)
++ [Next item recommendation with self-attention](https://arxiv.org/pdf/1808.06414.pdf)
++ [Self-attentive sequential recommendation](https://arxiv.org/pdf/1808.09781.pdf)-->SASRec
++ [Bert4rec: Sequential recommendation with bidirectional encoder representations from transformer](https://arxiv.org/pdf/1904.06690.pdf)
++ [Transformers4rec: Bridging the gap between nlp and sequential/session-based recommendation](https://scontent-sjc3-1.xx.fbcdn.net/v/t39.8562-6/246721374_422204999475172_9039387325224382577_n.pdf?_nc_cat=104&ccb=1-7&_nc_sid=e280be&_nc_ohc=pSC1QwlGTzIAX-yb9Ax&_nc_ht=scontent-sjc3-1.xx&oh=00_AfApZwRSd9KDBf4b-uGHf3bSS_SsZoRqhYS-lJRZltT97A&oe=6606DDFA)
++ [S3-rec: Self-supervised learning for sequential recommendation with mutual information maximization](https://arxiv.org/pdf/2008.07873.pdf)
 
 TIGER(Transformer Index for GEnerative Recommenders)
 
