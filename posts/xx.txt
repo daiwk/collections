@@ -1,8 +1,0 @@
-当前GIP电商直播的gmv建模是采用wce loss建模，参考ecpm回归转分类模型 Weighted Cross-Entropy  。 后面经过一次升级Tweedie回归建模 ，具体方案见LR文档 【GIP电商LR】2023-03-01 电商精排模型用户电商特征优化 + PK Attention +  GMV优化 。 
-WCE建模实际是将每个label=y的样本当作y个正样本和1个负样本，预估正样本的概率为pred/(1+pred)，然后用交叉熵计算loss。 这种方法模型都是单head输出，但根据【抖音电商LR】电商直播间GMV预估优化 中的统计，电商成交gmv很明显呈现出多峰分布（见链接），再一些特定的付费档位上付费分布较多。 基于单head建模多峰分布较为困难，DistillSoftmax-时长分布建模 中解释了采用softmax建模多分类的做法，并基于此提出了distill softmax的方案。 
-Distill softmax相对于softmax解决的问题是什么呢？softmax多分类只关注标签的正确性，缺乏对非正确标签的预测。比如对于年龄分类，真实分类为100岁，模型预估为99岁还是1岁对于loss没啥差别，softmax无法感知类别之间的序关系。 而distill softmax本质是将hard label进行软化，从建模hard label改为建模多分类的分布，距离越远的类其概率相对越小，其loss越大。 
-
-因此，计划尝试采用这样一种解法：将由softmax作为输出的多分类问题，转化为一系列的二分类子问题。对于每一个输出等级，其中每一个二分类都用来预测输出是否高于等级。最后根据这些二分类的输出结果判定最后的预测等级。 该思路一定程度借鉴自 Ordinal Regression with Multiple Output CNN for Age Estimation。这是2016年CVPR一篇预测年龄的文章，通过上述处理巧妙的将分类之间的序关系建模其中。 具体的：假设将gmv按100个值y1~y100划分为区间，现在将gmv预估问题转化为100个子问题，判断gmv是否大于yi，若大于yi则输出为1，否则为0。最终的分类结果就是所有二分类输出为1的个数相加。
-
-
-
