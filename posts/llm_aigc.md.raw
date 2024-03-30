@@ -530,11 +530,31 @@ BERT 中 "MASK" 字符的加入，使得非目标词表征的建模都会依赖�
 
 [RoBERTa: A Robustly Optimized BERT Pretraining Approach](https://arxiv.org/pdf/1907.11692.pdf)
 
++ 修改了一些超参
++ 删掉nsp任务
++ 更大的batchsize和学习率
+
 
 [RoBERTa中文预训练模型，你离中文任务的「SOTA」只差个它](https://mp.weixin.qq.com/s/EKFa40rLQlnEVuu9V7GDmg)
 
 [https://github.com/brightmart/roberta_zh](https://github.com/brightmart/roberta_zh)
 
+
+### DeBERTa
+
+[Deberta: Decoding-enhanced bert with disentangled attention](https://arxiv.org/pdf/2006.03654.pdf)
+
++ disentangled attention mechanism：每个词使用2个向量，$$H$$编码内容，$$P$$编码相对位置，i和j间的attention如下：
+
+XXX
+\begin{array}{r}
+\mathrm{A}_{\mathrm{i}, \mathrm{j}}=\left\{\mathrm{H}_{\mathrm{i}}, \mathrm{P}_{\mathrm{i} \mid \mathrm{j}}\right\} \times\left\{\mathrm{H}_{\mathrm{j}}, \mathrm{P}_{\mathrm{j} \mid \mathrm{i}}\right\}^{\mathrm{T}} \\
+=\mathrm{H}_{\mathrm{i}} \mathrm{H}_{\mathrm{j}}^{\mathrm{T}}+\mathrm{H}_{\mathrm{i}} \mathrm{P}_{\mathrm{j} \mid \mathrm{i}}^{\mathrm{T}}+\mathrm{P}_{\mathrm{i} \mid \mathrm{j}} \mathrm{H}_{\mathrm{j}}^{\mathrm{T}}+\mathrm{P}_{\mathrm{i} \mid \mathrm{j}} \mathrm{P}_{\mathrm{j} \mid \mathrm{i}}^{\mathrm{T}}
+\end{array}
+XXX
+
++ 预训练：使用enhanced mask decoder，把绝对位置信息引入解码层，来预估被mask掉的token
++ finetune：virtual adversarial training
 
 ### ELECTRA
 
@@ -544,6 +564,12 @@ BERT 中 "MASK" 字符的加入，使得非目标词表征的建模都会依赖�
 
 [ELECTRA: pre-training text encoders as discriminators rather than generators](https://openreview.net/pdf?id=r1xmh1btvb)
 
+使用新的预训练task：RTD(replaced token detection)：
+
++ 使用一个**生成网络**采样出token，替换一些原有的token
++ 训练一个**判别模型**，预估一个token**是否是被替换的**
+
+RTD比MLM**更sample-efficient**，因为RTD只做二分类，而MLM需要做全词表的softmax
 
 ## 更小的BERT
 
@@ -572,11 +598,14 @@ ALBERT 模型在 GLUE、RACE 和 SQuAD 基准测试上都取得了新的 SOTA �
 
 还提出了一种新型句间连贯性损失函数，它可以强迫模型学习句间的连贯性表达，从而有利于各种下游 NLP 任务。
 
-ALBERT 通过两个参数削减技术克服了扩展预训练模型面临的主要障碍。第一个技术是对嵌入参数化进行因式分解。研究者将大的词汇嵌入矩阵分解为两个小的矩阵，从而将隐藏层的大小与词汇嵌入的大小分离开来。这种分离使得隐藏层的增加更加容易，同时不显著增加词汇嵌入的参数量。
+ALBERT 通过两个参数削减技术克服了扩展预训练模型面临的主要障碍。
 
-第二种技术是跨层参数共享。这一技术可以避免参数量随着网络深度的增加而增加。两种技术都显著降低了 BERT 的参数量，同时不对其性能造成明显影响，从而提升了参数效率。ALBERT 的配置类似于 BERT-large，但参数量仅为后者的 1/18，训练速度却是后者的 1.7 倍。这些参数削减技术还可以充当某种形式的正则化，可以使训练更加稳定，而且有利于泛化。
++ 对嵌入参数化进行因式分解：将大的嵌入矩阵分解为两个小的矩阵，从而将隐藏层的大小与词汇嵌入的大小分离开来。这种分离使得隐藏层的增加更加容易，同时不显著增加词汇嵌入的参数量。
++ 跨层参数共享：避免参数量随着网络深度的增加而增加。
 
-为了进一步提升 ALBERT 的性能，研究者还引入了一个自监督损失函数，用于句子级别的预测（SOP）。SOP 主要聚焦于句间连贯，用于解决原版 BERT 中下一句预测（NSP）损失低效的问题。
+两种技术都显著降低了 BERT 的参数量，同时不对其性能造成明显影响，从而提升了参数效率。ALBERT 的配置类似于 BERT-large，但参数量仅为后者的 1/18，训练速度却是后者的 1.7 倍。这些参数削减技术还可以充当某种形式的正则化，可以使训练更加稳定，而且有利于泛化。
+
+为了进一步提升 ALBERT 的性能，还引入了一个自监督损失函数，用于句子级别的预测（SOP）。SOP 主要聚焦于**句间连贯**，用于解决原版 BERT 中下一句预测（NSP）损失低效的问题。
 
 albert_tiny：
 
@@ -997,6 +1026,8 @@ XXX
 
 ## 涌现能力
 
+![llm-capabilities](../assets/llm-capabilities.png)
+
 涌现能力：在小型模型中不存在而在大型模型中产生的能力，当规模达到一定程度时，性能显著提升，超出随机水平（参考
 [Emergent Abilities of Large Language Models](https://arxiv.org/pdf/2206.07682.pdf)）。与物理学中的**相变**现象类似（物质从一种相（状态）转变为另一种相的过程，通常伴随着能量的吸收或释放，并且涉及不同的物理性质，例如固体、液体和气体之间的转变）。
 
@@ -1009,7 +1040,7 @@ XXX
 
 LLM的3种典型涌现能力及其对应代表模型：
 
-### 上下文学习
+### 上下文学习(in-context learning)
 
 GPT-3（[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165.pdf)）提出，只要提供一个自然语言指令和/或几个任务演示，语言模型就能通过完成输入文本的词序列的方式来为测试实例生成预期输出，不用额外的梯度更新。
 
@@ -1017,7 +1048,7 @@ GPT-3（[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165
 + ICL能力取决于具体下游任务：130亿的GPT-3能在算术任务上有ICL，但1750亿的GPT-3在波斯语QA上无能为力。
 
 
-### 指令遵循
+### 指令遵循(instruction following)
 
 使用**自然语言描述的混合多任务数据集进行微调（指令微调）**，LLM在**未见过的以指令形式描述的任务**上表现出色，具有更好的泛化能力。例如[Multitask prompted training enables zero-shot task generalization](https://arxiv.org/pdf/2110.08207.pdf)、[Training language models to follow instructions with human feedback](https://arxiv.org/pdf/2203.02155.pdf)、[Finetuned language models are zero-shot learners](https://arxiv.org/pdf/2109.01652.pdf)。
 
@@ -1026,7 +1057,7 @@ GPT-3（[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165
 在[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)的实验中，PaLM至少在620亿参数上才能在4个评估基准的各种任务上表现良好。
 
 
-### 逐步推理
+### 逐步推理(multi-step reasoning)
 
 对于涉及多个推理步骤的复杂任务（如数学），可以使用**思维链（Chain-of-Thought, CoT）**提示策略（[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)），让LLM通过**利用中间推理步骤的提示机制**来解决这类任务。
 
@@ -2834,6 +2865,10 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 &nbsp;
 
+### lossless long context
+
+[专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
+
 
 # Claude系列
 
@@ -3429,9 +3464,11 @@ XXX
 中科大LDS实验室的tutorial：[XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf](https://github.com/daiwk/collections/blob/master/assets/XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf)
 
 
-## 生成式推荐
+生成式推荐综述：
 
-### DSI
+[Large Language Models for Generative Recommendation: A Survey and Visionary Discussions](https://arxiv.org/pdf/2309.01157.pdf)
+
+## DSI
 
 参考知乎：[https://zhuanlan.zhihu.com/p/470182510](https://zhuanlan.zhihu.com/p/470182510)
 
@@ -3440,7 +3477,7 @@ XXX
 + indexing：建立**文档**和**doc_id**的**一一映射**
 + retrieval：根据query生成候选doc_ids
 
-#### Indexing方法
+### Indexing方法
 
 + Inputs2Target：即doc_tokens->doc_id
 + Target2Inputs：即doc_id->doc_tokens
@@ -3449,19 +3486,19 @@ XXX
     + 在索引时进行通用的预训练
     + 实现doc_id作为去噪目标和输入的平衡
 
-#### 文档的表示
+### 文档的表示
 
 + Direct Indexing：直接用文档的前L个单词当做文档的表示，并且保留单词的顺序。
 + Set Indexing：去掉文档中的重复的单词及停用词，然后和Direct Indexing一样的处理。
 + Inverted Index：随机对文档中的连续的k个单词（一个文档块）进行采样，并将它们与doc_id相关联
 
-#### doc_id的表示
+### doc_id的表示
 
 + 非结构化的原子标识符：直接对所有的文档使用一个随机但互不相同的的整数标识。假设一共有N篇文档需要检索，假设原来解码器输出有V个单词，现在有V+N个单词。
 + 朴素的结构化字符串标识符：也使用一个随机的整数，但将这个整数当做一个字符串输出，用受限的beam search搜索前k个文档，因为需要保证**输出的是数字**。
 + 语义结构化的标识符：先用BERT产出每个doc的emb，然后**递归10-means**，第一次得到0-9作为第1个数字，第二次的0-9作为第2个数字，可以得到一个树，文档的最终标识符就是从根节点到当前结点的路径对应的编号组合。只要一个节点的文档数大于$$c=100$$，就继续分裂，当叶子的文档数小于c时，每个文档随机分配一个1到$$c-1$$的id，拼到doc_id的最后。
 
-#### 训练方法
+### 训练方法
 
 &nbsp;
 
@@ -3469,7 +3506,6 @@ XXX
 
 + 先对indexing进行预训练（memorization），再进行**将query映射为docid**的微调
 + 用多任务的方式**同时进行**，两个任务用**不同的标识符**，这样做效果会好很多
-
 
 后来有一篇[Bridging the Gap Between Indexing and Retrieval for Differentiable Search Index with Query Generation](https://arxiv.org/pdf/2206.10128.pdf)，对应的github：[https://github.com/ArvinZhuang/DSI-QG](https://github.com/ArvinZhuang/DSI-QG)，他也同时尝试复现DSI：[https://github.com/ArvinZhuang/DSI-transformers](https://github.com/ArvinZhuang/DSI-transformers)，主要有如下两个地方：
 
@@ -3584,6 +3620,8 @@ class IndexingTrainer(Trainer):
         return INT_TOKEN_IDS
 ```
 
+## vq-vae & rq-vae
+
 ### vq-vae
 
 [Neural discrete representation learning](https://proceedings.neurips.cc/paper_files/paper/2017/file/7a98af17e63a0ac09ce2e96d03992fbc-Paper.pdf)
@@ -3601,7 +3639,7 @@ class IndexingTrainer(Trainer):
 [Autoregressive Image Generation using Residual Quantization](https://arxiv.org/pdf/2203.01941.pdf)
 
 
-### TIGER
+## TIGER
 
 [Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
 
@@ -3623,13 +3661,13 @@ TIGER(Transformer Index for GEnerative Recommenders)
 
 ![tiger-personalized](../assets/tiger-personalized.jpg)
 
-### HSTU
+## HSTU
 
 [如何评价Meta最新推荐论文: 生成式推荐打败深度分层架构推荐？](https://mp.weixin.qq.com/s/MeH2drBIBML5OSfCujIJ0Q)
 
 [Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Generative Recommendations](https://arxiv.org/pdf/2402.17152.pdf)
 
-#### 背景
+### 背景
 
 &nbsp;
 
@@ -3662,7 +3700,7 @@ XXX
 + 给定一个新的特征空间，核心的召回排序任务能被直接转换成生成式模型问题(序列直推任务，sequential transduction tasks)
 + 这种范式能够系统性地解决传统推荐中的特征冗余、计算冗余、推理冗余，提升效率
 
-#### Sequential Transduction Tasks
+### Sequential Transduction Tasks
 
 &nbsp;
 
@@ -3671,7 +3709,7 @@ transductive learning（直推式学习） vs inductive learning（归纳式学�
 + 归纳式学习：训练只使用训练集，不使用测试集，训出的模型对测试集做预测，如监督学习。
 + 直推式学习：训练时使用训练集，还使用测试集的特征，但不使用测试集的label，
 
-##### 异构特征的统一表示
+#### 异构特征的统一表示
 
 &nbsp;
 
@@ -3690,7 +3728,7 @@ transductive learning（直推式学习） vs inductive learning（归纳式学�
 + 将数值型特征替换为target-aware的cross attention得到causal-masked的特征
 + 通过t0、t1、t2（**包括t2**）的特征生成t2的样本，以此类推
 
-##### 召回和排序的重定义
+#### 召回和排序的重定义
 
 &nbsp;
 
@@ -3706,7 +3744,7 @@ token对应的动态、非稳态词表是$$\mathbb{X}$$，用户交互的内容�
         + 对于action的位置，$$m_i=0$$
         + 对于content位置，使用一个小的nn将预估值转换成多任务的预估值（**感觉是输入0-n，第n项保留$$x_n$$，mask掉$$a_n$$，拿$$x_n$$去多目标地预估用户会用哪个action**）
 
-##### 生成式训练
+#### 生成式训练
 
 &nbsp;
 
@@ -3728,7 +3766,7 @@ XXX
 
 如果设置$$s_u\left(n_i\right)=1/n_i$$，那消耗就降到了$$O\left(N^2 d+N d^2\right)$$。而在工业界中要实现这种采样其实很简单，在用户请求或者session结束的时候吐出训练样本就有$$\hat{s_u}\left(n_i\right) \propto 1 / n_i$$了
 
-#### 生成式推荐中的高性能自注意力编码器
+### 生成式推荐中的高性能自注意力编码器
 
 &nbsp;
 
@@ -3763,7 +3801,7 @@ DLRM的3部分：
 + 表示转换：常见的如MoE、PLE等，主要思想就是对不同人群用特定的子网络。HSTU里的element-wise product也能达到MoE中的门控操作，只是可能有一个正则化因子的区别。
 
 
-##### pointwise聚合的注意力
+#### pointwise聚合的注意力
 
 &nbsp;
 
@@ -3778,7 +3816,7 @@ DLRM的3部分：
 | HSTU ($$-rab^{p,t}$$, Softmax) | .0617  | .2496  |
 | HSTU ($$-rab^{p,t}$$)          | .0893  | .3170  |
 
-##### 增加稀疏性
+#### 增加稀疏性
 
 &nbsp;
 
@@ -3819,7 +3857,7 @@ XXX
 | 1.9       | 17.2% | 21.0% | 36.3% | 64.1% |
 | 2.0       | 3.1%  | 6.6%  | 29.1% | 64.1% |
 
-##### 最小化激活值的内存使用
+#### 最小化激活值的内存使用
 
 &nbsp;
 
@@ -3853,7 +3891,7 @@ XXX
 + 使用**row-wise的AdamW**优化器（[Training highly multiclass classifiers](https://www.jmlr.org/papers/volume15/gupta14a/gupta14a.pdf)和[FBGEMM: Enabling High-Performance Low-Precision Deep Learning Inference](https://arxiv.org/pdf/2101.05615.pdf)）
 + 将优化器状态存在DRAM里，从而每一个float在HBM的占用从12bytes降低到2bytes
 
-##### cost-amortization(摊销)的预估scale up 
+#### cost-amortization(摊销)的预估scale up 
 
 &nbsp;
 
@@ -3866,7 +3904,7 @@ XXX
     + 前向pass中，用于降低消耗
     + requests之间，降低长尾耗时
 
-##### 其他
+#### 其他
 
 &nbsp;
 
@@ -3874,7 +3912,7 @@ XXX
 
 ![hstu-scaling-law](../assets/hstu-scaling-law.png)
 
-### Wukong
+## Wukong
 
 [Wukong: Towards a Scaling Law for Large-Scale Recommendation](https://arxiv.org/pdf/2403.02545.pdf)
 
@@ -4017,6 +4055,10 @@ XXX
 
 + ctr预估：u和q拼一起过nn得到个性化的q，再和d过nn得到的向量算内积，得到预估值，用交叉熵
 + 相关性预估：q过另一个nn，d过另一个nn，内积，用mse
+
+# RAG
+
+[Retrieval-Augmented Generation for Large Language Models: A Survey](https://arxiv.org/pdf/2312.10997.pdf)
 
 # 其他
 
