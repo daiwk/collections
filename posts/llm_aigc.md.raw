@@ -423,10 +423,15 @@ def gather_indexes(sequence_tensor, positions):
 
 #### XLM
 
-[Massively Multilingual Sentence Embeddings for Zero-Shot Cross-Lingual Transfer and Beyond](https://arxiv.org/abs/1812.10464)，XLM的主要思想还是来自于这片文章，借用了BERT的框架最后成了XLM。本文提出了LASER（Language-Agnostic SEntence Representations）
+[Massively Multilingual Sentence Embeddings for Zero-Shot Cross-Lingual Transfer and Beyond](https://arxiv.org/abs/1812.10464)，XLM的主要思想还是来自于这篇文章，借用了BERT的框架最后成了XLM。本文提出了LASER（Language-Agnostic SEntence Representations）
 
+XLM：facebook提出[Cross-lingual Language Model Pretraining](https://arxiv.org/abs/1901.07291)，加了language emb
 
-XLM：facebook提出[Cross-lingual Language Model Pretraining](https://arxiv.org/abs/1901.07291)
++ 无监督的方法：只依赖单语种数据（monolingual data）
++ 有监督的方法：对平行语料使用新的跨语言loss
+
+![xlm](../assets/xlm.png)
+
 
 [Facebook最新语言模型XLM-R：多项任务刷新SOTA，超越单语BERT](https://mp.weixin.qq.com/s/6oK-gevKLWDwdOy4aI7U7g)
 
@@ -450,19 +455,6 @@ bert只使用了Transformer的encoder部分，其下游任务也主要是适用�
 + Encoder： 输入为被随机mask掉连续部分token的句子，使用Transformer对其进行编码；这样处理的目的是可以使得encoder可以更好地捕获没有被mask掉词语信息用于后续decoder的预测；
 + Decoder： 输入为与encoder同样的句子，但是mask掉的正好和encoder相反，和翻译一样，使用attention机制去训练，但只预测encoder端被mask掉的词。该操作可以迫使decoder预测的时候更依赖于source端的输入而不是前面预测出的token，防止误差传递。
 
-
-### UNILM(microsoft)
-
-[Unified Language Model Pre-training for Natural Language Understanding and Generation](https://arxiv.org/abs/1905.03197)
-
-使用的核心框架还是 Transformer，不同的是预训练的目标函数结合了以下三个： 
-
-+ 单向语言模型（同 ELMO/GPT） 
-+ 双向语言模型（同 BERT） 
-+ seq2seq 语言模型（同上一篇）
-
-这里的 Transformer 是同一个，即三个 LM 目标参数共享，有点 multi-task learning 的感觉，可以学习到更 genneral 的文本表示。
-
 ### 更长序列
 
 #### XLNet
@@ -475,9 +467,7 @@ bert只使用了Transformer的encoder部分，其下游任务也主要是适用�
 
 [Stabilizing Transformers for Reinforcement Learning](https://arxiv.org/abs/1910.06764)
 
-摘要：得益于预训练语言模型强大的能力，这些模型近来在NLP任务上取得了一系列的成功。这需要归功于使用了transformer架构。但是在强化学习领域，transformer并没有表现出同样的能力。本文说明了为什么标准的transformer架构很难在强化学习中优化。研究者同时提出了一种架构，可以很好地提升 transformer架构和变体的稳定性，并加速学习。研究者将提出的架构命名为Gated Transformer-XL(GTrXL)，该架构可以超过LSTM，在多任务学习 DMLab-30 基准上达到 SOTA 的水平。
-
-推荐：本文是DeepMind的一篇论文，将强化学习和Transformer结合是一种新颖的方法，也许可以催生很多相关的交叉研究。
+但是在强化学习领域，transformer并没有表现出同样的能力。本文说明了为什么标准的transformer架构很难在强化学习中优化。研究者同时提出了一种架构，可以很好地提升 transformer架构和变体的稳定性，并加速学习。研究者将提出的架构命名为Gated Transformer-XL(GTrXL)，该架构可以超过LSTM，在多任务学习 DMLab-30 基准上达到 SOTA 的水平。
 
 
 [20项任务全面碾压BERT，CMU全新XLNet预训练模型屠榜（已开源）](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650764408&idx=1&sn=92196097be1a5f993ef02de0bac8128d&chksm=871ab006b06d3910ec88e57598d6c8b1a38dead073b3f417b793ba71ac4750ae2a8263537fa2&mpshare=1&scene=1&srcid=&pass_ticket=%2BD9Ask8qPVeDCkEHTF8NEBVBQX9YmDDkPy9VdMIfOYJ2VtpyHOOhIYdS3wUnvPjn#rd)
@@ -490,14 +480,22 @@ bert只使用了Transformer的encoder部分，其下游任务也主要是适用�
 
 预训练模型：[https://github.com/zihangdai/xlnet](https://github.com/zihangdai/xlnet)
 
-BERT 这样基于去噪自编码器的预训练模型可以很好地建模双向语境信息，性能优于基于自回归语言模型的预训练方法。然而，由于需要 mask 一部分输入，BERT 忽略了被 mask 位置之间的依赖关系，因此出现预训练和微调效果的差异（pretrain-finetune discrepancy）。
+BERT 这样基于去噪自编码器的预训练模型可以很好地建模双向语境信息，性能优于基于自回归语言模型的预训练方法。然而，由于需要 mask 一部分输入，BERT 忽略了**被mask位置之间的依赖关系**，因此出现预训练和微调效果的差异（pretrain-finetune discrepancy）。
 
 基于这些优缺点，该研究提出了一种泛化的自回归预训练模型XLNet。XLNet可以：
 
 + 通过最大化所有可能的因式分解顺序的对数似然，学习双向语境信息；
 + 用自回归本身的特点克服BERT的缺点。此外，XLNet 还融合了当前最优自回归模型 Transformer-XL 的思路。
 
-来，看一下transformer-xl：[https://daiwk.github.io/posts/nlp-transformer-xl.html](https://daiwk.github.io/posts/nlp-transformer-xl.html).。。。原来transformer-xl也是这几个作者提出的。。。
+transformer-xl：[https://daiwk.github.io/posts/nlp-transformer-xl.html](https://daiwk.github.io/posts/nlp-transformer-xl.html)：
+
+[Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context](https://arxiv.org/pdf/1901.02860.pdf)
+
+![transformer-xl](../assets/transformer-xl.png)
+
++ 在训练过程中，对**上一个segment**计算的隐藏状态序列进行**fixed和cached**，并在模型处理下一个新的segment时将其缓存为**可重用的扩展上下文**。
++ 这种递归机制应用于整个语料库的每两个连续的segment，它本质上是在隐藏状态中创建一个segment-level的递归。因此，所使用的有效上下文可以远远超出两个segments。
+
 
 XLNet 在 20 个任务上超过了 BERT 的表现，并在 18 个任务上取得了当前最佳效果（state-of-the-art），包括机器问答、自然语言推断、情感分析和文档排序。
 
@@ -829,14 +827,6 @@ huggingface的distill gpt-2：[https://github.com/huggingface/transformers](http
 
 [谷歌最新T5模型17项NLP任务霸榜SuperGLUE，110亿参数量！](https://mp.weixin.qq.com/s/rFT37D7p0MiS8XGZM35bYA)
 
-### UniLM
-
-[NeurIPS 2019 \| 既能理解又能生成自然语言，微软提出统一预训练新模型UniLM](https://mp.weixin.qq.com/s/J96WjZhnf_1vBRHbbGwtyg)
-
-[Unified Language Model Pre-training for Natural Language Understanding and Generation](https://arxiv.org/abs/1905.03197)
-
-[https://github.com/microsoft/unilm](https://github.com/microsoft/unilm)
-
 ### BART
 
 [多项NLP任务新SOTA，Facebook提出预训练模型BART​](https://mp.weixin.qq.com/s/1-EJ36-lY9YZSLBG5c2aaQ)
@@ -1148,6 +1138,8 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 + **前缀解码器架构(prefix decoder)**：修正因果解码器的掩码机制，使其能**对前缀token执行双向注意力**，并且**仅对生成的token执行单向注意力**（和encoder-decoder类似），即[Unified language model pre-training for natural language understanding and generation](https://arxiv.org/pdf/1905.03197.pdf)提出的uni-lm。[What language model architecture and pretraining objective works best for zero-shot generalization?](https://arxiv.org/pdf/2204.05832.pdf)建议不从头开始预训练，而是**继续训练因果编码器，然后将其转换成前缀编码器以加速收敛**。例如U-PaLM从PaLM演化而来，还有GLM-130B也是这种架构。
 
 ![uni-lm](../assets/uni-lm.png)
+
+[https://github.com/microsoft/unilm](https://github.com/microsoft/unilm)
 
 对于这3种架构，都可以用**MoE**进行扩展，每个输入的**一小部分神经网络权重**被**稀疏激活**，如[Switch Transformer](https://arxiv.org/pdf/2101.03961.pdf)和GLaM。[Unified scaling laws for routed language models](https://arxiv.org/pdf/2202.01169.pdf)发现，通过**增加专家数量或总参数大小**，性能会有显著改进。
 
