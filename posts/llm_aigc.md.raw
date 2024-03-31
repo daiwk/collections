@@ -3901,10 +3901,17 @@ XXX
 [Wukong: Towards a Scaling Law for Large-Scale Recommendation](https://arxiv.org/pdf/2403.02545.pdf)
 
 
-
 ## P5
 
 [Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+
+## agent4rec
+
+[On Generative Agents in Recommendation](https://arxiv.org/pdf/2310.10108.pdf)
+
+word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx](https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx)
+
+[https://github.com/LehengTHU/Agent4Rec](https://github.com/LehengTHU/Agent4Rec)
 
 ## llm vs ID
 
