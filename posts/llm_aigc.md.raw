@@ -441,20 +441,6 @@ XLM-R
 
 来自facebook。针对多种跨语言的传输任务，大规模地对多语言语言模型进行预训练可以显著提高性能。在使用超过 2TB 的已过滤 CommonCrawl 数据的基础上，研究者在 100 种语言上训练了基于 Transformer 的掩模语言模型。该模型被称为 XLM-R，在各种跨语言基准测试中，其性能显著优于多语言 BERT（mBERT），其中 XNLI 的平均准确度为+ 13.8％，MLQA 的平均 F1 得分为+ 12.3％，而 FQ 的平均 F1 得分为+ 2.1％ NER。XLM-R 在低资源语言上表现特别出色，与以前的 XLM 模型相比，斯瓦希里语（Swahili）的 XNLI 准确性提升了 11.8％，乌尔都语（Urdu）的准确性提升了 9.2％。研究者还对获得这些提升所需的关键因素进行了详细的实证评估，包括（1）积极转移和能力稀释；（2）大规模资源资源的高低性能之间的权衡。最后，他们首次展示了在不牺牲每种语言性能的情况下进行多语言建模的可能性。XLM-Ris 在 GLUE 和 XNLI 基准测试中具有强大的单语言模型，因此非常具有竞争力。
 
-#### MASS
-
-[MASS: Masked Sequence to Sequence Pre-training for Language Generation](https://arxiv.org/abs/1905.02450v5)
-
-bert只使用了Transformer的encoder部分，其下游任务也主要是适用于自然语言理解（NLU），对于类似文本摘要、机器翻译、对话应答生成等自然语言生成（NLG）任务显然是不太合适的。MASS 采用了编码器-解码器框架，并尝试在给定部分句子的情况下修复整个句子。如下所示为 MASS 的框架图，其输入句子包含了一些连续的 Token，并且中间会带有一些连续的 Mask，模型的任务是预测出被 Mask 掉的词是什么。相比 BERT 只有编码器，MASS 联合训练编码器与解码器，能获得更适合机器翻译的表征能力。
-
-
-受到bert的启发，作者们提出联合训练encoder和decoder的模型
-
-训练步骤主要分为两步：
-
-+ Encoder： 输入为被随机mask掉连续部分token的句子，使用Transformer对其进行编码；这样处理的目的是可以使得encoder可以更好地捕获没有被mask掉词语信息用于后续decoder的预测；
-+ Decoder： 输入为与encoder同样的句子，但是mask掉的正好和encoder相反，和翻译一样，使用attention机制去训练，但只预测encoder端被mask掉的词。该操作可以迫使decoder预测的时候更依赖于source端的输入而不是前面预测出的token，防止误差传递。
-
 ### 更长序列
 
 #### transformer-xl
@@ -790,8 +776,25 @@ similarities = cos_sim(embeddings[0], embeddings[1:])
 ## GPT
 
 
+2018年的[Improving language understanding by generative pre-training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)，生成式预训练（Generative pre-training, gpt），用transformer的decoder，参数量117m（0.1b），无监督预训练和有监督微调。
+
+![gpt1](../assets/gpt1.png)
+
+微调阶段为每种下游任务专门设计：
+
++ 分类：输入一段文本，经过transformer，最后接一个Linear
++ entailment(蕴含)：输入2段文本，premise(假设)和hypothesis(假说)，经过transformer，最后接一个Linear
++ 相似度：输入2段文本a和b，a+b过transformer，b+a过transformer，再合起来接一个Linear
++ 多选题：输入context+答案1过transformer+Linear，答案2、答案3同样操作，将3个输出合在一起求softmax
 
 ## GPT2
+
+2019年的[Language models are unsupervised multitask learners](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)模型结构小改，增加数据，参数量变大为15亿（1.5b），无监督语言建模。
+
++ layernorm前移到每个sub-block之前
++ additional layernorm在最后的self-attention block才加上
++ 修改初始化方法，以考虑残差路径上的累积并缩放残差层的权重
+
 
 [15亿参数最强通用NLP模型面世！Open AI GPT-2可信度高于所有小模型](https://mp.weixin.qq.com/s/nu2egJuG_yxIVfW9GfdlCw)
 
@@ -817,6 +820,27 @@ huggingface的distill gpt-2：[https://github.com/huggingface/transformers](http
 [谷歌T5模型刷新GLUE榜单，110亿参数量，17项NLP任务新SOTA](https://mp.weixin.qq.com/s/YOMWNV5BMI9hbB6Nr_Qj8w)
 
 [谷歌最新T5模型17项NLP任务霸榜SuperGLUE，110亿参数量！](https://mp.weixin.qq.com/s/rFT37D7p0MiS8XGZM35bYA)
+
+[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)
+
+将所有NLP任务都建模成text-to-text的生成任务，
+
+mT5（[mt5: A massively multilingual pre-trained text-to-text transformer](https://arxiv.org/pdf/2010.11934.pdf)）是T5的变种，基于新的Common Crawl的数据集（包括101种语言）上预训练
+
+#### MASS
+
+[MASS: Masked Sequence to Sequence Pre-training for Language Generation](https://arxiv.org/abs/1905.02450v5)
+
+bert只使用了Transformer的encoder部分，其下游任务也主要是适用于自然语言理解（NLU），对于类似文本摘要、机器翻译、对话应答生成等自然语言生成（NLG）任务显然是不太合适的。MASS 采用了编码器-解码器框架，并尝试在给定部分句子的情况下修复整个句子。如下所示为 MASS 的框架图，其输入句子包含了一些连续的 Token，并且中间会带有一些连续的 Mask，模型的任务是预测出被 Mask 掉的词是什么。相比 BERT 只有编码器，MASS 联合训练编码器与解码器，能获得更适合机器翻译的表征能力。
+
+
+受到bert的启发，作者们提出联合训练encoder和decoder的模型
+
+训练步骤主要分为两步：
+
++ Encoder： 输入为被随机mask掉连续部分token的句子，使用Transformer对其进行编码；这样处理的目的是可以使得encoder可以更好地捕获没有被mask掉词语信息用于后续decoder的预测；
++ Decoder： 输入为与encoder同样的句子，但是mask掉的正好和encoder相反，和翻译一样，使用attention机制去训练，但只预测encoder端被mask掉的词。该操作可以迫使decoder预测的时候更依赖于source端的输入而不是前面预测出的token，防止误差传递。
+
 
 ### BART
 
@@ -3930,6 +3954,10 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 [对应的ppt](https://github.com/westlake-repl/MicroLens/blob/master/MicroLens_DeepMind_Talk.pdf)
 
+## 推荐生态系统
+
+[Modeling Recommender Ecosystems: Research Challenges at the Intersection of Mechanism Design, Reinforcement Learning and Generative Models](https://storage.googleapis.com/gweb-research2023-media/pubtools/pdf/e00cc0ce4480c15339b7798943560ad1a0d593ce.pdf)
+
 ## 其他
 
 [WWW 2024 | 工业界大模型在搜广推场景应用](https://zhuanlan.zhihu.com/p/686259205)
@@ -3945,6 +3973,8 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 [SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
 
 [Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347.pdf)
+
+
 
 # 新的架构
 
