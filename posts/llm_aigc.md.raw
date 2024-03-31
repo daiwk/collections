@@ -491,10 +491,16 @@ transformer-xl：[https://daiwk.github.io/posts/nlp-transformer-xl.html](https:/
 
 [Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context](https://arxiv.org/pdf/1901.02860.pdf)
 
+![vanilla-segment](../assets/vanilla-segment.png)
+
+最简单的处理长文本方法：对长文本直接切成多个segment，每个segment独立过transformer，**segment间是没有信息流动的**
+
+
 ![transformer-xl](../assets/transformer-xl.png)
 
-+ 在训练过程中，对**上一个segment**计算的隐藏状态序列进行**fixed和cached**，并在模型处理下一个新的segment时将其缓存为**可重用的扩展上下文**。
-+ 这种递归机制应用于整个语料库的每两个连续的segment，它本质上是在隐藏状态中创建一个segment-level的递归。因此，所使用的有效上下文可以远远超出两个segments。
+transformer-xl的处理方法：参考RNN的**隐藏记忆单元**，对**上一个segment**计算的隐藏状态序列进行**fixed和cached**，并在模型处理下一个新的segment时将其缓存为**可重用的扩展上下文**。
+
+如图，第k+1层的第i个元素，用到了第k层的第i-1, i-2, ...,i - segment_len+1这几个元素，所以**对于最顶层的来讲，实际看到的窗口就更长了**。
 
 
 XLNet 在 20 个任务上超过了 BERT 的表现，并在 18 个任务上取得了当前最佳效果（state-of-the-art），包括机器问答、自然语言推断、情感分析和文档排序。
@@ -3943,6 +3949,9 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 [ClickPrompt: CTR Models are Strong Prompt Generators for Adapting Language Models to CTR Prediction](https://arxiv.org/pdf/2310.09234.pdf)
 
+[SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
+
+[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347.pdf)
 
 # 新的架构
 
