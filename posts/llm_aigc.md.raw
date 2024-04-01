@@ -831,10 +831,7 @@ mT5（[mt5: A massively multilingual pre-trained text-to-text transformer](https
 
 [MASS: Masked Sequence to Sequence Pre-training for Language Generation](https://arxiv.org/abs/1905.02450v5)
 
-bert只使用了Transformer的encoder部分，其下游任务也主要是适用于自然语言理解（NLU），对于类似文本摘要、机器翻译、对话应答生成等自然语言生成（NLG）任务显然是不太合适的。MASS 采用了编码器-解码器框架，并尝试在给定部分句子的情况下修复整个句子。如下所示为 MASS 的框架图，其输入句子包含了一些连续的 Token，并且中间会带有一些连续的 Mask，模型的任务是预测出被 Mask 掉的词是什么。相比 BERT 只有编码器，MASS 联合训练编码器与解码器，能获得更适合机器翻译的表征能力。
-
-
-受到bert的启发，作者们提出联合训练encoder和decoder的模型
+bert只使用了Transformer的encoder部分，其下游任务也主要是适用于自然语言理解（NLU），对于类似文本摘要、机器翻译、对话应答生成等自然语言生成（NLG）任务显然是不太合适的。MASS 采用了编码器-解码器框架，并尝试在**给定部分句子**的情况下**修复整个句子**。MASS输入句子包含了一些连续的 Token，并且中间会带有一些**连续的Mask**，模型的任务是**预测出被Mask掉的词**是什么。相比 BERT 只有编码器，MASS 联合训练编码器与解码器，能获得更适合机器翻译的表征能力。
 
 训练步骤主要分为两步：
 
@@ -848,13 +845,11 @@ bert只使用了Transformer的encoder部分，其下游任务也主要是适用�
 
 [BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension](https://arxiv.org/pdf/1910.13461.pdf)
 
-自监督方法在大量NLP任务中取得了卓越的成绩。近期研究通过改进masked token的分布（即masked token被预测的顺序）和替换masked token的可用语境，性能获得提升。然而，这些方法通常聚焦于特定类型和任务（如span prediction、生成等），应用较为有限。
+BART是一个适用于seq2seq模型的去噪自编码器。预训练包括两个阶段：
 
-Facebook的这项研究提出了新架构BART，它结合双向和自回归Transformer对模型进行预训练。BART是一个适用于序列到序列模型的去噪自编码器，可应用于大量终端任务。预训练包括两个阶段：1）使用任意噪声函数破坏文本；2）学得序列到序列模型来重建原始文本。BART使用基于Tranformer的标准神经机器翻译架构，可泛化BERT、GPT等近期提出的预训练模型。
++ 使用**任意噪声**函数**破坏文本**
++ 用seq2seq模型来**重建原始文本**
 
-
-
-[新预训练模型CodeBERT出世，编程语言和自然语言都不在话下，哈工大、中山大学、MSRA出品](https://mp.weixin.qq.com/s/wmAu4810wrK2n-pDezAo0w)
 
 # LLM概述
 
@@ -935,6 +930,25 @@ PLM（pretrained language models），即bert等
 | Y | [Pythia](https://arxiv.org/pdf/2304.01373.pdf) | 2023.04 | 12B | 3000亿tokens | 256 40G A100 | - |
 
 可以直接把对应的md丢给gpt，叫它导出一个excel，然后就可以自定义排序或者画散点图看了
+
+## 典型LLM简介
+
+![llm-families](../assets/llm-families.png)
+
+### GPT系列
+
+
+
+### LLaMA系列
+
+
+
+### PaLM系列
+
+
+
+### 其他LLM
+
 
 
 
@@ -2875,6 +2889,20 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 ### lossless long context
 
 [专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
+
+
+## 记忆能力
+
+[Localizing Paragraph Memorization in Language Models](https://arxiv.org/pdf/2403.19851v1.pdf)
+
+对应代码：[https://github.com/googleinterns/localizing-paragraph-memorization](https://github.com/googleinterns/localizing-paragraph-memorization)
+
+我们能否定位出语言模型中用于记忆其训练数据中整段文字的权重和机制？
+
++ 尽管记忆现象分布在模型的多个层级和组件中，但记忆段落的梯度在空间上有可辨别的模式，即**在较低模型层级的梯度比非记忆example的梯度大**。
++ 通过**仅微调高梯度的权重**，可以使模型**遗忘记忆的example**。
++ 定位了一个特别参与段落记忆的**低层注意力头**，它**主要关注**在语料库级单词频率分布中**最不频繁出现的独特、罕见的token**。
++ 总的来说，相较非记忆的续写，记忆续写不仅**更难以遗忘**，也**更难以损坏**。
 
 
 # Claude系列
