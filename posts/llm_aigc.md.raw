@@ -65,9 +65,9 @@ Mikolov发明word2vec的几个版本大概在13-14年前后。那个时候GPU非
 
 hierarchical softmax是softmax的近似，suboptimal的。当如今计算资源足够大的时候，当然包括时间和显存 (BERT 和 Elmo 都没有用hierarchical)，hierarchical softmax就逐渐退出了历史舞台。
 
-# 理解内容的仅编码器框架
+# PLM：仅编码器/仅解码器/编码器+解码器
 
-## BERT
+## 仅编码器的BERT
 
 [BERT小学生级上手教程，从原理到上手全有图示，还能直接在线运行](https://mp.weixin.qq.com/s/ltVuXZ4nJh8Cb5X2UhB6tQ)
 
@@ -546,6 +546,94 @@ XXX
 
 RTD比MLM**更sample-efficient**，因为RTD只做二分类，而MLM需要做全词表的softmax
 
+#### sentence Transformers
+
+[俄罗斯套娃 (Matryoshka) 嵌入模型概述](https://mp.weixin.qq.com/s/H3LWIs4hBQ-b_XLxICw7Dg)
+
+[Matryoshka representation learning](https://arxiv.org/pdf/2205.13147.pdf)
+
+俄罗斯套娃嵌入模型旨在将**更重要的信息存储在早期的维度中**，将不太重要的信息存储在后面的维度中。俄罗斯套娃嵌入模型的这一特点允许我们截断模型产生的原始 (大) 嵌入，同时仍保留足够的信息以在下游任务上表现良好。
+
+![matryoshka-representation-learning](../assets/matryoshka-representation-learning.png)
+
+[https://sbert.net/examples/training/matryoshka/README.html](https://sbert.net/examples/training/matryoshka/README.html)
+
+训练时：
+
+```python
+from sentence_transformers import SentenceTransformer
+from sentence_transformers.losses import CoSENTLoss, MatryoshkaLoss
+
+model = SentenceTransformer("microsoft/mpnet-base")
+
+base_loss = CoSENTLoss(model=model)
+loss = MatryoshkaLoss(
+    model=model,
+    loss=base_loss,
+    matryoshka_dims=[768, 512, 256, 128, 64],
+    matryoshka_weight=[1, 1, 1, 1, 1],
+)
+
+model.fit(
+    train_objectives=[(train_dataset, loss)],
+    ...,
+)
+```
+
+预测时
+
+```python
+from sentence_transformers import SentenceTransformer
+from sentence_transformers.util import cos_sim
+
+model = SentenceTransformer("tomaarsen/mpnet-base-nli-matryoshka")
+
+matryoshka_dim = 64
+embeddings = model.encode(
+    [
+        "The weather is so nice!",
+        "It's so sunny outside!",
+        "He drove to the stadium.",
+    ]
+)
+embeddings = embeddings[..., :matryoshka_dim] # Shrink the embedding dimensions
+print(embeddings.shape)
+# => (3, 64)
+
+# Similarity of the first sentence to the other two:
+similarities = cos_sim(embeddings[0], embeddings[1:])
+print(similarities)
+# => tensor([[0.8910, 0.1337]])
+```
+
+注意，如果嵌入已经归一化，那么在截断后它们将不再归一化，因此你**可能需要重新归一化**。
+
+```python
+from sentence_transformers import SentenceTransformer
+from sentence_transformers.util import cos_sim
+import torch.nn.functional as F
+
+model = SentenceTransformer("nomic-ai/nomic-embed-text-v1.5", trust_remote_code=True)
+
+matryoshka_dim = 64
+embeddings = model.encode(
+    [
+        "search_query: What is TSNE?",
+        "search_document: t-distributed stochastic xxx.",
+        "search_document: Amelia Mary Earhart was xxx.",
+    ],
+    convert_to_tensor=True,
+)
+# The Nomic team uses a custom architecture, 
+# making them recommend Layer Normalization before truncation
+embeddings = F.layer_norm(embeddings, normalized_shape=(embeddings.shape[1],))
+embeddings[..., :matryoshka_dim] # Shrink the embedding dimensions
+
+similarities = cos_sim(embeddings[0], embeddings[1:])
+# => tensor([[0.7154, 0.4468]])
+```
+
+
 ## 更小的BERT
 
 [BERT 瘦身之路：Distillation，Quantization，Pruning](https://mp.weixin.qq.com/s/ir3pLRtIaywsD94wf9npcA)
@@ -682,99 +770,11 @@ input_ids先查word_embeddings(`\(V\times E=21118*128)`)，得到dim=128的表�
 [AdaBERT: Task-Adaptive BERT Compression with Differentiable Neural Architecture Search](https://arxiv.org/pdf/2001.04246v1.pdf)
 
 
-## sentence Transformers
-
-[俄罗斯套娃 (Matryoshka) 嵌入模型概述](https://mp.weixin.qq.com/s/H3LWIs4hBQ-b_XLxICw7Dg)
-
-[Matryoshka representation learning](https://arxiv.org/pdf/2205.13147.pdf)
-
-俄罗斯套娃嵌入模型旨在将**更重要的信息存储在早期的维度中**，将不太重要的信息存储在后面的维度中。俄罗斯套娃嵌入模型的这一特点允许我们截断模型产生的原始 (大) 嵌入，同时仍保留足够的信息以在下游任务上表现良好。
-
-![matryoshka-representation-learning](../assets/matryoshka-representation-learning.png)
-
-[https://sbert.net/examples/training/matryoshka/README.html](https://sbert.net/examples/training/matryoshka/README.html)
-
-训练时：
-
-```python
-from sentence_transformers import SentenceTransformer
-from sentence_transformers.losses import CoSENTLoss, MatryoshkaLoss
-
-model = SentenceTransformer("microsoft/mpnet-base")
-
-base_loss = CoSENTLoss(model=model)
-loss = MatryoshkaLoss(
-    model=model,
-    loss=base_loss,
-    matryoshka_dims=[768, 512, 256, 128, 64],
-    matryoshka_weight=[1, 1, 1, 1, 1],
-)
-
-model.fit(
-    train_objectives=[(train_dataset, loss)],
-    ...,
-)
-```
-
-预测时
-
-```python
-from sentence_transformers import SentenceTransformer
-from sentence_transformers.util import cos_sim
-
-model = SentenceTransformer("tomaarsen/mpnet-base-nli-matryoshka")
-
-matryoshka_dim = 64
-embeddings = model.encode(
-    [
-        "The weather is so nice!",
-        "It's so sunny outside!",
-        "He drove to the stadium.",
-    ]
-)
-embeddings = embeddings[..., :matryoshka_dim] # Shrink the embedding dimensions
-print(embeddings.shape)
-# => (3, 64)
-
-# Similarity of the first sentence to the other two:
-similarities = cos_sim(embeddings[0], embeddings[1:])
-print(similarities)
-# => tensor([[0.8910, 0.1337]])
-```
-
-注意，如果嵌入已经归一化，那么在截断后它们将不再归一化，因此你**可能需要重新归一化**。
-
-```python
-from sentence_transformers import SentenceTransformer
-from sentence_transformers.util import cos_sim
-import torch.nn.functional as F
-
-model = SentenceTransformer("nomic-ai/nomic-embed-text-v1.5", trust_remote_code=True)
-
-matryoshka_dim = 64
-embeddings = model.encode(
-    [
-        "search_query: What is TSNE?",
-        "search_document: t-distributed stochastic xxx.",
-        "search_document: Amelia Mary Earhart was xxx.",
-    ],
-    convert_to_tensor=True,
-)
-# The Nomic team uses a custom architecture, 
-# making them recommend Layer Normalization before truncation
-embeddings = F.layer_norm(embeddings, normalized_shape=(embeddings.shape[1],))
-embeddings[..., :matryoshka_dim] # Shrink the embedding dimensions
-
-similarities = cos_sim(embeddings[0], embeddings[1:])
-# => tensor([[0.7154, 0.4468]])
-```
-
-# 生成内容的仅解码器or编码+解码器
+## 仅解码器的GPT 
 
 [AI也能精彩表达：几种经典文本生成模型一览](https://mp.weixin.qq.com/s/GfP76I-BzzQcyLqQJoeXxw)
 
-## GPT
-
+### GPT
 
 2018年的[Improving language understanding by generative pre-training](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)，生成式预训练（Generative pre-training, gpt），用transformer的decoder，参数量117m（0.1b），无监督预训练和有监督微调。
 
@@ -787,7 +787,7 @@ similarities = cos_sim(embeddings[0], embeddings[1:])
 + 相似度：输入2段文本a和b，a+b过transformer，b+a过transformer，再合起来接一个Linear
 + 多选题：输入context+答案1过transformer+Linear，答案2、答案3同样操作，将3个输出合在一起求softmax
 
-## GPT2
+### GPT2
 
 2019年的[Language models are unsupervised multitask learners](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)模型结构小改，增加数据，参数量变大为15亿（1.5b），无监督语言建模。
 
@@ -811,9 +811,7 @@ similarities = cos_sim(embeddings[0], embeddings[1:])
 
 huggingface的distill gpt-2：[https://github.com/huggingface/transformers](https://github.com/huggingface/transformers)
 
-## GPT3
-
-## encoder+decoder的方法
+## 编码器+解码器
 
 ### T5
 
@@ -827,7 +825,7 @@ huggingface的distill gpt-2：[https://github.com/huggingface/transformers](http
 
 mT5（[mt5: A massively multilingual pre-trained text-to-text transformer](https://arxiv.org/pdf/2010.11934.pdf)）是T5的变种，基于新的Common Crawl的数据集（包括101种语言）上预训练
 
-#### MASS
+### MASS
 
 [MASS: Masked Sequence to Sequence Pre-training for Language Generation](https://arxiv.org/abs/1905.02450v5)
 
@@ -937,6 +935,49 @@ PLM（pretrained language models），即bert等
 
 ### GPT系列
 
+#### GPT3
+
+&nbsp;
+
+2020年的gpt3：[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165.pdf)，175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning。
+
+#### CODEX
+
+&nbsp;
+
+[Evaluating Large Language Models Trained on Code](https://arxiv.org/pdf/2107.03374.pdf)
+
+能够解析自然语言，并生成代码。CODEX是gpt3在github上收集的代码语料上进行finetune得到的，并且在微软的copilot中使用。
+
+#### WebGPT
+
+&nbsp;
+
+[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
+
+[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
+
+为了回答开放性问题，使用基于文本的浏览器对gpt3进行finetune，包括如下3个步骤：
+
++ 学习使用人类示范（demonstration）数据来模仿人类的浏览行为
++ 学习一个reward函数来预测人类偏好
++ 用强化学习和拒绝采样来优化reward函数
+
+#### InstructGPT
+
+&nbsp;
+
+[Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)
+
+sft+rm+rl，在最小性能降低的情况下，提升了生成结果的真实性，并降低了毒害性
+
+#### ChatGPT&GPT-4
+
+&nbsp;
+
+2022.11.30推出了ChatGPT，基于GPT3.5，即InstructGPT的兄弟
+
+2023.3推出了GPT-4，多模态LLM，能输入图像和文本
 
 
 ### LLaMA系列
@@ -3103,6 +3144,10 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 用了tree-attention
 
+## MOD
+
+[Mixture-of-Depths: Dynamically allocating compute in transformer-based language models](https://arxiv.org/pdf/2404.02258.pdf)
+
 
 # 多模态（图像）
 
@@ -4010,11 +4055,33 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 # 新的架构
 
+## SSM
+
+[挑战Transformer的Mamba是什么来头？作者博士论文理清SSM进化路径](https://mp.weixin.qq.com/s/oXSwnL0sD96nnnqJyko7UA)
+
+[Pretraining Without Attention](https://arxiv.org/pdf/2212.10544.pdf) 
+
+[预训练无需注意力，扩展到4096个token不成问题，与BERT相当](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650864837&idx=2&sn=c57f0b8a7daf7d45093448c8ff5df3fc&chksm=84e538bbb392b1ad857f3ad2c2d6d6dbc9562ff492a7cda336dc07abe4d3912c19fa4c30d365&scene=21#wechat_redirect)
+
+[Diffusion Models Without Attention](https://arxiv.org/pdf/2311.18257.pdf)
+
+[丢掉注意力的扩散模型：Mamba带火的SSM被苹果、康奈尔盯上了](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650900014&idx=4&sn=315ca75ba700a93598b5c581ad2fb735&chksm=84e44250b393cb4619e7c24b9f6affe88e4c71ebb97d0c43b5301edd0a11154af6322f68cfd4&scene=21#wechat_redirect)
+
+[Long Range Language Modeling via Gated State Spaces](https://arxiv.org/abs/2206.13947) 认为 Transformer 和 SSM 完全可以互补。
+
 ## Mamba
 
 [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)
 
-[挑战Transformer的Mamba是什么来头？作者博士论文理清SSM进化路径](https://mp.weixin.qq.com/s/oXSwnL0sD96nnnqJyko7UA)
+[https://huggingface.co/state-spaces](https://huggingface.co/state-spaces)
+
+[https://github.com/havenhq/mamba-chat](https://github.com/havenhq/mamba-chat)
+
+[MODELING SEQUENCES WITH STRUCTURED STATE SPACES](https://stacks.stanford.edu/file/druid:mb976vf9362)
+
+## Block-State Transformer
+
+[Block-State Transformer](https://arxiv.org/pdf/2306.09539.pdf)
 
 ## Jamba
 
@@ -4146,11 +4213,6 @@ XXX
 
 [Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
 
-## WebGPT
-
-[WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/abs/2112.09332)
-
-[https://openai.com/blog/webgpt/](https://openai.com/blog/webgpt/)
 
 ## 本地知识库
 
