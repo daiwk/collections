@@ -997,6 +997,28 @@ sft+rm+rl，在最小性能降低的情况下，提升了生成结果的真实�
 
 ### LLaMA系列
 
+#### LLaMA
+
+
+#### LLaMA2
+
+
+#### Alpaca
+
+
+#### Vicuna
+
+#### Guanaco
+
+
+#### Koala
+
+#### Mistral 7b
+
+[Mistral 7b](https://arxiv.org/pdf/2310.06825.pdf)
+
+[https://mistral.ai/news/mixtral-of-experts/](https://mistral.ai/news/mixtral-of-experts/) 提出了moe的8x7b
+
 
 
 ### PaLM系列
@@ -3121,6 +3143,12 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/221
 
 
 # 训练&预测架构
+
+[大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
+
+[大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
+
+[大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
 
 ## pathways
 
