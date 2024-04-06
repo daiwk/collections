@@ -1167,11 +1167,48 @@ sft+rm+rl，在最小性能降低的情况下，提升了生成结果的真实�
 
 &nbsp;
 
-2023年2月发布，[LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)，对GPT3的主要改进：
+2023年2月发布，[LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)，开源的LLaMA-13B比 GPT3 175B在很多任务上都更好
 
-+ 用SwiGLU取代ReLU
-+ 用rotary positional embeddings取代绝对位置emb
-+ 用**root-mean-squared layer-norm**(RMSNorm)取代标准的layer-norm
+参考代码：
+[https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py)
+
+之前的工作考虑的是在训练预算有限的前提下，如何提升模型性能（2022年deepmind的[Training Compute-Optimal Large Language Models](https://arxiv.org/pdf/2203.15556.pdf)的Chinchilla）,llama考虑在预测时的预算。例如chinchilla是一个10b的模型在200b的token上训练，但其实一个7b的模型当用了1T的token后，性能仍在提升。LLama-13b比gpt3在大多数benchmark上好，但size只有1/10，在一个GPU上就能跑。
+
+llama只用公开数据训练，而Chinchilla、PaLM、GPT-3都有自己的未公开数据集。其他的OPT、GPT-NeoX、BLOOM、GLM虽然也只用公开数据集，但打不过PaLM-62B或者Chinchilla
+
+#### 预训练数据
+
+&nbsp;
+
++ English CommonCrawl(67%)：使用CCNet pipeline，去重、用fasttext把非英文的页面删了，用n-gram把低质内容删了。此外，还训了一个线性模型，对页面进行分类：作为维基百科的引用 vs 随机采样的页面，最后把不属于引用这个类别的页面删了
++ C4(15%)：与CCNet类似，主要区别在质量过滤是基于启发式的规则，如标点符号的存在，或者词数和句子数
++ github(4.5%)：使用Google BigQuery里的公开github数据集，只用Apache、BSD和MIT证书的。低质判断是启发式规则，如字母数字占比、行的长度等，用正则删掉head等样式，最终以文件粒度进行去重。
++ wikipedia(4.5%)：2022年6-8月的数据，包括20种语言
++ Gutenberg and Books3(4.5%)：两个书籍数据集，对有90%以上内容重复的书籍做去重。
++ Arxiv(2.5%)：拿原始的tex文件，删掉first section之前的东西，还有一些注释、宏
++ Stack Exchange(2%)：高质量的问答网站，按答案的分数排序
+
+![llama_data](../assets/llama_data.png)
+
+tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数字，回退到字节去处理未知的utf8字符（fallback to bytes to decompose unknown UTF-8 characters）
+
+总共有1.4T的token，对大部分训练数据，每个token在训练时只用了一次，除了维基和book大概用了两次。
+
+附：gpt4说：当我们说"一个token只训练一次"，我们其实是在说在一个epoch（一个完整遍历训练集的过程）中，我们只遍历一次完整的数据集。如果一个特定的token在数据集中出现多次，那么在一个epoch中，这个token就会被用来训练模型多次。
+
+![llama](../assets/llama_params.png)
+
+
+![一些大模型](../assets/LLM/WechatIMG322.jpg)
+
+
+#### 网络结构
+
+&nbsp;
+
++ SwiGLU激活函数(PaLM)：取代ReLU，[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
++ Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
++ pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))取代标准的layer-norm
     + layernorm计算单个样本在单层中所有激活的均值和标准差，并使用这些统计数据来归一化该层的激活。
     + RMSnorm只计算激活的平方根均值（RMS），而不是标准差。这样做的一个好处是计算上更简单，因为它省去了计算均值的步骤，只关注激活的规模（scale）而非其准确的分布。$$\operatorname{RMSNorm}\left(x_i\right)=\frac{x_i}{\sqrt{\frac{1}{H} \sum_{j=1}^H x_j^2}+\epsilon}$$，其中$$H$$是该层的神经元个数，而且也不用求均值
 
@@ -1225,7 +1262,17 @@ class RMSNorm(torch.nn.Module):
         return output * self.weight
 ```
 
-开源的LLaMA-13B比 GPT3 175B在很多任务上都更好
+优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%。0.1的weight decay和1.0的gradient cliping，使用2000steps的warmup
+
+#### 训练加速
+
+&nbsp;
+
++ 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $$o(n^2)$$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
+    + 不存储attention weights
+    + 不计算被mask的key/query得分
++ 减少xxx：
+
 
 ### LLaMA2
 
@@ -1239,6 +1286,8 @@ class RMSNorm(torch.nn.Module):
     + 使用RLHF迭代地更新（拒绝采样+ppo） 
 
 ![llama-2-chat](../assets/llama-2-chat.png)
+
+[https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
 
 ### Alpaca
 
@@ -1371,6 +1420,13 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 &nbsp;
 
+[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
+
+[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
+
+[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
+
+
 ### GLaM
 
 &nbsp;
@@ -1435,7 +1491,60 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 &nbsp;
 
+#### Gemini 1.0
 
+[Gemini: a family of highly capable multimodal models](https://arxiv.org/pdf/2312.11805.pdf)
+
+#### Gemini 1.5
+
+[谷歌Gemini 1.5深夜爆炸上线，史诗级多模态硬刚GPT-5！最强MoE首破100万极限上下文纪录](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652444347&idx=1&sn=51ae7e3e100e24fd49b0f75924e74695&chksm=f093b48285369da37b6148803e41fb272c51c013bc31ac1ba6b09672ff1efd38269af1192b53&scene=132&exptype=timeline_recommend_article_extendread_samebiz#wechat_redirect)
+
+[Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
+
+#### 更大的上下文窗口
+
+此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
+
+
+### gemma
+
+[https://blog.google/technology/developers/gemma-open-models/](https://blog.google/technology/developers/gemma-open-models/)
+
+[Gemma: Open Models Based on Gemini Research and Technology](https://storage.googleapis.com/deepmind-media/gemma/gemma-report.pdf)
+
+
+#### 架构&训练方法
+
++ moe：
+    + 
+
+### Claude
+
+&nbsp;
+
+[全球最强大模型一夜易主，GPT-4时代终结！Claude 3提前狙击GPT-5，3秒读懂万字论文理解力接近人类](https://mp.weixin.qq.com/s/WqQWS-hiQ1i1Ve6IPH3djw)
+
+[The Claude 3 Model Family: Opus, Sonnet, Haiku](https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf)
+
++ 对齐：使用Constitutional AI([Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/pdf/2212.08073.pdf))， explicitly specifying rules and principles based on sources like the UN Declaration of Human Rights.
++ 基于Collective Constitutional AI([Collective Constitutional AI: Aligning a Language Model with Public Input](https://www.anthropic.com/news/collective-constitutional-ai-aligning-a-language-model-with-public-input))，added an additional principle to Claude’s constitution to encourage respect for disability rights
++ 公开了部分RHLF数据：[https://huggingface.co/datasets/Anthropic/hh-rlhf](https://huggingface.co/datasets/Anthropic/hh-rlhf)，对应的论文是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
+
+
+### grok
+
+&nbsp;
+
+[马斯克开源Grok-1：3140亿参数迄今最大，权重架构全开放，磁力下载](https://mp.weixin.qq.com/s/hvt5zwoazDx26KOaKuTs_w)
+
+[https://github.com/xai-org/grok-1](https://github.com/xai-org/grok-1)
+
+[马斯克发布Grok 1.5！ 编码和数学能力大幅提升](https://mp.weixin.qq.com/s/QwM1uk61o1DMpe5EPq9giQ)
+
++ 上下文窗口提升16倍，达到128k
++ 不使用通用的Python语言+Pytorch框架，采用分布式训练架构，使用Rust、JAX+Kubernetes构建。
++ 提出了自定义训练协调器，可自动检测到有问题的节点，然后剔除。
++ 优化了checkpointing、数据加载和训练重启等流程，最大限度地减少故障停机时间。
 
 # 预训练
 
@@ -3237,123 +3346,6 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [「有效上下文」提升20倍！DeepMind发布ReadAgent框架](https://mp.weixin.qq.com/s/xXJqJeqf8mzP9VW9kLIdgQ)
 
-# Claude系列
-
-## Claude3
-
-[全球最强大模型一夜易主，GPT-4时代终结！Claude 3提前狙击GPT-5，3秒读懂万字论文理解力接近人类](https://mp.weixin.qq.com/s/WqQWS-hiQ1i1Ve6IPH3djw)
-
-[The Claude 3 Model Family: Opus, Sonnet, Haiku](https://www-cdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/Model_Card_Claude_3.pdf)
-
-+ 对齐：使用Constitutional AI([Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/pdf/2212.08073.pdf))， explicitly specifying rules and principles based on sources like the UN Declaration of Human Rights.
-+ 基于Collective Constitutional AI([Collective Constitutional AI: Aligning a Language Model with Public Input](https://www.anthropic.com/news/collective-constitutional-ai-aligning-a-language-model-with-public-input))，added an additional principle to Claude’s constitution to encourage respect for disability rights
-+ 公开了部分RHLF数据：[https://huggingface.co/datasets/Anthropic/hh-rlhf](https://huggingface.co/datasets/Anthropic/hh-rlhf)，对应的论文是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
-
-# llama系列
-
-## llama
-
-[LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/abs/2302.13971)
-
-
-参考代码：
-[https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py)
-
-之前的工作考虑的是在训练预算有限的前提下，如何提升模型性能（2022年deepmind的[Training Compute-Optimal Large Language Models](https://arxiv.org/pdf/2203.15556.pdf)的Chinchilla）,llama考虑在预测时的预算。例如chinchilla是一个10b的模型在200b的token上训练，但其实一个7b的模型当用了1T的token后，性能仍在提升。LLama-13b比gpt3在大多数benchmark上好，但size只有1/10，在一个GPU上就能跑。
-
-llama只用公开数据训练，而Chinchilla、PaLM、GPT-3都有自己的未公开数据集。其他的OPT、GPT-NeoX、BLOOM、GLM虽然也只用公开数据集，但打不过PaLM-62B或者Chinchilla
-
-### 预训练数据
-
-+ English CommonCrawl(67%)：使用CCNet pipeline，去重、用fasttext把非英文的页面删了，用n-gram把低质内容删了。此外，还训了一个线性模型，对页面进行分类：作为维基百科的引用 vs 随机采样的页面，最后把不属于引用这个类别的页面删了
-+ C4(15%)：与CCNet类似，主要区别在质量过滤是基于启发式的规则，如标点符号的存在，或者词数和句子数
-+ github(4.5%)：使用Google BigQuery里的公开github数据集，只用Apache、BSD和MIT证书的。低质判断是启发式规则，如字母数字占比、行的长度等，用正则删掉head等样式，最终以文件粒度进行去重。
-+ wikipedia(4.5%)：2022年6-8月的数据，包括20种语言
-+ Gutenberg and Books3(4.5%)：两个书籍数据集，对有90%以上内容重复的书籍做去重。
-+ Arxiv(2.5%)：拿原始的tex文件，删掉first section之前的东西，还有一些注释、宏
-+ Stack Exchange(2%)：高质量的问答网站，按答案的分数排序
-
-![llama_data](../assets/llama_data.png)
-
-tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数字，回退到字节去处理未知的utf8字符（fallback to bytes to decompose unknown UTF-8 characters）
-
-总共有1.4T的token，对大部分训练数据，每个token在训练时只用了一次，除了维基和book大概用了两次。
-
-附：gpt4说：当我们说"一个token只训练一次"，我们其实是在说在一个epoch（一个完整遍历训练集的过程）中，我们只遍历一次完整的数据集。如果一个特定的token在数据集中出现多次，那么在一个epoch中，这个token就会被用来训练模型多次。
-
-![llama](../assets/llama_params.png)
-
-
-![一些大模型](../assets/LLM/WechatIMG322.jpg)
-
-
-### 网络结构
-
-+ pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))
-+ SwiGLU激活函数(PaLM)：[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
-+ Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
-
-优化器：AdamW，cosine学习率schedule，最终学习率是最大学习率的10%。0.1的weight decay和1.0的gradient cliping，使用2000steps的warmup
-
-### 训练加速
-
-+ 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $$o(n^2)$$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)。思想是
-    + 不存储attention weights
-    + 不计算被mask的key/query得分
-+ 减少xxx：
-
-## llama2
-
-[Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
-
-[https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
-
-
-# gemini系列
-
-## Gemini 1.0
-
-[Gemini: a family of highly capable multimodal models](https://arxiv.org/pdf/2312.11805.pdf)
-
-
-
-## Gemini 1.5
-
-[谷歌Gemini 1.5深夜爆炸上线，史诗级多模态硬刚GPT-5！最强MoE首破100万极限上下文纪录](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652444347&idx=1&sn=51ae7e3e100e24fd49b0f75924e74695&chksm=f093b48285369da37b6148803e41fb272c51c013bc31ac1ba6b09672ff1efd38269af1192b53&scene=132&exptype=timeline_recommend_article_extendread_samebiz#wechat_redirect)
-
-[Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context](https://storage.googleapis.com/deepmind-media/gemini/gemini_v1_5_report.pdf)
-
-### 更大的上下文窗口
-
-此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
-
-
-## gemma
-
-[https://blog.google/technology/developers/gemma-open-models/](https://blog.google/technology/developers/gemma-open-models/)
-
-[Gemma: Open Models Based on Gemini Research and Technology](https://storage.googleapis.com/deepmind-media/gemma/gemma-report.pdf)
-
-
-### 架构&训练方法
-
-+ moe：
-    + 
-
-
-# grok
-
-[马斯克开源Grok-1：3140亿参数迄今最大，权重架构全开放，磁力下载](https://mp.weixin.qq.com/s/hvt5zwoazDx26KOaKuTs_w)
-
-[https://github.com/xai-org/grok-1](https://github.com/xai-org/grok-1)
-
-[马斯克发布Grok 1.5！ 编码和数学能力大幅提升](https://mp.weixin.qq.com/s/QwM1uk61o1DMpe5EPq9giQ)
-
-+ 上下文窗口提升16倍，达到128k
-+ 不使用通用的Python语言+Pytorch框架，采用分布式训练架构，使用Rust、JAX+Kubernetes构建。
-+ 提出了自定义训练协调器，可自动检测到有问题的节点，然后剔除。
-+ 优化了checkpointing、数据加载和训练重启等流程，最大限度地减少故障停机时间。
-
 # 多智能体
 
 [《综述：全新大语言模型驱动的Agent》——4.5万字详细解读复旦NLP和米哈游最新Agent Survey](https://zhuanlan.zhihu.com/p/656676717)
@@ -4503,14 +4495,6 @@ XXX
 [https://huggingface.co/moka-ai/m3e-base](https://huggingface.co/moka-ai/m3e-base)
 
 [https://huggingface.co/shibing624/text2vec-base-chinese](https://huggingface.co/shibing624/text2vec-base-chinese)
-
-## RETRO Transformer
-
-[参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
-
-[http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
-
-[Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
 
 
 ## 本地知识库
