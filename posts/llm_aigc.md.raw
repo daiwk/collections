@@ -1410,6 +1410,7 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 &nbsp;
 
+
 ### T0
 
 &nbsp;
@@ -1547,6 +1548,20 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 + 不使用通用的Python语言+Pytorch框架，采用分布式训练架构，使用Rust、JAX+Kubernetes构建。
 + 提出了自定义训练协调器，可自动检测到有问题的节点，然后剔除。
 + 优化了checkpointing、数据加载和训练重启等流程，最大限度地减少故障停机时间。
+
+### Gecko
+
+[谷歌DeepMind发布Gecko：专攻检索，与大7倍模型相抗衡](https://mp.weixin.qq.com/s/5e_Py_Xm0RsmP1YMcikpaQ)
+
+[Gecko: Versatile Text Embeddings Distilled from Large Language Models](https://arxiv.org/pdf/2403.20327.pdf)
+
+### Octopus
+
+[超越GPT-4，斯坦福团队手机可跑的大模型火了，一夜下载量超2k](https://mp.weixin.qq.com/s/qnFZOPLpdRxW42_cLUcImA)
+
+[Octopus v2: On-device language model for super agent](https://arxiv.org/pdf/2404.01744.pdf)
+
+[https://huggingface.co/NexaAIDev/Octopus-v2](https://huggingface.co/NexaAIDev/Octopus-v2)
 
 # 预训练
 
@@ -4306,6 +4321,12 @@ XXX
 word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx](https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx)
 
 [https://github.com/LehengTHU/Agent4Rec](https://github.com/LehengTHU/Agent4Rec)
+
+## 拿推荐语料微调LLM
+
+[谷歌: 利用推荐知识对齐大语言模型](https://mp.weixin.qq.com/s/62SaQofe9qi2LCApjIzLFA)
+
+[Aligning Large Language Models with Recommendation Knowledge](https://arxiv.org/pdf/2404.00245.pdf)
 
 ## llm vs ID
 
