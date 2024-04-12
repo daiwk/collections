@@ -2353,6 +2353,18 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 [Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
 
+### 其他的一些加速库
+
+#### lightseq
+
+&nbsp;
+
+[LightSeq: A High Performance Inference Library for Transformers](https://arxiv.org/pdf/2010.13887.pdf)
+
+[LightSeq2: Accelerated Training for Transformer-based Models on GPUs](https://arxiv.org/pdf/2110.05722.pdf)
+
+[https://github.com/bytedance/lightseq](https://github.com/bytedance/lightseq)
+
 # 微调
 
 + 指令微调（instruct tuning）：增强/解锁LLM的能力，
@@ -3074,6 +3086,8 @@ ppo_trainer.save_model("my_ppo_model")
 
 #### actor & actor loss
 
+&nbsp;
+
 Actor 是**策略**，它决定文本会被怎么样生成，是从**策略网络**拷贝来的模拟整个智能体在环境中行动的网络。
 
 优势函数表示在给定的状态下采取某个行动比遵循当前策略的期望回报要好多少。
@@ -3103,6 +3117,8 @@ pg_clipfrac = masked_mean(torch.gt(pg_losses2, pg_losses).double(), mask)
 
 #### critic & critic loss
 
+&nbsp;
+
 critic是专门用来预测actor轨迹**每一步价值**的网络，actor上加几个线性层能够给每个token预测一个值。任务是估计状态的价值函数，也就是预测从当前状态开始，通过遵循某个策略，期望能得到的总回报。
 
 Critic Loss是最小化它的预测价值与实际回报之间的差距，常用mse
@@ -3127,6 +3143,8 @@ vf_clipfrac = masked_mean(torch.gt(vf_losses2, vf_losses1).double(), mask)
 ```
 
 #### KL Penalty
+
+&nbsp;
 
 用于保证经过强化学习后的模型（新策略actor）不会过于偏离原始预训练模型（ref model）。
 
@@ -3162,6 +3180,8 @@ return torch.stack(rewards), torch.stack(non_score_rewards)
 
 #### GAE
 
+&nbsp;
+
 GAE是一种多步优势估计方法。它通过引入一个权衡参数$$\lambda$$，在**单步TD误差**和**多步TD误差**之间进行权衡，从而**减小估计的方差**，提高学习的稳定性。其中$$\sigma _{t+l}$$是时间步$$t+l$$的TD误差。
 
 XXXA_t=\sum ^{k-1}_{l=0}(\lambda \eta )^{l}\sigma _{t+l}XXX
@@ -3192,6 +3212,8 @@ returns = advantages + values
 
 ####  entropy loss
 
+&nbsp;
+
 一个策略的熵越大，意味着这个策略选择各个动作的概率更加“平均”。在actor的loss里加熵，使得策略的熵尽可能大，从而有更多机会探索可能带来更好奖励的文本轨迹。
 
 ```python
@@ -3207,6 +3229,8 @@ entropy = -torch.sum(logits* torch.log(logits + 1e-9), dim=-1).mean()
 
 
 #### Policy kl
+
+&nbsp;
 
 在PPO中，KL散度被用作一种约束，以确保在优化过程中新策略不会偏离旧策略太远。这是为了防止过度优化，因为过度优化可能会导致策略性能的大幅下降。
 
@@ -3236,6 +3260,8 @@ if policykl > 1.5 * self.config.target_kl:
 
 #### Old Policy Sampling（无bp）
 
+&nbsp;
+
 是**make experience**的过程，计算并**存储**旧策略的概率、价值等值，来为后面更新的过程服务。
 
 + Old Logprobs：从“旧的”策略[即在这个batch数据中初始的LM（initial actor）]中计算每个token在旧的策略下的概率Old Logprobs。
@@ -3251,6 +3277,8 @@ ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries,
 
 #### New Policy Sampling（有bp）
 
+&nbsp;
+
 在**新的策略**（更新后的actor）下对轨迹（文本）计算概率的过程，计算Actor Loss，即策略梯度的损失。
 
 Old Logprobs是一次性一个batch的数据计算的，这是因为在一个batch中旧策略都是不变的；而New Logprobs是一个mini batch计算一次，这是因为新策略每个mini batch变一次。
@@ -3264,14 +3292,20 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 #### openai的lm-human-preferences(gpt2的finetune)
 
+&nbsp;
+
 [https://github.com/openai/lm-human-preferences](https://github.com/openai/lm-human-preferences)
 
 #### huggingface的TRL
+
+&nbsp;
 
 [https://github.com/huggingface/trl](https://github.com/huggingface/trl)
  
 
 #### CarperAI的trlx
+
+&nbsp;
 
 [https://github.com/CarperAI/trlx](https://github.com/CarperAI/trlx)
 
