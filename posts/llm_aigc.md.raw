@@ -4593,7 +4593,11 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 将**压缩记忆**整合进标准的点积注意力机制，并在单个Transformer块内同时实现了**掩码局部注意力**和**长期线性注意力机制**
 
-![infini-attentioin](../assets/infini-attention.png)
+![infini-attention](../assets/infini-attention.png)
+
+与transformer-xl对比：
+
+![infini-attention-vs-transformer-xl](../assets/infini-attention-vs-transformer-xl.png)
 
 
 # 个性化搜索
