@@ -1337,7 +1337,7 @@ QLoRA将一个固定的4 bit量化的预训练权重转成low Rank Adapters来�
 
 使用用户与闭源大模型交互的用户输入和模型返回数据进行训练
 
-### Mistral 7b
+### Mistral
 
 &nbsp;
 
@@ -1353,6 +1353,10 @@ QLoRA将一个固定的4 bit量化的预训练权重转成low Rank Adapters来�
 [Mixtral of Experts](https://arxiv.org/pdf/2401.04088.pdf)
 
 [Mixtral 8x7B(Mistral MoE) 模型解析](https://mp.weixin.qq.com/s/-5yp0KU6_vkpWmY9wROWbg)
+
+[Mistral开源8X22B大模型，OpenAI更新GPT-4 Turbo视觉，都在欺负谷歌](https://mp.weixin.qq.com/s/hf4uq3yrHxTGhQuzl61Imw)
+
+[https://huggingface.co/mistral-community/Mixtral-8x22B-v0.1](https://huggingface.co/mistral-community/Mixtral-8x22B-v0.1)
 
 ## PaLM系列
 
@@ -1546,12 +1550,20 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 ### RecurrentGemma
 
-基于 Griffin 架构，将全局注意力替换为**局部注意力**和**线性循环（linear recurrences）**的混合，在生成长序列时实现快速推理。
-
 [RecurrentGemma: Moving Past Transformers for Efficient Open Language Models](https://storage.googleapis.com/deepmind-media/gemma/recurrentgemma-report.pdf)
+
+基于Griffin架构，将**门控线性递归**与**本地滑动窗口注意力**混合在一起，在生成长序列时实现快速推理，相比gemma：
+
++ 减少内存用量：内存要求越低，就越能在内存有限的设备（例如单个 GPU 或 CPU）上生成较长的样本。
++ 吞吐量较高：能够以明显较高的batch_size执行推理，这意味着每秒可以生成更多tokens，尤其是在生成长序列时。
+
+训练：
 
 [https://github.com/huggingface/transformers/blob/main/src/transformers/models/recurrent_gemma/modeling_recurrent_gemma.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/recurrent_gemma/modeling_recurrent_gemma.py)
 
+在线推理的C++实现
+
+[https://github.com/google/gemma.cpp](https://github.com/google/gemma.cpp)
 
 
 ### Claude
@@ -1581,6 +1593,10 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 + 不使用通用的Python语言+Pytorch框架，采用分布式训练架构，使用Rust、JAX+Kubernetes构建。
 + 提出了自定义训练协调器，可自动检测到有问题的节点，然后剔除。
 + 优化了checkpointing、数据加载和训练重启等流程，最大限度地减少故障停机时间。
+
+[马斯克的首款多模态大模型来了，GPT-4V又被超越了一次](https://mp.weixin.qq.com/s/2GDjZS6ctayAF8e8eFb3CQ)
+
+Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 
 ### Gecko
 
@@ -3411,6 +3427,11 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
 
+## llm+db
+
+[长文本杀不死RAG：SQL+向量驱动大模型和大数据新范式，MyScale AI数据库正式开源](https://mp.weixin.qq.com/s/JvyKnEbdOSb1fTwhiQTO5A)
+
+[https://github.com/myscale/myscaledb](https://github.com/myscale/myscaledb)
 
 ## 记忆能力
 
@@ -3433,6 +3454,29 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 ## ReadAgent
 
 [「有效上下文」提升20倍！DeepMind发布ReadAgent框架](https://mp.weixin.qq.com/s/xXJqJeqf8mzP9VW9kLIdgQ)
+
+## 高质量数据
+
+[Llama架构比不上GPT2？神奇token提升10倍记忆？](https://mp.weixin.qq.com/s/TMkn6yMTUrrGhxCQnd7_2g)
+
+[Physics of Language Models: Part 3.3, Knowledge Capacity Scaling Laws](https://arxiv.org/pdf/2404.05405.pdf)
+
+制造**人工合成数据**，通过控制数据中知识的数量和类型，来严格调控数据中的**知识比特数 (bits)**。使用不同大小和架构的 LLM 在人工合成数据上进行训练，并给出数学定理，来精确计算训练好的模型从数据中**学到了多少比特的知识**。有如下几个发现：
+
++ 如果**训练时间充足**，不论使用何种模型架构，模型的**存储效率**均可以达到**2bit/param**（即平均每个模型参数可以存储2比特的信息）。而且发现transformer中的知识**并非主要存储在MLP层**，因为即便移除所有MLP层，模型仍能达到 2bit/param 的存储效率。
++ 如果**训练时间不充足**，GPT2模型能比LlaMA/Mistral存储超过30%的知识，主要是因为**GatedMLP(MoE)**会导致**训练不稳定**，因此对同样的知识，需要**更长的训练时间**。
++ **压缩/量化**的影响：将训练好的模型从float32/16压缩到int8，对知识的存储**毫无影响**。LLM可以达到“**信息论极限**”的**1/4**——因为int8只有8比特，但平均每个参数可以存储2比特的知识。
++ **高质量数据**的影响：如果我们的预训练数据中，有1/8来自高质量知识库（如百度百科），7/8来自低质量数据（如common crawl或论坛对话，甚至是完全随机的垃圾数据），会发现：
+    + 即使对高质量数据的训练时间保持一致，**低质量数据的存在本身**可能会让模型对**高质量知识的存储量下降20倍**，即便将高质量数据的训练时间延长 3倍，知识储量仍会降低3倍
+    + 解法：只需给所有的预训练数据**加上自己的网站域名token即可**，模型的知识存储量可以立即回升10倍，模型**不需要任何先验知识**来识别哪些网站上的知识是金子，而可以在预训练过程中，自动发现高质量知识的网站，并**自动为这些高质量数据腾出存储空间**。
+
+## 可解释AI
+
+[XAI有什么用？探索LLM时代利用可解释性的10种策略](https://mp.weixin.qq.com/s/V35k4UJZPtJkAHqYlZiO1A)
+
+[Usable XAI: 10 Strategies Towards Exploiting Explainability in the LLM Era](https://arxiv.org/pdf/2403.08946.pdf)
+
+[https://github.com/JacksonWuxs/UsableXAI_LLM](https://github.com/JacksonWuxs/UsableXAI_LLM)
 
 # 多智能体
 
@@ -3685,6 +3729,20 @@ DALL-E3：
 
 ![InstantID](../assets/InstantID.png)
 
+[曾爆火的 InstantID又有了新玩法：风格化图像生成，已开源](https://mp.weixin.qq.com/s/CP6NFzzt57YZMj4Q3JNySA)
+
+[InstantStyle: Free Lunch towards Style-Preserving in Text-to-Image Generation](https://arxiv.org/pdf/2404.02733.pdf)
+
+[https://github.com/InstantStyle/InstantStyle](https://github.com/InstantStyle/InstantStyle)
+
+
+## VAR
+
+[GPT超越扩散、视觉生成Scaling Law时刻！北大&字节提出VAR范式](https://mp.weixin.qq.com/s/KOEdTgJX4Gga5zRbl57Yow)
+
+[Visual Autoregressive Modeling: Scalable Image Generation via Next-Scale Prediction](https://arxiv.org/pdf/2404.02905.pdf)
+
+[https://github.com/FoundationVision/VAR](https://github.com/FoundationVision/VAR)
 
 
 # 多模态（视频）
@@ -3920,6 +3978,9 @@ XXX
 ## minigpt4-video
 
 [AI视频理解天花板，全新MiniGPT4-Video刷爆SOTA！宝格丽宣传片配文一绝](https://mp.weixin.qq.com/s/Y8w6CqTvm7zVQMOmTuxePA)
+
+
+
 
 # 世界模型
 
@@ -4453,7 +4514,18 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 [Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347.pdf)
 
+### time-LLM
 
+[谁说大象不能起舞! 重编程大语言模型实现跨模态交互的时序预测 | ICLR 2024](https://mp.weixin.qq.com/s/K04haPMcbKiS6OkCihXAqQ)
+
+[Time-LLM: Time Series Forecasting by Reprogramming Large Language Models](https://arxiv.org/pdf/2310.01728.pdf)
+
+[https://github.com/KimMeen/Time-LLM](https://github.com/KimMeen/Time-LLM)
+
+将**时序预测任务**转换成一个可以由 LLMs 有效解决的**语言任务**，成功激活了llm做**高精度时序推理**的能力。
+
++ 时序输入重编程
++ 提示做前缀
 
 # 新的架构
 
@@ -4495,6 +4567,13 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 [RNN效率媲美Transformer，谷歌新架构两连发：同等规模强于Mamba](https://mp.weixin.qq.com/s/RtAZiEzjRWgqQw3yu3lvcg)
 
+## infini-attention
+
+[Leave No Context Behind: Efficient Infinite Context Transformers with Infini-attention](https://arxiv.org/pdf/2404.07143.pdf)
+
+[【重磅】谷歌重塑Transformer：无限记忆力，无限长输入，LLM基础研究重大突破](https://mp.weixin.qq.com/s/bV2b9uJ4GFQPhhggHT3VIA)
+
+将**压缩记忆**整合进标准的点积注意力机制，并在单个Transformer块内同时实现了**掩码局部注意力**和**长期线性注意力机制**
 
 
 # 个性化搜索
@@ -4655,6 +4734,8 @@ print(encoding_res)
 raw_text = enc.decode(encoding_res)
 print(raw_text)
 ```
+
+类似的：[https://github.com/karpathy/llm.c](https://github.com/karpathy/llm.c)
 
 ## 达摩院大模型技术交流
 
