@@ -1242,13 +1242,16 @@ class LlamaMLP(nn.Module):
             down_proj_slices = self.down_proj.weight.split(slice, dim=1)
 
             gate_proj = torch.cat(
-                [F.linear(x, gate_proj_slices[i]) for i in range(self.config.pretraining_tp)], dim=-1
+                [F.linear(x, gate_proj_slices[i]) 
+                    for i in range(self.config.pretraining_tp)], dim=-1
             )
-            up_proj = torch.cat([F.linear(x, up_proj_slices[i]) for i in range(self.config.pretraining_tp)], dim=-1)
+            up_proj = torch.cat([F.linear(x, up_proj_slices[i]) 
+                for i in range(self.config.pretraining_tp)], dim=-1)
 
             intermediate_states = (self.act_fn(gate_proj) * up_proj).split(slice, dim=2)
             down_proj = [
-                F.linear(intermediate_states[i], down_proj_slices[i]) for i in range(self.config.pretraining_tp)
+                F.linear(intermediate_states[i], down_proj_slices[i]) 
+                    for i in range(self.config.pretraining_tp)
             ]
             down_proj = sum(down_proj)
         else:
@@ -1274,8 +1277,10 @@ class FeedForward(nn.Module):
         Args:
             dim (int): Input dimension.
             hidden_dim (int): Hidden dimension of the feedforward layer.
-            multiple_of (int): Value to ensure hidden dimension is a multiple of this value.
-            ffn_dim_multiplier (float, optional): Custom multiplier for hidden dimension. Defaults to None.
+            multiple_of (int): Value to ensure hidden dimension is 
+                a multiple of this value.
+            ffn_dim_multiplier (float, optional): 
+                Custom multiplier for hidden dimension. Defaults to None.
 
         Attributes:
             w1 (ColumnParallelLinear): Linear transformation for the first layer.
