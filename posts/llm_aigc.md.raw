@@ -4457,6 +4457,8 @@ DLRM的3部分：
     + 因为$$U(X)$$已经用过SiLU了，所以$$\operatorname{Norm}(A(X) V(X)) \odot U(X)$$可以看成是SwiGLU的变种（参考[Glu variants improve transformer](https://arxiv.org/pdf/2002.05202.pdf)），因为前面在对比LLM激活函数时讲了，$$\operatorname{SwiGLU}\left(\mathbf{x}_1, \mathbf{x}_2\right)=\operatorname{Swish}\left(\mathbf{x}_1\right) \odot \mathbf{x}_2$$
 + 表示转换：常见的如MoE、PLE等，主要思想就是对不同人群用特定的子网络。HSTU里的element-wise product也能达到MoE中的门控操作，只是可能有一个正则化因子的区别。
 
+其实就是原来一般会拆成attention+ffn，而它这3个公式，前两个是attention，第3个就是attention求个norm，然后过一个swiglu的ffn
+
 
 #### pointwise聚合的注意力
 
