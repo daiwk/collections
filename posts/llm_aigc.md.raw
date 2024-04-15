@@ -1305,7 +1305,7 @@ class FeedForward(nn.Module):
 ```
 
 
-+ Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
++ Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: Enhanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
 + pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))取代标准的layer-norm
     + layernorm计算单个样本在单层中所有激活的均值和标准差，并使用这些统计数据来归一化该层的激活。
     + RMSnorm只计算激活的平方根均值（RMS），而不是标准差。这样做的一个好处是计算上更简单，因为它省去了计算均值的步骤，只关注激活的规模（scale）而非其准确的分布。$$\operatorname{RMSNorm}\left(x_i\right)=\frac{x_i}{\sqrt{\frac{1}{H} \sum_{j=1}^H x_j^2}+\epsilon}$$，其中$$H$$是该层的神经元个数，而且也不用求均值
@@ -1840,7 +1840,7 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 + 绝对位置编码：
     + 正弦函数：原始Transformer中使用
     + 可学习的位置编码：LLM中常用
-+ 相对位置编码：[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)提出，根据**k和q之间的偏移量**生成emb
++ 相对位置编码：[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)提出，其实是在[Self-attention with relative position representations](https://arxiv.org/pdf/1803.02155.pdf)一文提出的，根据**k和q之间的偏移量**生成emb
 + Alibi：[Train short, test long: Attention with linear biases enables input length extrapolation](https://arxiv.org/pdf/2108.12409.pdf)提出，使用**k和q之间距离的惩罚**来给注意力分数加bias，[What language model architecture and pretraining objective works best for zero-shot generalization](https://arxiv.org/pdf/2204.05832.pdf)发现其有更好的**零样本泛化能力**和更强的**外推能力**，能够在**比训练序列更长的序列**上表现良好。
 + RoPE：[Roformer: Enhanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)提出，**k和q之间的分数用相对位置信息计算**，利于建模长序列，在PaLM、LLaMA、GLM-130B中都有应用。
 
@@ -4447,7 +4447,7 @@ XXX
 
 + $$f_i(x)$$是MLP，$$f_i(X)=W_i(X)+b_i$$
 + $$\phi_1$$和$$\phi_2$$是激活函数，都是SiLU([Sigmoid-weighted linear units for neural network function approximation in reinforcement learning](https://arxiv.org/pdf/1702.03118.pdf))，其实就是Swish，即$$f(x)=x \cdot sigmoid(x)$$
-+ $${rab}^{p, t}$$是relative attention bias，考虑了位置$$p$$和时间$$t$$(参考T5论文，[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf))
++ $${rab}^{p, t}$$是relative attention bias，考虑了位置$$p$$和时间$$t$$(参考T5论文，[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf))，其实是在[Self-attention with relative position representations](https://arxiv.org/pdf/1803.02155.pdf)一文提出的
 
 DLRM的3部分：
 
