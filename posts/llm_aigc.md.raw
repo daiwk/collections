@@ -1218,7 +1218,7 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 说白了就是输入$$x$$，SwiGLU激活完是$$swish(w_1(x)) * w_2(x)$$，其中swish又叫silu，是$$f(x)=x \cdot sigmoid(x)$$
 
-然后再过一个$$w_3$$，得到$w_3(swish(w_1(x)) * w_2(x))$$$就是最终的ffn输出
+然后再过一个$$w_3$$，得到$$w_3(swish(w_1(x)) * w_2(x))$$就是最终的ffn输出
 
 以下是transformers里的实现：[https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py)
 
