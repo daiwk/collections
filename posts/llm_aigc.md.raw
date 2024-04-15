@@ -1215,6 +1215,96 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 &nbsp;
 
 + SwiGLU激活函数(PaLM)：取代ReLU，[Glu variants improve trans- former](https://arxiv.org/abs/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
+
+说白了就是输入$$x$$，SwiGLU激活完是$$swish(w_1(x)) * w_2(x)$$，其中swish又叫silu，是$$f(x)=x \cdot sigmoid(x)$$
+
+然后再过一个$$w_3$$，得到$w_3(swish(w_1(x)) * w_2(x))$$$就是最终的ffn输出
+
+以下是transformers里的实现：[https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py)
+
+```python
+class LlamaMLP(nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+        self.hidden_size = config.hidden_size
+        self.intermediate_size = config.intermediate_size
+        self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.up_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=False)
+        self.down_proj = nn.Linear(self.intermediate_size, self.hidden_size, bias=False)
+        self.act_fn = ACT2FN[config.hidden_act]
+
+    def forward(self, x):
+        if self.config.pretraining_tp > 1:
+            slice = self.intermediate_size // self.config.pretraining_tp
+            gate_proj_slices = self.gate_proj.weight.split(slice, dim=0)
+            up_proj_slices = self.up_proj.weight.split(slice, dim=0)
+            down_proj_slices = self.down_proj.weight.split(slice, dim=1)
+
+            gate_proj = torch.cat(
+                [F.linear(x, gate_proj_slices[i]) for i in range(self.config.pretraining_tp)], dim=-1
+            )
+            up_proj = torch.cat([F.linear(x, up_proj_slices[i]) for i in range(self.config.pretraining_tp)], dim=-1)
+
+            intermediate_states = (self.act_fn(gate_proj) * up_proj).split(slice, dim=2)
+            down_proj = [
+                F.linear(intermediate_states[i], down_proj_slices[i]) for i in range(self.config.pretraining_tp)
+            ]
+            down_proj = sum(down_proj)
+        else:
+            down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
+
+        return down_proj
+```
+
+这个是llama官方代码的实现：[https://github.com/meta-llama/llama/blob/ef351e9cd9496c579bf9f2bb036ef11bdc5ca3d2/llama/model.py#L337-L345](https://github.com/meta-llama/llama/blob/ef351e9cd9496c579bf9f2bb036ef11bdc5ca3d2/llama/model.py#L337-L345)
+
+```python
+class FeedForward(nn.Module):
+    def __init__(
+        self,
+        dim: int,
+        hidden_dim: int,
+        multiple_of: int,
+        ffn_dim_multiplier: Optional[float],
+    ):
+        """
+        Initialize the FeedForward module.
+
+        Args:
+            dim (int): Input dimension.
+            hidden_dim (int): Hidden dimension of the feedforward layer.
+            multiple_of (int): Value to ensure hidden dimension is a multiple of this value.
+            ffn_dim_multiplier (float, optional): Custom multiplier for hidden dimension. Defaults to None.
+
+        Attributes:
+            w1 (ColumnParallelLinear): Linear transformation for the first layer.
+            w2 (RowParallelLinear): Linear transformation for the second layer.
+            w3 (ColumnParallelLinear): Linear transformation for the third layer.
+
+        """
+        super().__init__()
+        hidden_dim = int(2 * hidden_dim / 3)
+        # custom dim factor multiplier
+        if ffn_dim_multiplier is not None:
+            hidden_dim = int(ffn_dim_multiplier * hidden_dim)
+        hidden_dim = multiple_of * ((hidden_dim + multiple_of - 1) // multiple_of)
+
+        self.w1 = ColumnParallelLinear(
+            dim, hidden_dim, bias=False, gather_output=False, init_method=lambda x: x
+        )
+        self.w2 = RowParallelLinear(
+            hidden_dim, dim, bias=False, input_is_parallel=True, init_method=lambda x: x
+        )
+        self.w3 = ColumnParallelLinear(
+            dim, hidden_dim, bias=False, gather_output=False, init_method=lambda x: x
+        )
+
+    def forward(self, x):
+        return self.w2(F.silu(self.w1(x)) * self.w3(x))
+```
+
+
 + Rotary embeddings(GPTNeo)：删掉原来的绝对位置编码，加上rotary positional embedding(RoPE)，网络的每一层都加，参考[Roformer: En- hanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)
 + pre-normalization(gpt3)：提升训练**稳定性**，对每个子层的输入做norm，而非输出。此外，使用的是RMSNorm函数([Root mean square layer normalization](https://arxiv.org/abs/1910.07467))取代标准的layer-norm
     + layernorm计算单个样本在单层中所有激活的均值和标准差，并使用这些统计数据来归一化该层的激活。
@@ -4356,7 +4446,7 @@ XXX
 其中，
 
 + $$f_i(x)$$是MLP，$$f_i(X)=W_i(X)+b_i$$
-+ $$\phi_1$$和$$\phi_2$$是激活函数，都是SiLU([Sigmoid-weighted linear units for neural network function approximation in reinforcement learning](https://arxiv.org/pdf/1702.03118.pdf))，其实就是Swish，即$$f(x)=x \cdot \sigma(x)$$
++ $$\phi_1$$和$$\phi_2$$是激活函数，都是SiLU([Sigmoid-weighted linear units for neural network function approximation in reinforcement learning](https://arxiv.org/pdf/1702.03118.pdf))，其实就是Swish，即$$f(x)=x \cdot sigmoid(x)$$
 + $${rab}^{p, t}$$是relative attention bias，考虑了位置$$p$$和时间$$t$$(参考T5论文，[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf))
 
 DLRM的3部分：
@@ -4364,7 +4454,7 @@ DLRM的3部分：
 + 特征抽取：常见的基础版本是离散特征pooling，高级版本是din。HSTU本来就能做这种target-aware的attention
 + 特征交互：常见的使用FMs、DCNv2、DHEN([DHEN: A Deep and Hierarchical Ensemble Network for Large-Scale Click-Through Rate Prediction](https://arxiv.org/pdf/2203.11014.pdf)，引入残差连接)。HSTU通过$$\operatorname{Norm}(A(X) V(X)) \odot U(X)$$来实现，将attention pooled后的结果直接和其他特征算element-wise product。
     + 这个做法受[Neural collaborative filtering vs. matrix factorization revisited](https://arxiv.org/pdf/2005.09683.pdf)和[Revisiting neural retrieval on accelerators](https://arxiv.org/pdf/2306.04039.pdf)的启发，用MLP来近似点积是很困难的。原因大概是nn需要调超参和足够的训练数据，在线算得又慢，而且本来内积效果就不错了，nn能带来的边际收益其实不明确。
-    + 因为$$U(X)$$已经用过SiLU了，所以$$\operatorname{Norm}(A(X) V(X)) \odot U(X)$$可以看成是SwiGLU的变种（参考[Glu variants improve transformer](https://arxiv.org/pdf/2002.05202.pdf)），因为前面在对比LLM激活函数时讲了，$$\operatorname{SwiGLU}\left(\mathbf{x}_1, \mathbf{x}_2\right)=\operatorname{Swish}\left(\mathbf{x}_1\right) \otimes \mathbf{x}_2$$
+    + 因为$$U(X)$$已经用过SiLU了，所以$$\operatorname{Norm}(A(X) V(X)) \odot U(X)$$可以看成是SwiGLU的变种（参考[Glu variants improve transformer](https://arxiv.org/pdf/2002.05202.pdf)），因为前面在对比LLM激活函数时讲了，$$\operatorname{SwiGLU}\left(\mathbf{x}_1, \mathbf{x}_2\right)=\operatorname{Swish}\left(\mathbf{x}_1\right) \odot \mathbf{x}_2$$
 + 表示转换：常见的如MoE、PLE等，主要思想就是对不同人群用特定的子网络。HSTU里的element-wise product也能达到MoE中的门控操作，只是可能有一个正则化因子的区别。
 
 
