@@ -4703,6 +4703,9 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 ![infini-attention-vs-transformer-xl](../assets/infini-attention-vs-transformer-xl.png)
 
+## feedback attention memory
+
+[TransformerFAM: Feedback attention is working memory](https://arxiv.org/pdf/2404.09173.pdf)
 
 # 个性化搜索
 
