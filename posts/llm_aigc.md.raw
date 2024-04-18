@@ -1392,6 +1392,23 @@ class RMSNorm(torch.nn.Module):
 
 [https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
 
+### llama3
+
+[开源大模型Llama 3王者归来！最大底牌4000亿参数，性能直逼GPT-4](https://mp.weixin.qq.com/s/KCyL8WTzXutPQ_k0Vl9Vwg)
+
+Llama 3的主要亮点：
+
++ 基于超过15T token训练，比Llama 2数据集的7倍还多；
++ 支持8K长文本，改进的tokenizer有128K token的词汇量；
++ 训练效率比 Llama 2 高 3 倍；
++ 带有 Llama Guard 2、Code Shield 和 CyberSec Eval 2 的新版信任和安全工具；
++ 在大量重要基准中均具有最先进性能；
++ 新能力范畴，包括增强的推理和代码能力；
+
+[https://github.com/meta-llama/](https://github.com/meta-llama/)
+
+[https://github.com/meta-llama/llama3](https://github.com/meta-llama/llama3)
+
 ### Alpaca
 
 &nbsp;
