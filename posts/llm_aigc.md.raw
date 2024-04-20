@@ -65,6 +65,21 @@ Mikolov发明word2vec的几个版本大概在13-14年前后。那个时候GPU非
 
 hierarchical softmax是softmax的近似，suboptimal的。当如今计算资源足够大的时候，当然包括时间和显存 (BERT 和 Elmo 都没有用hierarchical)，hierarchical softmax就逐渐退出了历史舞台。
 
+### Transformer会不会规划未来
+
+[Transformer本可以深谋远虑，但就是不做](https://mp.weixin.qq.com/s/1kolCWSsFAp4e9MGG089vQ)
+
+[Do Language Models Plan for Future Tokens?](https://arxiv.org/pdf/2404.00859.pdf)
+
+在训练期间的梯度既会为**当前token位置**的损失优化权重，也会为该序列**后面的token**进行优化，那么这二者会以怎样的比例分配资源？
+
++ 预缓存假设（pre-caching hypothesis）：在时间步$$t$$计算与**当前时间步的推理任务无关**但**可能对未来时间步$$t + \tau$$有用**的特征
++ 面包屑假设（breadcrumbs hypothesis）：与时间步$$t$$**最相关的特征**已经**等同**于将在**时间步$$t + \tau$$最有用**的特征。
+
+设计了一种合成场景，其中**只能通过显式的预缓存完成任务**，即模型必须为下一token预先计算信息，**否则就无法在一次单向通过中准确计算出正确答案。**发现明显的证据说明transformer可以学习预缓存，即当必须预计算信息来最小化损失时，它们就会这样做。
+
+但在真实语言数据上，语言模型并不会显著地准备用于未来的信息。相反，它们是计算对预测**下一个token有用的特征**——事实证明**这对未来的步骤也很有用**。
+
 # PLM：仅编码器/仅解码器/编码器+解码器
 
 ## 仅编码器的BERT
@@ -1724,6 +1739,10 @@ Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 
 [https://huggingface.co/NexaAIDev/Octopus-v2](https://huggingface.co/NexaAIDev/Octopus-v2)
 
+### Cohere Command R+
+
+[开源模型打败GPT-4！LLM竞技场最新战报，Cohere Command R+上线](https://mp.weixin.qq.com/s/uUeGQFWel5NLfFRFFF8w9g)
+
 ### CT-LLM：以中文为中心的LLM
 
 [Chinese Tiny LLM: Pretraining a Chinese-Centric Large Language Model](https://arxiv.org/pdf/2404.04167.pdf)
@@ -2529,6 +2548,12 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 [https://github.com/bytedance/lightseq](https://github.com/bytedance/lightseq)
 
+#### PPL.LLM
+
+[高性能 LLM 推理框架的设计与实现](https://mp.weixin.qq.com/s/4o86rMuburB8jcbU0aYC7g)
+
+[https://github.com/openppl-public/ppl.llm.serving](https://github.com/openppl-public/ppl.llm.serving)
+
 # 微调
 
 + 指令微调（instruct tuning）：增强/解锁LLM的能力，
@@ -3093,6 +3118,10 @@ Flan-T5和Flan-PaLM（[Scaling instruction-finetuned language models](https://ar
 
 [https://huggingface.co/BelleGroup](https://huggingface.co/BelleGroup) 里有很多中文的instruct和输出的数据集
 
+### OpenEQA
+
+[从文字模型到世界模型！Meta新研究让AI Agent理解物理世界](https://mp.weixin.qq.com/s/Qeuq8v5-ruKGNlcw884RXg)
+
 
 # RLHF & InstructGPT
 
@@ -3610,6 +3639,7 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 [Usable XAI: 10 Strategies Towards Exploiting Explainability in the LLM Era](https://arxiv.org/pdf/2403.08946.pdf)
 
 [https://github.com/JacksonWuxs/UsableXAI_LLM](https://github.com/JacksonWuxs/UsableXAI_LLM)
+
 
 # 多智能体
 
