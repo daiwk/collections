@@ -1118,6 +1118,10 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 
 # 典型LLM简介
 
+llm榜单：
+
+[https://huggingface.co/spaces/lmsys/chatbot-arena-leaderboard](https://huggingface.co/spaces/lmsys/chatbot-arena-leaderboard)
+
 ![llm-families](../assets/llm-families.png)
 
 ## GPT系列
@@ -1407,9 +1411,15 @@ class RMSNorm(torch.nn.Module):
 
 [https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
 
-### llama3
+### LLaMA3
+
+2024年4月
 
 [开源大模型Llama 3王者归来！最大底牌4000亿参数，性能直逼GPT-4](https://mp.weixin.qq.com/s/KCyL8WTzXutPQ_k0Vl9Vwg)
+
+[Llama 3超大杯有何惊喜？Meta会一直开源吗？当初为何笃信元宇宙？扎克伯格新访谈回应一切](https://mp.weixin.qq.com/s/e2n4ttcT8raDU877t53GPQ)
+
+三个版本：8B 和 70B 参数的模型，还有一个 405B 参数的密集模型（还在训练之中），8B版本基本上与Llama-2的最大版本一样强大。
 
 Llama 3的主要亮点：
 
@@ -1418,7 +1428,7 @@ Llama 3的主要亮点：
 + 训练效率比 Llama 2 高 3 倍；
 + 带有 Llama Guard 2、Code Shield 和 CyberSec Eval 2 的新版信任和安全工具；
 + 在大量重要基准中均具有最先进性能；
-+ 新能力范畴，包括增强的推理和代码能力；
++ 新能力范畴，包括增强的推理和代码能力；Llama-2 只能使用非常特定的工具，而 Llama-3 能使用好得多的工具。无需人工编程就能让其使用谷歌执行搜索，类似的功能还有编程和运行代码等。
 
 [https://github.com/meta-llama/](https://github.com/meta-llama/)
 
@@ -1742,6 +1752,16 @@ Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 ### Cohere Command R+
 
 [开源模型打败GPT-4！LLM竞技场最新战报，Cohere Command R+上线](https://mp.weixin.qq.com/s/uUeGQFWel5NLfFRFFF8w9g)
+
+[https://huggingface.co/CohereForAI/c4ai-command-r-plus](https://huggingface.co/CohereForAI/c4ai-command-r-plus)
+
+[https://huggingface.co/CohereForAI/c4ai-command-r-plus-4bit](https://huggingface.co/CohereForAI/c4ai-command-r-plus-4bit)
+
+1040亿的参数量，相比于Grok-1（3140亿）还差了一些，但Command R+并非Grok那种MoE架构，所以这1040亿参数是实打实的完全用于推理，而Grok-1的活跃参数为860亿。相比commend R：
+
++ 高级检索增强生成（RAG）与引用以减少幻觉
++ 10种主要语言的多语言覆盖，支持全球业务运营
++ 工具的运用以自动化复杂的业务流程
 
 ### CT-LLM：以中文为中心的LLM
 
