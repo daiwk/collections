@@ -1400,7 +1400,7 @@ class RMSNorm(torch.nn.Module):
 
 &nbsp;
 
-2023年7月，[Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/abs/2307.09288)
+2023年7月，[Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/pdf/2307.09288.pdf)
 
 + 基于公开数据集预自监督地训练一个llama-2
 + llama-2-chat模型:
@@ -1410,6 +1410,11 @@ class RMSNorm(torch.nn.Module):
 ![llama-2-chat](../assets/llama-2-chat.png)
 
 [https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
+
+使用了GQA（grouped query attention）(参考[Gqa: Training generalized multi-query transformer models from multi-head checkpoints](https://arxiv.org/pdf/2305.13245.pdf))
+
+![gqa](../assets/gqa.png)
+
 
 ### LLaMA3
 
@@ -4809,7 +4814,7 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 &nbsp;
 
-先看对于序列长度=$$n$$的
+对于序列长度=$$n$$的输入$$\boldsymbol{X}=\left\{\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n\right\} \in \mathbb{R}^{n \times d}$$，输出$$\boldsymbol{Y}=\left\{\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_n\right\} \in \mathbb{R}^{n \times d}$$
 
 XXX
 \boldsymbol{Y}=\operatorname{Attn}(\boldsymbol{X})=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \boldsymbol{V}
@@ -4832,7 +4837,7 @@ XXX
 
 &nbsp;
 
-对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)
+对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)如下
 
 XXX
 \mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha}) \odot \mathbf{y}_{t-1}
@@ -4842,12 +4847,89 @@ XXX
 
 $$\boldsymbol{\alpha}$$越大，$$1-\boldsymbol{\alpha}$$越小，对历史的衰减也越快：
 
+![ema](../assets/ema.png)
+
+EMA的计算看成$$n$$个**独立的卷积**，可以通过**FFT(快速傅立叶变换)**来加速计算。具体。。。再看看
+
+**Damped EMA**：由于输入的x是d维向量，可以引入一个因子$$\boldsymbol{\delta} \in(0,1)^d$$让EMA更鲁棒：
+
+XXX
+\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha} \odot \boldsymbol{\delta}) \odot \mathbf{y}_{t-1}
+XXX
+
+#### MEGA
+
+&nbsp;
+
+EMA可以看成是一种**与位置相关的归纳偏置（inductive bias）**，即假设当前位置与之前位置满足滑动平均的关系，而attention矩阵的计算其实并没有考虑位置信息，所以可以把二者结合一下。
+
 ![mega](../assets/mega.png)
 
-EMA的计算看成$$n$$个**独立的卷积**，可以通过**FFT(快速傅立叶变换)**来加速计算。具体。。。
+其中的multi-dimensional damped EMA大致流程如下：
+
++ **先变成h维**：先把$$\boldsymbol{X} \in \mathbb{R}^{n \times d}$$通过矩阵$$\beta$$映射成$$\boldsymbol{U}\in \mathbb{R}^{n \times h}$$
++ **计算EMA**：然后通过EMA得到$$\boldsymbol{h}\in \mathbb{R}^{n \times h}$$（具体$$\mathbf{h}_t^{(j)}=\boldsymbol{\alpha}_j \odot \mathbf{u}_t^{(j)}+\left(1-\boldsymbol{\alpha}_j \odot \boldsymbol{\delta}_j\right) \odot \mathbf{h}_{t-1}^{(j)}$$）
++ **再变回d维**：再通过一个矩阵$$\eta$$变回$$\boldsymbol{Y}\in \mathbb{R}^{n \times h}$$
+
+然后看整个流程：
+
++ 先计算EMA
+
+XXX
+\begin{aligned}
+\boldsymbol{X}^{\prime} & =\operatorname{EMA}(\boldsymbol{X}) & & \in \mathbb{R}^{n \times d} \\
+\boldsymbol{Z} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_z+b_z\right) & & \in \mathbb{R}^{n \times z}
+\end{aligned}
+XXX
+
++ 再基于EMA的结果计算QK，基于原始的X计算V：
+
+XXX
+\begin{array}{ll}
+\boldsymbol{Q}=\boldsymbol{\kappa}_q \odot \boldsymbol{Z}+\boldsymbol{\mu}_q & \in \mathbb{R}^{n \times z} \\
+\boldsymbol{K}=\boldsymbol{\kappa}_k \odot \boldsymbol{Z}+\boldsymbol{\mu}_k & \in \mathbb{R}^{n \times z} \\
+\boldsymbol{V}=\phi_{\text {silu }}\left(\boldsymbol{X} W_v+b_v\right) & \in \mathbb{R}^{n \times v}
+\end{array}
+XXX
+
++ 计算带位置bias的attention：
+
+XXX
+\boldsymbol{O}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}+\boldsymbol{b}_{\mathrm{rel}}\right) \boldsymbol{V} \quad \in \mathbb{R}^{n \times v}
+XXX
+
++ 通过reset gate $$\boldsymbol{\gamma}$$和update gate $$\boldsymbol{\varphi}$$计算输出
+
+XXX
+\begin{aligned}
+\boldsymbol{\gamma} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_\gamma+b_\gamma\right) & & \in \mathbb{R}^{n \times v} \\
+\boldsymbol{\varphi} & =\phi_{\text {sigmoid }}\left(\boldsymbol{X}^{\prime} W_{\varphi}+b_{\varphi}\right) & & \in \mathbb{R}^{n \times d} \\
+\hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d}
+\end{aligned} \\
+\boldsymbol{Y}=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
+XXX
 
 
+这里把attention里的softmax改成了如下的laplace函数：
 
+XXX
+f_{\text {laplace }}(x ; \mu, \sigma)=0.5 \times\left[1+\operatorname{erf}\left(\frac{x-\mu}{\sigma \sqrt{2}}\right)\right]
+XXX
+
+其中，$$\operatorname{erf}(x)=\frac{1}{\sqrt{\pi}} \int_{-x}^x e^{-t^2} \mathrm{~d} t=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} \mathrm{~d} t$$是[误差函数](https://zh.wikipedia.org/wiki/%E8%AF%AF%E5%B7%AE%E5%87%BD%E6%95%B0)，
+
+为了让laplace逼近$$f_{\text {relu }^2}$$，对于$$x=\sqrt{2} $$这个点，求解如下方程
+
+XXX
+\begin{aligned}
+& f_{\text {relu2 }}(\sqrt{2})=f_{\text {laplace }}(\sqrt{2}) \\
+& f_{\text {relu2 }}^{\prime}(\sqrt{2})=f_{\text {laplace }}^{\prime}(\sqrt{2})
+\end{aligned}
+XXX
+
+可以得到$$\mu=\sqrt{1 / 2}$$，$$\sigma=\sqrt{1 / 4 \pi}$$，对应的曲线和准确率如下：
+
+![laplace-vs-relu2](../assets/laplace-vs-relu2.png)
 
 # 个性化搜索
 
