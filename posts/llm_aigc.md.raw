@@ -4786,31 +4786,13 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 ![infini-attention-vs-transformer-xl](../assets/infini-attention-vs-transformer-xl.png)
 
-
-## MEGALODON
-
-[Meta无限长文本大模型来了：参数仅7B，已开源](https://mp.weixin.qq.com/s/VML5hExo5iPsyEavxzIZSA)
-
-[革命新架构掀翻Transformer！无限上下文处理，2万亿token碾压Llama 2](https://mp.weixin.qq.com/s/xgP9P51gjqJ93FYSWfPeaA)
-
-[MEGALODON: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
-
-[https://github.com/XuezheMax/megalodon](https://github.com/XuezheMax/megalodon)
-
-[Megalodon: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
-
-能够同时实现
-
-+ 高效训练（减少通信和计算量）
-+ 高效推理（保持恒定的KV缓存）
-
-### mega
+## MEGA
 
 [Mega: Moving average equipped gated attention](https://arxiv.org/pdf/2209.10655.pdf)
 
 [https://github.com/facebookresearch/mega](https://github.com/facebookresearch/mega)
 
-#### 标准的self-attention公式
+### 标准的self-attention公式
 
 &nbsp;
 
@@ -4833,7 +4815,7 @@ XXX
 
 对于$$h$$个attention heads，计算$$\boldsymbol{A}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \in \mathbb{R}^{n \times n}$$需要的时间和空间复杂度都是$$O(hn^2)$$
 
-#### EMA
+### EMA
 
 &nbsp;
 
@@ -4857,7 +4839,7 @@ XXX
 \mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha} \odot \boldsymbol{\delta}) \odot \mathbf{y}_{t-1}
 XXX
 
-#### MEGA
+### MEGA
 
 &nbsp;
 
@@ -4906,7 +4888,7 @@ XXX
 \boldsymbol{\varphi} & =\phi_{\text {sigmoid }}\left(\boldsymbol{X}^{\prime} W_{\varphi}+b_{\varphi}\right) & & \in \mathbb{R}^{n \times d} \\
 \hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d}
 \end{aligned} \\
-\boldsymbol{Y}=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
+\boldsymbol{Y}&=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
 XXX
 
 
@@ -4930,6 +4912,32 @@ XXX
 可以得到$$\mu=\sqrt{1 / 2}$$，$$\sigma=\sqrt{1 / 4 \pi}$$，对应的曲线和准确率如下：
 
 ![laplace-vs-relu2](../assets/laplace-vs-relu2.png)
+
+### mega-chunk
+
+![mega-chunk](../assets/mega-chunk.png)
+
+将序列切分成长度固定为$$c$$的$$k=n/c$$个chunk，对**每个chunk独立计算**上面的attention，这样复杂度就变成了$$O(kc^2)=O(nc)$$，由于有EMA，所以这样做还是能够保持一定程度的长距离依赖。
+
+## MEGALODON
+
+[Meta无限长文本大模型来了：参数仅7B，已开源](https://mp.weixin.qq.com/s/VML5hExo5iPsyEavxzIZSA)
+
+[革命新架构掀翻Transformer！无限上下文处理，2万亿token碾压Llama 2](https://mp.weixin.qq.com/s/xgP9P51gjqJ93FYSWfPeaA)
+
+[MEGALODON: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
+
+[https://github.com/XuezheMax/megalodon](https://github.com/XuezheMax/megalodon)
+
+[Megalodon: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
+
+基于MEGA进行改进，能够同时实现
+
++ 高效训练（减少通信和计算量）
++ 高效推理（保持恒定的KV缓存）
+
+
+
 
 # 个性化搜索
 
