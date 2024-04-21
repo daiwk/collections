@@ -4805,9 +4805,11 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 [https://github.com/facebookresearch/mega](https://github.com/facebookresearch/mega)
 
-![mega](../assets/mega.png)
+#### 标准的self-attention公式
 
-先看对于序列长度=$$n$$的标准的self-attention
+&nbsp;
+
+先看对于序列长度=$$n$$的
 
 XXX
 \boldsymbol{Y}=\operatorname{Attn}(\boldsymbol{X})=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \boldsymbol{V}
@@ -4820,9 +4822,32 @@ XXX
 其中，$$\text { Attn : } \mathbb{R}^{n \times d} \rightarrow \mathbb{R}^{n \times d}$$，$$W_q, W_k, W_v \in \mathbb{R}^{d \times d}$$，$$b_q, b_k, b_v \in \mathbb{R}^d$$，而且有两种定义方式：
 
 + $$f(\cdot)=f_{\text {softmax }}(\cdot)$$，同时$$\tau(\boldsymbol{X})=\sqrt{d}$$，这是经典操作[Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/pdf/1409.0473.pdf)
-+ $$f(\cdot)=f_{\mathrm{relu}^2}(\cdot)$$，同时$$\tau(\boldsymbol{X})=n$$，这是[Primer: Searching for efficient transformers for language modeling](https://arxiv.org/pdf/2109.08668.pdf)和[Transformer Quality in Linear Time](https://arxiv.org/pdf/2202.10447.pdf)提出的
++ $$f(\cdot)=f_{\mathrm{relu}^2}(\cdot)$$即$$relu(x)^2$$，同时$$\tau(\boldsymbol{X})=n$$，这是[Primer: Searching for efficient transformers for language modeling](https://arxiv.org/pdf/2109.08668.pdf)和[Transformer Quality in Linear Time](https://arxiv.org/pdf/2202.10447.pdf)提出的
+
+![gau](../assets/gau.png)
 
 对于$$h$$个attention heads，计算$$\boldsymbol{A}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \in \mathbb{R}^{n \times n}$$需要的时间和空间复杂度都是$$O(hn^2)$$
+
+#### EMA
+
+&nbsp;
+
+对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)
+
+XXX
+\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha}) \odot \mathbf{y}_{t-1}
+XXX
+
+其中，$$\boldsymbol{\alpha} \in(0,1)^d$$表示权重衰减，$$\odot$$是element-wise product
+
+$$\boldsymbol{\alpha}$$越大，$$1-\boldsymbol{\alpha}$$越小，对历史的衰减也越快：
+
+![mega](../assets/mega.png)
+
+EMA的计算看成$$n$$个**独立的卷积**，可以通过**FFT(快速傅立叶变换)**来加速计算。具体。。。
+
+
+
 
 # 个性化搜索
 
