@@ -3954,6 +3954,10 @@ DALL-E3：
 
 [Sora: A Review on Background, Technology, Limitations, and Opportunities of Large Vision Models](https://arxiv.org/pdf/2402.17177.pdf)
 
+[Sora之后，OpenAI Lilian Weng亲自撰文教你从头设计视频生成扩散模型](https://mp.weixin.qq.com/s/C8JoiTHwW7T-g66EBPcfDg)
+
+[https://lilianweng.github.io/posts/2024-04-12-diffusion-video/](https://lilianweng.github.io/posts/2024-04-12-diffusion-video/)
+
 整体感觉：
 
 + latent diffusion的隐空间
