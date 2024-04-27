@@ -4967,9 +4967,9 @@ XXX
 \begin{aligned}
 \boldsymbol{\gamma} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_\gamma+b_\gamma\right) & & \in \mathbb{R}^{n \times v} \\
 \boldsymbol{\varphi} & =\phi_{\text {sigmoid }}\left(\boldsymbol{X}^{\prime} W_{\varphi}+b_{\varphi}\right) & & \in \mathbb{R}^{n \times d} \\
-\hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d}
-\end{aligned} \\
+\hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d} \\
 \boldsymbol{Y}&=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
+\end{aligned}
 XXX
 
 
