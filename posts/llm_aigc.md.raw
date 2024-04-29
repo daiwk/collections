@@ -4630,7 +4630,7 @@ XXX
 + $$\phi_1$$和$$\phi_2$$是激活函数，都是SiLU([Sigmoid-weighted linear units for neural network function approximation in reinforcement learning](https://arxiv.org/pdf/1702.03118.pdf))，其实就是Swish，即$$f(x)=x \cdot sigmoid(x)$$
 + $${rab}^{p, t}$$是relative attention bias，考虑了位置$$p$$和时间$$t$$(参考T5论文，[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf))，其实是在[Self-attention with relative position representations](https://arxiv.org/pdf/1803.02155.pdf)一文提出的
 
-对应到代码里：
+对应到代码([https://github.com/facebookresearch/generative-recommenders/blob/main/modeling/sequential/hstu.py](https://github.com/facebookresearch/generative-recommenders/blob/main/modeling/sequential/hstu.py))里：
 
 ```python
 self._linear_dim: int = linear_hidden_dim
