@@ -4937,6 +4937,13 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 选择性状态空间模型(selective state space model)是Mamba论文作者Albert Gu此前主导研发的S4架构(Structured State Spaces for Sequence Modeling)的一个简单泛化。
 
+[https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf](https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf)
+
+序列模型在训练和推理时的侧重点：
+
++ 训练时：在整个list上计算loss，需要优化forward的耗时
++ 推理时：一次输入一个时间步，需要高效地顺序处理
+
 
 ## Mamba
 
