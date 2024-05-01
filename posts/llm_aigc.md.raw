@@ -1428,6 +1428,8 @@ class RMSNorm(torch.nn.Module):
 
 [Llama 3超大杯有何惊喜？Meta会一直开源吗？当初为何笃信元宇宙？扎克伯格新访谈回应一切](https://mp.weixin.qq.com/s/e2n4ttcT8raDU877t53GPQ)
 
+[Llama 3细节公布！AI产品总监站台讲解：Llama系列超庞大生态系统](https://mp.weixin.qq.com/s/iDAlop_LNv9evZtfPMPyUg)
+
 三个版本：8B 和 70B 参数的模型，还有一个 405B 参数的密集模型（还在训练之中），8B版本基本上与Llama-2的最大版本一样强大。
 
 Llama 3的主要亮点：
@@ -1778,6 +1780,12 @@ Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 [Octopus v2: On-device language model for super agent](https://arxiv.org/pdf/2404.01744.pdf)
 
 [https://huggingface.co/NexaAIDev/Octopus-v2](https://huggingface.co/NexaAIDev/Octopus-v2)
+
+[参数量不到10亿的OctopusV3，如何媲美GPT-4V和GPT-4？](https://mp.weixin.qq.com/s/mUpX-nvo221WVii-gnjUmQ)
+
+[Octopus v3: Technical Report for On-device Sub-billion Multimodal AI Agent](https://arxiv.org/pdf/2404.11459.pdf)
+
+[Octopus v4: Graph of language models](https://arxiv.org/pdf/2404.19296)
 
 ### Cohere Command R+
 
@@ -2606,6 +2614,10 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 ### 并行推理方法
 
 [Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
+
+### LayerSkip
+
+[LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding](https://arxiv.org/pdf/2404.16710)
 
 ### 其他的一些加速库
 
@@ -3581,7 +3593,13 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [https://github.com/allenai/RL4LMs](https://github.com/allenai/RL4LMs)
 
+# RLHF变种
 
+## 自我奖励
+
+[Self-Rewarding Language Models](https://arxiv.org/pdf/2401.10020)
+
+[「用 AI 训 AI」这事靠谱吗？](https://mp.weixin.qq.com/s/bLLoYDTpq8q7ExfwyDekOQ)
 
 # LLM常见难题
 
@@ -4284,7 +4302,7 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [From r to Q*: Your Language Model is Secretly a Q-Function](https://arxiv.org/pdf/2404.12358.pdf)
 
-# LLM与推荐结合
+# LLM+推荐
 
 ## 综述
 
@@ -4864,6 +4882,8 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 [WWW 2024 | 工业界大模型在搜广推场景应用](https://zhuanlan.zhihu.com/p/686259205)
 
+[LLM+Recommendation大模型推荐近期进展|含WWW, SIGIR, AAAI等顶会文章](https://mp.weixin.qq.com/s/m8DMgSt_r-HVNHHzA8ceVw)
+
 + baidu：[Representation Learning with Large Language Models for Recommendation](https://arxiv.org/pdf/2310.15950.pdf)
 + huawei：[ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131.pdf)
 + microsoft：[Knowledge-Augmented Large Language Models for Personalized Contextual Query Suggestion](https://arxiv.org/pdf/2311.06318.pdf)
@@ -4875,6 +4895,10 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 [SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
 
 [Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347.pdf)
+
+
+
+
 
 ### time-LLM
 
@@ -4888,6 +4912,12 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 + 时序输入重编程
 + 提示做前缀
+
+# LLM+其他
+
+[【LLM-数学】MathScale 用于数学推理的指令调优扩展方法](https://mp.weixin.qq.com/s/tQUIGdViMZTb_9NNh3b3RQ)
+
+[MathScale: Scaling Instruction Tuning for Mathematical Reasoning](https://arxiv.org/pdf/2403.02884.pdf)
 
 # 新的架构
 
@@ -5208,6 +5238,14 @@ XXX
 [Meta提出全新文档级嵌入框架，利用LLM来增强信息检索能力](https://mp.weixin.qq.com/s/RCRHjrW6jF167HG169aFwg)
 
 [LLM-Augmented Retrieval: Enhancing Retrieval Models Through Language Models and Doc-Level Embedding](https://arxiv.org/pdf/2404.05825.pdf)
+
+# LLM模型融合
+
+[LLM 合并新思路：进化算法+零训练->新任务](https://mp.weixin.qq.com/s/eSWdLT0p5uyd32OOod5lKQ)
+
+[Evolutionary Optimization of Model Merging Recipes](https://arxiv.org/pdf/2403.13187)
+
+[https://github.com/SakanaAI/evolutionary-model-merge](https://github.com/SakanaAI/evolutionary-model-merge)
 
 # 其他
 
