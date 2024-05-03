@@ -1422,6 +1422,8 @@ class RMSNorm(torch.nn.Module):
 
 ### LLaMA3
 
+#### 原始LLaMa3
+
 2024年4月
 
 [开源大模型Llama 3王者归来！最大底牌4000亿参数，性能直逼GPT-4](https://mp.weixin.qq.com/s/KCyL8WTzXutPQ_k0Vl9Vwg)
@@ -1429,6 +1431,8 @@ class RMSNorm(torch.nn.Module):
 [Llama 3超大杯有何惊喜？Meta会一直开源吗？当初为何笃信元宇宙？扎克伯格新访谈回应一切](https://mp.weixin.qq.com/s/e2n4ttcT8raDU877t53GPQ)
 
 [Llama 3细节公布！AI产品总监站台讲解：Llama系列超庞大生态系统](https://mp.weixin.qq.com/s/iDAlop_LNv9evZtfPMPyUg)
+
+[OpenAI 前创始成员、特斯拉自动驾驶前负责人 Andrej Karpathy 发表 Meta Llama 3 笔记](https://mp.weixin.qq.com/s/701PSyi954QHz_mt6Ddn-Q)
 
 三个版本：8B 和 70B 参数的模型，还有一个 405B 参数的密集模型（还在训练之中），8B版本基本上与Llama-2的最大版本一样强大。
 
@@ -2049,6 +2053,16 @@ XXX
 XXX
 
 在T5和GLM-130B中使用，**自回归地恢复替换区间**。
+
+#### 其他任务
+
+multi-token prediction，一次预估未来的k个词
+
+[Better & Faster Large Language Models via Multi-token Prediction](https://arxiv.org/pdf/2404.19737)
+
+![multi-token-prediction](../assets/multi-token-prediction.png)
+
+
 
 ## Transformer的FLOPS和访存带宽
 
@@ -4952,7 +4966,7 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 
 ### SSM原理
 
-输入$$u(t) \in \mathbb{R} $$，输出是$$y(t) \in \mathbb{R}$$，引入**状态**$$x(t) \in \mathbb{R}^N$$，目标是学习映射$$u(t) \mapsto y(t)$$，
+输入$$u(t) \in \mathbb{R}$$，输出是$$y(t) \in \mathbb{R}$$，引入**状态**$$x(t) \in \mathbb{R}^N$$，目标是学习映射$$u(t) \mapsto y(t)$$，
 
 XXX
 \begin{aligned}
@@ -5362,3 +5376,10 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 通过单语数据提升 NMT 模型最高效的方法之一是回译（back-translation）。如果我们的目标是训练一个英语到德语的翻译模型，那么可以首先训练一个从德语到英语的翻译模型，并利用该模型翻译所有的单语德语数据。然后基于原始的英语到德语数据，再加上新生成的数据，我们就能训练一个英语到德语的最终模型。
 
 [Understanding Back-Translation at Scale](https://arxiv.org/pdf/1808.09381v2.pdf)
+
+## 其他
+
+[小模型性能饱和、表现不佳，根源是因为Softmax?](https://mp.weixin.qq.com/s/bvv-frM8bKhkZiqOa9nqDA)
+
+[Why do small language models underperform? Studying LM Saturation via the Softmax Bottleneck](https://arxiv.org/pdf/2404.07647.pdf)
+
