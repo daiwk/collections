@@ -4944,6 +4944,35 @@ SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
 + 训练时：在整个list上计算loss，需要优化forward的耗时
 + 推理时：一次输入一个时间步，需要高效地顺序处理
 
+### SSM原理
+
+输入$$u(t) \in \mathbb{R} $$，输出是$$y(t) \in \mathbb{R}$$，引入**状态**$$x(t) \in \mathbb{R}^N$$，目标是学习映射$$u(t) \mapsto y(t)$$，
+
+XXX
+\begin{aligned}
+x^{\prime}(t) & =\boldsymbol{A} x(t)+\boldsymbol{B} u(t) \\
+y(t) & =\boldsymbol{C} x(t)+\boldsymbol{D} u(t)
+\end{aligned}
+XXX
+
+结合[维基百科](https://en.wikipedia.org/wiki/State-space_representation)的图，方便理解
+
+![ssm](../assets/ssm.png)
+
+其中，$$\boldsymbol{A},\boldsymbol{B},\boldsymbol{C},\boldsymbol{D}$$都是$$ \mathbb{R}^{N\timesN}$$的矩阵，$$x^{\prime}(t):=\frac{d}{d t} \mathbf{x}(t)$$是$$x(t)$$关于$$t$$的导数，所以图里有一个**积分**操作把它变回$$x(t)$$
+
+假设序列长度为$$L$$，那么
+
++ 时间复杂度：
+    + SSM：$$O(N^2L)$$，因为$$\boldsymbol{A} x(t)$$是$$N\times N$$和$$N\times 1$$的矩阵乘法，复杂度是$$N^2$$
+    + RNN：$$O(N^2L)$$，和SSM类似
+    + CNN：$$O(kLM^2)$$，假设$$k$$个卷积核，每个卷积核$$M\times M$$，一般$$M \ll N$$
++ 空间复杂度：
+    + SSM：$$O(N^2+NL)$$，因为中间状态$$x(t) \in \mathbb{R}^N$$是需要**额外存储**的
+    + RNN：$$O(N^2)$$，所有时间步共享权重，不需要像SSM专门为每个时间步存一个状态$$x(t)$$
+    + CNN：$$kM^2$$
+
+所以传统SSM的时空复杂度都很高，作者提出了S4(structured state space model)
 
 ## Mamba
 
