@@ -1016,7 +1016,7 @@ XXXL(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8
 
 ### Chinchilla扩展法则
 
-DeepMind在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来指导LLM最优计算量的训练。通过变化更大范围的模型大小（7000w到160亿参数）和数据大小（50亿到5000亿个token）进行实验，拟合了如下的扩散法则：
+DeepMind在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来指导LLM**最优计算量**的训练。通过变化更大范围的模型大小（7000w到160亿参数）和数据大小（50亿到5000亿个token）进行实验，拟合了如下的扩展法则：
 
 XXX
 L(N, D)=E+\frac{A}{N^\alpha}+\frac{B}{D^\beta}
@@ -1036,6 +1036,10 @@ XXX
 + Chinchilla扩展法则认为**模型大小和数据大小要同比例增加**，即$$a$$和$$b$$取值差不多。因为其在无视模型大小的前提下，发现设置与数据量差不多match的学习率能获得更好的loss。每增加10倍的计算量，应该让数据集大小增加为约3.16倍，模型参数量也增加为约3.16倍。即**数据集大小和模型参数量一样重要**。
 
 然而，有一些能力（如涌现）无法根据扩展法则进行预测，只有当模型达到一定规模时才会出现。
+
+![chinchilla-law](../assets/chinchilla-law.png)
+
+飘红的就是常见的10B模型，大概要205B的token来训练，能达到**计算最优点**，当然**并不一定是loss最小的点**，这个可以参考llama3的现象
 
 ### scaling law的一些讨论
 
@@ -1415,7 +1419,7 @@ class RMSNorm(torch.nn.Module):
 
 [https://zhuanlan.zhihu.com/p/636784644](https://zhuanlan.zhihu.com/p/636784644)
 
-使用了GQA（grouped query attention）(参考[Gqa: Training generalized multi-query transformer models from multi-head checkpoints](https://arxiv.org/pdf/2305.13245.pdf))
+使用了GQA（grouped query attention）(参考[Gqa: Training generalized multi-query transformer models from multi-head checkpoints](https://arxiv.org/pdf/2305.13245.pdf))，在注意力机制中对**K/V进行参数共享**的方案，可以在**推理**过程中**减小KV缓存**。
 
 ![gqa](../assets/gqa.png)
 
@@ -1434,16 +1438,17 @@ class RMSNorm(torch.nn.Module):
 
 [OpenAI 前创始成员、特斯拉自动驾驶前负责人 Andrej Karpathy 发表 Meta Llama 3 笔记](https://mp.weixin.qq.com/s/701PSyi954QHz_mt6Ddn-Q)
 
-三个版本：8B 和 70B 参数的模型，还有一个 405B 参数的密集模型（还在训练之中），8B版本基本上与Llama-2的最大版本一样强大。
+三个版本：8B 和 70B 参数的模型，还有一个 405B 参数的密集模型（还在训练之中，但已经在逼近GPT-4的领域，例如84.8 MMLU vs. 86.5 4Turbo），8B版本基本上与Llama-2的最大版本一样强大。
 
 Llama 3的主要亮点：
 
-+ 基于超过15T token训练，比Llama 2数据集的7倍还多；
-+ 支持8K长文本，改进的tokenizer有128K token的词汇量；
-+ 训练效率比 Llama 2 高 3 倍；
-+ 带有 Llama Guard 2、Code Shield 和 CyberSec Eval 2 的新版信任和安全工具；
-+ 在大量重要基准中均具有最先进性能；
-+ 新能力范畴，包括增强的推理和代码能力；Llama-2 只能使用非常特定的工具，而 Llama-3 能使用好得多的工具。无需人工编程就能让其使用谷歌执行搜索，类似的功能还有编程和运行代码等。
++ 训练语料：基于超过15T token训练，比Llama 2数据集(2T)的7倍还多：
+    + **scaling law的新发现**：对于一个8B模型，Chinchilla的**计算最优点**将是训练约200B词汇(前面提到了10B模型，大概要205B的token来训练，以此类推)，所以这里**超出了75倍**，而且**还未收敛**。可见，我们经常使用的LLMs在训练上显著不足，可能是100-1000倍或更多，远未达到它们的收敛点。
++ tokenizer：词汇数量从Llama 2的32K增加到Llama 3的128K，增加了4倍，拥有更多的词汇可以在长度上**更有效地压缩序列**。
++ 上下文窗口：从Llama 2的4096和Llama 1的2048增加到了**8192**，相比GPT4的128k还差得很远
++ 训练效率：比 Llama 2 高 3 倍，做了很多工程优化；
++ 模型结构：在Llama 2中，只在更大的模型使用了**分组查询注意力（GQA）**，但llama3的所有模型都使用了，包括最小的8B模型。
++ 新能力范畴：Llama-2 只能使用非常特定的工具，而 Llama-3 能使用好得多的工具，无需人工编程就能让其使用谷歌执行搜索，类似的功能还有编程和运行代码等。
 
 [https://github.com/meta-llama/](https://github.com/meta-llama/)
 
@@ -4981,10 +4986,10 @@ XXX
 
 各变量含义如下（看起来和RNN很像）：
 
-+ $$\boldsymbol{A}\in \mathbb{R}^{N\timesN}$$：状态矩阵
-+ $$\boldsymbol{B}\in \mathbb{R}^{N\timesN}$$：输入矩阵
-+ $$\boldsymbol{C}\in \mathbb{R}^{N\timesN}$$：输出矩阵
-+ $$\boldsymbol{D}\in \mathbb{R}^{N\timesN}$$：feedforward矩阵或者feedthrough矩阵
++ $$\boldsymbol{A}\in \mathbb{R}^{N\times N}$$：状态矩阵
++ $$\boldsymbol{B}\in \mathbb{R}^{N\times N}$$：输入矩阵
++ $$\boldsymbol{C}\in \mathbb{R}^{N\times N}$$：输出矩阵
++ $$\boldsymbol{D}\in \mathbb{R}^{N\times N}$$：feedforward矩阵或者feedthrough矩阵
 + $$x^{\prime}(t):=\frac{d}{d t} \mathbf{x}(t)$$是$$x(t)$$关于$$t$$的导数，所以图里有一个**积分**$$\int$$操作把它变回$$x(t)$$
 
 假设序列长度为$$L$$，那么
