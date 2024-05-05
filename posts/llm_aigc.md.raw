@@ -1132,6 +1132,8 @@ llm榜单：
 
 [MoE模型的前世今生](https://mp.weixin.qq.com/s/jhT4kv9c7fJp4xwSfckoag)
 
+[MoE 系列论文解读：Gshard、FastMoE、Tutel、MegaBlocks 等](https://mp.weixin.qq.com/s/T5eJZWGH3yRpK9bxmvhhTA)
+
 ## GPT系列
 
 ### GPT3
@@ -3752,6 +3754,38 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 [《综述：全新大语言模型驱动的Agent》——4.5万字详细解读复旦NLP和米哈游最新Agent Survey](https://zhuanlan.zhihu.com/p/656676717)
 
 [Agent > GPT5？吴恩达最新演讲：四种 Agent 设计范式（通俗易懂版）](https://mp.weixin.qq.com/s/6sh39yEO4YGZI-BGPjJnCg)
+
+## JAT
+
+[告别偏科，能玩转多模态、多任务、多领域的强化智能体终于来了](https://mp.weixin.qq.com/s/2GBB-w7hBf6equtqD8V0Lg)
+
+[Jack of All Trades, Master of Some, a Multi-Purpose Transformer Agent](https://arxiv.org/pdf/2402.09844)
+
+[https://github.com/huggingface/jat](https://github.com/huggingface/jat)
+
+[https://huggingface.co/datasets/jat-project/jat-dataset](https://huggingface.co/datasets/jat-project/jat-dataset)
+
+![jat](../assets/jat.png)
+
+输入的序列元素是observations, actions, 和rewards的交替组合：
+
+XXX
+\left[\phi\left(s_0, 0.0\right), \phi\left(a_0\right), \phi\left(s_1, r_1\right), \phi\left(a_1\right), \ldots\right]
+XXX
+
+依据不同输入的数据类型，使用不同网络处理：
+
++ 图像：用CNN。
++ 连续向量：用线性层
++ 离散值：用线性投影层
+
+预测任务：根据所有先前的观察和动作嵌入来预测下一个动作嵌入。
+
+序列的构造方法：
+
++ 和文本相关的任务：用 GPT-2 的分词策略，将文本转换为一个整数序列，然后emb lookup映射到一个嵌入向量序列。
++ 和图像有关的任务：用ViT，将图像切割成小块后，通过线性层转换为嵌入向量序列。
++ 最终再将图像和文本的向量序列拼接在一起，形成一个统一的序列，输入到 Transformer 中。
 
 # 一些其他比较重要的工作
 
