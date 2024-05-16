@@ -2140,6 +2140,7 @@ XXX
 + 对NLP任务来讲，一般$$d$$是个比较固定的值，如512，而$$s$$变大，效果会更好，所以一般是$$s>d$$，所以复杂度取决于$$s$$的大小。
 + 但有些模型的初始设置不是这样的，例如GPT3的175B模型里，$$s=2048,d=12288$$，当然，算力够的话也可以把$$s$$变大
 
+自己感觉：既然是$$24bsd^2+4bs^2d$$，其实就是$$6sd^2$$和$$s^2d$$的大小，即$$6d$$和$$s$$的大小，如果$$6d>s$$，则$$d^2$$起主导，反之$$s^2$$起主导
 
 ### DIN的FLOPS
 
@@ -2423,6 +2424,7 @@ GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效
 
 pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/checkpoint.py)。大致逻辑是包了一个```autograd.Function```，前向时保存一些inputs/rng_state(RNG state是Random Number Generator state的缩写，**随机数生成器的状态**。在深度学习和其他计算任务中，随机数生成器用于初始化参数、决定正则化技术如dropout的行为，以及在训练过程中选择样本等。RNG状态是指随机数生成器当前的内部状态，它可以用来在需要时重现或恢复特定的随机数序列，确保实验或模型训练的可重复性)，反向时重新计算
 
+cpu offload：层数很深的时候，可能可以把一些计算挪到cpu上去，再搞回gpu
 
 ##### 张量并行（Tensor Parallelism）
 
