@@ -1122,6 +1122,397 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 + [Toolformer: Language models can teach themselves to use tools](https://arxiv.org/pdf/2302.04761.pdf)能利用计算器进行准确计算
 + [Webgpt: Browser-assisted question-answering with human feed- back](https://arxiv.org/pdf/2112.09332.pdf)能利用搜索引擎检索未知信息
 
+# 新的架构
+
+## 长上下文的问题
+
+[LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
+
+以中文为例，大部分模型每个token对应的中文字数都>1.5个字，所以200k的token就对应30w字的上下文
+
+对长文本的几个要求：
+
++ 在文本比较长的时候，还能保证通顺，**ppl要足够低**
++ 能attention到前面提过的细节，**不能自我矛盾**
+
+注意：如果训练时是2k长度的语料，而推理设定8k窗口，那么PPL会急剧上升，因为
+
++ RoPE不能很好地处理没有训练过的**位置编码**
++ 推理时**注意力机制**所处理的token数量远超训练时的数量，导致注意力机制的崩坏
+
+### 两阶段训练方式
+
++ 直接输入连续长文本（如书籍）
++ 多个中等文本拼接，再通过attention mask来限制各段文本之间注意力，让它们可以在各自的位置上各训各的，互不干扰。甚至实际上即使不做attention mask，效果也挺好。
+
+如果简单地增加长度，例如从4k变到32k，长度增加8倍，为了加速计算需要缓存中间结果（如QK的结果是$$s^2$$的空间复杂度），所以显存会扩大$$8^2=64$$倍。一般的做法是2阶段：
+
++ 第一阶段：用2k或者4k训练一个基础模型，让模型学好**文本内容**和**短位置关系**
++ 第二阶段：用**比第一阶段小的数据量优化**模型在**长上下文的效果**，具体做法见下节
+
+### 针对位置编码的插值类方法
+
+#### 线性插值
+
+&nbsp;
+
+[Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/pdf/2306.15595.pdf)
+
+#### NTK-Aware Interpolation
+
+&nbsp;
+
+#### NTK-by-parts
+
+&nbsp;
+
+#### Dynamically NTK Scaled RoPE
+
+&nbsp;
+
+### 针对attention score的缩放方法
+
+#### YaRN
+
+&nbsp;
+
+#### logn
+
+&nbsp;
+
+### lossless long context
+
+[专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
+
+### longRoPE
+
+[LongRoPE：超越极限，将大模型上下文窗口扩展超过200万tokens](https://mp.weixin.qq.com/s/4ryyv59ofNOD--RCSdqktQ)
+
+
+## SSM
+
+[挑战Transformer的Mamba是什么来头？作者博士论文理清SSM进化路径](https://mp.weixin.qq.com/s/oXSwnL0sD96nnnqJyko7UA)
+
+[Pretraining Without Attention](https://arxiv.org/pdf/2212.10544.pdf) 
+
+[预训练无需注意力，扩展到4096个token不成问题，与BERT相当](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650864837&idx=2&sn=c57f0b8a7daf7d45093448c8ff5df3fc&chksm=84e538bbb392b1ad857f3ad2c2d6d6dbc9562ff492a7cda336dc07abe4d3912c19fa4c30d365&scene=21#wechat_redirect)
+
+[Diffusion Models Without Attention](https://arxiv.org/pdf/2311.18257.pdf)
+
+[丢掉注意力的扩散模型：Mamba带火的SSM被苹果、康奈尔盯上了](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650900014&idx=4&sn=315ca75ba700a93598b5c581ad2fb735&chksm=84e44250b393cb4619e7c24b9f6affe88e4c71ebb97d0c43b5301edd0a11154af6322f68cfd4&scene=21#wechat_redirect)
+
+[Long Range Language Modeling via Gated State Spaces](https://arxiv.org/abs/2206.13947) 认为 Transformer 和 SSM 完全可以互补。
+
+选择性状态空间模型(selective state space model)是Mamba论文作者Albert Gu此前主导研发的S4架构(Structured State Spaces for Sequence Modeling)的一个简单泛化。
+
+[https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf](https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf)
+
+序列模型在训练和推理时的侧重点：
+
++ 训练时：在整个list上计算loss，需要优化forward的耗时
++ 推理时：一次输入一个时间步，需要高效地顺序处理
+
+### SSM原理
+
+输入$$u(t) \in \mathbb{R}$$，输出是$$y(t) \in \mathbb{R}$$，引入**状态**$$x(t) \in \mathbb{R}^N$$，目标是学习映射$$u(t) \mapsto y(t)$$，
+
+XXX
+\begin{aligned}
+x^{\prime}(t) & =\boldsymbol{A} x(t)+\boldsymbol{B} u(t) \\
+y(t) & =\boldsymbol{C} x(t)+\boldsymbol{D} u(t)
+\end{aligned}
+XXX
+
+结合[维基百科](https://en.wikipedia.org/wiki/State-space_representation)的图，方便理解
+
+![ssm](../assets/ssm.png)
+
+各变量含义如下（看起来和RNN很像）：
+
++ $$\boldsymbol{A}\in \mathbb{R}^{N\times N}$$：状态矩阵
++ $$\boldsymbol{B}\in \mathbb{R}^{N\times N}$$：输入矩阵
++ $$\boldsymbol{C}\in \mathbb{R}^{N\times N}$$：输出矩阵
++ $$\boldsymbol{D}\in \mathbb{R}^{N\times N}$$：feedforward矩阵或者feedthrough矩阵
++ $$x^{\prime}(t):=\frac{d}{d t} \mathbf{x}(t)$$是$$x(t)$$关于$$t$$的导数，所以图里有一个**积分**$$\int$$操作把它变回$$x(t)$$
+
+假设序列长度为$$L$$，那么
+
++ 时间复杂度：
+    + SSM：$$O(N^2L)$$，因为$$\boldsymbol{A} x(t)$$是$$N\times N$$和$$N\times 1$$的矩阵乘法，复杂度是$$N^2$$
+    + RNN：$$O(N^2L)$$，和SSM类似
+    + CNN：$$O(kLM^2)$$，假设$$k$$个卷积核，每个卷积核$$M\times M$$，一般$$M \ll N$$
++ 空间复杂度：
+    + SSM：$$O(N^2+NL)$$，因为中间状态$$x(t) \in \mathbb{R}^N$$是需要**额外存储**的
+    + RNN：$$O(N^2)$$，所有时间步共享权重，不需要像SSM专门为每个时间步存一个状态$$x(t)$$
+    + CNN：$$kM^2$$
+
+所以传统SSM的时空复杂度都很高，作者提出了S4(structured state space model)
+
+## Mamba
+
+[Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)
+
+[https://huggingface.co/state-spaces](https://huggingface.co/state-spaces)
+
+[https://github.com/havenhq/mamba-chat](https://github.com/havenhq/mamba-chat)
+
+[MODELING SEQUENCES WITH STRUCTURED STATE SPACES](https://stacks.stanford.edu/file/druid:mb976vf9362)
+
+## Block-State Transformer
+
+[Block-State Transformer](https://arxiv.org/pdf/2306.09539.pdf)
+
+## Jamba
+
+[Mamba做大做强！混合Transformer，打败Transformer](https://mp.weixin.qq.com/s/Lde0G_zysfrGcRUX5nOf8g)
+
+[https://huggingface.co/ai21labs/Jamba-v0.1](https://huggingface.co/ai21labs/Jamba-v0.1)
+
+## Hawk & Griffin
+
+[RNN效率媲美Transformer，谷歌新架构两连发：同等规模强于Mamba](https://mp.weixin.qq.com/s/RtAZiEzjRWgqQw3yu3lvcg)
+
+[Griffin: Mixing Gated Linear Recurrences with Local Attention for Efficient Language Models](https://arxiv.org/pdf/2402.19427)
+
+## feedback attention memory
+
+[TransformerFAM: Feedback attention is working memory](https://arxiv.org/pdf/2404.09173.pdf)
+
+## infini-attention
+
+[Leave No Context Behind: Efficient Infinite Context Transformers with Infini-attention](https://arxiv.org/pdf/2404.07143.pdf)
+
+[【重磅】谷歌重塑Transformer：无限记忆力，无限长输入，LLM基础研究重大突破](https://mp.weixin.qq.com/s/bV2b9uJ4GFQPhhggHT3VIA)
+
+将**压缩记忆**整合进标准的点积注意力机制，并在单个Transformer块内同时实现了**掩码局部注意力**和**长期线性注意力机制**
+
+![infini-attention](../assets/infini-attention.png)
+
+与transformer-xl对比：
+
+![infini-attention-vs-transformer-xl](../assets/infini-attention-vs-transformer-xl.png)
+
+[https://github.com/mustafaaljadery/gemma-2B-10M](https://github.com/mustafaaljadery/gemma-2B-10M)
+
+[https://github.com/dingo-actual/infini-transformer](https://github.com/dingo-actual/infini-transformer)
+
+## MEGA
+
+[Mega: Moving average equipped gated attention](https://arxiv.org/pdf/2209.10655.pdf)
+
+[https://github.com/facebookresearch/mega](https://github.com/facebookresearch/mega)
+
+### 标准的self-attention公式
+
+&nbsp;
+
+对于序列长度=$$n$$的输入$$\boldsymbol{X}=\left\{\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n\right\} \in \mathbb{R}^{n \times d}$$，输出$$\boldsymbol{Y}=\left\{\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_n\right\} \in \mathbb{R}^{n \times d}$$
+
+XXX
+\boldsymbol{Y}=\operatorname{Attn}(\boldsymbol{X})=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \boldsymbol{V}
+XXX
+
+XXX
+\boldsymbol{Q}=\boldsymbol{X} W_q+b_q,\boldsymbol{K}=\boldsymbol{X} W_k+b_k,\boldsymbol{V}=\boldsymbol{X} W_v+b_v
+XXX
+
+其中，$$\text { Attn : } \mathbb{R}^{n \times d} \rightarrow \mathbb{R}^{n \times d}$$，$$W_q, W_k, W_v \in \mathbb{R}^{d \times d}$$，$$b_q, b_k, b_v \in \mathbb{R}^d$$，而且有两种定义方式：
+
++ $$f(\cdot)=f_{\text {softmax }}(\cdot)$$，同时$$\tau(\boldsymbol{X})=\sqrt{d}$$，这是经典操作[Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/pdf/1409.0473.pdf)
++ $$f(\cdot)=f_{\mathrm{relu}^2}(\cdot)$$即$$relu(x)^2$$，同时$$\tau(\boldsymbol{X})=n$$，这是[Primer: Searching for efficient transformers for language modeling](https://arxiv.org/pdf/2109.08668.pdf)和[Transformer Quality in Linear Time](https://arxiv.org/pdf/2202.10447.pdf)提出的
+
+![gau](../assets/gau.png)
+
+对于$$h$$个attention heads，计算$$\boldsymbol{A}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \in \mathbb{R}^{n \times n}$$需要的时间和空间复杂度都是$$O(hn^2)$$
+
+### EMA
+
+&nbsp;
+
+对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)如下
+
+XXX
+\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha}) \odot \mathbf{y}_{t-1}
+XXX
+
+其中，$$\boldsymbol{\alpha} \in(0,1)^d$$表示权重衰减，$$\odot$$是element-wise product
+
+$$\boldsymbol{\alpha}$$越大，$$1-\boldsymbol{\alpha}$$越小，对历史的衰减也越快：
+
+![ema](../assets/ema.png)
+
+EMA的计算看成$$n$$个**独立的卷积**，可以通过**FFT(快速傅立叶变换)**来加速计算。具体。。。再看看
+
+**Damped EMA**：由于输入的x是d维向量，可以引入一个因子$$\boldsymbol{\delta} \in(0,1)^d$$让EMA更鲁棒：
+
+XXX
+\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha} \odot \boldsymbol{\delta}) \odot \mathbf{y}_{t-1}
+XXX
+
+### MEGA
+
+&nbsp;
+
+EMA可以看成是一种**与位置相关的归纳偏置（inductive bias）**，即假设当前位置与之前位置满足滑动平均的关系，而attention矩阵的计算其实并没有考虑位置信息，所以可以把二者结合一下。
+
+![mega](../assets/mega.png)
+
+其中的multi-dimensional damped EMA大致流程如下：
+
++ **先变成h维**：先把$$\boldsymbol{X} \in \mathbb{R}^{n \times d}$$通过矩阵$$\beta$$映射成$$\boldsymbol{U}\in \mathbb{R}^{n \times h}$$
++ **计算EMA**：然后通过EMA得到$$\boldsymbol{h}\in \mathbb{R}^{n \times h}$$（具体$$\mathbf{h}_t^{(j)}=\boldsymbol{\alpha}_j \odot \mathbf{u}_t^{(j)}+\left(1-\boldsymbol{\alpha}_j \odot \boldsymbol{\delta}_j\right) \odot \mathbf{h}_{t-1}^{(j)}$$）
++ **再变回d维**：再通过一个矩阵$$\eta$$变回$$\boldsymbol{Y}\in \mathbb{R}^{n \times h}$$
+
+然后看整个流程：
+
++ 先计算EMA
+
+XXX
+\begin{aligned}
+\boldsymbol{X}^{\prime} & =\operatorname{EMA}(\boldsymbol{X}) & & \in \mathbb{R}^{n \times d} \\
+\boldsymbol{Z} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_z+b_z\right) & & \in \mathbb{R}^{n \times z}
+\end{aligned}
+XXX
+
++ 再基于EMA的结果计算QK，基于原始的X计算V：
+
+XXX
+\begin{array}{ll}
+\boldsymbol{Q}=\boldsymbol{\kappa}_q \odot \boldsymbol{Z}+\boldsymbol{\mu}_q & \in \mathbb{R}^{n \times z} \\
+\boldsymbol{K}=\boldsymbol{\kappa}_k \odot \boldsymbol{Z}+\boldsymbol{\mu}_k & \in \mathbb{R}^{n \times z} \\
+\boldsymbol{V}=\phi_{\text {silu }}\left(\boldsymbol{X} W_v+b_v\right) & \in \mathbb{R}^{n \times v}
+\end{array}
+XXX
+
++ 计算带位置bias的attention：
+
+XXX
+\boldsymbol{O}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}+\boldsymbol{b}_{\mathrm{rel}}\right) \boldsymbol{V} \quad \in \mathbb{R}^{n \times v}
+XXX
+
++ 通过reset gate $$\boldsymbol{\gamma}$$和update gate $$\boldsymbol{\varphi}$$计算输出
+
+XXX
+\begin{aligned}
+\boldsymbol{\gamma} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_\gamma+b_\gamma\right) & & \in \mathbb{R}^{n \times v} \\
+\boldsymbol{\varphi} & =\phi_{\text {sigmoid }}\left(\boldsymbol{X}^{\prime} W_{\varphi}+b_{\varphi}\right) & & \in \mathbb{R}^{n \times d} \\
+\hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d} \\
+\boldsymbol{Y}&=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
+\end{aligned}
+XXX
+
+
+这里把attention里的softmax改成了如下的laplace函数：
+
+XXX
+f_{\text {laplace }}(x ; \mu, \sigma)=0.5 \times\left[1+\operatorname{erf}\left(\frac{x-\mu}{\sigma \sqrt{2}}\right)\right]
+XXX
+
+其中，$$\operatorname{erf}(x)=\frac{1}{\sqrt{\pi}} \int_{-x}^x e^{-t^2} \mathrm{~d} t=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} \mathrm{~d} t$$是[误差函数](https://zh.wikipedia.org/wiki/%E8%AF%AF%E5%B7%AE%E5%87%BD%E6%95%B0)，
+
+为了让laplace逼近$$f_{\text {relu }^2}$$，对于$$x=\sqrt{2}$$这个点，求解如下方程
+
+XXX
+\begin{aligned}
+& f_{\text {relu2 }}(\sqrt{2})=f_{\text {laplace }}(\sqrt{2}) \\
+& f_{\text {relu2 }}^{\prime}(\sqrt{2})=f_{\text {laplace }}^{\prime}(\sqrt{2})
+\end{aligned}
+XXX
+
+可以得到$$\mu=\sqrt{1 / 2}$$，$$\sigma=\sqrt{1 / 4 \pi}$$，对应的曲线和准确率如下：
+
+![laplace-vs-relu2](../assets/laplace-vs-relu2.png)
+
+### mega-chunk
+
+![mega-chunk](../assets/mega-chunk.png)
+
+将序列切分成长度固定为$$c$$的$$k=n/c$$个chunk，对**每个chunk独立计算**上面的attention，这样复杂度就变成了$$O(kc^2)=O(nc)$$，由于有EMA，所以这样做还是能够保持一定程度的长距离依赖。
+
+## MEGALODON
+
+[Meta无限长文本大模型来了：参数仅7B，已开源](https://mp.weixin.qq.com/s/VML5hExo5iPsyEavxzIZSA)
+
+[革命新架构掀翻Transformer！无限上下文处理，2万亿token碾压Llama 2](https://mp.weixin.qq.com/s/xgP9P51gjqJ93FYSWfPeaA)
+
+[MEGALODON: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
+
+[https://github.com/XuezheMax/megalodon](https://github.com/XuezheMax/megalodon)
+
+[Megalodon: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
+
+基于MEGA进行改进，能够同时实现
+
++ 高效训练（减少通信和计算量）
++ 高效推理（保持恒定的KV缓存）
+
+
+# 训练&预测架构
+
+[大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
+
+[大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
+
+[大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
+
+## pathways
+
+[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
+
+下载了，[pdf](../assets/LLM/pathways.pdf)
+
+这个回答分析得不错
+[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
+
+### Google的大规模稀疏模型设计
+
+[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
+
+代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
+
+## megatron-lm
+
+[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
+
+## deepspeed
+
+[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
+
+
+## ray-llm
+
+[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
+
+
+## MOD
+
+[Mixture-of-Depths: Dynamically allocating compute in transformer-based language models](https://arxiv.org/pdf/2404.02258.pdf)
+
+## multi-head moe
+
+[微软让MoE长出多个头，大幅提升专家激活率](https://mp.weixin.qq.com/s/ZCRyb63M2DL4hOQh7uxxaw)
+
+[Multi-Head Mixture-of-Experts](https://arxiv.org/pdf/2404.15045)
+
+[https://github.com/yushuiwx/MH-MoE](https://github.com/yushuiwx/MH-MoE)
+
+
+
+## Google的几大LLM加速工具
+
+### maxdiffusion
+
+[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
+
+### JetStream
+
+[https://github.com/google/JetStream](https://github.com/google/JetStream)
+
+### maxtext
+
+[https://github.com/google/maxtext](https://github.com/google/maxtext)
+
+
 # 典型LLM简介
 
 llm榜单：
@@ -3736,260 +4127,6 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [「用 AI 训 AI」这事靠谱吗？](https://mp.weixin.qq.com/s/bLLoYDTpq8q7ExfwyDekOQ)
 
-# LLM常见难题
-
-## 重复生成
-
-[https://www.zhihu.com/question/616130636](https://www.zhihu.com/question/616130636)
-
-[https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
-
-
-## 长上下文
-
-[LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
-
-以中文为例，大部分模型每个token对应的中文字数都>1.5个字，所以200k的token就对应30w字的上下文
-
-对长文本的几个要求：
-
-+ 在文本比较长的时候，还能保证通顺，**ppl要足够低**
-+ 能attention到前面提过的细节，**不能自我矛盾**
-
-注意：如果训练时是2k长度的语料，而推理设定8k窗口，那么PPL会急剧上升，因为
-
-+ RoPE不能很好地处理没有训练过的**位置编码**
-+ 推理时**注意力机制**所处理的token数量远超训练时的数量，导致注意力机制的崩坏
-
-### 两阶段训练方式
-
-+ 直接输入连续长文本（如书籍）
-+ 多个中等文本拼接，再通过attention mask来限制各段文本之间注意力，让它们可以在各自的位置上各训各的，互不干扰。甚至实际上即使不做attention mask，效果也挺好。
-
-如果简单地增加长度，例如从4k变到32k，长度增加8倍，为了加速计算需要缓存中间结果（如QK的结果是$$s^2$$的空间复杂度），所以显存会扩大$$8^2=64$$倍。一般的做法是2阶段：
-
-+ 第一阶段：用2k或者4k训练一个基础模型，让模型学好**文本内容**和**短位置关系**
-+ 第二阶段：用**比第一阶段小的数据量优化**模型在**长上下文的效果**，具体做法见下节
-
-### 针对位置编码的插值类方法
-
-#### 线性插值
-
-&nbsp;
-
-[Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/pdf/2306.15595.pdf)
-
-#### NTK-Aware Interpolation
-
-&nbsp;
-
-#### NTK-by-parts
-
-&nbsp;
-
-#### Dynamically NTK Scaled RoPE
-
-&nbsp;
-
-### 针对attention score的缩放方法
-
-#### YaRN
-
-&nbsp;
-
-#### logn
-
-&nbsp;
-
-### lossless long context
-
-[专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
-
-### longRoPE
-
-[LongRoPE：超越极限，将大模型上下文窗口扩展超过200万tokens](https://mp.weixin.qq.com/s/4ryyv59ofNOD--RCSdqktQ)
-
-## llm+db
-
-[长文本杀不死RAG：SQL+向量驱动大模型和大数据新范式，MyScale AI数据库正式开源](https://mp.weixin.qq.com/s/JvyKnEbdOSb1fTwhiQTO5A)
-
-[https://github.com/myscale/myscaledb](https://github.com/myscale/myscaledb)
-
-## 记忆能力
-
-[Localizing Paragraph Memorization in Language Models](https://arxiv.org/pdf/2403.19851v1.pdf)
-
-对应代码：[https://github.com/googleinterns/localizing-paragraph-memorization](https://github.com/googleinterns/localizing-paragraph-memorization)
-
-我们能否定位出语言模型中用于记忆其训练数据中整段文字的权重和机制？
-
-+ 尽管记忆现象分布在模型的多个层级和组件中，但记忆段落的梯度在空间上有可辨别的模式，即**在较低模型层级的梯度比非记忆example的梯度大**。
-+ 通过**仅微调高梯度的权重**，可以使模型**遗忘记忆的example**。
-+ 定位了一个特别参与段落记忆的**低层注意力头**，它**主要关注**在语料库级单词频率分布中**最不频繁出现的独特、罕见的token**。
-+ 总的来说，相较非记忆的续写，记忆续写不仅**更难以遗忘**，也**更难以损坏**。
-
-
-## 越狱
-
-[长文本之罪：Claude团队新越狱技术，Llama 2到GPT-4无一幸免](https://mp.weixin.qq.com/s/C0opoIzLCFojfmoa6poM8A)
-
-## ReadAgent
-
-[「有效上下文」提升20倍！DeepMind发布ReadAgent框架](https://mp.weixin.qq.com/s/xXJqJeqf8mzP9VW9kLIdgQ)
-
-## 高质量数据
-
-[Llama架构比不上GPT2？神奇token提升10倍记忆？](https://mp.weixin.qq.com/s/TMkn6yMTUrrGhxCQnd7_2g)
-
-[Physics of Language Models: Part 3.3, Knowledge Capacity Scaling Laws](https://arxiv.org/pdf/2404.05405.pdf)
-
-制造**人工合成数据**，通过控制数据中知识的数量和类型，来严格调控数据中的**知识比特数 (bits)**。使用不同大小和架构的 LLM 在人工合成数据上进行训练，并给出数学定理，来精确计算训练好的模型从数据中**学到了多少比特的知识**。有如下几个发现：
-
-+ 如果**训练时间充足**，不论使用何种模型架构，模型的**存储效率**均可以达到**2bit/param**（即平均每个模型参数可以存储2比特的信息）。而且发现transformer中的知识**并非主要存储在MLP层**，因为即便移除所有MLP层，模型仍能达到 2bit/param 的存储效率。
-+ 如果**训练时间不充足**，GPT2模型能比LlaMA/Mistral存储超过30%的知识，主要是因为**GatedMLP(MoE)**会导致**训练不稳定**，因此对同样的知识，需要**更长的训练时间**。
-+ **压缩/量化**的影响：将训练好的模型从float32/16压缩到int8，对知识的存储**毫无影响**。LLM可以达到“**信息论极限**”的**1/4**——因为int8只有8比特，但平均每个参数可以存储2比特的知识。
-+ **高质量数据**的影响：如果我们的预训练数据中，有1/8来自高质量知识库（如百度百科），7/8来自低质量数据（如common crawl或论坛对话，甚至是完全随机的垃圾数据），会发现：
-    + 即使对高质量数据的训练时间保持一致，**低质量数据的存在本身**可能会让模型对**高质量知识的存储量下降20倍**，即便将高质量数据的训练时间延长 3倍，知识储量仍会降低3倍
-    + 解法：只需给所有的预训练数据**加上自己的网站域名token即可**，模型的知识存储量可以立即回升10倍，模型**不需要任何先验知识**来识别哪些网站上的知识是金子，而可以在预训练过程中，自动发现高质量知识的网站，并**自动为这些高质量数据腾出存储空间**。
-
-## 可解释AI
-
-[XAI有什么用？探索LLM时代利用可解释性的10种策略](https://mp.weixin.qq.com/s/V35k4UJZPtJkAHqYlZiO1A)
-
-[Usable XAI: 10 Strategies Towards Exploiting Explainability in the LLM Era](https://arxiv.org/pdf/2403.08946.pdf)
-
-[https://github.com/JacksonWuxs/UsableXAI_LLM](https://github.com/JacksonWuxs/UsableXAI_LLM)
-
-
-# 多智能体
-
-[《综述：全新大语言模型驱动的Agent》——4.5万字详细解读复旦NLP和米哈游最新Agent Survey](https://zhuanlan.zhihu.com/p/656676717)
-
-[Agent > GPT5？吴恩达最新演讲：四种 Agent 设计范式（通俗易懂版）](https://mp.weixin.qq.com/s/6sh39yEO4YGZI-BGPjJnCg)
-
-## JAT
-
-[告别偏科，能玩转多模态、多任务、多领域的强化智能体终于来了](https://mp.weixin.qq.com/s/2GBB-w7hBf6equtqD8V0Lg)
-
-[Jack of All Trades, Master of Some, a Multi-Purpose Transformer Agent](https://arxiv.org/pdf/2402.09844)
-
-[https://github.com/huggingface/jat](https://github.com/huggingface/jat)
-
-[https://huggingface.co/datasets/jat-project/jat-dataset](https://huggingface.co/datasets/jat-project/jat-dataset)
-
-![jat](../assets/jat.png)
-
-输入的序列元素是observations, actions, 和rewards的交替组合：
-
-XXX
-\left[\phi\left(s_0, 0.0\right), \phi\left(a_0\right), \phi\left(s_1, r_1\right), \phi\left(a_1\right), \ldots\right]
-XXX
-
-依据不同输入的数据类型，使用不同网络处理：
-
-+ 图像：用CNN。
-+ 连续向量：用线性层
-+ 离散值：用线性投影层
-
-预测任务：根据所有先前的观察和动作嵌入来预测下一个动作嵌入。
-
-序列的构造方法：
-
-+ 和文本相关的任务：用 GPT-2 的分词策略，将文本转换为一个整数序列，然后emb lookup映射到一个嵌入向量序列。
-+ 和图像有关的任务：用ViT，将图像切割成小块后，通过线性层转换为嵌入向量序列。
-+ 最终再将图像和文本的向量序列拼接在一起，形成一个统一的序列，输入到 Transformer 中。
-
-# 一些其他比较重要的工作
-
-## 几篇出现频率比较高的论文
-
-[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf) 引用数800+
-
-[How can we know what language models know?](https://arxiv.org/pdf/1911.12543.pdf) 引用数800+
-
-[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)引用1800+
-
-## Anthropic的一些工作
-
-[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
-
-[Studying Large Language Model Generalization with Influence Functions](https://arxiv.org/pdf/2308.03296.pdf)
-
-[Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
-
-
-## ChatGLM
-
-ACL22 [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/abs/2103.10360)
-
-iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
-
-
-# 训练&预测架构
-
-[大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
-
-[大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
-
-[大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
-
-## pathways
-
-[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
-
-下载了，[pdf](../assets/LLM/pathways.pdf)
-
-这个回答分析得不错
-[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
-
-### Google的大规模稀疏模型设计
-
-[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
-
-代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
-
-## megatron-lm
-
-[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
-
-## deepspeed
-
-[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
-
-
-## ray-llm
-
-[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
-
-
-## MOD
-
-[Mixture-of-Depths: Dynamically allocating compute in transformer-based language models](https://arxiv.org/pdf/2404.02258.pdf)
-
-## multi-head moe
-
-[微软让MoE长出多个头，大幅提升专家激活率](https://mp.weixin.qq.com/s/ZCRyb63M2DL4hOQh7uxxaw)
-
-[Multi-Head Mixture-of-Experts](https://arxiv.org/pdf/2404.15045)
-
-[https://github.com/yushuiwx/MH-MoE](https://github.com/yushuiwx/MH-MoE)
-
-
-
-## Google的几大LLM加速工具
-
-### maxdiffusion
-
-[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
-
-### JetStream
-
-[https://github.com/google/JetStream](https://github.com/google/JetStream)
-
-### maxtext
-
-[https://github.com/google/maxtext](https://github.com/google/maxtext)
-
 # 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
@@ -4485,26 +4622,6 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)
-
-# 世界模型
-
-[怒斥Sora之后，LeCun放出「视觉世界模型」论文，揭示AI学习物理世界的关键​](https://mp.weixin.qq.com/s/KY-bTD-bxdB3Q-q97Gv7fg)
-
-[100万token，一次能分析1小时YouTube视频，「大世界模型」火了](https://mp.weixin.qq.com/s/8ONe7_ejQQIT1UwqDGK-vg)
-
-[WORLD MODEL ON MILLION-LENGTH VIDEO AND LANGUAGE WITH RINGATTENTION](https://arxiv.org/pdf/2402.08268.pdf)
-
-[https://github.com/LargeWorldModel/LWM](https://github.com/LargeWorldModel/LWM)
-
-[Sora是世界模拟器吗？全球首篇综述全面解析通用世界模型](https://mp.weixin.qq.com/s/rkq7NXGvB0O1Kstd_mTNJQ)
-
-[Is Sora a World Simulator? A Comprehensive Survey on General World Models and Beyond](https://arxiv.org/pdf/2405.03520)
-
-# Q*
-
-[这就是OpenAI神秘的Q*？斯坦福：语言模型就是Q函数](https://mp.weixin.qq.com/s/Mz_k5ensgiuXu-3cFQ1Dkw)
-
-[From r to Q*: Your Language Model is Secretly a Q-Function](https://arxiv.org/pdf/2404.12358.pdf)
 
 # LLM+推荐
 
@@ -5177,271 +5294,157 @@ XXX
 L=\frac{L_{c l}+\alpha L_{g e n}}{1+\alpha},
 XXX
 
+
+# 世界模型
+
+[怒斥Sora之后，LeCun放出「视觉世界模型」论文，揭示AI学习物理世界的关键​](https://mp.weixin.qq.com/s/KY-bTD-bxdB3Q-q97Gv7fg)
+
+[100万token，一次能分析1小时YouTube视频，「大世界模型」火了](https://mp.weixin.qq.com/s/8ONe7_ejQQIT1UwqDGK-vg)
+
+[WORLD MODEL ON MILLION-LENGTH VIDEO AND LANGUAGE WITH RINGATTENTION](https://arxiv.org/pdf/2402.08268.pdf)
+
+[https://github.com/LargeWorldModel/LWM](https://github.com/LargeWorldModel/LWM)
+
+[Sora是世界模拟器吗？全球首篇综述全面解析通用世界模型](https://mp.weixin.qq.com/s/rkq7NXGvB0O1Kstd_mTNJQ)
+
+[Is Sora a World Simulator? A Comprehensive Survey on General World Models and Beyond](https://arxiv.org/pdf/2405.03520)
+
+# Q*
+
+[这就是OpenAI神秘的Q*？斯坦福：语言模型就是Q函数](https://mp.weixin.qq.com/s/Mz_k5ensgiuXu-3cFQ1Dkw)
+
+[From r to Q*: Your Language Model is Secretly a Q-Function](https://arxiv.org/pdf/2404.12358.pdf)
+
+
 # LLM+其他
 
 [【LLM-数学】MathScale 用于数学推理的指令调优扩展方法](https://mp.weixin.qq.com/s/tQUIGdViMZTb_9NNh3b3RQ)
 
 [MathScale: Scaling Instruction Tuning for Mathematical Reasoning](https://arxiv.org/pdf/2403.02884.pdf)
 
-# 新的架构
+# LLM常见难题
 
-## SSM
+## 重复生成
 
-[挑战Transformer的Mamba是什么来头？作者博士论文理清SSM进化路径](https://mp.weixin.qq.com/s/oXSwnL0sD96nnnqJyko7UA)
+[https://www.zhihu.com/question/616130636](https://www.zhihu.com/question/616130636)
 
-[Pretraining Without Attention](https://arxiv.org/pdf/2212.10544.pdf) 
-
-[预训练无需注意力，扩展到4096个token不成问题，与BERT相当](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650864837&idx=2&sn=c57f0b8a7daf7d45093448c8ff5df3fc&chksm=84e538bbb392b1ad857f3ad2c2d6d6dbc9562ff492a7cda336dc07abe4d3912c19fa4c30d365&scene=21#wechat_redirect)
-
-[Diffusion Models Without Attention](https://arxiv.org/pdf/2311.18257.pdf)
-
-[丢掉注意力的扩散模型：Mamba带火的SSM被苹果、康奈尔盯上了](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650900014&idx=4&sn=315ca75ba700a93598b5c581ad2fb735&chksm=84e44250b393cb4619e7c24b9f6affe88e4c71ebb97d0c43b5301edd0a11154af6322f68cfd4&scene=21#wechat_redirect)
-
-[Long Range Language Modeling via Gated State Spaces](https://arxiv.org/abs/2206.13947) 认为 Transformer 和 SSM 完全可以互补。
-
-选择性状态空间模型(selective state space model)是Mamba论文作者Albert Gu此前主导研发的S4架构(Structured State Spaces for Sequence Modeling)的一个简单泛化。
-
-[https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf](https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf)
-
-序列模型在训练和推理时的侧重点：
-
-+ 训练时：在整个list上计算loss，需要优化forward的耗时
-+ 推理时：一次输入一个时间步，需要高效地顺序处理
-
-### SSM原理
-
-输入$$u(t) \in \mathbb{R}$$，输出是$$y(t) \in \mathbb{R}$$，引入**状态**$$x(t) \in \mathbb{R}^N$$，目标是学习映射$$u(t) \mapsto y(t)$$，
-
-XXX
-\begin{aligned}
-x^{\prime}(t) & =\boldsymbol{A} x(t)+\boldsymbol{B} u(t) \\
-y(t) & =\boldsymbol{C} x(t)+\boldsymbol{D} u(t)
-\end{aligned}
-XXX
-
-结合[维基百科](https://en.wikipedia.org/wiki/State-space_representation)的图，方便理解
-
-![ssm](../assets/ssm.png)
-
-各变量含义如下（看起来和RNN很像）：
-
-+ $$\boldsymbol{A}\in \mathbb{R}^{N\times N}$$：状态矩阵
-+ $$\boldsymbol{B}\in \mathbb{R}^{N\times N}$$：输入矩阵
-+ $$\boldsymbol{C}\in \mathbb{R}^{N\times N}$$：输出矩阵
-+ $$\boldsymbol{D}\in \mathbb{R}^{N\times N}$$：feedforward矩阵或者feedthrough矩阵
-+ $$x^{\prime}(t):=\frac{d}{d t} \mathbf{x}(t)$$是$$x(t)$$关于$$t$$的导数，所以图里有一个**积分**$$\int$$操作把它变回$$x(t)$$
-
-假设序列长度为$$L$$，那么
-
-+ 时间复杂度：
-    + SSM：$$O(N^2L)$$，因为$$\boldsymbol{A} x(t)$$是$$N\times N$$和$$N\times 1$$的矩阵乘法，复杂度是$$N^2$$
-    + RNN：$$O(N^2L)$$，和SSM类似
-    + CNN：$$O(kLM^2)$$，假设$$k$$个卷积核，每个卷积核$$M\times M$$，一般$$M \ll N$$
-+ 空间复杂度：
-    + SSM：$$O(N^2+NL)$$，因为中间状态$$x(t) \in \mathbb{R}^N$$是需要**额外存储**的
-    + RNN：$$O(N^2)$$，所有时间步共享权重，不需要像SSM专门为每个时间步存一个状态$$x(t)$$
-    + CNN：$$kM^2$$
-
-所以传统SSM的时空复杂度都很高，作者提出了S4(structured state space model)
-
-## Mamba
-
-[Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)
-
-[https://huggingface.co/state-spaces](https://huggingface.co/state-spaces)
-
-[https://github.com/havenhq/mamba-chat](https://github.com/havenhq/mamba-chat)
-
-[MODELING SEQUENCES WITH STRUCTURED STATE SPACES](https://stacks.stanford.edu/file/druid:mb976vf9362)
-
-## Block-State Transformer
-
-[Block-State Transformer](https://arxiv.org/pdf/2306.09539.pdf)
-
-## Jamba
-
-[Mamba做大做强！混合Transformer，打败Transformer](https://mp.weixin.qq.com/s/Lde0G_zysfrGcRUX5nOf8g)
-
-[https://huggingface.co/ai21labs/Jamba-v0.1](https://huggingface.co/ai21labs/Jamba-v0.1)
-
-## Hawk & Griffin
-
-[RNN效率媲美Transformer，谷歌新架构两连发：同等规模强于Mamba](https://mp.weixin.qq.com/s/RtAZiEzjRWgqQw3yu3lvcg)
+[https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
 
 
+## llm+db
 
-## feedback attention memory
+[长文本杀不死RAG：SQL+向量驱动大模型和大数据新范式，MyScale AI数据库正式开源](https://mp.weixin.qq.com/s/JvyKnEbdOSb1fTwhiQTO5A)
 
-[TransformerFAM: Feedback attention is working memory](https://arxiv.org/pdf/2404.09173.pdf)
+[https://github.com/myscale/myscaledb](https://github.com/myscale/myscaledb)
 
-## infini-attention
+## 记忆能力
 
-[Leave No Context Behind: Efficient Infinite Context Transformers with Infini-attention](https://arxiv.org/pdf/2404.07143.pdf)
+[Localizing Paragraph Memorization in Language Models](https://arxiv.org/pdf/2403.19851v1.pdf)
 
-[【重磅】谷歌重塑Transformer：无限记忆力，无限长输入，LLM基础研究重大突破](https://mp.weixin.qq.com/s/bV2b9uJ4GFQPhhggHT3VIA)
+对应代码：[https://github.com/googleinterns/localizing-paragraph-memorization](https://github.com/googleinterns/localizing-paragraph-memorization)
 
-将**压缩记忆**整合进标准的点积注意力机制，并在单个Transformer块内同时实现了**掩码局部注意力**和**长期线性注意力机制**
+我们能否定位出语言模型中用于记忆其训练数据中整段文字的权重和机制？
 
-![infini-attention](../assets/infini-attention.png)
++ 尽管记忆现象分布在模型的多个层级和组件中，但记忆段落的梯度在空间上有可辨别的模式，即**在较低模型层级的梯度比非记忆example的梯度大**。
++ 通过**仅微调高梯度的权重**，可以使模型**遗忘记忆的example**。
++ 定位了一个特别参与段落记忆的**低层注意力头**，它**主要关注**在语料库级单词频率分布中**最不频繁出现的独特、罕见的token**。
++ 总的来说，相较非记忆的续写，记忆续写不仅**更难以遗忘**，也**更难以损坏**。
 
-与transformer-xl对比：
 
-![infini-attention-vs-transformer-xl](../assets/infini-attention-vs-transformer-xl.png)
+## 越狱
 
-[https://github.com/mustafaaljadery/gemma-2B-10M](https://github.com/mustafaaljadery/gemma-2B-10M)
+[长文本之罪：Claude团队新越狱技术，Llama 2到GPT-4无一幸免](https://mp.weixin.qq.com/s/C0opoIzLCFojfmoa6poM8A)
 
-[https://github.com/dingo-actual/infini-transformer](https://github.com/dingo-actual/infini-transformer)
+## ReadAgent
 
-## MEGA
+[「有效上下文」提升20倍！DeepMind发布ReadAgent框架](https://mp.weixin.qq.com/s/xXJqJeqf8mzP9VW9kLIdgQ)
 
-[Mega: Moving average equipped gated attention](https://arxiv.org/pdf/2209.10655.pdf)
+## 高质量数据
 
-[https://github.com/facebookresearch/mega](https://github.com/facebookresearch/mega)
+[Llama架构比不上GPT2？神奇token提升10倍记忆？](https://mp.weixin.qq.com/s/TMkn6yMTUrrGhxCQnd7_2g)
 
-### 标准的self-attention公式
+[Physics of Language Models: Part 3.3, Knowledge Capacity Scaling Laws](https://arxiv.org/pdf/2404.05405.pdf)
 
-&nbsp;
+制造**人工合成数据**，通过控制数据中知识的数量和类型，来严格调控数据中的**知识比特数 (bits)**。使用不同大小和架构的 LLM 在人工合成数据上进行训练，并给出数学定理，来精确计算训练好的模型从数据中**学到了多少比特的知识**。有如下几个发现：
 
-对于序列长度=$$n$$的输入$$\boldsymbol{X}=\left\{\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n\right\} \in \mathbb{R}^{n \times d}$$，输出$$\boldsymbol{Y}=\left\{\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_n\right\} \in \mathbb{R}^{n \times d}$$
++ 如果**训练时间充足**，不论使用何种模型架构，模型的**存储效率**均可以达到**2bit/param**（即平均每个模型参数可以存储2比特的信息）。而且发现transformer中的知识**并非主要存储在MLP层**，因为即便移除所有MLP层，模型仍能达到 2bit/param 的存储效率。
++ 如果**训练时间不充足**，GPT2模型能比LlaMA/Mistral存储超过30%的知识，主要是因为**GatedMLP(MoE)**会导致**训练不稳定**，因此对同样的知识，需要**更长的训练时间**。
++ **压缩/量化**的影响：将训练好的模型从float32/16压缩到int8，对知识的存储**毫无影响**。LLM可以达到“**信息论极限**”的**1/4**——因为int8只有8比特，但平均每个参数可以存储2比特的知识。
++ **高质量数据**的影响：如果我们的预训练数据中，有1/8来自高质量知识库（如百度百科），7/8来自低质量数据（如common crawl或论坛对话，甚至是完全随机的垃圾数据），会发现：
+    + 即使对高质量数据的训练时间保持一致，**低质量数据的存在本身**可能会让模型对**高质量知识的存储量下降20倍**，即便将高质量数据的训练时间延长 3倍，知识储量仍会降低3倍
+    + 解法：只需给所有的预训练数据**加上自己的网站域名token即可**，模型的知识存储量可以立即回升10倍，模型**不需要任何先验知识**来识别哪些网站上的知识是金子，而可以在预训练过程中，自动发现高质量知识的网站，并**自动为这些高质量数据腾出存储空间**。
+
+## 可解释AI
+
+[XAI有什么用？探索LLM时代利用可解释性的10种策略](https://mp.weixin.qq.com/s/V35k4UJZPtJkAHqYlZiO1A)
+
+[Usable XAI: 10 Strategies Towards Exploiting Explainability in the LLM Era](https://arxiv.org/pdf/2403.08946.pdf)
+
+[https://github.com/JacksonWuxs/UsableXAI_LLM](https://github.com/JacksonWuxs/UsableXAI_LLM)
+
+
+# 多智能体
+
+[《综述：全新大语言模型驱动的Agent》——4.5万字详细解读复旦NLP和米哈游最新Agent Survey](https://zhuanlan.zhihu.com/p/656676717)
+
+[Agent > GPT5？吴恩达最新演讲：四种 Agent 设计范式（通俗易懂版）](https://mp.weixin.qq.com/s/6sh39yEO4YGZI-BGPjJnCg)
+
+## JAT
+
+[告别偏科，能玩转多模态、多任务、多领域的强化智能体终于来了](https://mp.weixin.qq.com/s/2GBB-w7hBf6equtqD8V0Lg)
+
+[Jack of All Trades, Master of Some, a Multi-Purpose Transformer Agent](https://arxiv.org/pdf/2402.09844)
+
+[https://github.com/huggingface/jat](https://github.com/huggingface/jat)
+
+[https://huggingface.co/datasets/jat-project/jat-dataset](https://huggingface.co/datasets/jat-project/jat-dataset)
+
+![jat](../assets/jat.png)
+
+输入的序列元素是observations, actions, 和rewards的交替组合：
 
 XXX
-\boldsymbol{Y}=\operatorname{Attn}(\boldsymbol{X})=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \boldsymbol{V}
+\left[\phi\left(s_0, 0.0\right), \phi\left(a_0\right), \phi\left(s_1, r_1\right), \phi\left(a_1\right), \ldots\right]
 XXX
 
-XXX
-\boldsymbol{Q}=\boldsymbol{X} W_q+b_q,\boldsymbol{K}=\boldsymbol{X} W_k+b_k,\boldsymbol{V}=\boldsymbol{X} W_v+b_v
-XXX
+依据不同输入的数据类型，使用不同网络处理：
 
-其中，$$\text { Attn : } \mathbb{R}^{n \times d} \rightarrow \mathbb{R}^{n \times d}$$，$$W_q, W_k, W_v \in \mathbb{R}^{d \times d}$$，$$b_q, b_k, b_v \in \mathbb{R}^d$$，而且有两种定义方式：
++ 图像：用CNN。
++ 连续向量：用线性层
++ 离散值：用线性投影层
 
-+ $$f(\cdot)=f_{\text {softmax }}(\cdot)$$，同时$$\tau(\boldsymbol{X})=\sqrt{d}$$，这是经典操作[Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/pdf/1409.0473.pdf)
-+ $$f(\cdot)=f_{\mathrm{relu}^2}(\cdot)$$即$$relu(x)^2$$，同时$$\tau(\boldsymbol{X})=n$$，这是[Primer: Searching for efficient transformers for language modeling](https://arxiv.org/pdf/2109.08668.pdf)和[Transformer Quality in Linear Time](https://arxiv.org/pdf/2202.10447.pdf)提出的
+预测任务：根据所有先前的观察和动作嵌入来预测下一个动作嵌入。
 
-![gau](../assets/gau.png)
+序列的构造方法：
 
-对于$$h$$个attention heads，计算$$\boldsymbol{A}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \in \mathbb{R}^{n \times n}$$需要的时间和空间复杂度都是$$O(hn^2)$$
++ 和文本相关的任务：用 GPT-2 的分词策略，将文本转换为一个整数序列，然后emb lookup映射到一个嵌入向量序列。
++ 和图像有关的任务：用ViT，将图像切割成小块后，通过线性层转换为嵌入向量序列。
++ 最终再将图像和文本的向量序列拼接在一起，形成一个统一的序列，输入到 Transformer 中。
 
-### EMA
+# 一些其他比较重要的工作
 
-&nbsp;
+## 几篇出现频率比较高的论文
 
-对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)如下
+[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf) 引用数800+
 
-XXX
-\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha}) \odot \mathbf{y}_{t-1}
-XXX
+[How can we know what language models know?](https://arxiv.org/pdf/1911.12543.pdf) 引用数800+
 
-其中，$$\boldsymbol{\alpha} \in(0,1)^d$$表示权重衰减，$$\odot$$是element-wise product
+[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)引用1800+
 
-$$\boldsymbol{\alpha}$$越大，$$1-\boldsymbol{\alpha}$$越小，对历史的衰减也越快：
+## Anthropic的一些工作
 
-![ema](../assets/ema.png)
+[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)
 
-EMA的计算看成$$n$$个**独立的卷积**，可以通过**FFT(快速傅立叶变换)**来加速计算。具体。。。再看看
+[Studying Large Language Model Generalization with Influence Functions](https://arxiv.org/pdf/2308.03296.pdf)
 
-**Damped EMA**：由于输入的x是d维向量，可以引入一个因子$$\boldsymbol{\delta} \in(0,1)^d$$让EMA更鲁棒：
-
-XXX
-\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha} \odot \boldsymbol{\delta}) \odot \mathbf{y}_{t-1}
-XXX
-
-### MEGA
-
-&nbsp;
-
-EMA可以看成是一种**与位置相关的归纳偏置（inductive bias）**，即假设当前位置与之前位置满足滑动平均的关系，而attention矩阵的计算其实并没有考虑位置信息，所以可以把二者结合一下。
-
-![mega](../assets/mega.png)
-
-其中的multi-dimensional damped EMA大致流程如下：
-
-+ **先变成h维**：先把$$\boldsymbol{X} \in \mathbb{R}^{n \times d}$$通过矩阵$$\beta$$映射成$$\boldsymbol{U}\in \mathbb{R}^{n \times h}$$
-+ **计算EMA**：然后通过EMA得到$$\boldsymbol{h}\in \mathbb{R}^{n \times h}$$（具体$$\mathbf{h}_t^{(j)}=\boldsymbol{\alpha}_j \odot \mathbf{u}_t^{(j)}+\left(1-\boldsymbol{\alpha}_j \odot \boldsymbol{\delta}_j\right) \odot \mathbf{h}_{t-1}^{(j)}$$）
-+ **再变回d维**：再通过一个矩阵$$\eta$$变回$$\boldsymbol{Y}\in \mathbb{R}^{n \times h}$$
-
-然后看整个流程：
-
-+ 先计算EMA
-
-XXX
-\begin{aligned}
-\boldsymbol{X}^{\prime} & =\operatorname{EMA}(\boldsymbol{X}) & & \in \mathbb{R}^{n \times d} \\
-\boldsymbol{Z} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_z+b_z\right) & & \in \mathbb{R}^{n \times z}
-\end{aligned}
-XXX
-
-+ 再基于EMA的结果计算QK，基于原始的X计算V：
-
-XXX
-\begin{array}{ll}
-\boldsymbol{Q}=\boldsymbol{\kappa}_q \odot \boldsymbol{Z}+\boldsymbol{\mu}_q & \in \mathbb{R}^{n \times z} \\
-\boldsymbol{K}=\boldsymbol{\kappa}_k \odot \boldsymbol{Z}+\boldsymbol{\mu}_k & \in \mathbb{R}^{n \times z} \\
-\boldsymbol{V}=\phi_{\text {silu }}\left(\boldsymbol{X} W_v+b_v\right) & \in \mathbb{R}^{n \times v}
-\end{array}
-XXX
-
-+ 计算带位置bias的attention：
-
-XXX
-\boldsymbol{O}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}+\boldsymbol{b}_{\mathrm{rel}}\right) \boldsymbol{V} \quad \in \mathbb{R}^{n \times v}
-XXX
-
-+ 通过reset gate $$\boldsymbol{\gamma}$$和update gate $$\boldsymbol{\varphi}$$计算输出
-
-XXX
-\begin{aligned}
-\boldsymbol{\gamma} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_\gamma+b_\gamma\right) & & \in \mathbb{R}^{n \times v} \\
-\boldsymbol{\varphi} & =\phi_{\text {sigmoid }}\left(\boldsymbol{X}^{\prime} W_{\varphi}+b_{\varphi}\right) & & \in \mathbb{R}^{n \times d} \\
-\hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d} \\
-\boldsymbol{Y}&=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
-\end{aligned}
-XXX
+[Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
 
 
-这里把attention里的softmax改成了如下的laplace函数：
+## ChatGLM
 
-XXX
-f_{\text {laplace }}(x ; \mu, \sigma)=0.5 \times\left[1+\operatorname{erf}\left(\frac{x-\mu}{\sigma \sqrt{2}}\right)\right]
-XXX
+ACL22 [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/abs/2103.10360)
 
-其中，$$\operatorname{erf}(x)=\frac{1}{\sqrt{\pi}} \int_{-x}^x e^{-t^2} \mathrm{~d} t=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} \mathrm{~d} t$$是[误差函数](https://zh.wikipedia.org/wiki/%E8%AF%AF%E5%B7%AE%E5%87%BD%E6%95%B0)，
-
-为了让laplace逼近$$f_{\text {relu }^2}$$，对于$$x=\sqrt{2}$$这个点，求解如下方程
-
-XXX
-\begin{aligned}
-& f_{\text {relu2 }}(\sqrt{2})=f_{\text {laplace }}(\sqrt{2}) \\
-& f_{\text {relu2 }}^{\prime}(\sqrt{2})=f_{\text {laplace }}^{\prime}(\sqrt{2})
-\end{aligned}
-XXX
-
-可以得到$$\mu=\sqrt{1 / 2}$$，$$\sigma=\sqrt{1 / 4 \pi}$$，对应的曲线和准确率如下：
-
-![laplace-vs-relu2](../assets/laplace-vs-relu2.png)
-
-### mega-chunk
-
-![mega-chunk](../assets/mega-chunk.png)
-
-将序列切分成长度固定为$$c$$的$$k=n/c$$个chunk，对**每个chunk独立计算**上面的attention，这样复杂度就变成了$$O(kc^2)=O(nc)$$，由于有EMA，所以这样做还是能够保持一定程度的长距离依赖。
-
-## MEGALODON
-
-[Meta无限长文本大模型来了：参数仅7B，已开源](https://mp.weixin.qq.com/s/VML5hExo5iPsyEavxzIZSA)
-
-[革命新架构掀翻Transformer！无限上下文处理，2万亿token碾压Llama 2](https://mp.weixin.qq.com/s/xgP9P51gjqJ93FYSWfPeaA)
-
-[MEGALODON: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
-
-[https://github.com/XuezheMax/megalodon](https://github.com/XuezheMax/megalodon)
-
-[Megalodon: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
-
-基于MEGA进行改进，能够同时实现
-
-+ 高效训练（减少通信和计算量）
-+ 高效推理（保持恒定的KV缓存）
-
+iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
 
 
 
