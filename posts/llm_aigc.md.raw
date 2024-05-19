@@ -2138,7 +2138,7 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 [RecurrentGemma: Moving Past Transformers for Efficient Open Language Models](https://storage.googleapis.com/deepmind-media/gemma/recurrentgemma-report.pdf)
 
-在infer阶段，需要检索**KV cache**，并加载到内存中，而KV cache会随着序列长度线性增长。[Longformer: The Long-Document Transformer](https://arxiv.org/pdf/2004.05150)通过**local attentnion**来降低cache大小，但模型效果会变差。recurrent gemma将输入序列**压缩到一个固定大小的state中**，从而不会降低效果，对长序列能降低内存占用并高效infer。
+在infer阶段，需要检索**KV cache**，并加载到内存中，而KV cache会随着序列长度线性增长。[Longformer: The Long-Document Transformer](https://arxiv.org/pdf/2004.05150)通过**local attention**来降低cache大小，但模型效果会变差。recurrent gemma将输入序列**压缩到一个固定大小的state中**，从而不会降低效果，对长序列能降低内存占用并高效infer。
 
 基于Griffin架构，将**门控线性递归**与**本地滑动窗口注意力**混合在一起，在生成长序列时实现快速推理，相比gemma：
 
@@ -2185,7 +2185,7 @@ def forward(self, ...):
 具体参数：
 
 | 变量 | 大小 |
-|--------|--------|
+|----------|-------------|
 | 总参数量 | 2.7b |
 | 非emb参数量 | 2.0b |
 | emb参数量 | 0.7b |
