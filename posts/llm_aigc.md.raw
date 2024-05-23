@@ -3180,6 +3180,9 @@ Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 
 [时隔一年Falcon回归！110亿参数5.5万亿token，性能超越Llama 3](https://mp.weixin.qq.com/s/CZNVl_GmYm_aPidMJrRHUg)
 
+### MiniCPM
+
+[登顶Top2！MiniCPM-V 8B新版本：GPT-4V水准小钢炮，8G显存，4070轻松推理！](https://mp.weixin.qq.com/s/TQVHJlZDExD3nMPRsqa_5w)
 
 
 # 微调
@@ -5341,6 +5344,12 @@ XXX
 
 [Is Sora a World Simulator? A Comprehensive Survey on General World Models and Beyond](https://arxiv.org/pdf/2405.03520)
 
+[世界模型也扩散！训练出的智能体竟然不错](https://mp.weixin.qq.com/s/AWt1Jgvr2aj6sjkGRV9-hg)
+
+[Diffusion for World Modeling: Visual Details Matter in Atari](https://arxiv.org/pdf/2405.12399)
+
+[https://github.com/eloialonso/diamond](https://github.com/eloialonso/diamond)
+
 # Q*
 
 [这就是OpenAI神秘的Q*？斯坦福：语言模型就是Q函数](https://mp.weixin.qq.com/s/Mz_k5ensgiuXu-3cFQ1Dkw)
@@ -5470,6 +5479,10 @@ XXX
 [Studying Large Language Model Generalization with Influence Functions](https://arxiv.org/pdf/2308.03296.pdf)
 
 [Measuring Faithfulness in Chain-of-Thought Reasoning](https://www-files.anthropic.com/production/files/measuring-faithfulness-in-chain-of-thought-reasoning.pdf)
+
+[从Claude 3中提取数百万特征，首次详细理解大模型的「思维」](https://mp.weixin.qq.com/s/cZhmvAva6NDLG84kD819Ww)
+
+[Scaling Dictionary Learning to Claude 3 Sonnet](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html)
 
 
 ## ChatGLM
@@ -5705,3 +5718,5 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 [Ilya Sutskever的推荐清单](https://arc.net/folder/D0472A20-9C20-4D3F-B145-D2865C0A9FEE)
 
 [2024年大模型LLM还有哪些可研究的方向？](https://www.zhihu.com/question/637595961)
+
+[Hinton万字访谈：用更大模型「预测下一个词」值得全力以赴](https://mp.weixin.qq.com/s/OydltjpVwsQ7hNBH6hq_Og)
