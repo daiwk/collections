@@ -1661,9 +1661,80 @@ XXX
 
 [Griffin: Mixing Gated Linear Recurrences with Local Attention for Efficient Language Models](https://arxiv.org/pdf/2402.19427)
 
-global attention在infer阶段的效率和序列长度成二次关系，而且序列长度与KV cache呈线性增长关系。[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)提出的multi-query attention(MQA)可以通过一个constant factor来减小cache size，部分缓解这个问题，但cache还是与序列长度线性相关。
+### 简介
 
-而循环模型能够将整个序列压缩到一个fixed-size的hidden state，并通过迭代进行更新。
+global attention在infer阶段的效率和序列长度成二次关系，而且序列长度与KV cache呈线性增长关系。[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)提出的multi-query attention(MQA)可以通过一个**constant factor**来**减小cache size**，部分缓解这个问题，但cache还是与序列长度线性相关。
+
+循环模型能够将整个序列压缩到一个**fixed-size的hidden state**，并通过迭代进行更新。但要想取代transformer，rnn不仅需要在效果上可比，还要相似的硬件效率，相关工作如下：
+
++ [Efficiently modeling long sequences with structured state spaces](https://arxiv.org/pdf/2111.00396)
++ [Long range language modeling via gated state spaces](https://arxiv.org/pdf/2206.13947)提出了GSS block
++ [Simplified state space layers for sequence modeling](https://arxiv.org/pdf/2208.04933)
++ [Resurrecting Recurrent Neural Networks for Long Sequences](https://arxiv.org/pdf/2303.06349)
++ [Hungry hungry hippos: Towards language modeling with state space models](https://arxiv.org/pdf/2212.14052)
++ [Hyena hierarchy: Towards larger convolutional language models](https://arxiv.org/pdf/2302.10866)
++ [Mamba: Linear-time sequence modeling with selective state spaces](https://arxiv.org/pdf/2312.00752)
+
+本文提出了新的**RG-LRU层**，一种新的gated linear recurrent layer，并基于此提出了将MLP和RG-LRU结合的Hawk，还有将MLP和RG-LRU与local attention混合的Griffin。
+
+![griffin-hawk](../assets/griffin-hawk.png)
+
++ 对于最多超过7B的模型，Hawk和Griffin发现了**held-out loss**和**训练FLOPS**间的**power law scaling**（上图左边）
++ Hawk-3B比Mamba-3B在下游任务上要好，而训练的token数只有mamba的一半；Griffin-7B和14B与Llama-2效果相当，而训练数据只有其1/7
++ 训练在TPU-v3上完成，用JAX中的Pallas实现了RG-LRU(Real-Gated Linear Recurrent Unit)层的内核([https://jax.readthedocs.io/en/latest/pallas/index.html](https://jax.readthedocs.io/en/latest/pallas/index.html))，减小内存transfer
++ infer阶段比MQA的**吞吐高很多**（上图右边），而且对长序列有**更低的latency**
++ 训练时在长序列上比transformer更好，而且能够高效地学习**复制和检索**的任务。但如果没有finetune，直接对比pretrain的效果，transformer会更好
+
+### 网络结构
+
+包括三大类组件：
+
++ residual block: 
++ MLP block：
++ temporal-mixing block
+
+
+![griffin-arch](../assets/griffin-arch.png)
+
+#### Residual Block
+
+&nbsp;
+
+受pre-norm transformer的启发，用的RMSNorm
+
+#### MLP block
+
+&nbsp;
+
+参考[Language modeling with gated convolutional networks](https://arxiv.org/pdf/1612.08083)（类似star两个W直接element-wise product），采用了gated MLP，即如下两个linear的结果（输入维度$$D$$，输出维度都是$$MD,M=3$$）进行element-wise product(类似GeGLU（[Glu variants improve transformer]((https://arxiv.org/pdf/2002.05202.pdf))）)，再过一个linear
+
++ 直接过一个linear，但没有激活
++ linear后加一个GeLU激活
+
+#### Temporal-mixing block
+
+&nbsp;
+
+##### global Multi-Query Attention(MQA)
+
+&nbsp;
+
+[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)中为了加速推理，采用了MQA的方法，本文固定了head的维度为$$D_{head}=128$$，head的个数$$H$$也固定，且$$HD_{head}=D$$，所以model的维度$$D$$需要是128的倍数。没用绝对位置编码，用了RoPE。
+
+##### local(sliding-window) MQA
+
+&nbsp;
+
+[Longformer: The long-document transformer](https://arxiv.org/pdf/2004.05150)提出了可以用local attention，即滑动窗口attention。让每个位置只和前面的固定个tokens去算attentioin，可以
+
++ 降低计算的FLOPS
++ 让KV cache的size的上界变成了**window的size**，从而不是序列长度的二次关系
+
+##### RG-LRU
+
+&nbsp;
+
+类似GSS block，也类似Mamba
 
 ## feedback attention memory
 
