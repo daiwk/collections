@@ -373,7 +373,7 @@ item-embedding也可以参考[https://zhuanlan.zhihu.com/p/24339183?refer=deeple
 
 训练用的是logistic regression加上cross-entropy，
 
-logit和sigmoid的关系：
+logit和sigmoid的关系，odds表示一个事件的几率，即该事件**发生与不发生的概率比值**，x表示logit：
 
 XXX
 \begin{aligned}
@@ -384,8 +384,7 @@ XXX
 \end{aligned}
 XXX
 
-
-假设第i个正样本的播放时长是$$T_i$$，使用weighted logistic regression，将正样本的权重设为播放时长，而负样本的权重设为1，这样，假设总共有N个样本，有k个被点击了，就相当于有了$$\sum T_i$$个正样本，N-k个负样本。所以odds（注：一个事件的几率odds指该事件发生与不发生的概率比值）就是正样本数/负样本数=$$\frac{\sum T_i}{N-k}$$。
+假设第i个正样本的播放时长是$$T_i$$，使用weighted logistic regression，将正样本的权重设为播放时长，而负样本的权重设为1，这样，假设总共有N个样本，有k个被点击了，就相当于有了$$\sum T_i$$个正样本，N-k个负样本。所以odds就是正样本数/负样本数=$$\frac{\sum T_i}{N-k}$$。
 
 而实际中，点击率P很低，也就是k很小，而播放时长的期望是$$E(T)=\frac{\sum T_i}{N}$$，所以$$E(T)$$约等于$$E(T)(1+P)$$，约等于odds，即$$\frac{\sum T_i}{N-k}$$
 
