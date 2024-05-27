@@ -1928,6 +1928,12 @@ XXX
 
 [Lory: Fully Differentiable Mixture-of-Experts for Autoregressive Language Model Pre-training](https://arxiv.org/pdf/2405.03133)
 
+## Perciever
+
+[Perceiver: General Perception with Iterative Attention](https://arxiv.org/pdf/2103.03206.pdf)
+
+
+
 
 # 训练与预测方法
 
@@ -5779,6 +5785,10 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 
 [Understanding Back-Translation at Scale](https://arxiv.org/pdf/1808.09381v2.pdf)
 
+## nan问题
+
+[解决pytorch半精度amp训练nan问题](https://zhuanlan.zhihu.com/p/443166496)
+
 ## 其他
 
 [小模型性能饱和、表现不佳，根源是因为Softmax?](https://mp.weixin.qq.com/s/bvv-frM8bKhkZiqOa9nqDA)
@@ -5791,3 +5801,4 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 [2024年大模型LLM还有哪些可研究的方向？](https://www.zhihu.com/question/637595961)
 
 [Hinton万字访谈：用更大模型「预测下一个词」值得全力以赴](https://mp.weixin.qq.com/s/OydltjpVwsQ7hNBH6hq_Og)
+
