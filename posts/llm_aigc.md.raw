@@ -229,12 +229,6 @@ GPU的显存分成两部分：
 
 ## Transformer加速
 
-[https://github.com/NVIDIA/FasterTransformer](https://github.com/NVIDIA/FasterTransformer)
-
-remove padding的逻辑如下，把整个batch的数据变成一行数据，加上offset标注是哪一条样本的
-
-![effective_transformer](../assets/effective_transformer.png)
-
 # PLM：仅编码器/仅解码器/编码器+解码器
 
 ## 仅编码器的BERT
@@ -2440,6 +2434,27 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 [3倍生成速度还降内存成本，超越Medusa2的高效解码框架终于来了](https://mp.weixin.qq.com/s/Aw_bjXIQFdOJvN22UvW9UA)
 
 [CLLMs：Consistency Large Language Models](https://arxiv.org/pdf/2403.00835)
+
+### fasterTransformer
+
+[https://github.com/NVIDIA/FasterTransformer](https://github.com/NVIDIA/FasterTransformer)
+
+[https://github.com/NVIDIA/TensorRT-LLM/](https://github.com/NVIDIA/TensorRT-LLM/)
+
+remove padding的逻辑如下，把整个batch的数据变成一行数据，加上offset标注是哪一条样本的
+
+![effective_transformer](../assets/effective_transformer.png)
+
+### huggingface/text-generation-inference
+
+[https://huggingface.co/docs/text-generation-inference/index](https://huggingface.co/docs/text-generation-inference/index)
+
+[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/causal_lm.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/causal_lm.py)
+
+[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/seq2seq_lm.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/seq2seq_lm.py)
+
+[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py)
+
 
 ### 其他的一些加速库
 
