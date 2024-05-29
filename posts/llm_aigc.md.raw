@@ -2455,6 +2455,10 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py)
 
+直接有这么个脚本：
+
+[https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/recurrentgemma/convert_checkpoint.py](https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/recurrentgemma/convert_checkpoint.py)
+
 
 ### 其他的一些加速库
 
