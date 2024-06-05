@@ -5688,6 +5688,9 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/221
 
 [Revisiting Knowledge Distillation for Autoregressive Language Models](https://arxiv.org/pdf/2402.11890)
 
+### transformer-debugger
+
+[https://github.com/openai/transformer-debugger/tree/main](https://github.com/openai/transformer-debugger/tree/main)
 
 # 个性化搜索
 
