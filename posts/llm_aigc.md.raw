@@ -2081,6 +2081,12 @@ def xxx():
     + 梯度检查点：容易出现loss突增，PaLM和OPT从**发生突增前的一个ckpt重新开始训练**，并**跳过可能有问题的数据**
     + 缩减emb梯度：GLM发现emb的异常梯度通常会导致loss突增，故**缩减emb梯度**以缓解
 
+另外，swiglu会让act_norm变大，得加一些方式让模型能训动，一种方法是把weight_decay调小：
+
++ loss会变高==>[https://poe.com/s/Cv6lODy94INz1ozQKJYJ](https://poe.com/s/Cv6lODy94INz1ozQKJYJ)，正则项变大，L+norm中的L相对影响变小了，所以会变大，即为了防止过拟合，但可能eval的时候会更好
++ act_norm会降低20-30%，因为正则项更重要了，会让权重更接近0
+
+
 ### 混合精度训练
 
 &nbsp;
@@ -5668,6 +5674,19 @@ ACL22 [GLM: General Language Model Pretraining with Autoregressive Blank Infilli
 
 iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/2210.02414)
 
+## 一些别的topic
+
+### 白化
+
+在 transformer 领域里，“白化”（whitening）主要是指一种对句子嵌入进行后处理的方法，通过将句子向量的均值变为0，并将协方差矩阵变为单位矩阵，从而解决句子嵌入中的各向异性问题。这种技术能够提高句子嵌入在语义相似性任务中的表现，并且加快检索速度。
+
+[Whitening Sentence Representations for Better Semantics and Faster Retrieval](https://ar5iv.labs.arxiv.org/html/2103.15316)
+
+[Transformer Scale Gate for Semantic Segmentation](https://arxiv.org/pdf/2205.07056v1)
+
+### 蒸馏
+
+[Revisiting Knowledge Distillation for Autoregressive Language Models](https://arxiv.org/pdf/2402.11890)
 
 
 # 个性化搜索
