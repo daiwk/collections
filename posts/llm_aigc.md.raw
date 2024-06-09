@@ -1198,6 +1198,10 @@ XXX
 
 [Bigger is not Always Better: Scaling Properties of Latent Diffusion Models](https://arxiv.org/pdf/2404.01367.pdf)
 
+[腾讯混元、北大发现Scaling law「浪涌现象」，解决学习率调参难题](https://mp.weixin.qq.com/s/ff5_O0H5VQNkArKroJkEZQ)
+
+[Surge Phenomenon in Optimal Learning Rate and Batch Size Scaling](https://arxiv.org/pdf/2405.14578)
+
 ## 涌现能力
 
 ![llm-capabilities](../assets/llm-capabilities.png)
@@ -1575,6 +1579,12 @@ multi-token prediction，一次预估未来的k个词
 
 [LongRoPE：超越极限，将大模型上下文窗口扩展超过200万tokens](https://mp.weixin.qq.com/s/4ryyv59ofNOD--RCSdqktQ)
 
+### CoPE
+
+[解决Transformer根本缺陷，CoPE论文爆火：所有大模型都能获得巨大改进](https://mp.weixin.qq.com/s/JxB6JU6MxO3709mkg7penw)
+
+[Contextual Position Encoding: Learning to Count What’s Important](https://arxiv.org/pdf/2405.18719)
+
 
 ## SSM
 
@@ -1644,6 +1654,13 @@ XXX
 [https://github.com/havenhq/mamba-chat](https://github.com/havenhq/mamba-chat)
 
 [MODELING SEQUENCES WITH STRUCTURED STATE SPACES](https://stacks.stanford.edu/file/druid:mb976vf9362)
+
+## Mamba2
+
+[Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality](https://arxiv.org/pdf/2405.21060)
+
+[https://github.com/state-spaces/mamba](https://github.com/state-spaces/mamba)
+
 
 ## Block-State Transformer
 
@@ -1987,7 +2004,11 @@ XXX
 
 [Perceiver: General Perception with Iterative Attention](https://arxiv.org/pdf/2103.03206.pdf)
 
+## Aaren
 
+[Bengio等人新作：注意力可被视为RNN，新模型媲美Transformer，但超级省内存](https://mp.weixin.qq.com/s/mRt2A1n1CmO7uqzuLQHxkw)
+
+[Attention as an RNN](https://arxiv.org/pdf/2405.13956)
 
 
 # 训练与预测方法
@@ -2454,6 +2475,8 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 [Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
 
+[3万字详细解析清华大学最新综述工作：大模型高效推理综述](https://mp.weixin.qq.com/s/U9ESiWehnoKc9SnDz7DVKg)
+
 [A Survey on Efficient Inference for Large Language Models](https://arxiv.org/pdf/2404.14294)
 
 ### LayerSkip
@@ -2873,6 +2896,8 @@ class RMSNorm(torch.nn.Module):
 
 [Karpathy称赞，从零实现LLaMa3项目爆火，半天1.5k star](https://mp.weixin.qq.com/s/1poG0tEjmym1456mmR66nQ)
 
+[Karpathy点赞，这份报告教你如何用 LLaMa 3创建高质量网络数据集](https://mp.weixin.qq.com/s/luZGMG1RRUT4X_ckt8hsCQ)
+
 [https://github.com/naklecha/llama3-from-scratch](https://github.com/naklecha/llama3-from-scratch)
 
 三个版本：8B 和 70B 参数的模型，还有一个 405B 参数的密集模型（还在训练之中，但已经在逼近GPT-4的领域，例如84.8 MMLU vs. 86.5 4Turbo），8B版本基本上与Llama-2的最大版本一样强大。
@@ -3098,6 +3123,12 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 ### GLM
 
 &nbsp;
+
+### GLM-4
+
+[GLM-4开源版本终于来了：超越Llama3，多模态比肩GPT4V，MaaS平台也大升级](https://mp.weixin.qq.com/s/MqxiXeYs8dg_lynsUIR0Tg)
+
+[https://github.com/THUDM/GLM-4](https://github.com/THUDM/GLM-4)
 
 ### Pythia
 
@@ -3354,6 +3385,10 @@ Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 
 [登顶Top2！MiniCPM-V 8B新版本：GPT-4V水准小钢炮，8G显存，4070轻松推理！](https://mp.weixin.qq.com/s/TQVHJlZDExD3nMPRsqa_5w)
 
+## 小结
+
+[开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
+
 
 # 微调
 
@@ -3578,7 +3613,9 @@ huggingface开源了[Peft: State-of-the-art parameter-efficient fine-tuning meth
 
 [Parameter-Efficient Fine-Tuning for Large Models: A Comprehensive Survey](https://arxiv.org/pdf/2403.14608.pdf)
 
-#### lora变种
+## lora变种
+
+### DoRA
 
 [DoRA: Weight-Decomposed Low-Rank Adaptation](https://arxiv.org/pdf/2402.09353.pdf)
 
@@ -3643,6 +3680,14 @@ def replace_linear_with_dora(model):
             replace_linear_with_dora(module)
 
 ```
+
+### fourierft
+
+[ICML 2024 | 脱离LoRA架构，训练参数大幅减少，新型傅立叶微调来了](https://mp.weixin.qq.com/s/jaYeIfByJaWU5-4jBmnrzQ)
+
+[](https://arxiv.org/abs/2405.03003)
+
+[https://github.com/Chaos96/fourierft](https://github.com/Chaos96/fourierft)
 
 # 使用
 
@@ -4326,6 +4371,14 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 + [https://github.com/RLHFlow/RLHF-Reward-Modeling](https://github.com/RLHFlow/RLHF-Reward-Modeling)
 + [https://github.com/RLHFlow/Online-RLHF](https://github.com/RLHFlow/Online-RLHF)
 
+#### openrlhf
+
+[这个团队做了OpenAI没Open的技术，开源OpenRLHF让对齐大模型超简单](https://mp.weixin.qq.com/s/3JjnGXJTqqiLP9hC21THIg)
+
+[OpenRLHF: An Easy-to-use, Scalable and High-performance RLHF Framework](https://arxiv.org/pdf/2405.11143)
+
+[https://github.com/OpenLLMAI/OpenRLHF](https://github.com/OpenLLMAI/OpenRLHF)
+
 # RLHF变种
 
 ## 自我奖励
@@ -4333,6 +4386,14 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 [Self-Rewarding Language Models](https://arxiv.org/pdf/2401.10020)
 
 [「用 AI 训 AI」这事靠谱吗？](https://mp.weixin.qq.com/s/bLLoYDTpq8q7ExfwyDekOQ)
+
+## SimPO
+
+[全面超越DPO：陈丹琦团队提出简单偏好优化SimPO，还炼出最强8B开源模型](https://mp.weixin.qq.com/s/wJKiDU8t2RW2DpnqYR1h8w)
+
+[SimPO: Simple Preference Optimization with a Reference-Free Reward](https://arxiv.org/pdf/2405.14734)
+
+[https://github.com/princeton-nlp/SimPO](https://github.com/princeton-nlp/SimPO)
 
 # 多模态（图像）
 
@@ -4552,6 +4613,14 @@ DALL-E3：
 [Meta首发「变色龙」挑战GPT-4o，34B参数引领多模态革命！10万亿token训练刷新SOTA](https://mp.weixin.qq.com/s/HQC7F64ZIb-k-K_QLzFegg)
 
 [Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/pdf/2405.09818)
+
+## Vision-LSTM
+
+[原作者带队，LSTM卷土重来之Vision-LSTM出世](https://mp.weixin.qq.com/s/_9DYLbRkiXTU70nsXJLCDQ)
+
+[Vision-LSTM: xLSTM as Generic Vision Backbone](https://arxiv.org/pdf/2406.04303)
+
+[https://nx-ai.github.io/vision-lstm/](https://nx-ai.github.io/vision-lstm/)
 
 # 多模态（视频）
 
@@ -4829,6 +4898,10 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)
+
+[多模态大模型不够灵活，谷歌DeepMind创新架构Zipper：分开训练再「压缩」](https://mp.weixin.qq.com/s/F8wstkJyYiNJCbSqYq3Pbw)
+
+[Zipper: A Multi-Tower Decoder Architecture for Fusing Modalities](https://arxiv.org/pdf/2405.18669)
 
 # LLM+推荐
 
@@ -5479,7 +5552,7 @@ recsys23的[Leveraging Large Language Models for Sequential Recommendation](http
 
 meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Models](https://arxiv.org/pdf/2307.15780)
 
-
+[生成式推荐系统近期研究工作梳理](https://mp.weixin.qq.com/s/u2kVzgv8ntUIkyCZZXIYWg)
 
 ### time-LLM
 
@@ -5563,6 +5636,14 @@ XXX
 [Diffusion for World Modeling: Visual Details Matter in Atari](https://arxiv.org/pdf/2405.12399)
 
 [https://github.com/eloialonso/diamond](https://github.com/eloialonso/diamond)
+
+## pandora
+
+[通用世界模型问世：不学习就能生成新领域视频，可实时控制](https://mp.weixin.qq.com/s/Vj2W3BtKITV4mxwVhDJHzg)
+
+[Pandora : Towards General World Model with Natural Language Actions and Video States](https://world-model.maitrix.org/assets/pandora.pdf)
+
+[https://github.com/maitrix-org/Pandora](https://github.com/maitrix-org/Pandora)
 
 # Q*
 
@@ -5954,4 +6035,10 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 [2024年大模型LLM还有哪些可研究的方向？](https://www.zhihu.com/question/637595961)
 
 [Hinton万字访谈：用更大模型「预测下一个词」值得全力以赴](https://mp.weixin.qq.com/s/OydltjpVwsQ7hNBH6hq_Og)
+
+[ChatGPT如何「思考」？心理学和神经科学破解AI大模型，Nature发文](https://mp.weixin.qq.com/s/4nO4DQE6Llfo3fiFSPSMhQ)
+
+[适应多形态多任务，最强开源机器人学习系统「八爪鱼」诞生](https://mp.weixin.qq.com/s/HPTfOlw25F5JcvlY-Vy9Tw)
+
+[Octo: An Open-Source Generalist Robot Policy](https://arxiv.org/pdf/2405.12213)
 
