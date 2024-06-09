@@ -2010,10 +2010,16 @@ XXX
 
 [Attention as an RNN](https://arxiv.org/pdf/2405.13956)
 
+对query向量$$q$$的attention可以看成是一个函数，对输入的$$N$$个token $$x_{1: N}$$通过他们的key和value $$\left\{\left(k_i, v_i\right)\right\}_{i=1}^N$$ 变换成输出 $$\text { Attention }\left(q, k_{1: N}, v_{1: N}\right)$$，假设$$\bar{s}_i=\operatorname{dot}\left(q, k_i\right)$$，那么输出就是
+
+XXX
+o_N=\sum_{i=1}^N \operatorname{softmax}(s)_i v_i=\frac{\sum_{i=1}^N \exp \left(s_i\right) v_i}{\sum_{i=1}^N \exp \left(s_i\right)}=\frac{\hat{a}_N}{\hat{c}_N}
+XXX
+
+
 ## Matmul-free
 
 [从LLM中完全消除矩阵乘法，效果出奇得好，10亿参数跑在FPGA上接近大脑功耗](https://mp.weixin.qq.com/s/HUvGGug48nGBx067nCbkag)
-
 
 # 训练与预测方法
 
