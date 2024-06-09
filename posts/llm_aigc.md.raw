@@ -2452,10 +2452,6 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 + 减少Global Memory的大小
 + 加速attenttion的计算，因为读cache比访问Global Memory快多了。
 
-
-
-
-
 ## 推理速度优化
 
 ### 量化
