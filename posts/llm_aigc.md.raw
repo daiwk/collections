@@ -1448,6 +1448,7 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 
 [Prompt-prompted Mixture of Experts for Efficient LLM Generation](https://arxiv.org/pdf/2404.01365.pdf)
 
+[From Sparse to Soft Mixtures of Experts](https://arxiv.org/pdf/2308.00951): softmoe
 
 ## 主流框架
 
