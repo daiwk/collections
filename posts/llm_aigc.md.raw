@@ -1450,6 +1450,18 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 
 [From Sparse to Soft Mixtures of Experts](https://arxiv.org/pdf/2308.00951): softmoe
 
+MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优化**问题，有如下离散+稀疏的分配方法，都需要**辅助loss**来**平衡每个专家的负载**，以减少drop tokens：
+
++ 线性规划
++ 强化学习
++ 人为固定规则
++ 最优运输方法
++ 贪心topk token-choose-expert
++ 贪心topk expert-choose-token
+
+在softmoe中，假设N个token，S个slot，E个expert
+
+
 ## 主流框架
 
 + **编码器-解码器架构(encoder-decoder)**：标准Transformer，如T5、BART，**只有少数LLLM还用这种结构**，如Flan-T5
