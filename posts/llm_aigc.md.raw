@@ -3343,7 +3343,7 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 &nbsp;
 
-基于152个多样的任务，对比了从44M到208B（Gopher）的不同transformer，发现Gopher在大多数任务上均达到sota：
+[Scaling language models: Methods, analysis & insights from training gopher](https://arxiv.org/pdf/2112.11446.pdf)基于152个多样的任务，对比了从44M到208B（Gopher）的不同transformer，发现Gopher在大多数任务上均达到sota：
 
 | Model         | Layers | Number Heads | Key/Value Size | d_model | Max LR     | Batch Size |
 |---------------|--------|--------------|----------------|---------------|------------|------------|
