@@ -2212,7 +2212,64 @@ XXX
 
 ### many-to-many RNN
 
+要计算$$\left\{o_i=\operatorname{Attention}\left(q, x_{1: i}\right)\right\}_{i=1}^N$$，通过如下的并行前缀扫描算法，对于$$N$$个序列数据的$$N$$个前缀，通过关联运算符$$\oplus$$并行计算，能够高效地通过$$\left\{x_k\right\}_{k=1}^N$$计算$$\left\{\bigoplus_{i=1}^k x_i\right\}_{k=1}^N$$
 
+![parallel-prefix-scan](../assets/parallel-prefix-scan.png)
+
+由于$$\operatorname{Attention}\left(\mathrm{q}, \mathrm{x}_{1: \mathrm{k}}\right)=o_k=\frac{a_k}{c_k}$$，为了计算$$\left\{\text { Attention }\left(\mathrm{q}, \mathrm{x}_{1: \mathrm{k}}\right)\right\}_{k=1}^N$$，只需要先按这个并行扫描算法计算$$\left\{a_k\right\}_{k=1}^N$$、$$\left\{c_k\right\}_{k=1}^N$$和$$\left\{m_k\right\}_{k=1}^N$$，再把$$a_k$$和$$c_k$$结合起来就行。
+
+接来来定义三元组$$\left(\mathrm{m}_A, \mathrm{u}_A, \mathrm{w}_A\right)$$，其中
+
++ $$A$$：一些下标的集合
++ $$\mathrm{m}_A=\max _{i \in A} s_i$$
++ $$\mathrm{u}_A=\sum_{i \in A} \exp \left(s_i-\mathrm{m}_A\right)$$
++ $$\mathrm{w}_A=\sum_{i \in A} \exp \left(s_i-\mathrm{m}_A\right) v_i$$
+
+所以并行扫描算法的输入是$$\left\{\left(\mathrm{m}_{\{i\}}, \mathrm{u}_{\{i\}}, \mathrm{W}_{\{i\}}\right)\right\}_{i=1}^N=\left\{\left(s_i, 1, v_i\right)\right\}_{i=1}^N$$，再来定义操作$$\oplus$$：
+
+XXX
+\left(\mathrm{m}_A, \mathrm{u}_A, \mathrm{w}_A\right) \oplus\left(\mathrm{m}_B, \mathrm{u}_B, \mathrm{w}_B\right)=\left(\mathrm{m}_{A \cup B}, \mathrm{u}_{A \cup B}, \mathrm{w}_{A \cup B}\right)
+XXX
+
+其中，
+
++ $$\mathrm{m}_{A \cup B}=\max \left(\mathrm{m}_A, \mathrm{~m}_B\right)$$
++ $$\mathrm{u}_{A \cup B}=\mathrm{u}_A \exp \left(\mathrm{m}_A-\mathrm{m}_{A \cup B}\right)+\mathrm{u}_B \exp \left(\mathrm{m}_B-\mathrm{m}_{A \cup B}\right)$$
++ $$\mathrm{W} A \cup B=\mathrm{w}_A \exp \left(\mathrm{m}_A-\mathrm{m}_{A \cup B}\right)+\mathrm{w}_B \exp \left(\mathrm{m}_B-\mathrm{m}_{A \cup B}\right)$$
+
+这个并行扫描算法最终输出下式，即$$\left\{\left(m_k, c_k, a_k\right)\right\}_{k=1}^N$$：
+
+XXX
+\left\{\left(\mathrm{m}_{\{1, \ldots, k\}}, \mathrm{u}_{\{1, \ldots, k\}}, \mathrm{w}_{\{1, \ldots, k\}}\right)\right\}_{k=1}^N=\left\{\left(m_k, \sum_{i=1}^k \exp \left(s_i-m_k\right), \sum_{i=1}^k \exp \left(s_i-m_k\right) v_i\right)\right\}_{k=1}^N
+XXX
+
+
+![many-to-many-rnn](../assets/many-to-many-rnn.png)
+
+### Aaren
+
+Aaren(attention as a recurrent newral network)的结构如下：
+
+XXX
+\begin{aligned}
+h_1^{(0)}, \ldots, h_N^{(0)} & \leftarrow x_1, \ldots, x_N \\
+{\left[h_1^{(j+1)}, \ldots, h_N^{(j+1)}\right] } & \leftarrow \operatorname{Aaren}\left(q^{(j)},\left[h_1^{(j)}, \ldots, h_N^{(j)}\right]\right)
+\end{aligned}
+XXX
+
+transformer的query是输入的token，而Aaren的query token $$q$$是在训练的过程中通过bp学习的。迭代地计算$$y_k$$只需要常数级的计算，因为它依赖$$h_{k-1}$$和$$x_k$$。
+
+transformer：
+
++ 使用kv cache时需要线性的内存
++ 需要保存所有之前的tokens，包括在中间层的那些
+
+aaren：
+
++ 只需要常数级的内存
++ 不需要保存之前的所有tokens
+
+![stacking-aaren](../assets/stacking-aaren.png)
 
 ## Matmul-free
 
