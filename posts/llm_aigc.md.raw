@@ -3343,6 +3343,16 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 &nbsp;
 
+基于152个多样的任务，对比了从44M到208B（Gopher）的不同transformer，发现Gopher在大多数任务上均达到sota：
+
+| Model         | Layers | Number Heads | Key/Value Size | d<sub>model</sub> | Max LR     | Batch Size |
+|---------------|--------|--------------|----------------|-------------------|------------|------------|
+| 44M           | 8      | 16           | 32             | 512               | $$6 \times 10^{-4}$$  | 0.25M      |
+| 117M          | 12     | 12           | 64             | 768               | $$6 \times 10^{-4}$$  | 0.25M      |
+| 417M          | 12     | 12           | 128            | 1,536             | $$2 \times 10^{-4}$$  | 0.25M      |
+| 1.4B          | 24     | 16           | 128            | 2,048             | $$2 \times 10^{-4}$$  | 0.25M      |
+| 7.1B          | 32     | 32           | 128            | 4,096             | $$1.2 \times 10^{-4}$$  | 2M        |
+| Gopher 280B | 80     | 128          | 128            | 16,384            | $$4 \times 10^{-5}$$  | 3M -> 6M    |
 
 ### T0
 
