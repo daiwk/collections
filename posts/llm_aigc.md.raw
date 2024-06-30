@@ -5039,6 +5039,13 @@ DALL-E3：
 + 现有基准可能无法为真实世界场景提供足够的指导 —— 视觉定基对于稳健的多模态理解至关重要
 
 
+## VCR
+
+[Bengio团队提出多模态新基准，直指Claude 3.5和GPT-4o弱点](https://mp.weixin.qq.com/s/Zy-kM3bvN-1oHondw1VLzw)
+
+[VCR: Visual Caption Restoration](https://arxiv.org/pdf/2406.06462)
+
+[https://github.com/tianyu-z/VCR](https://github.com/tianyu-z/VCR)
 
 
 # 多模态（视频）
@@ -6154,6 +6161,20 @@ XXX
 + **高质量数据**的影响：如果我们的预训练数据中，有1/8来自高质量知识库（如百度百科），7/8来自低质量数据（如common crawl或论坛对话，甚至是完全随机的垃圾数据），会发现：
     + 即使对高质量数据的训练时间保持一致，**低质量数据的存在本身**可能会让模型对**高质量知识的存储量下降20倍**，即便将高质量数据的训练时间延长 3倍，知识储量仍会降低3倍
     + 解法：只需给所有的预训练数据**加上自己的网站域名token即可**，模型的知识存储量可以立即回升10倍，模型**不需要任何先验知识**来识别哪些网站上的知识是金子，而可以在预训练过程中，自动发现高质量知识的网站，并**自动为这些高质量数据腾出存储空间**。
+
+## LLM+math
+
+[ICML 2024｜Transformer究竟如何推理？基于样例还是基于规则](https://mp.weixin.qq.com/s/aVRiGW3xU_LpvxZzjDpwzQ)
+
+[Case-Based or Rule-Based: How Do Transformers Do the Math?](https://arxiv.org/pdf/2402.17709)
+
+[https://github.com/GraphPKU/Case_or_Rule](https://github.com/GraphPKU/Case_or_Rule)
+
+## LLM compiler
+
+[开发者狂喜！Meta最新发布的LLM Compiler，实现77%自动调优效率](https://mp.weixin.qq.com/s/Js0lUS_5ZPspVLazthkEOg)
+
+[Meta Large Language Model Compiler: Foundation Models of Compiler Optimization](https://ai.meta.com/research/publications/meta-large-language-model-compiler-foundation-models-of-compiler-optimization/)
 
 ## 可解释AI
 
