@@ -2830,6 +2830,13 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [https://github.com/itsnamgyu/block-transformer](https://github.com/itsnamgyu/block-transformer)
 
+### MoonCake
+
+[月之暗面kimi底层推理系统方案揭秘](https://mp.weixin.qq.com/s/4SBRZKAjqcS2MkvnFPey_g)
+
+[Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving](https://github.com/kvcache-ai/Mooncake/blob/main/Mooncake-v1.pdf)
+
+[https://github.com/kvcache-ai/Mooncake/tree/main](https://github.com/kvcache-ai/Mooncake/tree/main)
 
 ### 其他的一些加速库
 
@@ -4765,6 +4772,13 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 CriticGPT依旧是自回归模型。标注者先向ChatGPT的响应输出中人为注入一些微妙的错误，CriticGPT针对这些有错误的答案生成批评意见，之后再由人类训练师为批评意见进行打分排名。
 
+## DeRa
+
+[ICML 2024 Spotlight | 在解码中重新对齐，让语言模型更少幻觉、更符合人类偏好](https://mp.weixin.qq.com/s/-9MjgNOLRrUdaQUF5tVv9w)
+
+[Decoding-time Realignment of Language Models](https://arxiv.org/pdf/2402.02992)
+
+[https://github.com/liutianlin0121/decoding-time-realignment](https://github.com/liutianlin0121/decoding-time-realignment)
 
 # 多模态（图像）
 
@@ -6184,6 +6198,13 @@ XXX
 
 [https://github.com/JacksonWuxs/UsableXAI_LLM](https://github.com/JacksonWuxs/UsableXAI_LLM)
 
+## ProLong
+
+[2024 年了，你的长文本训练数据真的够长吗？](https://mp.weixin.qq.com/s/5dVm-VWiZG09ixMMegKCbw)
+
+[Long Context is Not Long at All: A Prospector of Long-Dependency Data for Large Language Models](https://arxiv.org/pdf/2405.17915)
+
+[https://github.com/October2001/ProLong](https://github.com/October2001/ProLong)
 
 # 多智能体
 
