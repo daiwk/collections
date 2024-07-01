@@ -2287,7 +2287,7 @@ aaren：
 
 基于：[Neural Algorithmic Reasoning](https://arxiv.org/pdf/2105.02761)
 
-## 
+## softmax数学原理
 
 [通向概率分布之路：盘点Softmax及其替代品](https://mp.weixin.qq.com/s/tA9kJqD279dHnivzPkvbjg)
 
@@ -2301,6 +2301,17 @@ XXX
 XXX
 
 当$$\tau$$取1时，可以得到$$\operatorname{logsumexp}(\boldsymbol{x}) \approx \max (\boldsymbol{x})$$
+
+## StreamingLLM
+
+[Efficient Streaming Language Models with Attention Sinks](https://arxiv.org/pdf/2309.17453)
+
+[https://github.com/mit-han-lab/streaming-llm](https://github.com/mit-han-lab/streaming-llm)
+
+集成到trt-llm里了：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm)
+
++ trtllm-build时，加上```--streamingllm enable```
++ infer时，加上```--sink_token_length```设置sink的token数，加上```--max_attention_window_size```设置sliding_window
 
 # 训练与预测方法
 
