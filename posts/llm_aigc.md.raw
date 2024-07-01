@@ -3594,7 +3594,7 @@ def forward(self, ...):
 + **Logit软封顶**：根据**Gemini 1.5的方法**，研究团队在每个注意力层和最终层限制logit，使得logit的值保持在$$−soft\_cap,+soft\_cap$$之间。对于9B和27B模型，注意力对数封顶设置为50.0，最终对数封顶设置为30.0。截至本文发表时，注意力logit软封顶与常见的FlashAttention实现不兼容，因此他们已从使用FlashAttention的库中移除了此功能。对模型生成进行了有无注意力logit软封顶的消融实验，发现大多数预训练和后期评估中，生成质量几乎不受影响。本文中的所有评估均使用包含注意力logit软封顶的完整模型架构。然而，某些下游性能可能仍会受到此移除的轻微影响。
 
 XXX
-\text { logits } \leftarrow \text { soft_cap } * \text { tanh(logits } / \text { soft_cap) }
+\text { logits } \leftarrow \text { soft\_cap } * \text { tanh(logits } / \text { soft\_cap) }
 XXX
 
 + **RMSNorm**进行post-norm和pre-norm。为了稳定训练，用RMSNorm对每个变换子层、注意力层和前馈层的输入和输出进行归一化。 
