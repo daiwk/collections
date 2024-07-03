@@ -1449,6 +1449,51 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 + 当模型的复杂性远大于数据的复杂性时，训练误差可能再次开始减少。这是因为模型有足够的能力来对数据的噪声进行平滑，同时仍然能够捕获数据的实际模式。
 
 
+## 一些训练+预测框架简介
+### pathways
+
+[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
+
+下载了，[pdf](../assets/LLM/pathways.pdf)
+
+这个回答分析得不错
+[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
+
+Google的大规模稀疏模型设计
+
+[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
+
+代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
+
+### megatron-lm
+
+[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
+
+### deepspeed
+
+[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
+
+
+### ray-llm
+
+[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
+
+
+### Google的几大LLM加速工具
+
+#### maxdiffusion
+
+[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
+
+#### JetStream
+
+[https://github.com/google/JetStream](https://github.com/google/JetStream)
+
+#### maxtext
+
+[https://github.com/google/maxtext](https://github.com/google/maxtext)
+
+
 
 # LLM模型架构
 
@@ -2328,54 +2373,7 @@ XXX
 
 [谷歌重磅：告别RAG，长上下文的大语言模型无需检索增强](https://mp.weixin.qq.com/s/lOORnoyrA8lqOEXWKxhAQg)
 
-# 训练与预测方法
-
-## 一些框架简介
-### pathways
-
-[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
-
-下载了，[pdf](../assets/LLM/pathways.pdf)
-
-这个回答分析得不错
-[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
-
-Google的大规模稀疏模型设计
-
-[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
-
-代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
-
-### megatron-lm
-
-[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
-
-### deepspeed
-
-[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
-
-
-### ray-llm
-
-[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
-
-
-### Google的几大LLM加速工具
-
-#### maxdiffusion
-
-[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
-
-#### JetStream
-
-[https://github.com/google/JetStream](https://github.com/google/JetStream)
-
-#### maxtext
-
-[https://github.com/google/maxtext](https://github.com/google/maxtext)
-
-
-## 模型训练
+# 训练框架
 
 mfu(Model Flops Utilization)模型算力利用率是分布式训练效率的优化目标。
 
@@ -2420,7 +2418,7 @@ def xxx():
 
 一般分布式训练参数量越多->卡数越多->通信占比越高->MFU越低，所以要优化通信效率。
 
-### 优化设置
+## 优化设置
 
 + batchsize：通常用比较大的batchsize，提高训练**稳定性**和**吞吐量**。GPT-3和PaLM在训练时动态增加batshzie，最终达到百万级别，batchsize**从3.2w逐渐增加到320w个token**。
 + 优化器：
@@ -2440,11 +2438,11 @@ def xxx():
 + act_norm会降低20-30%，因为正则项更重要了，会让权重更接近0
 
 
-### 混合精度训练
+## 混合精度训练
 
 &nbsp;
 
-#### FP16
+### FP16
 
 &nbsp;
 
@@ -2467,7 +2465,7 @@ def xxx():
 
 而在预测时只要存一个fp16的参数(2bytes)就行，所以**预测的显存是训练的1/10**，对应1.3B参数量的gpt2-xl，训练要占用$$20B\times 1.3\times 10^9=26GB$$，预测只要2.6GB
 
-#### BF16
+### BF16
 
 &nbsp;
 
@@ -2479,17 +2477,17 @@ FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用*
 
 bf16的指数位和fp32一样多
 
-### 可扩展的训练
+## 可扩展的训练
 
 需要**提高训练吞吐量**和**加载更大模型到显存中**
 
-#### 3D并行
+### 3D并行
 
 &nbsp;
 
 如下三种并行（数据并行、流水线并行、张量并行）的组合
 
-##### 数据并行（Data Parallelism）
+#### 数据并行（Data Parallelism）
 
 &nbsp;
 
@@ -2543,7 +2541,7 @@ with ddp.no_sync():
 ddp(another_input).backward()  # synchronize grads
 ```
 
-##### 流水线并行（Pipeline Parallelism）
+#### 流水线并行（Pipeline Parallelism）
 
 &nbsp;
 
@@ -2552,7 +2550,7 @@ ddp(another_input).backward()  # synchronize grads
 + GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
 + PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
 
-###### 1) GPipe
+##### 1) GPipe
 
 &nbsp;
 
@@ -2568,7 +2566,7 @@ Gpipe主要思想：
 
 GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效果，输入和输出共享vocab embedding
 
-###### 2) 重计算
+##### 2) 重计算
 
 &nbsp;
 
@@ -2582,7 +2580,7 @@ pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/chec
 
 cpu offload：层数很深的时候，可能可以把一些计算挪到cpu上去，再搞回gpu
 
-##### 张量并行（Tensor Parallelism）
+#### 张量并行（Tensor Parallelism）
 
 &nbsp;
 
@@ -2630,7 +2628,7 @@ megatron对transformer进行了如下优化：
 
 ![clossal-ai-efficiency](../assets/clossal-ai-efficiency.png)
 
-#### ZeRO
+### ZeRO
 
 &nbsp;
 
@@ -2720,7 +2718,7 @@ model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
 
 [Training deep nets with sublinear memory cost](https://arxiv.org/pdf/1604.06174.pdf)
 
-#### 序列并行
+### 序列并行
 
 &nbsp;
 
@@ -2736,7 +2734,7 @@ SP：
 
 ![sequence-parallel](../assets/sequence-parallel.png)
 
-#### 综合对比各种并行
+### 综合对比各种并行
 
 &nbsp;
 
@@ -2761,7 +2759,7 @@ SP：
 + 一组机器有M台机器，**不同机器之间用PP**
 + 一台机器有K张卡，**不同卡之间用TP**
 
-### 编译优化
+## 编译优化
 
 pytorch的TorchDynamo
 
@@ -2771,7 +2769,7 @@ pytorch的TorchDynamo
 
 ![TorchDynamo](../assets/TorchDynamo.png)
 
-### flash attention
+## flash attention
 
 [Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)
 
@@ -2784,16 +2782,21 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 + 减少Global Memory的大小
 + 加速attenttion的计算，因为读cache比访问Global Memory快多了。
 
-## 推理速度优化
+## 训练稳定性
 
-### 量化
+层数加深时的稳定性调优：[Transformers Get Stable: An End-to-End Signal Propagation Theory for Language Models](https://arxiv.org/pdf/2403.09635)
+
+
+# 预测框架
+
+## 量化
 
 [ZeroQuant-V2: Exploring Post-training Quantization in LLMs from Comprehensive Study to Low Rank Compensation](https://arxiv.org/pdf/2303.08302.pdf)和[Compression of generative pre- trained language models via quantization](https://arxiv.org/pdf/2203.10705.pdf)
 
 + int8量化：[LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale](https://arxiv.org/pdf/2208.07339.pdf)
 + int4量化：GLM中用了
 
-### lightseq
+## lightseq
 
 &nbsp;
 
@@ -2803,20 +2806,20 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 [https://github.com/bytedance/lightseq](https://github.com/bytedance/lightseq)
 
-### PPL.LLM
+## PPL.LLM
 
 [高性能 LLM 推理框架的设计与实现](https://mp.weixin.qq.com/s/4o86rMuburB8jcbU0aYC7g)
 
 [https://github.com/openppl-public/ppl.llm.serving](https://github.com/openppl-public/ppl.llm.serving)
 
 
-### vLLM
+## vLLM
 
 [https://github.com/vllm-project/vllm](https://github.com/vllm-project/vllm)
 
 [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/pdf/2309.06180.pdf)
 
-### 并行推理方法
+## 并行推理方法
 
 [Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
 
@@ -2828,15 +2831,15 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 [LLM后端推理引擎性能大比拼](https://mp.weixin.qq.com/s/dPd84P_VdKog8v2IcHDOrQ)
 
-### LayerSkip
+## LayerSkip
 
 [LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding](https://arxiv.org/pdf/2404.16710)
 
-### speculative-decoding
+## speculative-decoding
 
 [Accelerating Large Language Model Decoding with Speculative Sampling](https://arxiv.org/pdf/2302.01318)
 
-### medusa
+## medusa
 
 decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
 
@@ -2846,13 +2849,13 @@ decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan
 
 [https://github.com/FasterDecoding/Medusa](https://github.com/FasterDecoding/Medusa)
 
-### CLLM
+## CLLM
 
 [3倍生成速度还降内存成本，超越Medusa2的高效解码框架终于来了](https://mp.weixin.qq.com/s/Aw_bjXIQFdOJvN22UvW9UA)
 
 [CLLMs：Consistency Large Language Models](https://arxiv.org/pdf/2403.00835)
 
-### fasterTransformer/TensorRTLLM
+## fasterTransformer/TensorRTLLM
 
 [https://github.com/NVIDIA/FasterTransformer](https://github.com/NVIDIA/FasterTransformer)
 
@@ -2869,7 +2872,7 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 [https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py](https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py)
 
 
-### huggingface/text-generation-inference
+## huggingface/text-generation-inference
 
 [https://huggingface.co/docs/text-generation-inference/index](https://huggingface.co/docs/text-generation-inference/index)
 
@@ -2880,7 +2883,7 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 [https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py)
 
 
-### block transformer
+## block transformer
 
 [KAIST-AI | 提出Block Transformer架构，大幅提升推理速度和内存效率，20倍增益！](https://mp.weixin.qq.com/s/H9qETDRwR9Q_3fG-XkBeeQ)
 
@@ -2888,13 +2891,14 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [https://github.com/itsnamgyu/block-transformer](https://github.com/itsnamgyu/block-transformer)
 
-### MoonCake
+## MoonCake
 
 [月之暗面kimi底层推理系统方案揭秘](https://mp.weixin.qq.com/s/4SBRZKAjqcS2MkvnFPey_g)
 
 [Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving](https://github.com/kvcache-ai/Mooncake/blob/main/Mooncake-v1.pdf)
 
 [https://github.com/kvcache-ai/Mooncake/tree/main](https://github.com/kvcache-ai/Mooncake/tree/main)
+
 
 
 
