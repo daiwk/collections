@@ -2786,6 +2786,35 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 层数加深时的稳定性调优：[Transformers Get Stable: An End-to-End Signal Propagation Theory for Language Models](https://arxiv.org/pdf/2403.09635)
 
+## 数据/训练策略
+
+### 综述
+
+[A Survey on Data Selection for Language Models](https://arxiv.org/pdf/2402.16827)
+
+### DSIR
+
+[Data Selection for Language Models via Importance Resampling](https://arxiv.org/pdf/2302.03169)
+
+[https://github.com/p-lambda/dsir](https://github.com/p-lambda/dsir)
+
+### DoReMi
+
+[DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining](https://arxiv.org/pdf/2305.10429) NeurIPS2023的spotlight
+
+[https://github.com/sangmichaelxie/doremi](https://github.com/sangmichaelxie/doremi)
+
+### dataset decomposition
+
+[Dataset Decomposition: Faster LLM Training with Variable Sequence Length Curriculum](https://arxiv.org/pdf/2405.13226)
+
+### RHO-1
+
+[RHO-1: Not All Tokens Are What You Need](https://arxiv.org/pdf/2404.07965)
+
+### infinit lr
+
+[Simple and Scalable Strategies to Continually Pre-train Large Language Models](https://arxiv.org/pdf/2403.08763)
 
 # 预测框架
 
