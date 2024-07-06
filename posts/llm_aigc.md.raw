@@ -2798,11 +2798,22 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 [https://github.com/p-lambda/dsir](https://github.com/p-lambda/dsir)
 
+大致思路：
+
+输入语料样本$$z_i$$
+
++ 学习语料的特征分布（target data是$$\hat{p}$$，raw data是$$\hat{q}$$）
++ 利用语料样本衡量样本间的重要性权重$$w_i=\frac{\hat{p}\left(z_i\right)}{\hat{q}\left(z_i\right)}$$
++ 根据权重进行无放回的采样，兼顾多样性和分布一致性
+
 ### DoReMi
 
 [DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining](https://arxiv.org/pdf/2305.10429) NeurIPS2023的spotlight
 
 [https://github.com/sangmichaelxie/doremi](https://github.com/sangmichaelxie/doremi)
+
+![doremi](../assets/doremi.png)
+
 
 ### dataset decomposition
 
