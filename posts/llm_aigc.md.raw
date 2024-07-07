@@ -2814,6 +2814,18 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 ![doremi](../assets/doremi.png)
 
++ 使用初始的reference domain weights来训练一个小的reference model $$p_{ref}$$，可以用简单的方式合并，例如用样本量加权
++ 用reference mnodel来指导一个小的proxy model的训练，proxy model使用group DRO（group distributionally robust optimization）来得到domain weights，即让最大的loss gap最小化
+XXX
+\min _\theta \max _{\alpha \in \Delta^k} L(\theta, \alpha):=\sum_{i=1}^k \alpha_i \cdot\left[\frac{1}{\sum_{x \in D_i}|x|} \sum_{x \in D_i} \ell_\theta(x)-\ell_{\mathrm{ref}}(x)\right]
+XXX
+  + domain weights: $$\alpha$$
+  + proxy model参数：$$\theta$$
+  + domain语料：$$D$$
+  + $$\ell_\theta(x)=-\log p_\theta(x)$$
++ 使用tune完的domain weights来训练大模型
++ 可以重复这个过程，用新的domain weights重新训练ref_model，迭代下去
+
 
 ### dataset decomposition
 
