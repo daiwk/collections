@@ -2831,6 +2831,13 @@ XXX
 
 [Dataset Decomposition: Faster LLM Training with Variable Sequence Length Curriculum](https://arxiv.org/pdf/2405.13226)
 
+LLM的训练语料大都是相同长度的sequence，一般是多篇文档concat到一起，然后再切分成等长的sequence，有可能一个sequence里有不同的毫不相关的文档，这样算attention就不太适合了。方法
+
++ 将数据划分为多个桶，每个桶中的序列长度均为$$2^i$$，保证每个序列仅来自同一个文档
++ 训练时可以给定一个固定的batch_len，即直接从某个桶里采样，也可以用特定长度策略，从多个桶里采样，组合为特定长度
+
+![dataset-decomposition](../assets/dataset-decomposition.png)
+
 ### RHO-1
 
 [RHO-1: Not All Tokens Are What You Need](https://arxiv.org/pdf/2404.07965)
