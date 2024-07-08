@@ -6078,9 +6078,20 @@ word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/mult
   + [ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131)
   + [Where to Go Next for Recommender Systems? ID- vs. Modality-based Recommender Models Revisited](https://arxiv.org/abs/2303.13835)
 
-本文认为以上其实都是将LLM的广域和推荐领域强行结合(Rec-to-LLM)，可能会出现遗忘，即随着推荐任务的学习，模型会**丢失在预训练过程中学到的知识**。
+上面两种方法可以看成是Rec-to-LLM，即将推荐这个target domain适配到LLM这个source domain上去，有如下缺点：
+
++ 将用户历史全丢给LLM不现实：一方面开源的LLM目前只支持1k(baichuan)-4k(llama)，不支持这么长的序列，另一方面复杂度和序列长度呈二次关系
++ 微调的方案可能会出现灾难性遗忘(catastrophic forgetting)：全参数微调，会让模型**丢失在预训练过程中学到的开放世界的知识**，而LoRA的效果也不好。原因：
+  + domain gap：两个领域有巨大的差别(profound gap)，[Continual Learning of Large Language Models: A Comprehensive Survey](https://arxiv.org/pdf/2404.16789)发现了全量参数微调会导致LLM对原有知识domain的严重的灾难性遗忘。
+  + 训练目标不对齐（misalignment）：LLM是next token prediction，学习大语料的general知识；finetune则主要是检索类的任务，强依赖用户-item的交互行为
 
 ![rec2llm-llm2rec](../assets/rec2llm-llm2rec.png)
+
+本文提出了LEARN(Llm-driven knowlEdge Adaptive RecommeNdation)，实现了LLM-to-Rec，让LLM作为content extractor，推荐任务是训练目标
+
+![learn](../assets/learn.png)
+
+![learn-ceg-pch](../assets/learn-ceg-pch.png)
 
 
 ## 推荐生态系统
