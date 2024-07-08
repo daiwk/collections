@@ -6038,6 +6038,18 @@ word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/mult
 
 [Aligning Large Language Models with Recommendation Knowledge](https://arxiv.org/pdf/2404.00245.pdf)
 
+## 快手的LEARN
+
+[https://zhuanlan.zhihu.com/p/705497209](https://zhuanlan.zhihu.com/p/705497209)
+
+[Knowledge Adaptation from Large Language Model to Recommendation for Practical Industrial Application](https://arxiv.org/pdf/2405.03988)
+
+过往的llm+推荐的两种思路：
+
++ freeze LLM参数并适应推荐领域数据：将用户行为历史改写成文本prompt，直接丢给LLM生成top-k推荐结果，例如[Chat-rec: Towards interactive and explainable llms-augmented recommender system](https://arxiv.org/pdf/2303.14524)、[Large Language Models are Zero-Shot Rankers for Recommender Systems](https://arxiv.org/pdf/2305.08845v2)、[Is ChatGPT a Good Recommender? A Preliminary Study](https://arxiv.org/pdf/2304.10149)、[LLM-Rec: Personalized Recommendation via Prompting Large Language Models](https://arxiv.org/pdf/2307.15780)、[Large Language Models are Competitive Near Cold-start Recommenders for Language- and Item-based Preferences](https://arxiv.org/pdf/2307.14225)、[Is ChatGPT Fair for Recommendation? Evaluating Fairness in Large Language Model Recommendation](https://arxiv.org/pdf/2305.07609)。
++ 在推荐领域的特定文本数据集上微调LLM：利用LLM捕捉用户行为序列，通过设计提示prompt，使LLM学习用户和物品之间的潜在关系，在预测任务中理解用户的偏好变化和行为模式，从而更好地预测用户可能感兴趣的物品，比如TallRec。
+文中认为以上其实都是将LLM的广域和推荐领域强行结合(Rec-to-LLM)，可能会出现遗忘，即随着推荐任务的学习，模型会丢失在预训练过程中学到的知识。
+
 ## llm vs ID
 
 [推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
