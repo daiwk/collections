@@ -6127,9 +6127,40 @@ word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/mult
 
 ## 蚂蚁的SLIM
 
+[蚂蚁集团在大模型推荐上的算法和应用](https://mp.weixin.qq.com/s/z4Q3Imuqoxw52TteaPbveQ?from=groupmessage&isappinstalled=0&scene=1&clicktime=1720679311&enterid=1720679311)
+
 [Can Small Language Models be Good Reasoners for Sequential Recommendation?](https://arxiv.org/pdf/2403.04260)
 
 ![slim](../assets/slim.png)
+
++ 第一阶段：蒸馏大型 GPT模型到较小的模型（如LLAMA2/3），来增强推理能力。
+  + 通过预设的 prompt，大模型生成推荐理由，这些理由基于预定义的模板。接着，
+  + 使用简化的推理模板请求小模型进行推荐和理由生成。
++ 第二阶段：利用生成式Loss来微调小模型，使其具备推理能力。
+  + 模型训练完成，将通过prompt为用户行为提供T+1推理。
+  + 推理结果通过文本编码器（Text Encoder）转化为表征，这些表征将直接应用于线上模型。
+
+接下来，希望将LLAMA进一步压缩至更小的序列模型。在实验中遇到几个挑战：
+
++ 蒸馏过程中教师模型的知识可靠性存疑
++ 从语言模型到序列模型的蒸馏跨越了不同的模型类型，带来两个主要问题：
+  + 参数差距大，学生模型难以容纳教师模型的知识
+  + 语义不一致，因为序列模型与原始语言模型之间存在天然差异
+
+
+参考[Distillation Matters: Empowering Sequential Recommenders to Match the Performance of Large Language Models](https://arxiv.org/pdf/2405.00338v1)
+
+![dllm2rec](../assets/dllm2rec.png)
+
+包含两个关键部分：基于Ranking的蒸馏策略(Importance-aware Ranking Distillation)和Embedding对齐(Collaborative Embedding Distillation)
+
+核心在于排名蒸馏，采取了如下三个策略
+
++ 选择LLAMA2作为教师模型，认为其排名靠前的分值更高；
++ 考虑LLM生成的描述与目标物品（Target Item）的接近程度，增加其排名；
++ 若教师模型（Teacher Model）认为某物品是优质且排名靠前的，学生模型（Student Model）也会给予其更高排名。
+
+通过这些策略，设计了排名损失（Ranking Loss）函数，用于蒸馏小型序列模型：
 
 ## 推荐生态系统
 
