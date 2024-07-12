@@ -73,6 +73,30 @@ CrossEntropyLoss就是把Softmax–Log–NLLLoss合并成一步
 
 ![cnllloss](../assets/ce-nllloss.png)
 
+## softplus
+
+[https://stackoverflow.com/questions/44230635/avoid-overflow-with-softplus-function-in-python](https://stackoverflow.com/questions/44230635/avoid-overflow-with-softplus-function-in-python)
+
+```python
+import numpy as np
+import math
+
+def softplus_np(x): return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0)
+def softplus_math(x): return math.log1p(math.exp(-abs(x))) + max(x, 0)
+```
+
+因为
+
+```python
+log(1+exp(x)) = log(1+exp(x)) - log(exp(x)) + x = log(1+exp(-x)) + x
+```
+
+同理，如果要求```log(1+exp(-x))```的稳定版本，可以
+
+```python
+def softplus_math(x): return math.log1p(math.exp(-abs(x))) + max(x, 0)
+```
+
 # 特征、样本、数据流
 
 [浅谈微视推荐系统中的特征工程](https://mp.weixin.qq.com/s/NqVP0ksfLiRLSGkuWxiz5A)
