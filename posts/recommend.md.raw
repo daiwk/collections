@@ -858,6 +858,14 @@ poso
 
 [https://github.com/Coder-Yu/QRec](https://github.com/Coder-Yu/QRec)
 
+## selfGNN
+
+[图神经网络加持，突破传统推荐系统局限！北大港大联合提出SelfGNN：有效降低信息过载与数据噪声影响](https://mp.weixin.qq.com/s/j0ARLIk1lylp4UO_-6tKCw)
+
+[SelfGNN: Self-Supervised Graph Neural Networks for Sequential Recommendation](https://arxiv.org/pdf/2405.20878)
+
+[https://github.com/HKUDS/SelfGNN](https://github.com/HKUDS/SelfGNN)
+
 # RL
 
 [快手强化学习与多任务推荐](https://mp.weixin.qq.com/s/QWnpM_n0RcP8nXlwXkuTlg)
