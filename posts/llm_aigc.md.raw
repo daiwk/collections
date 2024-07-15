@@ -3602,9 +3602,15 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 &nbsp;
 
+[Multitask Prompted Training Enables Zero-Shot Task Generalization](https://arxiv.org/pdf/2110.08207)设计了一个系统，将任意nlp任务映射成一个人类可读的prompt格式。训练了一个encoder-decoder的T0模型，输入文本，输出文本，在混合数据集上进行多任务学习。
+
 ### ERNIE 3.0
 
 &nbsp;
+
+[ERNIE 3.0: Large-scale Knowledge Enhanced Pre-training for Language Understanding and Generation](https://arxiv.org/pdf/2107.02137)结合自回归网络和autoencoding网络，让模型能够同时做语言理解和语言生成任务，可以支持zero-shot、few-shot和finetuning。有10B参数，在4TB的文本和图谱数据上训练。
+
+![ernie3.0](../assets/ernie3.0.png)
 
 ### RETRO
 
@@ -3615,6 +3621,17 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 [http://jalammar.github.io/illustrated-retrieval-transformer/](http://jalammar.github.io/illustrated-retrieval-transformer/)
 
 [Improving language models by retrieving from trillions of tokens](https://arxiv.org/abs/2112.04426)
+
+Retrieval Enhanced Transformer(Retro)基于与preceding(前述) tokens的相似度，从大的语料库里检索出文档段（document chunks）作为条件，增强了自回归模型的能力。通过少25%的参数，在Pile数据集上达到了与gpt3和Jurassic-1相当的效果
+
+![retro](../assets/retro.png)
+
++ 左图：
+  + 输入一个长度为12的序列，每4个token一个chunk，切成3个chunk
+  + 每个chunk通过freezed的bert去语料库中拿2个相似neighbors出来，每个neighbor过bert得到向量
+  + 邻居作为k和v，原来的3个chunk作为k，做attention(CCA, chunked cross attention)
++ 右图：CCA的结构
+  + 保证了因果性，即chunk1的邻居只对chunk1的last token以及chunk2的所有token有影响
 
 
 ### GLaM
