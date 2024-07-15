@@ -1257,6 +1257,8 @@ llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin
 
 ![AI的4场景战役](../assets/4wars-in-aistck.png)
 
+一些开源的小模型：[从零训练的 1B 以下小模型汇总](https://mp.weixin.qq.com/s/IWuMj6ywge2NAUhYmYQBLA)
+
 ## 一些综述
 
 + [Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](https://github.com/daiwk/collections/blob/master/assets/LLM/foundation%20models%20NLP.pdf)
@@ -6564,9 +6566,6 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [长文本之罪：Claude团队新越狱技术，Llama 2到GPT-4无一幸免](https://mp.weixin.qq.com/s/C0opoIzLCFojfmoa6poM8A)
 
-## ReadAgent
-
-[「有效上下文」提升20倍！DeepMind发布ReadAgent框架](https://mp.weixin.qq.com/s/xXJqJeqf8mzP9VW9kLIdgQ)
 
 ## LLM+math
 
@@ -6654,6 +6653,18 @@ XXX
 + 和文本相关的任务：用 GPT-2 的分词策略，将文本转换为一个整数序列，然后emb lookup映射到一个嵌入向量序列。
 + 和图像有关的任务：用ViT，将图像切割成小块后，通过线性层转换为嵌入向量序列。
 + 最终再将图像和文本的向量序列拼接在一起，形成一个统一的序列，输入到 Transformer 中。
+
+## ReadAgent
+
+[「有效上下文」提升20倍！DeepMind发布ReadAgent框架](https://mp.weixin.qq.com/s/xXJqJeqf8mzP9VW9kLIdgQ)
+
+## 多模态agent
+
+[一文详解多模态智能体（LMAs）最新进展（核心组件/分类/评估/应用）](https://mp.weixin.qq.com/s/lucGhu5-IPjIKbZ2o1q-PQ)
+
+[Large Multimodal Agents: A Survey](https://arxiv.org/pdf/2402.15116)
+
+[https://github.com/jun0wanan/awesome-large-multimodal-agents](https://github.com/jun0wanan/awesome-large-multimodal-agents)
 
 # 一些其他比较重要的工作
 
@@ -6796,6 +6807,14 @@ XXX
 [RAG微调Llama 3竟超越GPT-4！英伟达GaTech华人学者提出RankRAG框架](https://mp.weixin.qq.com/s/87qeqDSwtitYsruH_2Jdww)
 
 [RankRAG: Unifying Context Ranking with Retrieval-Augmented Generation in LLMs](https://arxiv.org/pdf/2407.02485)
+
+## graphRAG
+
+[微软开源的GraphRAG爆火，Github Star量破万，生成式AI进入知识图谱时代？](https://mp.weixin.qq.com/s/BX93FvDzW7WVLK66V2usBw)
+
+[https://github.com/microsoft/graphrag](https://github.com/microsoft/graphrag)
+
+[From Local to Global: A Graph RAG Approach to Query-Focused Summarization](https://arxiv.org/pdf/2404.16130)
 
 # LLM模型融合
 
