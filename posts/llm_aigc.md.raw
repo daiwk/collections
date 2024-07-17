@@ -2499,10 +2499,7 @@ def xxx():
     + 梯度检查点：容易出现loss突增，PaLM和OPT从**发生突增前的一个ckpt重新开始训练**，并**跳过可能有问题的数据**
     + 缩减emb梯度：GLM发现emb的异常梯度通常会导致loss突增，故**缩减emb梯度**以缓解
 
-另外，swiglu会让act_norm变大，得加一些方式让模型能训动，一种方法是把weight_decay调小：
 
-+ loss会变高==>[https://poe.com/s/Cv6lODy94INz1ozQKJYJ](https://poe.com/s/Cv6lODy94INz1ozQKJYJ)，正则项变大，L+norm中的L相对影响变小了，所以会变大，即为了防止过拟合，但可能eval的时候会更好
-+ act_norm会降低20-30%，因为正则项更重要了，会让权重更接近0
 
 
 ## 混合精度训练
@@ -2850,6 +2847,15 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 + 加速attenttion的计算，因为读cache比访问Global Memory快多了。
 
 ## 训练稳定性
+
+学习率+batchsize的一些经验：
+
+[https://zhuanlan.zhihu.com/p/64864995](https://zhuanlan.zhihu.com/p/64864995)
+
+另外，swiglu会让act_norm变大，得加一些方式让模型能训动，一种方法是把weight_decay调小：
+
++ loss会变高==>[https://poe.com/s/Cv6lODy94INz1ozQKJYJ](https://poe.com/s/Cv6lODy94INz1ozQKJYJ)，正则项变大，L+norm中的L相对影响变小了，所以会变大，即为了防止过拟合，但可能eval的时候会更好
++ act_norm会降低20-30%，因为正则项更重要了，会让权重更接近0
 
 层数加深时的稳定性调优：[Transformers Get Stable: An End-to-End Signal Propagation Theory for Language Models](https://arxiv.org/pdf/2403.09635)
 
