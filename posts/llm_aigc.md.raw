@@ -2520,10 +2520,10 @@ def xxx():
 以adam优化器为例，对于每1个参数来说，fp16的训练占用20bytes显存，包括（详见：[https://zhuanlan.zhihu.com/p/519264636](https://zhuanlan.zhihu.com/p/519264636)）
 
 + fp16的参数：2bytes
-+ fp16的梯度：2bytes（其实不一定是必须的，在ZeRO的[论文](https://arxiv.org/pdf/1910.02054v2.pdf)中有分析）
++ fp16的梯度：2bytes
 + 优化器状态（optimizer state）：16bytes
     + fp32参数（4bytes）
-    + fp32梯度（4bytes）(zero论文里提到的，用于reduce之类操作时需要的fp32内存，以1.5B的gpt2为例，需要6GB内存，倒推回来，就需要6/1.5byte=4byte)
+    + fp32梯度（4bytes）([zero论文](https://arxiv.org/pdf/1910.02054v2.pdf)里提到的，用于reduce之类操作时需要的fp32内存，以1.5B的gpt2为例，需要6GB内存，倒推回来，就需要6/1.5byte=4byte)
     + fp32 variance【历史梯度平方和】（4bytes）
     + fp32 momentum【历史梯度滑动平均】（4bytes）
 
