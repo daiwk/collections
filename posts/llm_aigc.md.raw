@@ -1534,6 +1534,8 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 
 在softmoe中，假设N个token，S个slot，E个expert
 
+[A Survey on Mixture of Experts](https://arxiv.org/pdf/2407.06204)
+
 
 ## 主流框架
 
@@ -3652,6 +3654,13 @@ Retrieval Enhanced Transformer(Retro)基于与preceding(前述) tokens的相似�
 ### GLaM
 
 &nbsp;
+
+[Glam: Efficient scaling of language models with mixture-of-experts](https://arxiv.org/pdf/2112.06905)提出了Generalist Language Model(GLaM)，用稀疏激活的MOE架构，同时能scale模型容量，也能相比dense更可观地降低训练成本。最大的模型有1.2T参数，是gpt3的7倍。但只需要GPT3的1/3的能量来训练，而且在infer时也只有一半的flops，且在29个NLP任务上都有更好的0/1/few shot效果。
+
+![Glam](../assets/glam.png)
+
+如图，2 in 64的结构，每个token只会取64个experts里的top 2相关的expert，对这两个的输出加权平均输入给后面的层
+
 
 ### LaMDA
 
