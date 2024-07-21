@@ -2430,6 +2430,8 @@ XXX
 
 [6700万参数比肩万亿巨兽GPT-4！微软MIT等联手破解Transformer推理密码](https://mp.weixin.qq.com/s/ySRE3MaEH539vqrWDi6KBQ)
 
+[公理训练让LLM学会因果推理：6700万参数模型比肩万亿参数级GPT-4](https://mp.weixin.qq.com/s/Yera281WG8RNAOrRUYjH6g)
+
 [Teaching Transformers Causal Reasoning through Axiomatic Training](https://arxiv.org/pdf/2407.07612v1)
 
 训练大模型新范式——**公理框架（Axiomatic Framework）**，作者从头开始训练了6700万参数的模型，仅使用了简单的因果链作为训练数据。在推断复杂图表中的因果关系时，**67M模型的表现超越了十亿级参数LLM**，甚至可以与GPT-4相媲美。
@@ -5326,6 +5328,14 @@ DALL-E3：
 [VCR: Visual Caption Restoration](https://arxiv.org/pdf/2406.06462)
 
 [https://github.com/tianyu-z/VCR](https://github.com/tianyu-z/VCR)
+
+## EVE
+
+[抛弃视觉编码器，这个「原生版」多模态大模型也能媲美主流方法](https://mp.weixin.qq.com/s/At2Wz9Kk2QzGEZ--4FnbZw)
+
+[Unveiling Encoder-Free Vision-Language Models](https://arxiv.org/pdf/2406.11832)
+
+[https://github.com/baaivision/EVE](https://github.com/baaivision/EVE)
 
 
 # 多模态（视频）
