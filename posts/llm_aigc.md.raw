@@ -1532,9 +1532,19 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 + 贪心topk token-choose-expert
 + 贪心topk expert-choose-token
 
+![softmoe](../assets/softmoe.png)
+
 在softmoe中，假设N个token，S个slot，E个expert
 
+代码：
+
+[https://github.com/google-research/vmoe/blob/main/vmoe/projects/soft_moe/router.py#L97](https://github.com/google-research/vmoe/blob/main/vmoe/projects/soft_moe/router.py#L97)和[https://github.com/google-research/vmoe/blob/main/vmoe/moe.py#L128](https://github.com/google-research/vmoe/blob/main/vmoe/moe.py#L128)
+
+
+
 [A Survey on Mixture of Experts](https://arxiv.org/pdf/2407.06204)
+
+![moe-gating](../assets/moe-gating.png)
 
 
 ## 主流框架
