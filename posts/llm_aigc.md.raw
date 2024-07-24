@@ -3431,6 +3431,8 @@ class RMSNorm(torch.nn.Module):
 
 #### 原始LLaMa3
 
+&nbsp;
+
 2024年4月
 
 [开源大模型Llama 3王者归来！最大底牌4000亿参数，性能直逼GPT-4](https://mp.weixin.qq.com/s/KCyL8WTzXutPQ_k0Vl9Vwg)
@@ -3465,11 +3467,15 @@ Llama 3的主要亮点：
 
 #### 多模态llama3
 
+&nbsp;
+
 [多模态 Llama-3 它来了 ！！[全网首发微调教程]](https://mp.weixin.qq.com/s/IFVIkVvMqeAL0lZF9OvRSA)
 
 [https://github.com/InternLM/XTuner](https://github.com/InternLM/XTuner)
 
 #### 中文llama3
+
+&nbsp;
 
 [首批中文版Llama3模型来了，解释成语、答弱智吧问题](https://mp.weixin.qq.com/s/ny0gBOxf4-tJiwjgp3o9HQ)
 
@@ -3521,8 +3527,6 @@ Llama 3的主要亮点：
 
 
 ### Alpaca
-
-&nbsp;
 
 [Alpaca: A Strong, Replicable Instruction-Following Model](https://crfm.stanford.edu/2023/03/13/alpaca.html?trk=cndc-detail)
 
