@@ -1350,6 +1350,9 @@ XXX
 
 [Surge Phenomenon in Optimal Learning Rate and Batch Size Scaling](https://arxiv.org/pdf/2405.14578)
 
+SIGIR24最佳论文：[Scaling Laws For Dense Retrieval](https://arxiv.org/pdf/2403.18684)
+
+
 ## 涌现能力
 
 ![llm-capabilities](../assets/llm-capabilities.png)
@@ -3489,6 +3492,8 @@ Llama 3的主要亮点：
 [最强模型Llama 3.1 405B正式发布，扎克伯格：开源引领新时代](https://mp.weixin.qq.com/s/QUWumWsTF_Qq77tdlyCHdg)
 
 [The Llama 3 Herd of Models](https://scontent-nrt1-2.xx.fbcdn.net/v/t39.2365-6/452387774_1036916434819166_4173978747091533306_n.pdf?_nc_cat=104&ccb=1-7&_nc_sid=3c67a6&_nc_ohc=t6egZJ8QdI4Q7kNvgGW93hm&_nc_ht=scontent-nrt1-2.xx&oh=00_AYCjkUrE9R1s1-mpRUu3d3p8QiFb42z-FDMJk9jwvHBuOQ&oe=66A5D24D)
+
+[Llama3 92页技术报告中文全文详解](https://mp.weixin.qq.com/s/9Mnd1ass0XYUGW_UqDF8bw)
 
 使用超过15万亿(15T)个token训练Llama 3.1 405B，优化了训练栈，在超过16,000个H100上训练
 
@@ -6635,7 +6640,7 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 类似[Star: Self-taught reasoner bootstrapping reasoning with reasoning](https://arxiv.org/pdf/2203.14465.pdf)能够通过迭代创建自己的训练数据，来「自我提升」到更高的智能水平。
 
-# LLM+其他
+# LLM+math
 
 [【LLM-数学】MathScale 用于数学推理的指令调优扩展方法](https://mp.weixin.qq.com/s/tQUIGdViMZTb_9NNh3b3RQ)
 
@@ -6643,7 +6648,10 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [清华包揽最佳论文+时间检验奖，山大获荣誉提名，SIGIR 2024奖项出炉](https://mp.weixin.qq.com/s/Z2Mj7etx6KvYrSn8LhrJwg)
 
-SIGIR24最佳论文：[Scaling Laws For Dense Retrieval](https://arxiv.org/pdf/2403.18684)
+[奥数能力金牌级：DeepMind几何推理模型登上Nature，代码开源，菲尔兹奖得主点赞](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650904746&idx=1&sn=d39a3d92078cecbd29bd0fc82560d1da&chksm=84e45cd4b393d5c24747f163fa0338761690447904a1a654aacf2344d7a16d36dfa2ac3ccdb0&scene=21#wechat_redirect)提出了AlphaGeometry
+
+[谷歌AI拿下IMO奥数银牌，数学推理模型AlphaProof面世，强化学习 is so back](https://mp.weixin.qq.com/s/LNzbyf0w412BIz71sROyzw)提出alphaproof和alphageometry 2
+
 
 # LLM常见难题
 
