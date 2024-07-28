@@ -1352,6 +1352,8 @@ XXX
 
 SIGIR24最佳论文：[Scaling Laws For Dense Retrieval](https://arxiv.org/pdf/2403.18684)
 
+[中科大联合华为诺亚提出Entropy Law，揭秘大模型性能、数据压缩率以及训练损失关系](https://mp.weixin.qq.com/s/F4OFP1lzAGH4RSXcXBw7mw)
+
 
 ## 涌现能力
 
@@ -1543,6 +1545,7 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 
 [https://github.com/google-research/vmoe/blob/main/vmoe/projects/soft_moe/router.py#L97](https://github.com/google-research/vmoe/blob/main/vmoe/projects/soft_moe/router.py#L97)和[https://github.com/google-research/vmoe/blob/main/vmoe/moe.py#L128](https://github.com/google-research/vmoe/blob/main/vmoe/moe.py#L128)
 
+[算法、系统和应用，三个视角全面读懂混合专家（MoE）](https://mp.weixin.qq.com/s/3UEFwy87f8O4H1Tt4VVnig)
 
 
 [A Survey on Mixture of Experts](https://arxiv.org/pdf/2407.06204)
@@ -1573,6 +1576,44 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 + 预训练**任务难度**更大：相比encoder-decoder，decoder-only架构里**每个位置能接触到的信息更少**，故难度更高，当模型大小和数据量够的时候，上限更高
 + 隐式学习了**位置信息**：[Transformer Language Models without Positional Encodings Still Learn Positional Information](https://aclanthology.org/2022.findings-emnlp.99.pdf)，encoder里对语序的区分能力较弱，需要结合position encoding，而causual attention隐式地具备了这种建模位置的能力。
 + **工程效率**：支持**复用kv-cache**，对多轮对话更友好，**『DIN的FLOPS』**一节里有讲
+
+[盛名一时的BERT哪去了？这个问题的答案昭示了LLM范式的转变](https://mp.weixin.qq.com/s/fKeorQYwRlmmepuG1_aJlQ)
+
+[What happened to BERT & T5? On Transformer Encoders, PrefixLM and Denoising Objectives](https://www.yitay.net/blog/model-architecture-blogpost-encoders-prefixlm-denoising)
+
+#### 去噪目标
+
+&nbsp;
+
+**去噪目标**指的是span corruption任务的任意变体，即填充(infilling)或填空(fill in the blank)。表达方式有很多，比如span长度、随机性、sentinel token等。
+
++ BERT类的模型中，大部分是**in-place**的去噪目标，例如对mask tokens的分类head，
++ T5的做法则是通过encoder-decoder或decoder-only模型来处理数据变换，即把masked token move to the back给模型预测。
+
+去噪目标的效果很好，可以作为常规语言建模的**补充目标**，但不足以单独作为目标，因为去噪有两个缺点：
+
++ **更少的loss exposure**：在去噪目标中，只有**少量token会被mask和学习**，而常规语言建模则接近100%，使得**每个FLOP的样本效率非常低**
++ 比常规语言建模更不自然：以一种奇怪的方式重新设定输入输出格式，不太适合少样本学习
+
+#### PrefixLM vs decoder-only
+
+&nbsp;
+
+注：归纳偏置(inductive bias)指模型在预测未遇到的输入时，做的一些假设的集合，例如最小描述长度（奥卡姆剃刀）指的就是当构成一个假设时，试图去最小化其假设的描述长度。假设越简单，越可能为真的。
+
+对语言模型来说，双向注意力是一种有趣的**归纳偏置**，相比于较小规模的场景，双向注意力**在规模较大时可能就没那么重要了**，或者可能对不同的任务或模态有不同的影响，例如PaliGemma就用的prefixLM（[PaliGemma: A versatile 3B VLM for transfer](https://arxiv.org/pdf/2407.07726)）
+
+![paligemma](../assets/paligemma.png)
+
+PrefixLM也存在缓存问题，是这类架构的一个固有缺陷
+
+#### encoder-decoder的优缺点
+
+&nbsp;
+
++ 相比decoder-only的优势：endocer不受causal的限制，可以激进地试各种pooling/linear attention，因此可以offload一些**不那么重要的context到encoder中**，也可以**让encoder更小**，例如[Charformer](https://arxiv.org/pdf/2106.12672)
++ 相比prefixLM的缺点：输入和目标必须分配固定的预算，例如输入预算是1024token，那么encoder就**必须pad**到1024，而这可能会浪费大量计算。相反，在 PrefixLM 中，输入和目标可以直接concat起来，从而可以缓解这个问题
+
 
 ## 组件配置
 
@@ -3017,7 +3058,7 @@ JEST能够在仅使用10%的FLOP预算的情况下超越之前的最先进水平
 [FastPersist: Accelerating Model Checkpointing in Deep Learning](https://arxiv.org/pdf/2406.13768)
 
 
-# 预测框架
+# 推理框架
 
 ## 量化
 
@@ -3121,9 +3162,26 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 [https://github.com/kvcache-ai/Mooncake/tree/main](https://github.com/kvcache-ai/Mooncake/tree/main)
 
 
-## MInference
+## MInference(microsoft)
 
 [MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention](https://arxiv.org/pdf/2407.02490)
+
+## Sarathi-Serve(microsoft)
+
+[OSDI 2024系列-低延迟大模型推理服务1](https://mp.weixin.qq.com/s/lfIyLnR2l5KBeuvPzeLBnQ)
+
+[Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve](https://arxiv.org/pdf/2403.02310)
+
+## SGLang(uc berkerley)
+
+[贾扬清点赞：3K star量的SGLang上新，加速Llama 405B推理秒杀vLLM、TensorRT-LLM](https://mp.weixin.qq.com/s/FYwguU3USf12Wb5HXaHH3A)
+
+[吞吐量提升5倍，联合设计后端系统和前端语言的LLM接口来了](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650904838&idx=4&sn=81a9f09f54f1b89b98fdc3d6be11ce51&chksm=84e45d78b393d46e38fed5d7e1952c9f465488b6953b63206a077f9d886c1104028b06c987c4&scene=21#wechat_redirect)
+
+[https://github.com/sgl-project/sglang/](https://github.com/sgl-project/sglang/)
+
+[SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/pdf/2312.07104)
+
 
 ## 各框架对比
 
@@ -3491,7 +3549,7 @@ Llama 3的主要亮点：
 
 [最强模型Llama 3.1 405B正式发布，扎克伯格：开源引领新时代](https://mp.weixin.qq.com/s/QUWumWsTF_Qq77tdlyCHdg)
 
-[The Llama 3 Herd of Models](https://scontent-nrt1-2.xx.fbcdn.net/v/t39.2365-6/452387774_1036916434819166_4173978747091533306_n.pdf?_nc_cat=104&ccb=1-7&_nc_sid=3c67a6&_nc_ohc=t6egZJ8QdI4Q7kNvgGW93hm&_nc_ht=scontent-nrt1-2.xx&oh=00_AYCjkUrE9R1s1-mpRUu3d3p8QiFb42z-FDMJk9jwvHBuOQ&oe=66A5D24D)
+[The Llama 3 Herd of Models](https://github.com/daiwk/collections/blob/master/assets/LLM/llama3.1.pdf)
 
 [Llama3 92页技术报告中文全文详解](https://mp.weixin.qq.com/s/9Mnd1ass0XYUGW_UqDF8bw)
 
@@ -3595,6 +3653,12 @@ QLoRA将一个固定的4 bit量化的预训练权重转成low Rank Adapters来�
 mathtral：[https://huggingface.co/mistralai/mathstral-7B-v0.1](https://huggingface.co/mistralai/mathstral-7B-v0.1)
 
 codestral-mamba: [https://huggingface.co/mistralai/mamba-codestral-7B-v0.1](https://huggingface.co/mistralai/mamba-codestral-7B-v0.1)，基于mamba2，可以直接用trt-llm启动
+
+[准狙击Llama 3.1？Mistral AI开源Large 2，123B媲美Llama 405B](https://mp.weixin.qq.com/s/6_d_e6DlQpyONdWxd8EZvA)
+
+Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一部分代码上训练了 Mistral Large 2。其表现远远优于上一代的Mistral Large，并且与GPT-4o、Claude 3 Opus和Llama 3 405B等顶尖模型相当。
+
+[https://huggingface.co/mistralai/Mistral-Large-Instruct-2407](https://huggingface.co/mistralai/Mistral-Large-Instruct-2407)
 
 
 ### phi-3
@@ -5139,6 +5203,14 @@ CriticGPT依旧是自回归模型。标注者先向ChatGPT的响应输出中人�
 
 [Step-DPO: Step-wise Preference Optimization for Long-chain Reasoning of LLMs](https://arxiv.org/pdf/2406.18629)
 
+## RBR
+
+[RLHF不够用了，OpenAI设计出了新的奖励机制](https://mp.weixin.qq.com/s/gn_MoLjessnCMxRNNjhtuw)
+
+[Rule Based Rewards for Language Model Safety](https://cdn.openai.com/rule-based-rewards-for-language-model-safety.pdf)
+
+[https://github.com/openai/safety-rbr-code-and-data](https://github.com/openai/safety-rbr-code-and-data)
+
 # 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
@@ -5754,6 +5826,15 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168)
 
 [https://github.com/KwaiVGI/LivePortrait](https://github.com/KwaiVGI/LivePortrait)
+
+## diffusion forcing
+
+[无限生成视频，还能规划决策，扩散强制整合下一token预测与全序列扩散](https://mp.weixin.qq.com/s/kz4RvqdK6nGtA11y5nq5xQ)
+
+[Diffusion Forcing:Next-token Prediction Meets Full-Sequence Diffusion](https://arxiv.org/pdf/2407.01392)
+
+[https://github.com/buoyancy99/diffusion-forcing](https://github.com/buoyancy99/diffusion-forcing)
+
 
 ## 其他
 
@@ -6640,18 +6721,37 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 类似[Star: Self-taught reasoner bootstrapping reasoning with reasoning](https://arxiv.org/pdf/2203.14465.pdf)能够通过迭代创建自己的训练数据，来「自我提升」到更高的智能水平。
 
+
+[Nature封面：AI训练AI，越训越离谱](https://mp.weixin.qq.com/s/l9ka81Cj2LFzNbXXsaEbmA)
+
+[AI models collapse when trained on recursively generated data](https://www.nature.com/articles/s41586-024-07566-y)，对应下载的[pdf](https://github.com/daiwk/collections/blob/master/assets/nature-ai-train-ai.pdf)
+
 # LLM+math
+
+## mathscale
 
 [【LLM-数学】MathScale 用于数学推理的指令调优扩展方法](https://mp.weixin.qq.com/s/tQUIGdViMZTb_9NNh3b3RQ)
 
 [MathScale: Scaling Instruction Tuning for Mathematical Reasoning](https://arxiv.org/pdf/2403.02884.pdf)
 
-[清华包揽最佳论文+时间检验奖，山大获荣誉提名，SIGIR 2024奖项出炉](https://mp.weixin.qq.com/s/Z2Mj7etx6KvYrSn8LhrJwg)
+
+## AlphaGeometry
 
 [奥数能力金牌级：DeepMind几何推理模型登上Nature，代码开源，菲尔兹奖得主点赞](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650904746&idx=1&sn=d39a3d92078cecbd29bd0fc82560d1da&chksm=84e45cd4b393d5c24747f163fa0338761690447904a1a654aacf2344d7a16d36dfa2ac3ccdb0&scene=21#wechat_redirect)提出了AlphaGeometry
 
-[谷歌AI拿下IMO奥数银牌，数学推理模型AlphaProof面世，强化学习 is so back](https://mp.weixin.qq.com/s/LNzbyf0w412BIz71sROyzw)提出alphaproof和alphageometry 2
+## AlphaProof & AlphaGeometry 2
 
+[谷歌AI拿下IMO奥数银牌，数学推理模型AlphaProof面世，强化学习 is so back](https://mp.weixin.qq.com/s/LNzbyf0w412BIz71sROyzw)提出AlphaProof和AlphaGeometry 2
+
+## WE-Math基准
+
+[真相了！大模型解数学题和人类真不一样：死记硬背、知识欠缺明显，GPT-4o表现最佳](https://mp.weixin.qq.com/s/uU1lZV0Ymj31cmZryhffyQ)
+
+[WE-MATH: Does Your Large Multimodal Model Achieve Human-like Mathematical Reasoning?](https://arxiv.org/pdf/2407.01284)
+
+[https://github.com/We-Math/We-Math](https://github.com/We-Math/We-Math)
+
+[https://huggingface.co/datasets/We-Math/We-Math](https://huggingface.co/datasets/We-Math/We-Math)
 
 # LLM常见难题
 
@@ -7148,4 +7248,4 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 
 [Just How Flexible are Neural Networks in Practice?](https://arxiv.org/pdf/2406.11463)
 
-
+[清华包揽最佳论文+时间检验奖，山大获荣誉提名，SIGIR 2024奖项出炉](https://mp.weixin.qq.com/s/Z2Mj7etx6KvYrSn8LhrJwg)
