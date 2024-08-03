@@ -3183,6 +3183,12 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 [SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/pdf/2312.07104)
 
 
+## LazyLLM
+
+[苹果让大模型学会偷懒：更快吐出第一个token，准确度还保住了](https://mp.weixin.qq.com/s/mAbiJEKd2zzNmt1pmGfmnQ)
+
+[LazyLLM: Dynamic Token Pruning for Efficient Long Context LLM Inference](https://arxiv.org/pdf/2407.14057)
+
 ## 各框架对比
 
 [最佳LLM推理引擎？TensorRT vs vLLM vs LMDeploy vs MLC-LLM](https://mp.weixin.qq.com/s/AnqaukudFukLYSi55w9r2Q)
@@ -3588,6 +3594,19 @@ Llama 3的主要亮点：
 + agent-system：[https://github.com/meta-llama/llama-agentic-system](https://github.com/meta-llama/llama-agentic-system)
 
 
+多模态的实现：
+
+![multimodal-llama3.1](../assets/multimodal-llama3.1.png)
+
+有5个stage：
+
++ 语言模型pre-training：
++ 多模态encoder pre-training：
++ vision adapter training：
++ model finetuning：
++ speech adapter training：
+
+视频侧的temporal aggregator是有一个perceiver的resampler
 
 ### Alpaca
 
@@ -3911,6 +3930,8 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/221
 
 ### RecurrentGemma
 
+&nbsp;
+
 [RecurrentGemma: Moving Past Transformers for Efficient Open Language Models](https://storage.googleapis.com/deepmind-media/gemma/recurrentgemma-report.pdf)
 
 在infer阶段，需要检索**KV cache**，并加载到内存中，而KV cache会随着序列长度线性增长。[Longformer: The Long-Document Transformer](https://arxiv.org/pdf/2004.05150)通过**local attention**来降低cache大小，但模型效果会变差。recurrent gemma将输入序列**压缩到一个固定大小的state中**，从而不会降低效果，对长序列能降低内存占用并高效infer。
@@ -3982,6 +4003,8 @@ def forward(self, ...):
 
 ### gemma-2
 
+&nbsp;
+
 [单张A100全精度推理！谷歌明星开源模型Gemma 2上新9B/27B，挑战3140亿Grok-1](https://mp.weixin.qq.com/s/z3h1eExDgItDf38Xar6yPg)
 
 [谷歌「诚意之作」，开源9B、27B版Gemma2，主打高效、经济！](https://mp.weixin.qq.com/s/0Iy3gOlWRLKRCMnrXQavaA)
@@ -3990,7 +4013,7 @@ def forward(self, ...):
 
 [https://blog.google/technology/developers/google-gemma-2/](https://blog.google/technology/developers/google-gemma-2/)
 
-[Gemma 2: Improving Open Language Models at a Practical Size](https://storage.googleapis.com/deepmind-media/gemma/gemma-2-report.pdf)
+[Gemma 2: Improving Open Language Models at a Practical Size](https://arxiv.org/pdf/2408.00118)
 
 用了RoPE和GeGLU，网络结构上：
 
@@ -4006,6 +4029,14 @@ XXX
 
 [https://github.com/huggingface/transformers/blob/v4.42.3/src/transformers/models/gemma2/modeling_gemma2.py](https://github.com/huggingface/transformers/blob/v4.42.3/src/transformers/models/gemma2/modeling_gemma2.py)
 
+
+#### gemma-scope
+
+&nbsp;
+
+[Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on Gemma 2](https://storage.googleapis.com/gemma-scope/gemma-scope-report.pdf)
+
+[https://huggingface.co/google/gemma-scope](https://huggingface.co/google/gemma-scope)
 
 
 ### Claude
@@ -6927,6 +6958,12 @@ XXX
 [Large Multimodal Agents: A Survey](https://arxiv.org/pdf/2402.15116)
 
 [https://github.com/jun0wanan/awesome-large-multimodal-agents](https://github.com/jun0wanan/awesome-large-multimodal-agents)
+
+## OpenDevin
+
+[OpenDevin出技术报告了，大模型Agent开发者必读](https://mp.weixin.qq.com/s/tfREoiwjfCZauisCE3PpvQ)
+
+[OpenDevin: An Open Platform for AI Software Developers as Generalist Agents](https://arxiv.org/pdf/2407.16741)
 
 # 一些其他比较重要的工作
 
