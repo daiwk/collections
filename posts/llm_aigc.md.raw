@@ -3559,18 +3559,50 @@ Llama 3的主要亮点：
 
 [Llama3 92页技术报告中文全文详解](https://mp.weixin.qq.com/s/9Mnd1ass0XYUGW_UqDF8bw)
 
-使用超过15万亿(15T)个token训练Llama 3.1 405B，优化了训练栈，在超过16,000个H100上训练
+还开放了一个生态系统：
 
-+ 选择了decoder only transformer with minor adaptations，而**不是MOE**，以最大限度地**提高训练稳定性**。
-  + 使用GQA with 8 key-value heads，提升推理速度，在decoding时降低k-v cache的大小
-  + 使用attention mask，**让同一序列里的不同documents不计算self-attention**。在标准的pretraining中影响不大，但**对于超长序列的continued pre-training非常重要**
-  + 128K tokens的vocab，100k的tiktoken tokenizer+28k的额外token，更好地支持非英语的语言。相比llama2，每个token能压缩的字符3.17变成3.94，**压缩率更高了**，即同样计算量能读更多文本，同时也能提升下游任务效果。
-  + 把RoPE的base frequency超参**加大到500,000**，能更好地**支持更长contexts**，[Effective Long-Context Scaling of Foundation Models](https://aclanthology.org/2024.naacl-long.260.pdf)说这个值对32768长度的context很有效。
-+ 采用iterative post-training procedure，即预训练后进行多轮对齐，每轮都使用sft、RS（拒绝采样）、直接偏好优化(DPO, Direct Preference Optimization)，能够为**每轮**创建**最高质量的合成数据**，并提高每项能力（capability）的性能。
-  + 使用**合成数据生成(synthetic data generation)**来产生绝大多数SFT示例，并**多次迭代**以在所有能力生成越来越高质量的合成数据。
-  + 采用了多种数据处理技术来过滤这些合成数据，达到最高质量，并可以**跨能力**来**扩展微调数据量**。
++ model：[https://github.com/meta-llama/llama-models/tree/main/models/llama3_1](https://github.com/meta-llama/llama-models/tree/main/models/llama3_1)
++ tool-chain：[https://github.com/meta-llama/llama-toolchain](https://github.com/meta-llama/llama-toolchain)
++ agent-system：[https://github.com/meta-llama/llama-agentic-system](https://github.com/meta-llama/llama-agentic-system)
 
-推理：从bf16量化为fp8
+
+#### 整体架构
+
+&nbsp;
+
+![multimodal-llama3.1](../assets/multimodal-llama3.1.png)
+
+有2个主要的stage：
+
++ language model pre-training：用多语言的语料进行next token prediction
+    + 使用超过15万亿(15T)个token训练Llama 3.1 405B，context window是8k tokens
+    + 又加上一个continued pretraining stage，将context windows增加到128k tokens
++ language model post-training：sft+dpo+新的能力（如工具使用，能提升代码和推理能力）+safety
+
+为了支持多模态，还加入了如下3个stage：
+
++ 多模态encoder pre-training：
+    + image encoder：在大量的img-text pair上训练，让模型能理解图片+描述
+    + speech encoder：自监督，mask掉部分的speech输入，通过离散token表示来重建被mask的部分
++ vision adapter training：
+    + 训练一个adapter将pretrained的image encoder融入到pretrained language model里，adapter包括一系列的cross-attention层将image-encoder表示输入language model。在image-text pair上训练，对齐图文表示。训练时**更新image-encoder的参数**，但**不更新language model的参数。**
+    + 基于这个image-encoder来训练一个video-adapter，用的是video-text数据，让模型能聚合多帧间的信息。视频侧的temporal aggregator是有一个perceiver的resampler
++ speech adapter training：将speech encodings转成token表示，直接输入finetuned language model。在sft阶段，**adaper和encoder的参数联合更新**，但**不更新language model的参数**，还集成进了一个text-to-speech的系统。
+
+
+#### 预训练
+
+&nbsp;
+
+在超过16,000个H100（80G HBM3）上训练，训练平台是[Meta open compute project, grand teton ai platform](https://engineering.fb.com/2022/10/18/open-source/ocp-summit-2022-grand-teton/)，基于[MAST: Global scheduling of ml training across geo-distributed datacenters at hyperscale](https://www.usenix.org/system/files/osdi24-choudhury.pdf)进行schedule
+
+选择了decoder only transformer with minor adaptations，而**不是MOE**，以最大限度地**提高训练稳定性**。
+
++ 使用GQA with 8 key-value heads，提升推理速度，在decoding时降低k-v cache的大小
++ 使用attention mask，**让同一序列里的不同documents不计算self-attention**。在标准的pretraining中影响不大，但**对于超长序列的continued pre-training非常重要**
++ 128K tokens的vocab，100k的tiktoken tokenizer+28k的额外token，更好地支持非英语的语言。相比llama2，每个token能压缩的字符3.17变成3.94，**压缩率更高了**，即同样计算量能读更多文本，同时也能提升下游任务效果。
++ 把RoPE的base frequency超参**加大到500,000**，能更好地**支持更长contexts**，[Effective Long-Context Scaling of Foundation Models](https://aclanthology.org/2024.naacl-long.260.pdf)说这个值对32768长度的context很有效。
+
 
 参数量：
 
@@ -3587,26 +3619,21 @@ Llama 3的主要亮点：
 | **Positional Embeddings**| RoPE ($$\theta$$ = 500,000) | RoPE ($$\theta$$ = 500,000) | RoPE ($$\theta$$ = 500,000) |
 
 
-还开放了一个生态系统：
+#### 后训练
 
-+ model：[https://github.com/meta-llama/llama-models/tree/main/models/llama3_1](https://github.com/meta-llama/llama-models/tree/main/models/llama3_1)
-+ tool-chain：[https://github.com/meta-llama/llama-toolchain](https://github.com/meta-llama/llama-toolchain)
-+ agent-system：[https://github.com/meta-llama/llama-agentic-system](https://github.com/meta-llama/llama-agentic-system)
+&nbsp;
 
+采用iterative post-training procedure，即预训练后进行多轮对齐，每轮都使用sft、RS（拒绝采样）、直接偏好优化(DPO, Direct Preference Optimization)，能够为**每轮**创建**最高质量的合成数据**，并提高每项能力（capability）的性能。
 
-多模态的实现：
++ 使用**合成数据生成(synthetic data generation)**来产生绝大多数SFT示例，并**多次迭代**以在所有能力生成越来越高质量的合成数据。
++ 采用了多种数据处理技术来过滤这些合成数据，达到最高质量，并可以**跨能力**来**扩展微调数据量**。
 
-![multimodal-llama3.1](../assets/multimodal-llama3.1.png)
+#### 推理
 
-有5个stage：
+&nbsp;
 
-+ 语言模型pre-training：
-+ 多模态encoder pre-training：
-+ vision adapter training：
-+ model finetuning：
-+ speech adapter training：
+从bf16量化为fp8
 
-视频侧的temporal aggregator是有一个perceiver的resampler
 
 ### Alpaca
 
@@ -7201,6 +7228,10 @@ Neel Nanda（deepmind）的项目
 [https://github.com/Significant-Gravitas/AutoGPT](https://github.com/Significant-Gravitas/AutoGPT)
 
 # 其他
+
+## 长尾
+
+[A Systematic Review on Long-Tailed Learning](https://arxiv.org/pdf/2408.00483)
 
 ## 一些比较好的模型
 
