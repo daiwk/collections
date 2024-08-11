@@ -1387,6 +1387,8 @@ GPT-3（[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165
 
 在[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)的实验中，PaLM至少在620亿参数上才能在4个评估基准的各种任务上表现良好。
 
+[精准0误差，输入价格打骨折！OpenAI官宣API支持结构化输出，JSON准确率100％](https://mp.weixin.qq.com/s/257SBcB2hr-xKPNYkUEErQ)
+
 
 ### 逐步推理(multi-step reasoning)
 
@@ -1552,6 +1554,13 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 
 ![moe-gating](../assets/moe-gating.png)
 
+### 多模态MoE
+
+[混合专家更有主见了，能感知多模态分情况行事，Meta提出模态感知型专家混合](https://mp.weixin.qq.com/s/1FNqu0CwPmMFuDTMhli7WA)
+
+[Chameleon: Mixed-modal early-fusion foundation models](https://arxiv.org/pdf/2405.09818)单一Transformer架构，可以根据下一个token的预测目标，对由离散图像和文本token组成的混合模态序列进行建模，从而在不同模态之间进行无缝推理和生成。然而对于Chameleon这样各种模态会在模型训练的早期混合起来的模型，想要拓展它的能力，需要投入大量算力。
+
+[MoMa: Efficient Early-Fusion Pre-training with Mixture of Modality-Aware Experts](https://arxiv.org/pdf/2407.21770)使用路由式稀疏架构（routed sparse architecture）
 
 ## 主流框架
 
@@ -3003,6 +3012,10 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 
 + 减少Global Memory的大小
 + 加速attenttion的计算，因为读cache比访问Global Memory快多了。
+
+## flexattention
+
+[新PyTorch API：几行代码实现不同注意力变体，兼具FlashAttention性能和PyTorch灵活性](https://mp.weixin.qq.com/s/8uoZZf4hNSLQYLKFr95jTw?poc_token=HAynt2ajgl8xoDMpMWq0t8R-ubMokh17VRDwmacE)
 
 ## 训练稳定性
 
@@ -5664,6 +5677,16 @@ DALL-E3：
 
 [https://github.com/baaivision/EVE](https://github.com/baaivision/EVE)
 
+## LC-Mis
+
+[AI画家的「滑铁卢」：为什么冰可乐不愿意住进茶杯里？](https://mp.weixin.qq.com/s/OyLEBVJoaJDkunq15Uwj1Q)
+
+[Lost in Translation: Latent Concept Misalignment in Text-to-Image Diffusion Models](https://arxiv.org/pdf/2408.00230)
+
+## 多模态cot
+
+[ACL 2024 Oral｜我们离真正的多模态思维链推理还有多远？](https://mp.weixin.qq.com/s/oCJB_Q_Kz3kTC36WoSVtEQ)
+
 
 # 多模态（视频）
 
@@ -7035,6 +7058,14 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 参考：[Learning to Give Checkable Answers with Prover-Verifier Games](https://arxiv.org/pdf/2108.12099)
 
+## 道德风险
+
+[GPT-4o模仿人类声音，诡异尖叫引OpenAI研究员恐慌！32页技术报告出炉](https://mp.weixin.qq.com/s/XSTNHTILAOkINg7mxssb6g)
+
+openai的报告：[GPT-4o System Card](https://cdn.openai.com/gpt-4o-system-card.pdf)
+
+之前deepmind也有一个报告[The Ethics of Advanced AI Assistants](https://arxiv.org/pdf/2404.16244)
+
 
 # 多智能体
 
@@ -7091,6 +7122,12 @@ XXX
 [OpenDevin出技术报告了，大模型Agent开发者必读](https://mp.weixin.qq.com/s/tfREoiwjfCZauisCE3PpvQ)
 
 [OpenDevin: An Open Platform for AI Software Developers as Generalist Agents](https://arxiv.org/pdf/2407.16741)
+
+## DAAG
+
+[三「模」联盟，谷歌DeepMind缔造终身学习智能体！](https://mp.weixin.qq.com/s/P-x8EDrfd1ydCnPP8MYu6g)
+
+[Diffusion Augmented Agents: A Framework for Efficient Exploration and Transfer Learning](https://arxiv.org/pdf/2407.20798)
 
 # 一些其他比较重要的工作
 
@@ -7285,6 +7322,11 @@ XXX
 
 [https://github.com/JacksonWuxs/UsableXAI_LLM](https://github.com/JacksonWuxs/UsableXAI_LLM)
 
+## 综述
+
+[可解释性终极追问，什么才是第一性解释？20篇CCF-A+ICLR论文给你答案](https://mp.weixin.qq.com/s/vCAw0d2uZ_MnLrl5MT9OKA)
+
+
 ## TransformerLens
 
 Neel Nanda（deepmind）的项目
@@ -7324,6 +7366,15 @@ Neel Nanda（deepmind）的项目
 
 [Transformer Layers as Painters](https://arxiv.org/pdf/2407.09298v1)
 
+## transformer explainer
+
+[黑匣子被打开了！能玩的Transformer可视化解释工具，本地运行GPT-2、还可实时推理](https://mp.weixin.qq.com/s/vLyIrRyoWYjhMN4gTRgA6g)
+
+[TRANSFORMER EXPLAINER: Interactive Learning of Text-Generative Models](https://arxiv.org/pdf/2408.04619)
+
+[http://poloclub.github.io/transformer-explainer/](http://poloclub.github.io/transformer-explainer/)
+
+[https://bbycroft.net/llm](https://bbycroft.net/llm)
 
 # LLM应用
 
