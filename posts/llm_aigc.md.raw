@@ -2054,6 +2054,22 @@ global attention在infer阶段的效率和序列长度成二次关系，而且�
 + 直接过一个linear，但没有激活
 + linear后加一个GeLU激活
 
+看recurrentGemma-2b的[config](https://huggingface.co/google/recurrentgemma-2b-it/blob/main/config.json)，发现总共有26个block，一个block依次包括：
+
++ rg-lru或者MQA，每个block里的选择方式是(rg,rg,att,rg,rg,att,rg,rg,att,...)
++ 再过一个gated MLP
+
+```python
+  "_block_types": [
+    "recurrent",
+    "recurrent",
+    "attention"
+  ],
+  "num_hidden_layers": 26,
+  "attention_window_size": 2048,
+
+```
+
 #### Temporal-mixing block
 
 &nbsp;
@@ -2638,6 +2654,28 @@ XXX
 ### 效率提升
 
 虽然Linear attention比softmax attention要快，但其实不如精心优化的softmax attention（如flash attention），[Simple linear attention language models balance the recall-throughput tradeof](https://arxiv.org/pdf/2402.18668)实现了一个io-aware的kernel（[https://github.com/HazyResearch/based/](https://github.com/HazyResearch/based/)），在prefill阶段精细地partitioning & storing暛的matrix-valued recurrent state across warp-registers，PLA参考这个实现了自己的加速版。
+
+## Falcon Mamba
+
+[非Transformer架构站起来了！首个纯无注意力大模型，超越开源巨头Llama 3.1](https://mp.weixin.qq.com/s/ET9gghK4asEr5ObuW2padw)
+
+[Welcome FalconMamba: The first strong attention-free 7B model](https://huggingface.co/blog/falconmamba)
+
+[https://huggingface.co/tiiuae/falcon-mamba-7b](https://huggingface.co/tiiuae/falcon-mamba-7b)
+
+[https://github.com/huggingface/transformers/blob/main/src/transformers/models/falcon_mamba/modeling_falcon_mamba.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/falcon_mamba/modeling_falcon_mamba.py)
+
+核心是```FalconMambaMixer```这个类
+
+无需增加内存存储，就可以处理任意长度的序列，并且能够在单个 24GB A10 GPU 上运行。
+
+训练数据有5500GT ，主要由RefinedWeb数据集组成，并添加了来自公共源的高质量技术数据、代码数据和数学数据。
+
+采用**多阶段训练策略**进行训练，上下文长度从2048增加到了8192。此外，受到**课程学习**概念的启发，整个训练阶段精心选择了混合数据，充分考虑了数据的**多样性和复杂性**。在最后的训练阶段，使用了一小部分高质量精选数据（即来自 Fineweb-edu 的样本），以进一步提升性能。
+
+大部分训练是在**256个H100 80GB GPU**上完成的，采用了 3D 并行（TP=1、PP=1、DP=256）与 ZeRO 相结合的策略。
+
+用adamW+WSD（预热 - 稳定 - 衰减）学习率schedule，在前50 GT的训练过程中，batch大小从b_min=128增加到了b_max=2048
 
 
 # 训练框架
@@ -5720,6 +5758,10 @@ DALL-E3：
 
 [ACL 2024 Oral｜我们离真正的多模态思维链推理还有多远？](https://mp.weixin.qq.com/s/oCJB_Q_Kz3kTC36WoSVtEQ)
 
+## Imagen 3
+
+[Imagen 3](https://arxiv.org/pdf/2408.07009)
+
 
 # 多模态（视频）
 
@@ -6783,6 +6825,11 @@ XXX
     + LLM参数freeze，只tune Q-former的参数和linear
 
 
+## embSum
+
+[EmbSum: Leveraging the Summarization Capabilities of Large Language Models for Content-Based Recommendations](https://www.arxiv.org/pdf/2405.11441)
+
+
 ## 其他
 
 [WWW 2024 | 工业界大模型在搜广推场景应用](https://zhuanlan.zhihu.com/p/686259205)
@@ -7099,6 +7146,13 @@ openai的报告：[GPT-4o System Card](https://cdn.openai.com/gpt-4o-system-card
 
 之前deepmind也有一个报告[The Ethics of Advanced AI Assistants](https://arxiv.org/pdf/2404.16244)
 
+## 选择性偏差
+
+[ACL2024|大模型选择偏差在腾讯广告特征评测上的优化及应用](https://mp.weixin.qq.com/s/0P1D1H1HoXMwZg2nBiM07Q)
+
+[Strengthened Symbol Binding Makes Large Language Models Reliable Multiple-Choice Selectors](https://arxiv.org/pdf/2406.01026)
+
+给定一个问题(question)及其对应的选项内容(options)，大模型无法把选项内容(option content)和对应的选项标识符(symbol，特指选项标识A/B/C/D)关联到一起。例如，当把正确答案"the president"放到选项B时，模型能够正确选择出答案；当我们把正确答案放到C时，模型依然选择"B"，即模型偏向于选"B"或者第二个答案，而忽略了正确答案的内容。
 
 # 多智能体
 
