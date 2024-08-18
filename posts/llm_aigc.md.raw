@@ -1554,6 +1554,17 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 
 ![moe-gating](../assets/moe-gating.png)
 
+[从ACL 2024录用论文看混合专家模型（MoE）最新研究进展](https://mp.weixin.qq.com/s/BCsRHvHnn3B8oOODjim-Kg)
+
+### DeepSeekMOE
+
+[DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models](https://arxiv.org/pdf/2401.06066)
+
+[https://github.com/deepseek-ai/DeepSeek-MoE](https://github.com/deepseek-ai/DeepSeek-MoE)
+
+### 
+
+
 ### 多模态MoE
 
 [混合专家更有主见了，能感知多模态分情况行事，Meta提出模态感知型专家混合](https://mp.weixin.qq.com/s/1FNqu0CwPmMFuDTMhli7WA)
@@ -4283,6 +4294,8 @@ XXX
 
 Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 
+grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发展猛如火箭](https://mp.weixin.qq.com/s/nBaY2srcMSzvEoecOyh1Cg)
+
 ### Gecko
 
 [谷歌DeepMind发布Gecko：专攻检索，与大7倍模型相抗衡](https://mp.weixin.qq.com/s/5e_Py_Xm0RsmP1YMcikpaQ)
@@ -5452,6 +5465,47 @@ CriticGPT依旧是自回归模型。标注者先向ChatGPT的响应输出中人�
 [Rule Based Rewards for Language Model Safety](https://cdn.openai.com/rule-based-rewards-for-language-model-safety.pdf)
 
 [https://github.com/openai/safety-rbr-code-and-data](https://github.com/openai/safety-rbr-code-and-data)
+
+## RLLR
+
+[ACL2024 | RLHF在腾讯广告自然语言理解任务上的优化及应用](https://mp.weixin.qq.com/s/GFrvQSf2TIQW-B1mbin9TA)
+
+[Enhancing Reinforcement Learning with Label-Sensitive Reward for Natural Language Understanding](https://arxiv.org/pdf/2405.19763)
+
+更适合NLU任务的强化学习方法RLLR（Reinforcement Learning with Label-Sensitive Reward），与RLHF相比可以一致地提升多种NLU任务上的标签准确率；进一步地，通过结合RLHF和RLLR的两个Reward Model，RLLR-mixed方法可以在标签准确率和理由质量上取得全面提升。
+
+### 原始RLHF直接用在NLU
+
++ 将NLU任务改写为自然语言的形式，让模型对同一个问题输出多条回复，每条回复包括两部分：
+    + 理由（rationale）：可以视为思维链的一种简化版本
+    + 标签（label）
++ 对同一个问题的不同回复进行排序，并处理成回复对（pair）的形式。
+    + 标签敏感对（label-sensitive pair）：标签不同的回复对
+    + 理由敏感对（rationale-sensitive pair）：**标签相同、理由不同**的回复对
+
+在7个公开数据集上，理由敏感对的占比都超过75%。在理由敏感对中，两个不同的理由会导向相同的标签，理论上说，模型在这些数据上进行训练只会使理由**更符合标注者的偏好**，但**对标签的准确性没有帮助**；而在NLU任务上，我们实际**更关心标签的准确性**，因此存在模型训练目标与评估指标不一致的问题。
+
+### RLLR
+
++ SFT训练：除了标签之外，我们还为数据集标注了理由，参考CoT的方式，先让模型生成一段理由，再根据理由输出标签，训练得到Policy Model；
++ Reward Model训练：训练两个reward model：
+    + **标签敏感RM**：解决原始RLHF中标签敏感对比例较低的问题：对于一条训练集中的样本，我们已有正确的标签标注，并且也知道所有可能的标签集合，因此可以**随机采样一个错误的标签**，并**为错误的标签标注理由**，与正确标签+理由构成**标签敏感对**，并基于此方法构造的数据训练单独的Reward Model；
+    + **理由敏感RM**：对于训练集中的每条样本，我们基于正确的标签采样多条理由，根据**理由的生成质量**来构建理由敏感对，并训练理由敏感的Reward Model，此处理由质量可以采用**人工判断或AI辅助**的方式标注，根据准确性、一致性、逻辑性、事实性、相关性和信息完整性进行排序。
++ PPO训练：使用Reward Model和的Policy Model进行强化学习训练。
+    + RLLR：只用标签敏感RM训练
+    + RLLR-mixed：用两个RM训练，最终reward如下，$$r_{\phi 1}$$是标签敏感RM的输出，$$r_{\phi 2}$$是理由敏感RM的输出，大部分情况下，$$r_{\phi 2}<r_{\phi 1}$$，为了强化各自的作用，当$$r_{\phi 1}$$较小时，由$$r_{\phi 1}$$主导，当$$r_{\phi 1}>\lambda$$时，截断到$$\lambda$$，由$$r_{\phi 2}$$主导：
+XXX
+r_M(q, a)= \begin{cases}r_{\phi 1}(q, a)+r_{\phi 2}(q, a) & r_{\phi 1}(q, a)<\lambda \\ \lambda+r_{\phi 2}(q, a) & r_{\phi 1}(q, a) \geq \lambda\end{cases}
+XXX
+
+### AMP
+
+[无需人工/GPT-4V排序，针对多模态大模型的全自动多级偏好学习](https://mp.weixin.qq.com/s/vv1s9D7WQ_kKhdMoQOjYjw)
+
+[Automated Multi-level Preference for MLLMs](https://arxiv.org/pdf/2405.11165)
+
+[https://github.com/takomc/amp](https://github.com/takomc/amp)
+
 
 # 多模态（图像）
 
