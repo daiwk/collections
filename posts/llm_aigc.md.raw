@@ -6461,7 +6461,7 @@ rq-vae的介绍：[](https://arxiv.org/pdf/2306.08121)
 最终的loss：$$\mathcal{L}_{\text {recon }} + \mathcal{L}_{\text {rqvae }}$$：
 
 + $$\mathcal{L}_{\text {recon }}=\|\boldsymbol{x}-\hat{\boldsymbol{x}}\|^2$$
-+ $$\mathcal{L}_{\text {rqvae }}=\sum_{l=1}^L \beta\left\|\boldsymbol{r}_l-\operatorname{sg}\left[\boldsymbol{e}_{c_l}\right]\right\|^2+\left\|\operatorname{sg}\left[\boldsymbol{r}_l\right]-\boldsymbol{e}_{c_l}\right\|^2$$，sg是stop gradient
++ $$\mathcal{L}_{\text {rqvae }}=\sum_{l=1}^L \beta\left\|\boldsymbol{r}_l-\operatorname{sg}\left[\boldsymbol{e}_{c_l}\right]\right\|^2+\left\|\operatorname{sg}\left[\boldsymbol{r}_l\right]-\boldsymbol{e}_{c_l}\right\|^2$$，sg是stop gradient，这里原始的rq-vae是算的$$\mathcal{L}_{\text {commit }}=\sum_{d=1}^D\left\|\mathbf{Z}-\operatorname{sg}\left[\hat{\mathbf{Z}}^{(d)}\right]\right\|_2^2$$看来有点diff
 + 码本的emb通过moving average更新
 
 
