@@ -6243,6 +6243,40 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [大语言模型在推荐系统中的探索与应用](https://mp.weixin.qq.com/s/nEhynptVyx8aV8onCwozAA)
 
+### 概况
+
+![llm-rec-where](../assets/llm-rec-where.png)
+
+![llm-rec-how](../assets/llm-rec-how.png)
+
+### where-LLM for feature engineering
+
+#### user-item level feature augmentation
+
+
+
+#### instance-level sample generation
+
+
+
+### where-LLM as feature encoder
+
+### where-LLM for scoring/ranking function
+
+### where-LLM for pipeline controller
+
+
+### how-tune LLM & infer with CRM
+
+### how-not tune LLM & infer w/o CRM
+
+### how-not tune LLM & infer with CRM
+
+### how-tune LLM & infer w/o CRM
+
+
+
+
 ## DSI
 
 参考知乎：[https://zhuanlan.zhihu.com/p/470182510](https://zhuanlan.zhihu.com/p/470182510)
