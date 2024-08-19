@@ -7382,6 +7382,9 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [Whitening Sentence Representations for Better Semantics and Faster Retrieval](https://ar5iv.labs.arxiv.org/html/2103.15316)
 
+代码：[https://github.com/bojone/BERT-whitening](https://github.com/bojone/BERT-whitening)
+
+
 [Transformer Scale Gate for Semantic Segmentation](https://arxiv.org/pdf/2205.07056v1)
 
 ## 蒸馏
