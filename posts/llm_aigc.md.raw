@@ -2551,6 +2551,25 @@ XXX
 
 [Efficient Streaming Language Models with Attention Sinks](https://arxiv.org/pdf/2309.17453)
 
+[深度解析streamingLLM之无限长文本生成能力](https://mp.weixin.qq.com/s?__biz=Mzg2ODk4MzE2MQ==&mid=2247484158&idx=1&sn=666bd5fed13815b5765124646206bac5&chksm=cea54ae8f9d2c3fea1f3d5dfc94fc3d48abbd02a1278584bfd76ff8fe52ce59ce8966ced9cd5&token=562866785&lang=zh_CN#rd)
+
+attention sink：输入给LLM推理开头的几个intial tokens是非常特殊的，就像水龙头一样，出水那一瞬间吸引了人们大量的attention。而且intial tokens与生成token的绝对距离距离和语义信息都不重要，重要的是这第一个或者前面几个token。
+
+softmax需要所有位置的值的总和为1，因此必须给某些位置权重，即使这个位置对输出没有任何贡献，可能导致在backward的过程中产生错误的权重更新，而这个错误在后续的过程中很难被纠正。因此，模型倾向于将不必要的注意力值转嫁给特定的token。其实在[https://www.evanmiller.org/attention-is-off-by-one.html](https://www.evanmiller.org/attention-is-off-by-one.html)就提出了，要给softmax的分母+1：$$(\operatorname{softmax_1}(\mathrm{x}))_i=\frac{\exp \left(x_i\right)}{\sum_j \exp \left(x_j\right)+1}$$
+
+当每个token都趋向负无穷时，softmax的极限是1/k（k是token数），也就是会让每个token的概率都是1/k
+
+XXX
+\lim _{x 1 \rightarrow-\infty} \ldots \lim _{x_k \rightarrow-\infty}(\operatorname{softmax}(x))_i=\frac{1}{k}>0
+XXX
+
+而$$$$softmax_1$$$$因为分母有个1（即$$exp(0)=1$$），相当于在最前面引入了一个或者多个的无意义的global_token。同样当每个token都趋向负无穷时，因为分母已经有一个1了，所以可以让其他正常token都趋于0
+
+XXX
+\lim _{x 1 \rightarrow-\infty} \ldots \lim _{x_k \rightarrow-\infty}\left(\operatorname{softmax}_1(x)\right)_i=0
+XXX
+
+
 [https://github.com/mit-han-lab/streaming-llm](https://github.com/mit-han-lab/streaming-llm)
 
 集成到trt-llm里了：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm)
