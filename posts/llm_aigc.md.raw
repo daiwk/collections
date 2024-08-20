@@ -6229,6 +6229,8 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817.pdf)
 [Recommender Systems in the Era of Large Language Models (LLMs)](https://arxiv.org/pdf/2307.02046.pdf)
 
+
+
 中科大LDS实验室的tutorial：[XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf](https://github.com/daiwk/collections/blob/master/assets/XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf)
 
 对应的datafun talk：[当"狂飙"的大模型撞上推荐系统](https://mp.weixin.qq.com/s/rBGq7rDMK5Vxad5qUmK3nw)
@@ -6336,6 +6338,8 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 ### where-LLM as feature encoder
 
 ### where-LLM for scoring/ranking function
+
+[Text Is All You Need: Learning Language Representations for Sequential Recommendation](https://arxiv.org/pdf/2305.13731) 亚马逊发的
 
 ### where-LLM for pipeline controller
 
