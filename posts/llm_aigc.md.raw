@@ -2022,6 +2022,8 @@ XXX
 
 所以传统SSM的时空复杂度都很高，作者提出了S4(structured state space model)
 
+====>hippo的假设会让模型关注宽波，对于很窄的毛刺信号效果不好，所以对大海捞针效果并不好
+
 ## Mamba
 
 [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)
@@ -2055,6 +2057,8 @@ XXX
 [Mamba做大做强！混合Transformer，打败Transformer](https://mp.weixin.qq.com/s/Lde0G_zysfrGcRUX5nOf8g)
 
 [https://huggingface.co/ai21labs/Jamba-v0.1](https://huggingface.co/ai21labs/Jamba-v0.1)
+
+让mamba做短程头，让transformer做长程头
 
 ## Hawk & Griffin
 
@@ -2758,6 +2762,26 @@ XXX
 
 用adamW+WSD（预热 - 稳定 - 衰减）学习率schedule，在前50 GT的训练过程中，batch大小从b_min=128增加到了b_max=2048
 
+## LM-steer
+
+ACL 2024
+
+[LM-Steer: Word Embeddings Are Steers for Language Models](https://arxiv.org/pdf/2305.12798)
+
+[https://github.com/Glaciohound/LM-Steer](https://github.com/Glaciohound/LM-Steer)
+
+发现词向量空间上的线性变换空间等价于对语言模型生成样式的调节，并以此设计了名为 LM-Steers 的语言模型调控方法。我们发现词向量的这种调节作用普遍存在于各种尺寸的语言模型中。它只需要学习原始模型 0.2% 的参数就可以引导各种风格。在语言模型去毒化和生成情感控制等任务上，LM-Steers 可以实现与最先进的受控生成方法相当或更好的性能，同时保持更好的生成质量平衡。学习到的 LM-Steer 还可以充当文本风格的解读弃：它可以解释各种文本样式与词向量哪些维度相关，并且可以用于寻找最具代表性的文本片段。 LM-Steer 可通过显式计算来在不同语言模型之间转移，而不需要额外训练。我们还可以简单地通过缩放 LM-Steer 来实现风格的连续控制，或者实现多种生成控制的组合。
+
+## razerattention
+
+减少kv-cache的大小
+
+[RazorAttention: Efficient KV Cache Compression Through Retrieval Heads](https://www.arxiv.org/pdf/2407.15891)
+
+受anthropic的induction head([In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html))启发:
+
++ short head：对长文没有任何响应
++ long head(induction head)：对长文能直接找到对应位置，并且对那附近的词有很强的信号
 
 # 训练框架
 
@@ -3430,6 +3454,8 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 ## MInference(microsoft)
 
 [MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention](https://arxiv.org/pdf/2407.02490)
+
+![minference](../assets/minference.png)
 
 ## Sarathi-Serve(microsoft)
 
@@ -7564,6 +7590,11 @@ openai的报告：[GPT-4o System Card](https://cdn.openai.com/gpt-4o-system-card
 
 给定一个问题(question)及其对应的选项内容(options)，大模型无法把选项内容(option content)和对应的选项标识符(symbol，特指选项标识A/B/C/D)关联到一起。例如，当把正确答案"the president"放到选项B时，模型能够正确选择出答案；当我们把正确答案放到C时，模型依然选择"B"，即模型偏向于选"B"或者第二个答案，而忽略了正确答案的内容。
 
+## lost in the middle
+
+[Lost in the Middle: How Language Models Use Long Contexts](https://arxiv.org/pdf/2307.03172)
+
+
 # 多智能体
 
 [《综述：全新大语言模型驱动的Agent》——4.5万字详细解读复旦NLP和米哈游最新Agent Survey](https://zhuanlan.zhihu.com/p/656676717)
@@ -7872,6 +7903,10 @@ Neel Nanda（deepmind）的项目
 [http://poloclub.github.io/transformer-explainer/](http://poloclub.github.io/transformer-explainer/)
 
 [https://bbycroft.net/llm](https://bbycroft.net/llm)
+
+## superposition
+
+[Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html)
 
 # LLM应用
 
