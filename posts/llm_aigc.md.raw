@@ -2022,7 +2022,7 @@ XXX
 
 所以传统SSM的时空复杂度都很高，作者提出了S4(structured state space model)
 
-====>hippo的假设会让模型关注宽波，对于很窄的毛刺信号效果不好，所以对大海捞针效果并不好
+====>hippo的假设会让模型更关注宽波，对于很窄的毛刺信号效果不好，所以对大海捞针任务效果并不好
 
 ## Mamba
 
@@ -2782,6 +2782,12 @@ ACL 2024
 
 + short head：对长文没有任何响应
 + long head(induction head)：对长文能直接找到对应位置，并且对那附近的词有很强的信号
+
+## MLP-Mixer
+
+[MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/pdf/2105.01601)
+
+
 
 # 训练框架
 
