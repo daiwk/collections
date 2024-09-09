@@ -7408,6 +7408,8 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 [One Embedder, Any Task: Instruction-Finetuned Text Embeddings](https://aclanthology.org/2023.findings-acl.71.pdf)
 
+基于google的GTR模型（[Large Dual Encoders Are Generalizable Retrievers](https://arxiv.org/pdf/2112.07899)）加了task instruction，用对比学习loss训练
+
 ### LLM-Embedder
 
 [Retrieve Anything To Augment Large Language Models](https://arxiv.org/pdf/2310.07554)
