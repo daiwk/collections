@@ -7353,6 +7353,81 @@ XXX
 
 [EmbSum: Leveraging the Summarization Capabilities of Large Language Models for Content-Based Recommendations](https://www.arxiv.org/pdf/2405.11441)
 
+## LLM for 检索
+
+### ChatRetriever
+
+[ChatRetriever: Adapting Large Language Models for Generalized and Robust Conversational Dense Retrieval](https://arxiv.org/pdf/2404.13556v1)
+
+思想：原来输入的prompt是x，输出的response是y，添加t个特殊的```[emb_i]``` token，输入$$s=[x_1, \ldots, x_N,\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right], y_1^{+}\ldots, y_M^{+},\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right]]$$，然后训练的时候，每个生成的$$y_i$$只看得到它前面的y，还有x后面的那t个特殊token：
+
+XXX
+\mathcal{L}_{\mathrm{S}}=-\frac{1}{M} \sum_{i=1}^M \log p\left(y_i^{+} \mid y_1^{+}, \ldots, y_{i-1}^{+}, \mathbf{x}_{1: t}\right)
+XXX
+
+![chatretriever](../assets/chatretriever.png)
+
+对应的代码：[https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247](https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247)
+
+```python
+def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: bool):
+    inputs.pop("sample_ids", None)
+    inputs.pop("input_texts", None)
+    
+    if model_type in ['bge', 'llm_embedder']:
+        output = model(**inputs)
+        embs = output.last_hidden_state[:, 0]
+    elif model_type in set(['qwen', 'qwen_chat', 'qwen_chat_cot', 'qwen_chat_lora', 'qwen_chat_lora_eval', 
+        'qwen_chat_cot_lora', 'qwen_chat_cot_lora_eval', 'qwen15_chat_cot_lora_eval', 'repllama', 'llama', 
+        'repllama-train', 'repllama_v2', 'repllama_v2-train', 'repllama_v2-continue_train', 'repllama_chat', 
+        'repllama_chat-train', 'repllama_chat_cot', 'repllama_chat_cot-train', 'mistrial_cot-train', 
+        'mistrial_chat_cot-train', 'mistrial_cot', 'mistrial_chat_cot', 'qwen15', 'qwen15_chat', 
+        'qwen15_chat_lora', 'qwen15_chat_cot_lora', 'qwen15_chat_cot']):        
+        inputs['output_hidden_states'] = True
+        output = model(**inputs)
+        hidden_states = output.hidden_states[-1]
+        last_token_indices = inputs['attention_mask'].sum(dim=1) - 1
+        embs = hidden_states[torch.arange(hidden_states.size(0)), last_token_indices]
+    elif model_type in ['e5_mistrial', 'e5_mistrial-train']:
+        outputs = model(**inputs)
+        embs = last_token_pool(outputs.last_hidden_state, inputs['attention_mask'])
+    elif model_type in ['ance', 'gtr', 'splade']:
+        embs = model(**inputs)
+    elif model_type in ['bert']:
+        output = model(**inputs)
+        embs = output.pooler_output
+    else:
+        raise NotImplementedError("Model type {} is not supported now.".format(model_type))    
+    
+    if normalize_emb:
+        embs = torch.nn.functional.normalize(embs, p=2, dim=-1)
+    return embs
+```
+
+### Instructor
+
+[One Embedder, Any Task: Instruction-Finetuned Text Embeddings](https://aclanthology.org/2023.findings-acl.71.pdf)
+
+### LLM-Embedder
+
+[Retrieve Anything To Augment Large Language Models](https://arxiv.org/pdf/2310.07554)
+
+[https://github.com/FlagOpen/FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding)
+
+### RepLLaMA
+
+[Fine-Tuning LLaMA for Multi-Stage Text Retrieval](https://arxiv.org/pdf/2310.08319)
+
+### $$E5_{mistral-7b}$$
+
+[Improving Text Embeddings with Large Language Models](https://arxiv.org/pdf/2401.00368)
+
+### GRIT
+
+[Generative Representational Instruction Tuning](https://arxiv.org/pdf/2402.09906)
+
+[https://github.com/ContextualAI/gritlm](https://github.com/ContextualAI/gritlm)
+
 
 ## 其他
 
@@ -8109,6 +8184,46 @@ FLASH_ATTENTION_FORCE_BUILD=TRUE pip install flash-attn
 ```
 
 # 一些记录
+
+## 打印模型参数量
+
+[https://stackoverflow.com/questions/49201236/check-the-total-number-of-parameters-in-a-pytorch-model](https://stackoverflow.com/questions/49201236/check-the-total-number-of-parameters-in-a-pytorch-model)
+
+```python
+
+pytorch_total_params = sum(p.numel() for p in model.parameters())
+
+pytorch_total_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+# Load the model
+from transformers import BartForConditionalGeneration
+from transformers import T5ForConditionalGeneration
+def cal(model):
+  pytorch_total_trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+  return pytorch_total_trainable_params
+
+model = BartForConditionalGeneration.from_pretrained("facebook/bart-base")
+print("bart-base")
+print(cal(model)) # 6L 139420416 139M
+
+model = BartForConditionalGeneration.from_pretrained("facebook/bart-base")
+print("bart-base")
+print(cal(model)) # 12L 406291456 406M
+
+model = T5ForConditionalGeneration.from_pretrained("t5-small")
+print("t5-small")
+print(cal(model)) # 6L 60506624 65M
+
+model = T5ForConditionalGeneration.from_pretrained("t5-base")
+print("t5-base")
+print(cal(model)) # 12L 222903552 223M
+
+
+model = T5ForConditionalGeneration.from_pretrained("t5-large")
+print("t5-large")
+print(cal(model)) # 24L 737668096 738M
+
+```
 
 ## 往现有tokenizer里加一些特殊token
 
