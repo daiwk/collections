@@ -7548,9 +7548,9 @@ PR-Graph（product relational graph）：$$\mathcal{G}=(\mathcal{T}, \mathcal{E}
 
 + $$\mathcal{T}$$：所有节点，15k
 + $$\mathcal{E}$$：所有边，417k，强关联的product才有边，例如共同购买
-+ $$\mathcal{V}$$ ：每个节点对应的d维向量，$$\mathcal{V} \in \mathbb{R}^{|\mathcal{T}| \times d}$$
++ $$\mathcal{V}$$ ：每个节点对应的d维向量，$$\mathcal{V} \in \mathbb{R}^{|\mathcal{T}| \times d}$$。
 
-用户的长度为$$N_i $$的历史序列就可以看成$$\mathcal{T}_i \subseteq \mathcal{T} \text {, i.e., } \mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i} $$，并构成了子图$$\mathcal{G}_i \subseteq \mathcal{G} $$
+用户的长度为$$N_i$$的历史序列就可以看成$$\mathcal{T}_i \subseteq \mathcal{T} \text {, i.e., } \mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i} $$，并构成了子图$$\mathcal{G}_i \subseteq \mathcal{G} $$
 
 基于最优运输理论（Optimal Transport theory）：如何最高效地将一个分布变成另一个分布
 
