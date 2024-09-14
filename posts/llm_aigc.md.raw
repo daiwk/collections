@@ -7603,7 +7603,7 @@ XXX
 如果我们知道按升序排序的$$\mathcal{V}_0^\theta$$(因为这原始embedding的slice，是一维的，所以可以排序)对应的每个输入$$x^\theta$$的排名$$\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)$$，而且$$N=N_i$$，那么最优的transport plan $$f^*$$可以表示为：
 
 XXX
-
+f^*\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_i^{\boldsymbol{\theta}}\right)=\operatorname{argmin}_{x^{\prime} \in \mathcal{V}_i^\theta}\left(\tau\left(x^{\prime} \mid \mathcal{V}_i^\theta\right)=\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)\right)
 XXX
 
 
@@ -7634,11 +7634,53 @@ XXX
 + $$\left\|E_i-E_j\right\|_p \approx S W_p\left(P_i, P_j\right)$$
 + $$\left\|E_i\right\|_p \approx S W_p\left(P_i, P_0\right)$$
 
-
-
 ### 序列内
 
+对于序列$$\mathcal{G}_i$$里的每个节点而言，它的邻居节点特征集合$$\mathcal{N}_i=\left[v_{t_\alpha^i}\right]_{t_\alpha^i \in N g h\left(\mathcal{T}_i\right)}$$，其中$$N g h\left(\mathcal{T}_i\right)$$是$$\mathcal{T}_{\boldsymbol{i}}$$的元素在PR-Graph里的所有邻居。对于$$\mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i}$$里的每个节点$$t_n^i$$，先将它在第$$l$$次迭代的邻居特征向量summarize起来：
 
+XXX
+v_{N g h\left(t_n^i\right)}^{(l)}=\sum_{t \in N g h\left(t_n^i\right)} \frac{w_{t, t_n^i}^{(l-1)}}{\sqrt{|N g h(t)|+1} \sqrt{\left|N g h\left(t_n^i\right)\right|+1}} v_{t_n^i}^{(l-1)}
+XXX
+
+其中$$w_{t, t_n^i}^{(l-1)} \in \mathbb{R}$$，$$v_{t_n^i}^{(0)}$$通过$$\mathcal{V}_i$$中的$$v_{t_n}^i$$初始化，定义如下的layer-wise邻居特征list：
+
+XXX
+\mathcal{N}_i^{(l)}=\left[v_{N g h\left(t_n^i\right)}^{(l)}\right]_{t_n^i \in \mathcal{T}_i}
+XXX
+
+最终定义Intra-Trajectory Correlation Encoder（Intra-CE）如下：
+
+XXX
+\operatorname{Intra-CE}\left(\mathcal{V}_i \mid \Theta\right):=\sum_{l=1}^L \alpha_l\left(\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N f^*\left(\boldsymbol{\theta}_s^{\top} \boldsymbol{v}_{t_n^0} \mid \mathcal{N}_i^{(l)}\right)-\boldsymbol{O}\right)
+XXX
+
+其中$$\alpha_l$$是第$$l$$个系数，简单地定义为$$\alpha_l=1/L$$。节点的emb一般通过邻居信息迭代更新，例如$$v_{t_n^i}^{(l)}=\operatorname{AGG}\left(v_{N g h\left(t_n^i\right)}^{(l)}, v_{t_n^i}^{(l-1)}\right)$$，AGG就是GNN的聚合函数。
+
+Inter-SE的输出是$$\boldsymbol{E}_{\boldsymbol{i}}$$，Intra-CE的输出是$$E_i^{\prime}$$，最终整个序列的表示是二者的融合$$E_i^{\star}=\left[\boldsymbol{E}_i, \boldsymbol{E}_i^{\prime}\right] \in \mathbb{R}^{2 N S}$$
+
+### C-Start预训练策略
+
+两个loss：
+
++ 序列间的element overlaps：两个序列的overlap越多，越相似。用$$\Omega_i$$表示与$$\mathcal{T}_i$$相关的ranking list，检索出一个序列pair $$\left(\mathcal{T}_j, \mathcal{T}_k\right) \in \Omega_i$$，使得$$\left|\mathcal{T}_i \cap \mathcal{T}_j\right|>\left|\mathcal{T}_i \cap \mathcal{T}_k\right|$$，即$$i$$与$$j$$的交集比$$i$$与$$k$$的大，loss如下：
+
+XXX
+\mathcal{L}_1=\sum_{i=1}^M \sum_{\left(\mathcal{G}_j, \mathcal{G}_k\right) \in \Omega_i}^H \max \left(0,\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_j^{\star}\right\|_2-\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_k^{\star}\right\|_2+\text { margin }\right)
+XXX
+
++ 序列内的contextual relalations：同一个序列里的是正样本，不同序列的是负样本，loss如下：
+
+XXX
+\mathcal{L}_2=\sum_{i=1}^M \sum_{t^{+} \in \mathcal{T}_i, t^{-} \notin \mathcal{T}_i}^H \max \left(0, \boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{+}}-\boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{-}}+\text {margin }\right)
+XXX
+
+整体loss，其中$$\|\Delta\|_2^2$$是正常的L2正则：
+
+XXX
+\mathcal{L}=\mathcal{L}_1+\mu \mathcal{L}_2+\mu^{\prime}\|\Delta\|_2^2
+XXX
+
+![c-star-algo](../assets/c-star-algo.png)
 
 
 # 世界模型
