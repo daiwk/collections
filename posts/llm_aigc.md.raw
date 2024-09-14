@@ -7546,7 +7546,7 @@ XXX
 Customer Shopping TrAjectory Representation Learning framework (C-STAR) 
 PR-Graph（product relational graph）：$$\mathcal{G}=(\mathcal{T}, \mathcal{E}, \mathcal{V})$$
 
-+ $$\mathcal{T}$$：所有节点，15k
++ $$\mathcal{T}$$：所有节点，15k，可能是类目之类的，应该不是商品id
 + $$\mathcal{E}$$：所有边，417k，强关联的product才有边，例如共同购买
 + $$\mathcal{V}$$ ：每个节点对应的d维向量，$$\mathcal{V} \in \mathbb{R}^{|\mathcal{T}| \times d}$$。
 
@@ -7658,7 +7658,7 @@ XXX
 
 Inter-SE的输出是$$\boldsymbol{E}_{\boldsymbol{i}}$$，Intra-CE的输出是$$E_i^{\prime}$$，最终整个序列的表示是二者的融合$$E_i^{\star}=\left[\boldsymbol{E}_i, \boldsymbol{E}_i^{\prime}\right] \in \mathbb{R}^{2 N S}$$
 
-### C-Start预训练策略
+### C-Star预训练策略
 
 两个loss：
 
