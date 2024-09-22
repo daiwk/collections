@@ -3574,6 +3574,7 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/pdf/2312.07104)
 
+[三个程序员奋战三天重写推理堆栈，Grok-2 mini直接提速两倍，马斯克亲发贺电](https://mp.weixin.qq.com/s/prC4R1Jjhc7r6mMXv_ZNcw)
 
 ## LazyLLM
 
@@ -6052,6 +6053,21 @@ DALL-E3：
 
 [统一transformer与diffusion！Meta融合新方法剑指下一代多模态王者](https://mp.weixin.qq.com/s/D0sadIZkILx8VvWcsIEYFQ)
 
+[Transfusion: Predict the Next Token and Diffuse Images with One Multi-Modal Model](https://arxiv.org/pdf/2408.11039)
+
+一般来说，多模态生成模型需要能够感知、处理和生成离散元素（如文本或代码）和连续元素（如图像、音频和视频数据）。
+
++ 离散模态领域：以预测下一个词为目标的语言模型占据主导地位
++ 连续模态方面：扩散模型及其泛化形式则是当前最先进技术
+
+研究者一直试图将语言模型与扩散模型结合：
+
++ 方法一：直接扩展语言模型，使其能够利用扩散模型作为一个工具，或者将一个预训练的扩散模型嫁接到语言模型上。
++ 方法二：是对连续模态进行量化处理，然后在离散的token上训练一个标准的语言模型，虽然简化了模型架构，但也会造成信息的丢失。
+
+本文通过训练单个模型来预测离散文本 token 和扩散连续图像，从而实现两种模态的完全集成，且不会丢失任何信息。引入了一个训练模型的新方法 Transfusion，能够无缝地生成离散和连续的模态，将语言模型损失函数与扩散相结合，在混合模态序列上训练单个transformer。
+
+该研究还在文本和图像数据混合基础上从头开始预训练多个 Transfusion 模型，最多可达到 7B 参数量，并针对各种单模态和跨模态基准建立扩展定律。
 
 # 多模态（视频）
 
@@ -6389,6 +6405,27 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [https://github.com/buoyancy99/diffusion-forcing](https://github.com/buoyancy99/diffusion-forcing)
 
+## VideoSys
+
+[视频生成要有自己的系统！尤洋团队历时半年开源VideoSys](https://mp.weixin.qq.com/s/Q-AHzIOT0PBP6Yvdk_T3Sg)
+
+[https://github.com/NUS-HPC-AI-Lab/VideoSys](https://github.com/NUS-HPC-AI-Lab/VideoSys)
+
+### Pyramid Attention Broadcast (PAB)
+
+
+[Real-Time Video Generation with Pyramid Attention Broadcast](https://arxiv.org/abs/2408.12588)
+
+
+[https://github.com/NUS-HPC-AI-Lab/VideoSys/blob/master/docs/pab.md](https://github.com/NUS-HPC-AI-Lab/VideoSys/blob/master/docs/pab.md)
+
+
+### Dyanmic Sequence Parallelism（DSP）
+
+
+[DSP: Dynamic Sequence Parallelism for Multi-Dimensional Transformers](https://arxiv.org/abs/2403.10266)
+
+[https://github.com/NUS-HPC-AI-Lab/VideoSys/blob/master/docs/dsp.md](https://github.com/NUS-HPC-AI-Lab/VideoSys/blob/master/docs/dsp.md)
 
 ## 其他
 
