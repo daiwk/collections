@@ -1468,54 +1468,6 @@ LLM本质是基于海量文本语料库进行文本生成训练的，对于不�
 + 当模型的复杂性超过数据的复杂性时，增加模型的复杂性反而可能导致训练误差增加。这是因为模型开始过拟合数据，捕获数据中的噪声而非实际的模式。
 + 当模型的复杂性远大于数据的复杂性时，训练误差可能再次开始减少。这是因为模型有足够的能力来对数据的噪声进行平滑，同时仍然能够捕获数据的实际模式。
 
-
-## 一些训练+预测框架简介
-
-### pathways
-
-[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
-
-下载了，[pdf](../assets/LLM/pathways.pdf)
-
-这个回答分析得不错
-[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
-
-Google的大规模稀疏模型设计
-
-[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
-
-代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
-
-### megatron-lm
-
-[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
-
-### deepspeed
-
-[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
-
-
-### ray-llm
-
-[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
-
-
-### Google的几大LLM加速工具
-
-#### maxdiffusion
-
-[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
-
-#### JetStream
-
-[https://github.com/google/JetStream](https://github.com/google/JetStream)
-
-#### maxtext
-
-[https://github.com/google/maxtext](https://github.com/google/maxtext)
-
-
-
 # LLM模型架构
 
 ## MoE原理
@@ -1617,6 +1569,34 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 [Chameleon: Mixed-modal early-fusion foundation models](https://arxiv.org/pdf/2405.09818)单一Transformer架构，可以根据下一个token的预测目标，对由离散图像和文本token组成的混合模态序列进行建模，从而在不同模态之间进行无缝推理和生成。然而对于Chameleon这样各种模态会在模型训练的早期混合起来的模型，想要拓展它的能力，需要投入大量算力。
 
 [MoMa: Efficient Early-Fusion Pre-training with Mixture of Modality-Aware Experts](https://arxiv.org/pdf/2407.21770)使用路由式稀疏架构（routed sparse architecture）
+
+### HMOE
+
+(toread)
+
+[优化传统MoE结构，腾讯混元团队提出专家差异化新思路](https://mp.weixin.qq.com/s/gOXGL_MReneAZCmO7lBIng)
+
+[HMoE: Heterogeneous Mixture of Experts for Language Modeling](https://arxiv.org/pdf/2408.10681)
+
+在 HMoE 中，**每个专家的大小不再相同**，从而赋予了每个专家不同的表达能力。这种差异化设计使得路由可以根据专家的实际能力动态分配不同难度的 token，有效解决了专家专业化程度不足的问题。 
+
+### OLMoE
+
+(toread)
+
+[OLMoE: Open Mixture-of-Experts Language Models](https://arxiv.org/pdf/2409.02060)
+
+[https://huggingface.co/allenai/OLMoE-1B-7B-0924](https://huggingface.co/allenai/OLMoE-1B-7B-0924)
+
+[https://github.com/allenai/OLMoE](https://github.com/allenai/OLMoE)
+
+### 元象MOE
+
+[中国最大开源MoE模型，255B参数无条件免费商用，元象发布](https://mp.weixin.qq.com/s/vX0gt2YfsbUbrCpvNBFHZw)
+
+XVERSE-MoE-A36B，该模型总参数255B，激活参数36B，达到100B模型性能的「跨级」跃升。
+
+[https://github.com/xverse-ai/XVERSE-MoE-A36B](https://github.com/xverse-ai/XVERSE-MoE-A36B)
 
 ## 主流框架
 
@@ -1754,6 +1734,10 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 [Transformer升级之路：RoPE的底数设计原则](https://mp.weixin.qq.com/s/YhpfIz0Pi1OMLwN3V3J1mQ)
 
 [Base of RoPE Bounds Context Length](https://arxiv.org/pdf/2405.14591)
+
+[Decoder-only的LLM为什么需要位置编码？](https://mp.weixin.qq.com/s/3sBYrKyEPP93nwigaOAAAA)
+
+(toread)
 
 ### 注意力机制和Bias
 
@@ -2303,6 +2287,13 @@ GRU：
 
 [SAMBA: Simple Hybrid State Space Models for Efficient Unlimited Context Language Modeling](https://arxiv.org/pdf/2406.07522)
 
+## Mamba in llama
+
+(toread)
+
+[Mamba作者新作：将Llama3蒸馏成混合线性 RNN](https://mp.weixin.qq.com/s/jZGcBxhVUfb-Qv1UkqYK4A)
+
+[The Mamba in the Llama: Distilling and Accelerating Hybrid Models](https://arxiv.org/pdf/2408.15237)
 
 ## feedback attention memory
 
@@ -2882,6 +2873,17 @@ ACL 2024
 
 证明了从理论上讲，与 softmax 注意力相比，具有sigmoid注意力的Transformer是**通用函数逼近器**，并且受益于**改进的正则化**。
 
+## lstm+transformer
+
+[LSTM+Transformer王炸创新，荣登Nature](https://mp.weixin.qq.com/s/OTwbZEy-v93-fzvh1Z4m2Q)
+
+## AnyGraph
+
+[港大黄超团队推出AnyGraph, 首次揭秘图大模型的Scaling Law](https://mp.weixin.qq.com/s/iqQi4ZP7FdpHnMxZByOyoQ)
+
+[AnyGraph: Graph Foundation Model in the Wild](https://arxiv.org/pdf/2408.10700)
+
+[https://github.com/HKUDS/AnyGraph](https://github.com/HKUDS/AnyGraph)
 
 
 # 训练框架
@@ -3448,6 +3450,56 @@ JEST能够在仅使用10%的FLOP预算的情况下超越之前的最先进水平
 [FastPersist: Accelerating Model Checkpointing in Deep Learning](https://arxiv.org/pdf/2406.13768)
 
 
+## pathways
+
+[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
+
+下载了，[pdf](../assets/LLM/pathways.pdf)
+
+这个回答分析得不错
+[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
+
+Google的大规模稀疏模型设计
+
+[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
+
+代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
+
+## megatron-lm
+
+[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
+
+## deepspeed
+
+[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
+
+
+## ray-llm
+
+[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
+
+
+## Google的几大LLM加速工具
+
+### maxdiffusion
+
+[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
+
+### JetStream
+
+[https://github.com/google/JetStream](https://github.com/google/JetStream)
+
+### maxtext
+
+[https://github.com/google/maxtext](https://github.com/google/maxtext)
+
+## Fire-Flyer AI-HPC
+
+[用60%成本干80%的事，DeepSeek分享沉淀多年的高性能深度学习架构](https://mp.weixin.qq.com/s/-OeGYiN15vzwv0INPfIU5w)
+
+[Fire-Flyer AI-HPC: A Cost-Effective Software-Hardware Co-Design for Deep Learning](https://arxiv.org/pdf/2408.14158)
+
+
 # 推理框架
 
 ## 量化
@@ -3585,6 +3637,13 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 ## 各框架对比
 
 [最佳LLM推理引擎？TensorRT vs vLLM vs LMDeploy vs MLC-LLM](https://mp.weixin.qq.com/s/AnqaukudFukLYSi55w9r2Q)
+
+# 算子加速
+
+## Triton
+
+[天下苦英伟达久矣！PyTorch官方免CUDA加速推理，Triton时代要来？](https://mp.weixin.qq.com/s/6gkPA-xc7GsltM1Ywui_XQ)
+
 
 # 典型LLM简介
 
@@ -4107,6 +4166,9 @@ Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一�
 
 [https://huggingface.co/mistralai/Mistral-Large-Instruct-2407](https://huggingface.co/mistralai/Mistral-Large-Instruct-2407)
 
+[​Mistral首个多模态模型Pixtral 12B来了！还是直接放出24GB磁力链接](https://mp.weixin.qq.com/s/c_fmpkuimmEtY6pD9f_bZQ)
+
+[https://huggingface.co/mistral-community/pixtral-12b-240910](https://huggingface.co/mistral-community/pixtral-12b-240910)
 
 ### phi-3
 
@@ -4466,6 +4528,13 @@ XXX
 
 [https://huggingface.co/google/gemma-scope](https://huggingface.co/google/gemma-scope)
 
+### datagemma
+
+[Knowing When to Ask - Bridging Large Language Models and Data](https://docs.datacommons.org/papers/DataGemma-FullPaper.pdf)
+
+提出了一种名为检索交错生成（Retrieval Interleaved Generation，RIG）的新方法，可以可靠地将Data Commons中的公共统计数据整合到LLM的响应中。RIG是一种受工具启发的方法，可以将统计数据标记与适合从Data Commons检索的自然语言问题交错。
+
+为了获得这种能力，他们利用Gemini 1.5的帮助生成了一个指令-响应数据集，并在此基础上对LLM进行了微调。RIG方法将事实准确性从5-7%提高到了约58%。
 
 ### Claude
 
@@ -4613,6 +4682,8 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 
 ### MiniCPM
 
+#### MiniCPM-Llama3-V
+
 [登顶Top2！MiniCPM-V 8B新版本：GPT-4V水准小钢炮，8G显存，4070轻松推理！](https://mp.weixin.qq.com/s/TQVHJlZDExD3nMPRsqa_5w)
 
 [可信度超越GPT-4V，清华&面壁揭秘「小钢炮」模型背后的高效对齐技术](https://mp.weixin.qq.com/s/7otafJLrrj4jlZIltQxcjQ)
@@ -4621,6 +4692,12 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 
 [https://github.com/RLHF-V/RLAIF-V](https://github.com/RLHF-V/RLAIF-V)
 
+#### MiniCPM 3.0
+
+[小模型杀疯了！仅4B参数性能超GPT-3.5！无限长文本性能超Kimi](https://mp.weixin.qq.com/s/qJM9OTDHS3pJB9ozFuRP1g)
+
+[MiniCPM: Unveiling the Potential of Small Language Models with Scalable Training Strategies](https://arxiv.org/pdf/2404.06395)
+
 ### DCFormer
 
 [彩云科技DCFormer大模型发布，效率是Transformer的两倍！](https://zhuanlan.zhihu.com/p/699582521)
@@ -4628,6 +4705,12 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 [Improving Transformers with Dynamically Composable Multi-Head Attention](https://arxiv.org/pdf/2405.08553)
 
 [https://github.com/Caiyun-AI/DCFormer](https://github.com/Caiyun-AI/DCFormer)
+
+### Reflection
+
+[这就翻车了？Reflection 70B遭质疑基模为Llama 3，作者：重新训练](https://mp.weixin.qq.com/s/Ip1Muv-jC6W9iHTBauJshQ)
+
+
 
 ## 小模型
 
@@ -5731,7 +5814,7 @@ XXX
 r_M(q, a)= \begin{cases}r_{\phi 1}(q, a)+r_{\phi 2}(q, a) & r_{\phi 1}(q, a)<\lambda \\ \lambda+r_{\phi 2}(q, a) & r_{\phi 1}(q, a) \geq \lambda\end{cases}
 XXX
 
-### AMP
+## AMP
 
 [无需人工/GPT-4V排序，针对多模态大模型的全自动多级偏好学习](https://mp.weixin.qq.com/s/vv1s9D7WQ_kKhdMoQOjYjw)
 
@@ -5739,8 +5822,16 @@ XXX
 
 [https://github.com/takomc/amp](https://github.com/takomc/amp)
 
+# Alignment
+
+[大模型微调（八）：SFT for Alignment 总结纪要](https://zhuanlan.zhihu.com/p/717553974)
+
+# 安全性
+
+[Anthropic安全负责人：在超级AI「毁灭」人类之前，我们可以做这些准备](https://mp.weixin.qq.com/s/nxD8qeCfG1tjfpvlJ6uacg)
 
 # 多模态（图像）
+
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
 
@@ -5965,12 +6056,6 @@ DALL-E3：
 
 [https://huggingface.co/Alpha-VLLM/Lumina-T2I/tree/main](https://huggingface.co/Alpha-VLLM/Lumina-T2I/tree/main)
 
-## Chameleon
-
-[Meta首发「变色龙」挑战GPT-4o，34B参数引领多模态革命！10万亿token训练刷新SOTA](https://mp.weixin.qq.com/s/HQC7F64ZIb-k-K_QLzFegg)
-
-[Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/pdf/2405.09818)
-
 ## Vision-LSTM
 
 [原作者带队，LSTM卷土重来之Vision-LSTM出世](https://mp.weixin.qq.com/s/_9DYLbRkiXTU70nsXJLCDQ)
@@ -6049,7 +6134,26 @@ DALL-E3：
 
 [Imagen 3](https://arxiv.org/pdf/2408.07009)
 
+[Imagen 3支持人物生成，人人可用！谷歌Gemini AI重大升级来了](https://mp.weixin.qq.com/s/4gYFpljgF64vA5ojulEmYQ)
+
+
+## Chameleon
+
+下面3个工作都在这里有介绍：[生成-理解大一统：一文浅谈多模态大模型最新研究进展](https://mp.weixin.qq.com/s/Ip-IphDFF6il3rTJLxflZA)
+
+
+[Meta首发「变色龙」挑战GPT-4o，34B参数引领多模态革命！10万亿token训练刷新SOTA](https://mp.weixin.qq.com/s/HQC7F64ZIb-k-K_QLzFegg)
+
+[Chameleon: Mixed-Modal Early-Fusion Foundation Models](https://arxiv.org/pdf/2405.09818)
+
+
+## Show-o
+
+[Show-o: One Single Transformer to Unify Multimodal Understanding and Generation](https://arxiv.org/abs/2408.12528)
+
 ## Transfusion
+
+(toread)
 
 [统一transformer与diffusion！Meta融合新方法剑指下一代多模态王者](https://mp.weixin.qq.com/s/D0sadIZkILx8VvWcsIEYFQ)
 
@@ -6068,6 +6172,38 @@ DALL-E3：
 本文通过训练单个模型来预测离散文本 token 和扩散连续图像，从而实现两种模态的完全集成，且不会丢失任何信息。引入了一个训练模型的新方法 Transfusion，能够无缝地生成离散和连续的模态，将语言模型损失函数与扩散相结合，在混合模态序列上训练单个transformer。
 
 该研究还在文本和图像数据混合基础上从头开始预训练多个 Transfusion 模型，最多可达到 7B 参数量，并针对各种单模态和跨模态基准建立扩展定律。
+
+## ControlNeXt
+
+[视频生成控制提升几十倍，新一代轻量级ControlNeXt火了，贾佳亚团队正挑战Scaling Law](https://mp.weixin.qq.com/s/IBqOmZbSCcdRvyFRdcXMLQ)
+
+[ControlNeXt: Powerful and Efficient Control for Image and Video Generation](https://arxiv.org/pdf/2408.06070)
+
+[https://github.com/dvlab-research/ControlNeXt](https://github.com/dvlab-research/ControlNeXt)
+
+## GNN+Graph Transformer综述
+
+[TPAMI 2024 | 计算机视觉中基于图神经网络和图Transformers的方法和最新进展](https://mp.weixin.qq.com/s/-lWM4mmbCixxJxWRPuoQsw)
+
+[Survey on Graph Neural Networks and Graph Transformers in Computer Vision: A Task-Oriented Perspective](https://arxiv.org/abs/2209.13232)
+
+## Llip
+
+[ICML 2024 | 直面CLIP内在缺陷，Meta提出全新latent对比预训练框架Llip](https://mp.weixin.qq.com/s/vucfBAYI_SFemwg5_PrbLA)
+
+[Modeling Caption Diversity in Contrastive Vision-Language Pretraining](https://arxiv.org/abs/2405.00740)
+
+基于对比视觉-语言预训练技术的大型多模态模型目前已成为人工智能领域研究的热点课题。但这一预训练技术仍然以经典的CLIP模型为基础，缺乏进一步的发展。此外，鉴于CLIP模型通过将图像及其caption映射到单个向量这样的底层机制，可以认为限制了对比预训练模型描述图像各种其他方面的能力。
+
+提出了一种名为Llip的架构（Latent Language Image Pretraining），以图像字幕生成（Image Caption）任务作为出发点，用来模拟自然场景中与单张图像进行匹配caption的多样性。Llip仍然采用双塔特征提取模式，其视觉编码器可以对给定图像输出一组视觉特征，这些特征可以总结与当前图像匹配的多样式captions中的文本信息，来得到最终的表示。
+
+## longllava
+
+[首个Mamba+Transformer混合架构多模态大模型来了，实现单卡千图推理](https://mp.weixin.qq.com/s/ipfx6qaxeQlkILEVACabvA)
+
+[LongLLaVA: Scaling Multi-modal LLMs to 1000 Images Efficiently via Hybrid Architecture](https://arxiv.org/abs/2409.02889)
+
+[https://github.com/FreedomIntelligence/LongLLaVA](https://github.com/FreedomIntelligence/LongLLaVA)
 
 # 多模态（视频）
 
@@ -6426,6 +6562,16 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [DSP: Dynamic Sequence Parallelism for Multi-Dimensional Transformers](https://arxiv.org/abs/2403.10266)
 
 [https://github.com/NUS-HPC-AI-Lab/VideoSys/blob/master/docs/dsp.md](https://github.com/NUS-HPC-AI-Lab/VideoSys/blob/master/docs/dsp.md)
+
+## GameNGen
+
+[扩散模型做游戏引擎，单TPU 20 FPS模拟毁灭战士，谷歌最新GameNGen太博眼球了](https://mp.weixin.qq.com/s/LvjhY9Gzd_lnE3M3MllKDA)
+
+## Firefly
+
+[厉害了！Adobe新出Firefly视频模型，2分钟速成高清大片](https://mp.weixin.qq.com/s/uFKQNGuoZ2bS4Ea0pye71Q)
+
+[https://blog.adobe.com/en/publish/2024/09/11/bringing-gen-ai-to-video-adobe-firefly-video-model-coming-soon](https://blog.adobe.com/en/publish/2024/09/11/bringing-gen-ai-to-video-adobe-firefly-video-model-coming-soon)
 
 ## 其他
 
@@ -7827,21 +7973,53 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [AI models collapse when trained on recursively generated data](https://www.nature.com/articles/s41586-024-07566-y)，对应下载的[pdf](https://github.com/daiwk/collections/blob/master/assets/nature-ai-train-ai.pdf)
 
+## self-play
+
+[清华、北大等发布Self-Play强化学习最新综述](https://mp.weixin.qq.com/s/oMY0O0OIVYJc04zkoMzgcQ)
+
+[OpenAI o1 强化学习背后的自博弈（Self-play）方法介绍](https://mp.weixin.qq.com/s/zyAHcigtI2fEFN3TKQBb6A)
+
+[万字长文推演OpenAI o1 self-play RL 技术路线](https://mp.weixin.qq.com/s/_kt0SPuWWiiu7XwqNZKZAw)
+
+## Cursor
+
+[Scaling Law瓶颈，Cursor编程为什么这么强？团队参与新研究掏出秘密武器](https://mp.weixin.qq.com/s/xhV9HoeEP22RjuWTjgbPqg)
+
+[Planning In Natural Language Improves LLM Search For Code Generation](https://arxiv.org/pdf/2409.03733)
+
+## Let's verify step by step
+
+[o1基石论文火爆传阅，Ilya仍是关键先生！核心项目清北校友闪光](https://mp.weixin.qq.com/s/woElE_YfQni7bwe4UCCK4g)
+
+[Let's Verify Step by Step](https://arxiv.org/pdf/2305.20050)
+
 ## O1
+
+(toread)
+
+[OpenAI o1要跟，怎么跟？这个GitHub项目把解读、博客、相关论文一网打尽](https://mp.weixin.qq.com/s/sPYeM5LbfAwyHUxbQ78Vsg)
+
+[刚刚，OpenAI震撼发布o1大模型！强化学习突破LLM推理极限](https://mp.weixin.qq.com/s/sGcx90Q_uI8se-DKosj9dw)
+
+[张俊林：OpenAI o1的价值意义及强化学习的Scaling Law](https://mp.weixin.qq.com/s/my7XiRtpb8IY3Z0b471NJA)
+
+
+[北大对齐团队独家解读：OpenAI o1开启「后训练」时代强化学习新范式](https://mp.weixin.qq.com/s/FXGdJA8OyZvLl89rXJiyAQ)
+
+
+## CoT能让Transformer更强
 
 [谷歌再次痛失好局！OpenAI o1 证实谷歌 ICLR 2024 论文价值「四位华人贡献」](https://mp.weixin.qq.com/s/7FsVPFUb4-fkeaOtcRrgsw)
 
-### CoT能让Transformer更强
-
 [Chain of Thought Empowers Transformers to Solve Inherently Serial Problems](https://arxiv.org/pdf/2402.12875)
 
-#### CoT：打破 Transformer 的“并行诅咒”
+### CoT：打破 Transformer 的“并行诅咒”
 
 传统的 Transformer 模型虽然在自然语言处理领域取得了巨大成功，但它有一个致命弱点：擅长并行计算，但不擅长串行推理。这就像一个超级聪明的孩子，能快速完成大量的计算题，但却无法理解简单的逻辑推理。
 
 而CoT (Chain of Thought，思维链)技术的灵感来源于人类的思维过程，它可以让 Transformer 模拟人类的思考方式，通过生成一系列中间推理步骤，来解决那些需要逻辑推理的复杂问题。
 
-#### CoT 的理论基础：从电路复杂度到 Transformer 表达能力
+### CoT 的理论基础：从电路复杂度到 Transformer 表达能力
 
 作者用电路复杂性理论来解释 CoT 的强大之处，将Transformer的计算过程与电路模型进行类比，并将Transformer能够解决的问题类别定义为“CoT 复杂性类”
 
@@ -7849,7 +8027,7 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 只要CoT步骤足够多，Transformer 就能模拟任意大小的布尔电路，从而解决P/poly问题，这是一个包含了P问题的更大的问题类别，相当于证明了CoT可以让 Transformer 解决几乎所有可以用计算机解决的问题。
 
-#### CoT 的实验验证：从模加到电路值问题，CoT 全面胜出！
+### CoT 的实验验证：从模加到电路值问题，CoT 全面胜出！
 
 为了进一步验证CoT的有效性，论文作者设计了四个核心问题：
 
@@ -7864,6 +8042,54 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 + 对于模加问题，即使不使用 CoT，Transformer 也能取得不错的效果
 + 但对于其他三个问题，使用 CoT 可以显著提高 Transformer 的准确率，尤其是在模型深度较浅的情况下
+
+### 讨论
+
+[CoT能让模型推理能力无上限？田渊栋、LeCun下场反对：两层MLP还能模拟全世界呢](https://mp.weixin.qq.com/s/wi1jvQg47O078Xk83UpYmA)
+
+[Transformer推理天花板被谷歌打破？DeepMind首席科学家亮出84页PPT，却遭LeCun反对](https://mp.weixin.qq.com/s/_z3ITDGRWXjbh8aVUBdUsg)
+
+## CoT or not
+
+[o1带火的CoT到底行不行？新论文引发了论战](https://mp.weixin.qq.com/s/_v15-UYpv300XIlhQ-54Vg)
+
+[To CoT or not to CoT? Chain-of-thought helps mainly on math and symbolic reasoning](https://arxiv.org/pdf/2409.12183)
+
+## inference scaling
+
+[LLM Inference Scaling：姚班/OpenAI/CMU 8月论文提前揭示o1核心原理](https://mp.weixin.qq.com/s/p84S9r7Qbuo_yjAWhhqoVQ)
+
+[An Empirical Analysis of Compute-Optimal Inference for Problem-Solving with Language Models](https://arxiv.org/abs/2408.00724)
+
+## 开源模型+O1
+
+[OpenAI o1式思维链，开源模型也可以有，成功案例来了](https://mp.weixin.qq.com/s/W28qb8ZaJkcyDP69eGw8MA)
+
+## LeCo
+
+[COLM 24 | 从正确中学习？大模型的自我纠正新视角](https://mp.weixin.qq.com/s/F8KpJuiDE9DfSVb1ciLUSQ)
+
+[Learning From Correctness Without Prompting Makes LLM Efficient Reasoner](https://arxiv.org/pdf/2403.19094)
+
+[https://github.com/starrYYxuan/LeCo](https://github.com/starrYYxuan/LeCo)
+
+## ScoRe
+
+[强化学习让大模型自动纠错，数学、编程性能暴涨，DeepMind新作](https://mp.weixin.qq.com/s/CqxEoL50_FQTGtLYgh6omw)
+
+## test-time scaling
+
+[小模型越级挑战14倍参数大模型，谷歌开启Test-Time端新的Scaling Law](https://mp.weixin.qq.com/s/tfi7VOpSdKIXVb--k6NCSg)
+
+[Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters](https://arxiv.org/pdf/2408.03314)
+
+# 语言物理学
+
+(toread)
+
+[大模型边推理边纠错，有可能做到吗？这是ICML爆火的演讲](https://mp.weixin.qq.com/s/NOVFYmXiHUJ7x1SU7yH0CA)
+
+[https://www.bilibili.com/video/BV1Yw4m1k7nH](https://www.bilibili.com/video/BV1Yw4m1k7nH)
 
 
 # LLM+math
@@ -8097,6 +8323,12 @@ XXX
 
 [OpenDevin: An Open Platform for AI Software Developers as Generalist Agents](https://arxiv.org/pdf/2407.16741)
 
+## autogpt
+
+[GitHub星标超16万，爆火AutoGPT进阶版来了：定制节点、多智能体协同](https://mp.weixin.qq.com/s/dBL47yYoVNkyPoPG8pcLLA)
+
+[https://github.com/Significant-Gravitas/AutoGPT](https://github.com/Significant-Gravitas/AutoGPT)
+
 ## DAAG
 
 [三「模」联盟，谷歌DeepMind缔造终身学习智能体！](https://mp.weixin.qq.com/s/P-x8EDrfd1ydCnPP8MYu6g)
@@ -8108,6 +8340,20 @@ XXX
 [GPT-4o能玩《黑神话》！精英怪胜率超人类，无强化学习纯大模型方案](https://mp.weixin.qq.com/s/veHSbBxPIqRexG0OWtg4pw)
 
 [Can VLMs Play Action Role-Playing Games? Take Black Myth Wukong as a Study Case](https://arxiv.org/abs/2409.12889)
+
+## MARL
+
+[北大领衔，多智能体强化学习研究登上Nature子刊](https://mp.weixin.qq.com/s/_67dbIMDjktMEw4QYiIAUA)
+
+[Efficient and scalable reinforcement learning for large-scale network control](https://www.nature.com/articles/s42256-024-00879-7)
+
+## MMRole
+
+[与「李白」赏图赋诗，同「猴哥」直面天命，人大高瓴提出MMRole多模态角色扮演](https://mp.weixin.qq.com/s/I8gyDv9K8uhB3EXF_2_zVw)
+
+[MMRole: A Comprehensive Framework for Developing and Evaluating Multimodal Role-Playing Agents](https://arxiv.org/abs/2408.04203)
+
+[https://github.com/YanqiDai/MMRole](https://github.com/YanqiDai/MMRole)
 
 # 一些其他比较重要的工作
 
@@ -8267,6 +8513,10 @@ XXX
 
 [https://github.com/amazon-science/RAGChecker](https://github.com/amazon-science/RAGChecker)
 
+## TAG
+
+[表格增强生成TAG登场：解锁AI自然语言与数据库的完美结合](https://mp.weixin.qq.com/s/6gkPA-xc7GsltM1Ywui_XQ)
+
 
 # LLM模型融合
 
@@ -8302,6 +8552,24 @@ XXX
     + 循环5次：
         shuffle测试question的答案选项，让LLM回答
     + 对生成的答案投票，选票数最多的
+
+## APE
+
+[还在人工炼丹？自动提示工程指南来了，还带从头实现](https://mp.weixin.qq.com/s/TxzkRUPhsiqtLhCyrIsQrQ)
+
+[https://github.com/marshmellow77/automated-prompt-engineering-from-scratch](https://github.com/marshmellow77/automated-prompt-engineering-from-scratch)
+
+## PAS
+
+[还在死磕AI咒语？北大-百川搞了个自动提示工程系统PAS](https://mp.weixin.qq.com/s/2etnB3hbRtOCth1notqyBQ)
+
+[PAS: Data-Efficient Plug-and-Play Prompt Augmentation System](https://arxiv.org/abs/2407.06027)
+
+## ell
+
+[OpenAI前研究者发布提示词工程框架ell，升级版LangChain，支持版本控制和多模态](https://mp.weixin.qq.com/s/LaNbu4bVrWLG3ueopFTj5g)
+
+[https://github.com/MadcowD/ell](https://github.com/MadcowD/ell)
 
 # 可解释AI
 
@@ -8369,13 +8637,50 @@ Neel Nanda（deepmind）的项目
 
 [Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html)
 
-# LLM应用
+## 3Blue1Brown
 
-## autogpt
+[用最直观的动画，讲解LLM如何存储事实，3Blue1Brown的这个视频又火了](https://mp.weixin.qq.com/s/PSMfQLBBQZyG2GwgzatqvA)
 
-[GitHub星标超16万，爆火AutoGPT进阶版来了：定制节点、多智能体协同](https://mp.weixin.qq.com/s/dBL47yYoVNkyPoPG8pcLLA)
+[https://www.youtube.com/watch?v=9-Jl0dxWQs8](https://www.youtube.com/watch?v=9-Jl0dxWQs8)
 
-[https://github.com/Significant-Gravitas/AutoGPT](https://github.com/Significant-Gravitas/AutoGPT)
+# Lifelong learning of LLM
+
+(toread)
+
+[Towards Lifelong Learning of Large Language Models: A Survey](https://arxiv.org/abs/2406.06391)
+
+[https://github.com/qianlima-lab/awesome-lifelong-learning-methods-for-llm](https://github.com/qianlima-lab/awesome-lifelong-learning-methods-for-llm)
+
+
+# 具身智能
+
+[大模型走向物理世界，TeleAI 发布大模型驱动的具身智能综述，覆盖300篇文献](https://mp.weixin.qq.com/s/vzDhVsPmBqNT1iuZDnPjRw)
+
+[Embodied-AI with large models: research and challenges](https://www.sciengine.com/SSI/doi/10.1360/SSI-2024-0076)
+
+## ReKep
+
+[李飞飞团队提出ReKep，让机器人具备空间智能，还能整合GPT-4o](https://mp.weixin.qq.com/s/AdyOPA6RhFIu5sjra5cW2Q)
+
+[ReKep: Spatio-Temporal Reasoning of Relational Keypoint Constraints for Robotic Manipulation](https://rekep-robot.github.io/rekep.pdf)
+
+[https://github.com/huangwl18/ReKep](https://github.com/huangwl18/ReKep)
+
+# 语音
+
+## Mini-Omni
+
+[让大模型能听会说，国内机构开源全球首个端到端语音对话模型Mini-Omni](https://mp.weixin.qq.com/s/2vf2QMnnmEdcdVbK8g9-_w)
+
+[Mini-Omni: Language Models Can Hear, Talk While Thinking in Streaming](https://arxiv.org/abs/2408.16725)
+
+[https://github.com/gpt-omni/mini-omni](https://github.com/gpt-omni/mini-omni)
+
+## Illuminate
+
+[任意论文一键变播客，谷歌正式发布Illuminate，它能重构研究者的学习方式吗？](https://mp.weixin.qq.com/s/2C2B5yNLjXXYyDQnQgqPyQ)
+
+[https://illuminate.google.com/home](https://illuminate.google.com/home)
 
 # 其他
 
