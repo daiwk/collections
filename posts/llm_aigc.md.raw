@@ -5881,6 +5881,14 @@ VL-BERT 的预训练主要采用三个任务：
 
 视觉常识推理任务即给定图片与相关问题，机器不仅需要回答问题，还需要提供理由来证明答案的正确性。此任务（Q->AR）被分解为两个子任务，即视觉问答（Q->A，给定图片与问题，输出正确答案），以及视觉推理（QA->R，给定图片、问题与答案，输出正确的理由）。
 
+## CLIP系列
+
+## cn-clip
+
+[Chinese CLIP: Contrastive Vision-Language Pretraining in Chinese](https://arxiv.org/pdf/2211.01335)
+
+[https://github.com/OFA-Sys/Chinese-CLIP](https://github.com/OFA-Sys/Chinese-CLIP)
+
 ## BEiT系列
 
 
@@ -7798,6 +7806,16 @@ XXX
 
 + inter-trajectory distribution similarity: 不同用户的行为序列间的分布相似度
 + intra-trajectory semantic correlation: 一个序列内部的语义相关性 
+
+
+小结：参考最优传输理论（Optimal Transport），即把每个购物路径视为一个概率分布，然后通过计算这些分布之间的距离来衡量路径之间的相似性。Wasserstein距离可以视为将一个分布“移动”到另一个分布所需的“工作量”，其中“工作量”由移动每个元素所需的“成本”（通常是欧几里得距离）决定。
+高维空间中直接计算Wasserstein距离很难，采用了Sliced-Wasserstein距离，将高维分布投影到多个一维分布上，然后将这些一维分布之间的Wasserstein距离进行pooling，来近似原始高维Wasserstein距离。
+
+Inter-SE和Intra-CE简单总结如下：
+
++ Inter-trajectory similarity encoding(inter-SE)：把原分布的n维特征向量映射成1维，参考分布（可以是原来特征的向量的avg之类的）也映射成1维，计算映射后的向量与参考向量的距离（可以证明这个距离就约等于sliced-WD），作为inter-SE
++ Intra-trajectory correlation encoder(intra-CE)：取每个item在graph里的邻居，用GCN得到其表示，然后和inter-SE一样也映射成1维，算映射后的向量与inter-SE里的参考向量的距离，作为intra-SE
+
 
 ### 序列间
 
