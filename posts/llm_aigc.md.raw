@@ -3575,6 +3575,10 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py](https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py)
 
+关于plugin：
+
++ 自己加plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton)
++ 已有plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins](https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins)
 
 ## huggingface/text-generation-inference
 
