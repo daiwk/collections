@@ -4102,6 +4102,15 @@ Llama 3的主要亮点：
 
 NVIDIA用TensorRT-LLM优化了Llama 3.1 8B和Llama-3.1-Minitron 4B模型。
 
+### Llama-3.2
+
+[刚刚，Llama 3.2 来了！支持图像推理，还有可在手机上运行的版本](https://mp.weixin.qq.com/s/3JP9UgfXNMlI5jaYHyekYA)
+
+Llama 3.2 
+
++ 最大的两个模型11B和90B：都支持图像推理，包括文档级的图表理解、图像描述和视觉定位任务，比如直接根据自然语言描述定位图像中的事物。
++ 轻量级的1B和3B：都是纯文本模型，但也具备多语言文本生成和工具调用能力。
+
 
 ### Alpaca
 
@@ -5829,6 +5838,13 @@ XXX
 [Automated Multi-level Preference for MLLMs](https://arxiv.org/pdf/2405.11165)
 
 [https://github.com/takomc/amp](https://github.com/takomc/amp)
+
+## U-SOPHISTRY
+
+[AI会「说谎」，RLHF竟是帮凶](https://mp.weixin.qq.com/s/TvtKnXoR9rBRcGl0N-uCAQ)
+
+[Language Models Learn to Mislead Humans via RLHF](https://arxiv.org/pdf/2409.12822)
+
 
 # Alignment
 
