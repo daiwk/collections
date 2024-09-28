@@ -3080,7 +3080,7 @@ GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效
 
 &nbsp;
 
-重计算(recomputation)是对于pipeline parallelism非常重要的一个优化，最开始在[Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/pdf/1604.06174.pdf)一文中提到，在**flash attention**中也用了。
+即gradient checkpointing，重计算(recomputation)是对于pipeline parallelism非常重要的一个优化，最开始在[Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/pdf/1604.06174.pdf)一文中提到，在**flash attention**中也用了。
 
 因为要做pipeline+梯度累积，前向过程中的**激活值**要保存，以留给反向过程使用，保存很多份的激活值对显存造成了很大压力。recomputation(也叫**checkpointing**)用时间来换空间（反向的时候进行一次激活值的重计算），可以缓解显存问题。
 
