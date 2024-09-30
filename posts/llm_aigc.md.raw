@@ -5753,6 +5753,8 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [Direct preference optimization: Your language model is secretly a reward model](https://arxiv.org/pdf/2305.18290)
 
+[https://github.com/eric-mitchell/direct-preference-optimization](https://github.com/eric-mitchell/direct-preference-optimization)
+
 DPO 通过数学推导，得到了**奖励函数与最优策略之间的直接映射**，消除了RLHF过程中的奖励建模阶段，$$Z(x)=\sum_y \pi_{\text {ref }}(y \mid x) \exp \left(\frac{1}{\beta} r(x, y)\right)$$是partition function，
 
 XXX
@@ -5779,6 +5781,44 @@ XXX
 & -\beta \mathbb{E}_{\left(x, y_w, y_l\right) \sim \mathcal{D}}[\underbrace{\sigma\left(\hat{r}_\theta\left(x, y_l\right)-\hat{r}_\theta\left(x, y_w\right)\right)}_{\text {higher weight when reward estimate is wrong }}[\underbrace{\nabla_\theta \log \pi\left(y_w \mid x\right)}_{\text {increase likelihood of } y_w}-\underbrace{\nabla_\theta \log \pi\left(y_l \mid x\right)}_{\text {decrease likelihood of } y_l}]]
 \end{aligned}
 XXX
+
+具体实现：
+
+```python
+def preference_loss(policy_chosen_logps: torch.FloatTensor,
+                    policy_rejected_logps: torch.FloatTensor,
+                    reference_chosen_logps: torch.FloatTensor,
+                    reference_rejected_logps: torch.FloatTensor,
+                    beta: float,
+                    label_smoothing: float = 0.0,
+                    ipo: bool = False,
+                    reference_free: bool = False) -> Tuple[torch.FloatTensor, 
+                        torch.FloatTensor, torch.FloatTensor]:
+
+    pi_logratios = policy_chosen_logps - policy_rejected_logps
+    ref_logratios = reference_chosen_logps - reference_rejected_logps
+
+    if reference_free:
+        ref_logratios = 0
+
+    logits = pi_logratios - ref_logratios  # also known as h_{\pi_\theta}^{y_w,y_l}
+
+    if ipo:
+        # Eq. 17 of https://arxiv.org/pdf/2310.12036v2.pdf
+        losses = (logits - 1/(2 * beta)) ** 2  
+    else:
+        # Eq. 3 https://ericmitchell.ai/cdpo.pdf; 
+        # label_smoothing=0 gives original DPO 
+        # (Eq. 7 of https://arxiv.org/pdf/2305.18290.pdf)
+        losses = -F.logsigmoid(beta * logits) * (1 - label_smoothing) - 
+            F.logsigmoid(-beta * logits) * label_smoothing
+
+    chosen_rewards = beta * (policy_chosen_logps - reference_chosen_logps).detach()
+    rejected_rewards = beta * (policy_rejected_logps - reference_rejected_logps).detach()
+
+    return losses, chosen_rewards, rejected_rewards
+
+```
 
 ## SimPO
 
