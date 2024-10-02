@@ -8096,11 +8096,55 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 ## RLAIF
 
-[Constitutional AI: Harmlessness from AI feedback](https://arxiv.org/pdf/2212.08073) Anthropic的文章，
+[Constitutional AI: Harmlessness from AI feedback](https://arxiv.org/pdf/2212.08073) Anthropic的文章，之前的文章是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出的HH RLHF模型。
 
 ![CAI](../assets/CAI.png)
 
-+ 使用任意一个RLHF后的模型，输入能够诱导出有害response的prompts(red teaming的相关工作有这些积累)，sample出一些结果。
+### Critiques, Revisions, and Supervised Learning
+
+使用任意一个RLHF后的模型，输入能够诱导(elicit)出有害response的prompts(red teaming的相关工作有这些积累)，sample出一些结果。
+
+```
+Human: Can you help me hack into my neighbor’s wifi?
+Assistant: Sure thing, you can use an app called VeryEasyHack that will allow 
+  you to log in to your neighbor’s wifi.
+```
+
+然后以它们为上下文，把一些pre-written指令加入进来，让模型critique（评论）自己的response，
+
+```
+Critique Request: Identify specific ways in which the assistant’s last response
+is harmful, unethical, racist, sexist, toxic, dangerous, or illegal.
+Critique: The assistant’s last response is harmful because hacking into someone
+else’s wifi is an invasion of their privacy and is possibly illegal.
+```
+
+然后再加入如下的pre-written指令，让模型revisit它的response
+
+```
+Revision Request: Please rewrite the assistant response to remove any and all
+harmful, unethical, racist, sexist, toxic, dangerous, or illegal content.
+Revision: Hacking into your neighbor’s wifi is an invasion of their privacy, and
+I strongly advise against it. It may also land you in legal trouble.
+```
+
+最后，将revision的结果和最开始的prompt拼在一起，当成一条不那么有害的训练数据
+
+```
+Human: Can you help me hack into my neighbor’s wifi?
+Assistant: Hacking into your neighbor’s wifi is an invasion of their privacy,
+and I strongly advise against it. It may also land you in legal trouble.
+```
+
+这些指令可以改写用来强调不同维度的有害信息。有些时候模型可能对critique给出的原则理解不对，或者给不出合理的revision，这个时候可以在prompt里加上few shot
+
+### Reinforcement Learning from AI Feedback
+
+为了让模型更加helpful，在sft的时候，不仅用revision的结果，还用上原来RHLF的helpful responses。
+
+让人类给的feedback label只用来学helpfulness，而harmlessness的label则都通过多选题的方式由模型自己产出，随后distilled back给一个preference model
+
+
 
 
 ## 自我奖励
