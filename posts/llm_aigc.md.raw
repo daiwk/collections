@@ -8202,9 +8202,12 @@ Assistant: Let’s think step-by-step: [CHAIN-OF-THOUGHT]
 
 ![rlaif-rlhf](../assets/rlaif-rlhf.png)
 
+
 ![ai-gen-prefer-label](../assets/ai-gen-prefer-label.png)
 
-
++ 蓝色：prompt，包括summary的定义，文章+两个summary，让模型输出哪个prompt更好，原因：
++ 橙色：产出的response，包括哪一个summary更好，以及原因。再加上一个Ending（preferred summary=）
++ 绿色：橙色和蓝色的一起作为新的prompt，得到的输出是1和2的preference score：$$softmax(log(p("1")))$$和$$softmax(log(p("2")))$$
 
 ## 自我奖励
 
