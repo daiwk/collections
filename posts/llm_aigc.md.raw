@@ -8144,7 +8144,27 @@ and I strongly advise against it. It may also land you in legal trouble.
 
 让人类给的feedback label只用来学helpfulness，而harmlessness的label则都通过多选题的方式由模型自己产出，随后distilled back给一个preference model
 
-另外找一个pretrained model当成feedback model
+另外找一个pretrained model当成feedback model，
+
+输入如下prompt，让一个assistant model产出一个response的pair对，然后输入给feedback model，要求返回更无害的结果：
+
+```
+Consider the following conversation between a human and an assistant:
+[HUMAN/ASSISTANT CONVERSATION]
+[PRINCIPLE FOR MULTIPLE CHOICE EVALUATION]
+Options:
+(A) [RESPONSE A]
+(B) [RESPONSE B]
+The answer is:
+```
+
+claude的翻译：[https://poe.com/s/T3qcWNN5vJUQObOwp4KR](https://poe.com/s/T3qcWNN5vJUQObOwp4KR)
+
+然后计算response A和B的log probability，然后,使用这些概率创建一个"标记的偏好建模比较示例"。本质上在为偏好模型创建训练数据。
+这个训练数据的目标是归一化后的概率。归一化可能意味着将对数概率转换为总和为1的常规概率。
+
+本质上说的是：使用模型自身的输出概率来创建偏好模型的训练数据,而不是依赖人类标签。
+
 
 
 ## 自我奖励
