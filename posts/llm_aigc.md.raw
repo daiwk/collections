@@ -8094,13 +8094,13 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 [AI models collapse when trained on recursively generated data](https://www.nature.com/articles/s41586-024-07566-y)，对应下载的[pdf](https://github.com/daiwk/collections/blob/master/assets/nature-ai-train-ai.pdf)
 
 
-## RLAIF
+## RLAIF(Constitutional AI)
 
 [Constitutional AI: Harmlessness from AI feedback](https://arxiv.org/pdf/2212.08073) Anthropic的文章，之前的文章是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出的HH RLHF模型。
 
 ![CAI](../assets/CAI.png)
 
-这里的preference model感觉就是RLHF里的reward model，输入一些response的pair对，输出哪个更好
+这里的preference model感觉就是RLHF里的reward model，输入一些response的pair对，输出哪个更好，和RLHF的区别在于其中的helpfulness的label还是人标的，而harmlessness的label是由模型生成的。
 
 ### Critiques, Revisions, and Supervised Learning
 
@@ -8195,6 +8195,16 @@ Assistant: Let’s think step-by-step: [CHAIN-OF-THOUGHT]
 ```
 
 发现这样输出的答案一般很“置信”，即非常接近0或者1，会导致不好训练，所以尝试clamp到40-60%后，效果会更鲁棒。关于clamp，[claude说](https://poe.com/s/CubK8BvdYOUmfHFXUxAu)大概可以这么理解：如果高于0.6就变成0.6，低于0.4就变成0.4。
+
+## d-RLAIF
+
+[RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback](https://arxiv.org/pdf/2309.00267) deepmind的论文，在RLAIF的基础上进行改进，提出了d-RLAIF(direct-RLAIF)。
+
+![rlaif-rlhf](../assets/rlaif-rlhf.png)
+
+![ai-gen-prefer-label](../assets/ai-gen-prefer-label.png)
+
+
 
 ## 自我奖励
 
