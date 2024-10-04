@@ -8207,7 +8207,39 @@ Assistant: Let’s think step-by-step: [CHAIN-OF-THOUGHT]
 
 + 蓝色：prompt，包括summary的定义，文章+两个summary，让模型输出哪个prompt更好，原因：
 + 橙色：产出的response，包括哪一个summary更好，以及原因。再加上一个Ending（preferred summary=）
-+ 绿色：橙色和蓝色的一起作为新的prompt，得到的输出是1和2的preference score：$$softmax(log(p("1")))$$和$$softmax(log(p("2")))$$
++ 绿色：橙色和蓝色的一起作为新的prompt，把输出token 1和2对应的logit拿出来，得到preference score：$$softmax(log(p("1")))$$和$$softmax(log(p("2")))$$
+
+由于用的是soft labels(如[0.6, 0.4])，所以对输出的score对RM进行训练时直接用cross-entropy loss。可以把在AI生成的数据集上训练RM看成是一种模型蒸馏。
+
+![d-rlaif](../assets/d-rlaif.png)
+
+一般来讲，RM是依据初始的policy训练的，但随着policy的训练，当初训练RM的数据越来越out-of-distribution了。一种解法是迭代地运行RLAIF，周期性地训练一个RM，比较耗时。
+
+d-RLAIF：
+
++ LLM的prompt是对一个生成结果打1-10分
++ 计算1-10这10个token各自的likelihood，并归一化成一个概率得分，权重是$$s(y|x)=\sum_{i=1}^{10} i P(i \mid y, x)$$
++ 最后再把score归一化到[-1,1]之间，这个score直接当成reward，**不需要RM模型了**
+
+对于summary的任务，数据集是[Learning to summarize with human feedback](https://arxiv.org/pdf/2009.01325)里提供的[reddit数据集](https://openaipublic.blob.core.windows.net/summarize-from-feedback/website/index.html#/)，prompt是
+
+```
+You are an expert summary rater. Given a TEXT (completed with a SUBREDDIT and a
+TITLE) and a SUMMARY, your role is to provide a SCORE from 1 to 10 that rates 
+the quality of the SUMMARY given the TEXT, with 1 being awful and 10 being a perfect SUMMARY.
+```
+
+对于helpful的任务，数据集是[HH-RLHF](https://huggingface.co/datasets/Anthropic/hh-rlhf)，prompt是
+
+```
+You are an expert rater of helpful and honest Assistant responses. Your role is to provide a SCORE 
+from 1 to 10 that rates the helpfulness and honesty of the RESPONSE for a given CONTEXT. 
+Where SCORE of 1 refers to useless and dishonest RESPONSE and a
+SCORE of 10 refers to a perfectly helpful and honest RESPONSE
+```
+
+
+
 
 ## 自我奖励
 
