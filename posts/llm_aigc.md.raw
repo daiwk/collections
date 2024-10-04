@@ -7683,7 +7683,13 @@ XXX
 
 [ChatRetriever: Adapting Large Language Models for Generalized and Robust Conversational Dense Retrieval](https://arxiv.org/pdf/2404.13556v1)
 
-思想：原来输入的prompt是x，输出的response是y，添加t个特殊的```[emb_i]``` token，输入$$s=[x_1, \ldots, x_N,\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right], y_1^{+}\ldots, y_M^{+},\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right]]$$，然后训练的时候，每个生成的$$y_i$$只看得到它前面的y，还有x后面的那t个特殊token：
+思想：原来输入的prompt是x，输出的response是y，添加t个特殊的```[emb_i]``` token，输入
+
+XXX
+s=[x_1, \ldots, x_N,\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right], y_1^{+}\ldots, y_M^{+},\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right]]
+XXX
+
+然后训练的时候，每个生成的$$y_i$$只看得到它前面的y，还有x后面的那t个特殊token：
 
 XXX
 \mathcal{L}_{\mathrm{S}}=-\frac{1}{M} \sum_{i=1}^M \log p\left(y_i^{+} \mid y_1^{+}, \ldots, y_{i-1}^{+}, \mathbf{x}_{1: t}\right)
@@ -7691,7 +7697,7 @@ XXX
 
 ![chatretriever](../assets/chatretriever.png)
 
-对应的代码：[https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247](https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247)
+对应的[代码](https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247)
 
 ```python
 def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: bool):
@@ -7701,11 +7707,15 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
     if model_type in ['bge', 'llm_embedder']:
         output = model(**inputs)
         embs = output.last_hidden_state[:, 0]
-    elif model_type in set(['qwen', 'qwen_chat', 'qwen_chat_cot', 'qwen_chat_lora', 'qwen_chat_lora_eval', 
-        'qwen_chat_cot_lora', 'qwen_chat_cot_lora_eval', 'qwen15_chat_cot_lora_eval', 'repllama', 'llama', 
-        'repllama-train', 'repllama_v2', 'repllama_v2-train', 'repllama_v2-continue_train', 'repllama_chat', 
-        'repllama_chat-train', 'repllama_chat_cot', 'repllama_chat_cot-train', 'mistrial_cot-train', 
-        'mistrial_chat_cot-train', 'mistrial_cot', 'mistrial_chat_cot', 'qwen15', 'qwen15_chat', 
+    elif model_type in set(['qwen', 'qwen_chat', 'qwen_chat_cot', 'qwen_chat_lora', 
+        'qwen_chat_lora_eval', 'qwen_chat_cot_lora', 'qwen_chat_cot_lora_eval', 
+        'qwen15_chat_cot_lora_eval', 'repllama', 'llama', 
+        'repllama-train', 'repllama_v2', 'repllama_v2-train', 
+        'repllama_v2-continue_train', 'repllama_chat', 
+        'repllama_chat-train', 'repllama_chat_cot', 'repllama_chat_cot-train', 
+        'mistrial_cot-train', 
+        'mistrial_chat_cot-train', 'mistrial_cot', 'mistrial_chat_cot', 
+        'qwen15', 'qwen15_chat', 
         'qwen15_chat_lora', 'qwen15_chat_cot_lora', 'qwen15_chat_cot']):        
         inputs['output_hidden_states'] = True
         output = model(**inputs)
@@ -8202,6 +8212,7 @@ Assistant: Let’s think step-by-step: [CHAIN-OF-THOUGHT]
 
 ![rlaif-rlhf](../assets/rlaif-rlhf.png)
 
+如上是rlaif和rlhf的对比。
 
 ![ai-gen-prefer-label](../assets/ai-gen-prefer-label.png)
 
@@ -8238,7 +8249,16 @@ Where SCORE of 1 refers to useless and dishonest RESPONSE and a
 SCORE of 10 refers to a perfectly helpful and honest RESPONSE
 ```
 
+评估方式：
 
++ AI Labeler Alignment：衡量AI标注的preferences和人类preferences的准确率。先把AI标注的转成二分类([0.6, 0.4]->[1,0])，如果这个结果和人类的标注一样那就是1，否则是0。最终的准确率就是如下公式，其中$$D$$是数据集，$$P^{A I} \in \mathbb{R}^{D \times 2}$$是AI标注的，而$$p^H \in \mathbb{R}^D$$是人类标注的：
+
+XXX
+z_{\text {acc }}=\frac{1}{D} \sum_{i=1}^D \mathbb{1}\left[\underset{j}{\arg \max } P_{i, j}^{A I}=p_i^H\right]
+XXX
+
++ Win Rate：给定两个策略生成的结果，人类选择更好的那个，然后统计胜率。
++ Harmless Rate：人类认为response是harmless的比例，
 
 
 ## 自我奖励
