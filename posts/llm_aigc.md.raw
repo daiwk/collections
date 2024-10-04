@@ -4575,7 +4575,7 @@ XXX
 
 [https://github.com/xai-org/grok-1](https://github.com/xai-org/grok-1)
 
-[马斯克发布Grok 1.5！ 编码和数学能力大幅提升](https://mp.weixin.qq.com/s/QwM1uk61o1DMpe5EPq9giQ)
+[马斯克发布Grok 1.5！编码和数学能力大幅提升](https://mp.weixin.qq.com/s/QwM1uk61o1DMpe5EPq9giQ)
 
 + 上下文窗口提升16倍，达到128k
 + 不使用通用的Python语言+Pytorch框架，采用分布式训练架构，使用Rust、JAX+Kubernetes构建。
@@ -4596,7 +4596,16 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 
 ![gecko](../assets/gecko.png)
 
+主要包括两阶段：
 
++ pre-finetuning：类似[Large dual encoders are generalizable retrievers](https://arxiv.org/pdf/2112.07899)，自监督
++ finetuning：2-step llm distillation，提出了一个FRet数据集（Few-shot Prompted Retrieval dataset）
+
+#### Pre-finetuning
+
+#### FRet
+
+![fret](../assets/fret.png)
 
 ### Octopus
 
