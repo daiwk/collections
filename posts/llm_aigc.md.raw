@@ -4654,13 +4654,34 @@ XXX
 
 ##### LLM-based Positive and Negative Mining
 
-
 &nbsp;
+
+对于某个query $$q$$，之前的工作一般会直接把输入的段落$$p_{\text {seed }}$$当成正样本，但实践中发现$$p_{\text {seed }}$$一般比较长，而生成的query一般只关注其中一小部分，所以可能在整个语料库中有比$$p_{\text {seed }}$$更准确的答案。因此，通过如下方法构造了一个FRet数据集：
+
++ 先把$$p_{\text {seed }}$$当成正样本，in-batch负例训一个embedding模型。
++ 用这个模型从文档库中检索出top N的相似段落$$P=\left\{p^{(1)}, \ldots, p^{(N)}\right\}$$
++ 用生成query的LLM给这N个文档排序，有两种排序方法：
+    + query likelihood：参考[Improving passage retrieval with zero-shot question generation](https://arxiv.org/pdf/2204.07496)，给定段落$$p$$，衡量query $$q$$的likelihood，$$\mathrm{QL}(q, p)=\operatorname{LLM}\left(q \mid p, \mathbb{P}_{\mathrm{QL}}\right)$$，其中的prompt参考[PaRaDe: Passage Ranking using Demonstrations with Large Language Models](https://arxiv.org/pdf/2310.14408)包括了判断query likelihood的指令，以及一些相关query+段落的few-shot。基本思想是：**如果q和p高度相关，那么从p生成q的概率应该很高**。
+    + relevance classification：参考[Beyond yes and no: Improving zero-shot llm rankers via scoring fine-grained relevance labels](https://arxiv.org/pdf/2310.14122)，给定query $$q$$和段落$$p$$后，衡量特定相关性label的log likelihood：$$\operatorname{RC}(q, p)=\operatorname{LLM}\left(\text { label } \mid q, p, \mathbb{P}_{\mathrm{RC}}\right)$$。基本思想是：**让LLM直接判断q和p的相关程度,并输出一个相关性标签**。
++ 通过标准的Reciprocal Rank Fusion（RRF，倒数融合，[Reciprocal rank fusion outperforms condorcet and individual rank learning methods](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf)）方法得到rank函数，对上面两个方法的排序结果merge：$$R(q, p)=1 / r_{\mathrm{QL}}(q, p)+1 / r_{\mathrm{RC}}(q, p)$$...其实就是rankindex
++ 基于得分筛选样本：
+    + 正样本：$$p^{+}=\underset{p \in P}{\arg \max } R(q, p)=p_1$$
+    + hard负例：排名第$$N$$位的样本$$p_N$$，也可以从除了第1个外的N-1个里随机sample
 
 #### Unified Fine-tuning Mixture
 
-
 &nbsp;
+
+除了FRet，还融合了多个公开数据集：
+
++ xx
++ xx
+
+发现不同的任务对prompt的格式敏感程度不同，，非对称任务（如BEIR）对格式更敏感，而对称任务的性能相对稳定。
+
++ 对称格式（Symmetric Formatting）：输入和目标使用相同的格式。
++ 非对称格式（Asymmetric Formatting）：输入和目标使用不同的格式。
+
 
 ### Octopus
 
