@@ -4636,7 +4636,7 @@ XXX
 
 &nbsp;
 
-从web语料$$\text { C }$$中抽出一个段落$$ p_{\text {seed }}$$，$$\mathbb{P}_{\mathrm{QG}}$$是一个固定的few-shot的prompt，让LLM生成任务描述和这个task的query
+从web语料$$\text { C }$$中抽出一个段落$$p_{\text {seed }}$$，$$\mathbb{P}_{\mathrm{QG}}$$是一个固定的few-shot的prompt，让LLM生成任务描述和这个task的query
 
 XXX
 \operatorname{LLM}\left(\mathbb{P}_{\mathrm{QG}}, p_{\text {seed }}\right) \rightarrow(t, q)
