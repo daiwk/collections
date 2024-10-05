@@ -4603,6 +4603,29 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 
 #### Pre-finetuning
 
+2个数据集：
+
++ 大型社区qa数据集：[Large dual encoders are generalizable retrievers](https://arxiv.org/pdf/2112.07899)中的来自网上论坛和qa网站的问答pair对
++ 去各种网站上爬了title-body的pair对，因为[Text Embeddings by Weakly-Supervised Contrastive Pre-training](https://arxiv.org/pdf/2212.03533)发现这种自然出现的pair对对于pre-finetuning embedding模型很有用
+
+pre-finetuning的目标是让模型看到大量的多样性语料，对于一个预训练的语言模型$$\mathcal{M}$$，长度为$$n$$的句子对应的contextual向量$$\mathbf{W} \in \mathbb{R}^{n \times d}$$，对于任务特征$$t$$，数据集$$\mathcal{D}_{\text {pre }}=\left\{\left(q_i, p_i\right)\right\}_{i=1}^N$$，得到的向量如下：
+
+XXX
+\begin{aligned}
+\mathbf{q}_i & =\text { mean_pool }_{|t|+\left|q_i\right|}\left[\mathcal{M}\left(t \oplus q_i\right) \in \mathbb{R}^{\left(|t|+\left|q_i\right|\right) \times d}\right] \in \mathbb{R}^d \\
+\mathbf{p}_i & =\text { mean_pool }_{\left|p_i\right|}\left[\mathcal{M}\left(p_i\right) \in \mathbb{R}^{\left|p_i\right| \times d}\right] \in \mathbb{R}^d
+\end{aligned}
+XXX
+
+对于batchsize为$$B$$的样本来说，inbatch负例，$$\operatorname{sim}(\mathbf{x}, \mathbf{y})=\frac{\mathbf{x}^{\top} \mathbf{y}}{\|\mathbf{x}\| \cdot \cdot\|\mathbf{y}\|}$$，其loss如下：
+
+XXX
+\mathcal{L}_{\text {pre }}=\frac{1}{B} \sum_{i=1}^B\left[-\log \frac{e^{\operatorname{sim}\left(\mathbf{q}_i, \mathbf{p}_i\right) / \tau}}{\sum_{j=1}^B e^{\operatorname{sim}\left(\mathbf{q}_i, \mathbf{p}_j\right) / \tau}}\right]
+XXX
+
+在这个阶段没有用hard负例，用了能适配设备的最大batchsize，这是[Towards General Text Embeddings with Multi-stage Contrastive Learning](https://arxiv.org/pdf/2308.03281)和[Text embeddings by weakly-supervised contrastive pre-training](https://arxiv.org/pdf/2212.03533)里的经验。
+
+
 #### FRet
 
 ![fret](../assets/fret.png)
