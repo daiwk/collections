@@ -4603,6 +4603,8 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 
 #### Pre-finetuning
 
+&nbsp;
+
 2个数据集：
 
 + 大型社区qa数据集：[Large dual encoders are generalizable retrievers](https://arxiv.org/pdf/2112.07899)中的来自网上论坛和qa网站的问答pair对
@@ -4629,6 +4631,36 @@ XXX
 #### FRet
 
 ![fret](../assets/fret.png)
+
+##### LLM-based Diverse Query Generation 
+
+&nbsp;
+
+从web语料$$\text { C }$$中抽出一个段落$$ p_{\text {seed }}$$，$$\mathbb{P}_{\mathrm{QG}}$$是一个固定的few-shot的prompt，让LLM生成任务描述和这个task的query
+
+XXX
+\operatorname{LLM}\left(\mathbb{P}_{\mathrm{QG}}, p_{\text {seed }}\right) \rightarrow(t, q)
+XXX
+
+生成的任务t例如：
+
++ question answering：```Given a query, find a passage that has the answer to the query```
++ fact checking：```Given a query, find a passage that allows you to check whether the query is true or not```
+
+为了保证多样性：
+
++ 网页库本身就有很多的topic和很多的写作风格
++ 在prompt里加多样的任务描述，来让模型生成的query保证多样性。
+
+##### LLM-based Positive and Negative Mining
+
+
+&nbsp;
+
+#### Unified Fine-tuning Mixture
+
+
+&nbsp;
 
 ### Octopus
 
@@ -6712,6 +6744,15 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [厉害了！Adobe新出Firefly视频模型，2分钟速成高清大片](https://mp.weixin.qq.com/s/uFKQNGuoZ2bS4Ea0pye71Q)
 
 [https://blog.adobe.com/en/publish/2024/09/11/bringing-gen-ai-to-video-adobe-firefly-video-model-coming-soon](https://blog.adobe.com/en/publish/2024/09/11/bringing-gen-ai-to-video-adobe-firefly-video-model-coming-soon)
+
+
+## MovieGen
+
+[Meta又给OpenAI一记重击，视频生成Movie Gen震撼登场，甚至可以配音、编辑](https://mp.weixin.qq.com/s/c8_sXLRkwEVvg_LKCPQHKw)
+
+[MovieGen: A Cast of Media Foundation Models](https://ai.meta.com/static-resource/movie-gen-research-paper)
+
+
 
 ## 其他
 
