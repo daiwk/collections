@@ -4674,14 +4674,25 @@ XXX
 
 除了FRet，还融合了多个公开数据集：
 
-+ xx
-+ xx
++ Natural Questions：[Natural Questions: A Benchmark for Question Answering Research](https://aclanthology.org/Q19-1026.pdf)
++ HotpotQA：[Hotpotqa: A dataset for diverse, explainable multi-hop question answering](https://arxiv.org/pdf/1809.09600)
++ FEVER：[Fever: a large-scale dataset for fact extraction and verification](https://arxiv.org/pdf/1803.05355)
++ MedMCQA：[Medmcqa: A large-scale multi-subject multi-choice dataset for medical domain question answering](https://arxiv.org/pdf/2203.14371)
++ SNLI：[A large annotated corpus for learning natural language inference](https://arxiv.org/pdf/1508.05326)
++ MNLI：[A broad-coverage challenge corpus for sentence understanding through inference](https://arxiv.org/pdf/1704.05426)
++ MIRACL：多语言的数据集[Miracl: A multilingual retrieval dataset covering 18 diverse languages](https://direct.mit.edu/tacl/article/doi/10.1162/tacl_a_00595/117438/MIRACL-A-Multilingual-Retrieval-Dataset-Covering)
++ huggingface上的一些分类数据集
 
-发现不同的任务对prompt的格式敏感程度不同，，非对称任务（如BEIR）对格式更敏感，而对称任务的性能相对稳定。
+将这些数据集处理成一个统一的格式，发现不同的任务对prompt的格式敏感程度不同，，非对称任务（如BEIR）对格式更敏感，而对称任务的性能相对稳定。
 
 + 对称格式（Symmetric Formatting）：输入和目标使用相同的格式。
+    + 输入：task: {task} | query: {input}
+    + 目标：task: {task} | query: {target}
 + 非对称格式（Asymmetric Formatting）：输入和目标使用不同的格式。
+    + 输入：task: {task} | query: {input}
+    + 目标：title: {title} | text: {target}
 
+参考[One Embedder, Any Task: Instruction-Finetuned Text Embeddings](https://aclanthology.org/2023.findings-acl.71.pdf)，对于每个文本$$x$$，找到另一个同样label是$$y$$的样本当成正样本$$x^{+}$$
 
 ### Octopus
 
