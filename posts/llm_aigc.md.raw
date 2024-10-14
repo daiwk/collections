@@ -3580,6 +3580,13 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 + 自己加plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton)
 + 已有plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins](https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins)
 
+一些参数设置：
+
+[https://www.bentoml.com/blog/tuning-tensor-rt-llm-for-optimal-serving-with-bentoml](https://www.bentoml.com/blog/tuning-tensor-rt-llm-for-optimal-serving-with-bentoml)
+
+```--multiple_profiles``` enables multiple TensorRT optimization profiles in the built engines, it will benefits the performance especially when GEMM plugin is disabled, because more optimization profiles help TensorRT have more chances to select better kernels. However, this feature will increase the engine build time.
+
+
 ## huggingface/text-generation-inference
 
 [https://huggingface.co/docs/text-generation-inference/index](https://huggingface.co/docs/text-generation-inference/index)
@@ -9300,3 +9307,8 @@ print(tokenizer.all_special_ids)    # --> [100, 102, 0, 101, 103]
 ## python的读写锁
 
 一个写，多个并行读：[https://pypi.org/project/readerwriterlock/](https://pypi.org/project/readerwriterlock/)
+
+## pytorch的显存泄露
+
+[https://github.com/pytorch/pytorch/issues/13246#issuecomment-445770039](https://github.com/pytorch/pytorch/issues/13246#issuecomment-445770039)
+
