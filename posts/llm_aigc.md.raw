@@ -9312,3 +9312,8 @@ print(tokenizer.all_special_ids)    # --> [100, 102, 0, 101, 103]
 
 [https://github.com/pytorch/pytorch/issues/13246#issuecomment-445770039](https://github.com/pytorch/pytorch/issues/13246#issuecomment-445770039)
 
+## torch profiling
+
+[https://pytorch.org/tutorials/recipes/recipes/profiler_recipe.html](https://pytorch.org/tutorials/recipes/recipes/profiler_recipe.html)
+
+可以拿这个来可视化：[https://ui.perfetto.dev/](https://ui.perfetto.dev/)
