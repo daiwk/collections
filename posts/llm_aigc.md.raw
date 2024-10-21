@@ -3669,6 +3669,13 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 ```--multiple_profiles``` enables multiple TensorRT optimization profiles in the built engines, it will benefits the performance especially when GEMM plugin is disabled, because more optimization profiles help TensorRT have more chances to select better kernels. However, this feature will increase the engine build time.
 
+### trt-llm显存泄露解决
+
+因为用到了kvcache，py的runner的memory管理有问题，改成cpp的runner就行了
+
+[https://github.com/NVIDIA/TensorRT-LLM/issues/283](https://github.com/NVIDIA/TensorRT-LLM/issues/283)
+
+[https://nvidia.github.io/TensorRT-LLM/reference/memory.html#python-runtime-not-recommended-to-be-used](https://nvidia.github.io/TensorRT-LLM/reference/memory.html#python-runtime-not-recommended-to-be-used)
 
 ## huggingface/text-generation-inference
 
