@@ -3739,6 +3739,14 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [最佳LLM推理引擎？TensorRT vs vLLM vs LMDeploy vs MLC-LLM](https://mp.weixin.qq.com/s/AnqaukudFukLYSi55w9r2Q)
 
+## DuoAttention
+
+[MIT韩松团队长上下文LLM推理高效框架DuoAttention：单GPU实现330万Token上下文推理](https://mp.weixin.qq.com/s/avM4jketPuNGzx-8tZvxIQ)
+
+[DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads](https://arxiv.org/abs/2410.10819)
+
+[https://github.com/mit-han-lab/duo-attention](https://github.com/mit-han-lab/duo-attention)
+
 # 算子加速
 
 ## Triton
@@ -6621,6 +6629,12 @@ DALL-E3：
 [https://github.com/deepseek-ai/Janus](https://github.com/deepseek-ai/Janus)
 
 [https://huggingface.co/spaces/deepseek-ai/Janus-1.3B](https://huggingface.co/spaces/deepseek-ai/Janus-1.3B)
+
+## sCM
+
+[刚刚，OpenAI发布sCM提升50倍效率，扩散模型重大技术突破！](https://mp.weixin.qq.com/s/dI9mSCDbGzZIkjol_CT6Cg)
+
+[Simplifying, Stabilizing and Scaling Continuous-Time Consistency Models](https://arxiv.org/pdf/2410.11081)
 
 # 多模态（视频）
 
