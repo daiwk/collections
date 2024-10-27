@@ -4995,6 +4995,17 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [https://github.com/microsoft/BitNet](https://github.com/microsoft/BitNet)
 
+### Zamba 2
+
+[7B新王登基！Zamba 2完胜同级模型，推理效率比Llama 3提升20%，内存用量更少](https://mp.weixin.qq.com/s/6_dQod3hS1IJ_xU09x_jrg)
+
+用了mamba 2
+
+[Zamba: A Compact 7B SSM Hybrid Model](https://arxiv.org/pdf/2405.16712)
+
++ hf版本：[https://huggingface.co/Zyphra/Zamba2-2.7B](https://huggingface.co/Zyphra/Zamba2-2.7B)
++ 纯pytorch版本：[https://github.com/Zyphra/Zamba2](https://github.com/Zyphra/Zamba2)
+
 ## 小结
 
 [开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
@@ -6208,6 +6219,14 @@ XXX
 
 [Beyond Preferences in AI Alignment](https://arxiv.org/pdf/2408.16984)
 
+## TDPO-R
+
+[与OpenAI o1技术理念相似，TDPO-R算法有效缓解奖励过优化问题](https://mp.weixin.qq.com/s/MYSlYsFtlvZAmusEvrRsjA)
+
+[Confronting Reward Overoptimization for Diffusion Models: A Perspective of Inductive and Primacy Biases](https://openreview.net/pdf?id=v2o9rRJcEv)
+
+[https://github.com/ZiyiZhang27/tdpo](https://github.com/ZiyiZhang27/tdpo)
+
 # 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
@@ -6626,7 +6645,13 @@ DALL-E3：
 
 [OpenAI攻克扩散模型短板，清华校友路橙、宋飏合作最新论文](https://mp.weixin.qq.com/s/tDlp95HLlvYqW2gVPqzQag)
 
+[刚刚，OpenAI发布sCM提升50倍效率，扩散模型重大技术突破！](https://mp.weixin.qq.com/s/dI9mSCDbGzZIkjol_CT6Cg)
+
+[比扩散模型快50倍！OpenAI发布多模态模型实时生成进展，作者还是清华校友，把休假总裁Greg都炸出来了](https://mp.weixin.qq.com/s/3h_mxCij5_owicnfsHhp_Q)
+
 [Simplifying, Stabilizing & Scaling Continuous-Time Consistency Models](https://arxiv.org/pdf/2410.11081v1)
+
+
 
 ## Janus
 
@@ -6640,9 +6665,6 @@ DALL-E3：
 
 ## sCM
 
-[刚刚，OpenAI发布sCM提升50倍效率，扩散模型重大技术突破！](https://mp.weixin.qq.com/s/dI9mSCDbGzZIkjol_CT6Cg)
-
-[Simplifying, Stabilizing and Scaling Continuous-Time Consistency Models](https://arxiv.org/pdf/2410.11081)
 
 # 多模态（视频）
 
@@ -9111,6 +9133,15 @@ XXX
 
 [https://github.com/metauto-ai/agent-as-a-judge](https://github.com/metauto-ai/agent-as-a-judge)
 
+## Hammer
+
+[哪个模型擅长调用工具？这个7B模型跻身工具调用综合榜单第一](https://mp.weixin.qq.com/s/YsjjaTdDNWsoLXhr7mGOpQ)
+
+[Hammer: Robust Function-Calling for On-Device Language Models via Function Masking](https://arxiv.org/abs/2410.04587)
+
+[https://huggingface.co/MadeAgents](https://huggingface.co/MadeAgents)
+
+[https://github.com/MadeAgents/Hammer](https://github.com/MadeAgents/Hammer)
 
 # 一些其他比较重要的工作
 
@@ -9274,6 +9305,16 @@ XXX
 
 [表格增强生成TAG登场：解锁AI自然语言与数据库的完美结合](https://mp.weixin.qq.com/s/6gkPA-xc7GsltM1Ywui_XQ)
 
+## Storm
+
+[斯坦福开源学术研究神器STORM再进化，AI智能体像人一样进行圆桌讨论](https://mp.weixin.qq.com/s/-NY8Xw8ihIFgUwy4LFLMgA)
+
+[Into the Unknown Unknowns: Engaged Human Learning through Participation in Language Model Agent Conversations](https://www.arxiv.org/pdf/2408.15232)
+
+[https://github.com/stanford-oval/storm](https://github.com/stanford-oval/storm)
+
+[https://storm.genie.stanford.edu/](https://storm.genie.stanford.edu/)
+
 
 # LLM模型融合
 
@@ -9399,6 +9440,14 @@ Neel Nanda（deepmind）的项目
 [用最直观的动画，讲解LLM如何存储事实，3Blue1Brown的这个视频又火了](https://mp.weixin.qq.com/s/PSMfQLBBQZyG2GwgzatqvA)
 
 [https://www.youtube.com/watch?v=9-Jl0dxWQs8](https://www.youtube.com/watch?v=9-Jl0dxWQs8)
+
+## Monitor
+
+[他们掰开神经元，终于让大模型9.8大于9.11了：神秘创业公司，开源AI「洗脑」工具](https://mp.weixin.qq.com/s/pOOBY6cBZUn86xRtO12FtQ)
+
+[https://transluce.org/observability-interface](https://transluce.org/observability-interface)
+
+[https://monitor.transluce.org/dashboard/chat](https://monitor.transluce.org/dashboard/chat)
 
 # Lifelong learning of LLM
 
