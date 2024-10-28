@@ -9881,3 +9881,56 @@ if __name__ == "__main__":
 ## 各型号gpu对比
 
 [https://zhuanlan.zhihu.com/p/441153412](https://zhuanlan.zhihu.com/p/441153412)
+
+## 查看python的栈
+
+```shell
+pip install py-spy
+py-spy dump --pid 1199
+
+```
+
+打出来：
+
+```
+Process 1199: /usr/bin/python3.10 -u torch_main.py
+Python v3.10.14 (/usr/bin/python3.10)
+
+Thread 0x7F62A2C43740 (active): "MainThread"
+    _wait_for_tstate_lock (threading.py:1116)
+    join (threading.py:1096)
+    main (torch_main.py:776)
+    <module> (torch_main.py:785)
+Thread 0xAABBBCC (idle): "Thread-1"
+    wait (threading.py:324)
+    wait (threading.py:607)
+    run (threading.py:1376)
+    _bootstrap_inner (threading.py:1016)
+    _bootstrap (threading.py:973)
+Thread 0xAAAAA (idle): "Thread-3 (process)"
+    wait (threading.py:320)
+    get (queue.py:171)
+    process (abase_writer.py:73)
+    run (threading.py:953)
+    _bootstrap_inner (threading.py:1016)
+    _bootstrap (threading.py:973)
+Thread 0xA992ACDA (idle): "Thread-4 (process)"
+    wait (threading.py:320)
+    get (queue.py:171)
+    process (abase_writer.py:73)
+    run (threading.py:953)
+    _bootstrap_inner (threading.py:1016)
+    _bootstrap (threading.py:973)
+Thread 0xAFF11AA (active): "Thread-5 (read_file)"
+    get_seq (ecom_seq_reader.py:200)
+    read_file (torch_main.py:494)
+    run (threading.py:953)
+    _bootstrap_inner (threading.py:1016)
+    _bootstrap (threading.py:973)
+Thread 0x9922BCDA (idle): "Thread-6"
+    wait (threading.py:324)
+    wait (threading.py:607)
+    run (tqdm/_monitor.py:60)
+    _bootstrap_inner (threading.py:1016)
+    _bootstrap (threading.py:973)
+```
