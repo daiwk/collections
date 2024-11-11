@@ -6177,6 +6177,9 @@ CriticGPT依旧是自回归模型。标注者先向ChatGPT的响应输出中人�
 
 [Rule Based Rewards for Language Model Safety](https://cdn.openai.com/rule-based-rewards-for-language-model-safety.pdf)
 
+[https://openai.com/index/improving-model-safety-behavior-with-rule-based-rewards/](https://openai.com/index/improving-model-safety-behavior-with-rule-based-rewards/)
+
+
 [https://github.com/openai/safety-rbr-code-and-data](https://github.com/openai/safety-rbr-code-and-data)
 
 ## RLLR
