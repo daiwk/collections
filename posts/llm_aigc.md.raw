@@ -1305,6 +1305,10 @@ llm中文数据集：[https://juejin.cn/post/7238921093553438779](https://juejin
 + [一篇对大语言模型（LLMs）进行全面、深入分析的43页综述（Word2Vec作者出品）](https://mp.weixin.qq.com/s/5fbx0lM9V-Q7xYbeDauuHw)==>[Large Language Models: A Survey](https://arxiv.org/pdf/2402.06196.pdf)，[自己存了一份](https://github.com/daiwk/collections/blob/master/assets/LLM/Large%20Language%20Models-%20A%20Survey.pdf)
 + [Large Language Models for Information Retrieval: A Survey](https://arxiv.org/pdf/2308.07107v3.pdf)
 + [awesome-LLM-resourses](https://github.com/WangRongsheng/awesome-LLM-resourses)
++ [14天速成LLM高手！大佬开源学习笔记，GitHub狂揽700星](https://mp.weixin.qq.com/s/aDkH9E5b0yNd1J_Kthkh5Q)：[https://github.com/hesamsheikh/ml-retreat](https://github.com/hesamsheikh/ml-retreat)
++ [GitHub超火开发者路线图库有AI学习路线了！star数近30万](https://mp.weixin.qq.com/s/P9hWHGsiWcfEfMq54E02xg)：[https://github.com/kamranahmedse/developer-roadmap](https://github.com/kamranahmedse/developer-roadmap)
++ [写的真好，万字长文串烧LLM大模型技术原理](https://mp.weixin.qq.com/s/ArTr-Df10LiTkJ4k9zlmZA)：[https://zhuanlan.zhihu.com/p/713794852](https://zhuanlan.zhihu.com/p/713794852)
+
 
 [大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
 
@@ -1379,6 +1383,15 @@ SIGIR24最佳论文：[Scaling Laws For Dense Retrieval](https://arxiv.org/pdf/2
 [Scaling Laws with Vocabulary: Larger Models Deserve Larger Vocabularies](https://arxiv.org/abs/2407.13623)
 
 [https://github.com/sail-sg/scaling-with-vocab/](https://github.com/sail-sg/scaling-with-vocab/)
+
+#### scaling law for precision
+
+[Scaling Laws终结，量化无用，AI大佬都在审视这篇论文](https://mp.weixin.qq.com/s/JhtOlj5Y4UYM3W3koeMmqw)
+
+[Scaling Laws for Precision](https://arxiv.org/abs/2411.04330)
+
+你训练的 token 越多，你需要的精度就越高。
+
 
 ## 涌现能力
 
@@ -1638,6 +1651,12 @@ XVERSE-MoE-A36B，该模型总参数255B，激活参数36B，达到100B模型性
 [https://github.com/thu-nics/MoA](https://github.com/thu-nics/MoA)
 
 [MoA: Mixture of Sparse Attention for Automatic Large Language Model Compression](https://arxiv.org/abs/2406.14909)
+
+### GRIN
+
+[专家模型不要专家并行！微软开源MoE新路径](https://mp.weixin.qq.com/s/pt-AlH_z4e3PNiKC9Iyz7A)
+
+[GRIN: GRadient-INformed MoE](https://arxiv.org/abs/2409.12136)
 
 
 ## 主流框架
@@ -2755,6 +2774,10 @@ XXX
 [https://github.com/test-time-training/ttt-lm-pytorch](https://github.com/test-time-training/ttt-lm-pytorch)
 
 ![ttt](../assets/ttt.png)
+
+[连OpenAI都推不动Scaling Law了？MIT把「测试时训练」系统研究了一遍，发现还有路](https://mp.weixin.qq.com/s/tfrG21mfteVAkjqYx5mDsQ)
+
+[The Surprising Effectiveness of Test-Time Training for Abstract Reasoning](https://ekinakyurek.github.io/papers/ttt.pdf)
 
 ## Axiomatic Training
 
@@ -7022,6 +7045,10 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 根据此前的消息推测，「Vidu」也复用了生数科技在图文任务的很多经验，包括训练加速、并行化训练、低显存训练等等，从而快速跑通了训练流程。据悉，他们通过视频数据压缩技术降低输入数据的序列维度，同时采用自研的分布式训练框架，在保证计算精度的同时，通信效率提升 1 倍，显存开销降低 80%，训练速度累计提升 40 倍。
 
+## Vidu 1.5
+
+[视觉模型学会LLM独门秘籍「上下文记忆」，迎来智能涌现的大爆发！](https://mp.weixin.qq.com/s/vXE1_Spya2BsZxWuD6LBOA)
+
 ## gen-3
 
 [Runway版Sora发布：高保真、超强一致性，Gen-3 Alpha震撼到网友了](https://mp.weixin.qq.com/s/uuLub-ruJgYYrTOFoNJ5iw)
@@ -8523,11 +8550,7 @@ XXX
 
 [https://github.com/eloialonso/diamond](https://github.com/eloialonso/diamond)
 
-## LLM的不足
 
-[语言≠思维，大模型学不了推理：一篇Nature让AI社区炸锅了](https://mp.weixin.qq.com/s/BgMNITn5e1RGUOHQLKv7yg)
-
-[https://www.nature.com/articles/s41586-024-07522-w](https://www.nature.com/articles/s41586-024-07522-w)
 
 ## pandora
 
@@ -8541,6 +8564,12 @@ XXX
 [ACL 2024论文盖棺定论：大语言模型≠世界模拟器，Yann LeCun：太对了](https://mp.weixin.qq.com/s/FBqYb_gcBr5D204mDtmCOA)
 
 [Can Language Models Serve as Text-Based World Simulators?](https://arxiv.org/pdf/2406.06485)
+
+## WHALE
+
+[WHALE来了，南大周志华团队做出更强泛化的世界模型](https://mp.weixin.qq.com/s/9vk__IpfMdYj57VjtV1HvQ)
+
+[WHALE: TOWARDS GENERALIZABLE AND SCALABLE WORLD MODELS FOR EMBODIED DECISION-MAKING](https://arxiv.org/pdf/2411.05619)
 
 # O1
 
@@ -8880,6 +8909,10 @@ XXX
 
 [技术上，如何复现 o1?](https://mp.weixin.qq.com/s/_fNioAkD--nI9WSH64O-_A?poc_token=HH6r-2ajxUVBKhJS6btRQEAl85tnczRGWRIAES19)
 
+[17岁高中生写了个神级Prompt，直接把Claude强化成了满血o1](https://mp.weixin.qq.com/s/IAKD0FfcYehs5FsDkLbTJQ)
+
+[https://github.com/richards199999/Thinking-Claude/tree/main](https://github.com/richards199999/Thinking-Claude/tree/main)
+
 ## O1 Replication Journey
 
 [上交大发布首个OpenAI o1复现项目进展报告，满满的经验洞察](https://mp.weixin.qq.com/s/ZO_Rv98OakPuBaZl9Tw5VA)
@@ -9098,6 +9131,12 @@ openai的报告：[GPT-4o System Card](https://cdn.openai.com/gpt-4o-system-card
 [Unlocking the Capabilities of Thought: A Reasoning Boundary Framework to Quantify and Optimize Chain-of-Thought](https://arxiv.org/abs/2410.05695)
 
 [https://github.com/LightChen233/reasoning-boundary](https://github.com/LightChen233/reasoning-boundary)
+
+## 语言≠思维
+
+[语言≠思维，大模型学不了推理：一篇Nature让AI社区炸锅了](https://mp.weixin.qq.com/s/BgMNITn5e1RGUOHQLKv7yg)
+
+[https://www.nature.com/articles/s41586-024-07522-w](https://www.nature.com/articles/s41586-024-07522-w)
 
 # 多智能体
 
@@ -9624,6 +9663,8 @@ Neel Nanda（deepmind）的项目
 
 [First-Person Fairness in Chatbots](https://cdn.openai.com/papers/first-person-fairness-in-chatbots.pdf)
 
+[翁荔B站分享原文：AI安全与“培养”之道](https://mp.weixin.qq.com/s/92QyZcwteFXaKfJk3GdTcQ)
+
 ## 长尾
 
 [A Systematic Review on Long-Tailed Learning](https://arxiv.org/pdf/2408.00483)
@@ -9722,6 +9763,8 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 
 
 [Ilya Sutskever的推荐清单](https://arc.net/folder/D0472A20-9C20-4D3F-B145-D2865C0A9FEE)
+
+[传说中Ilya Sutskever精选论文清单：AI领域40大论文完整版「破解」完成](https://mp.weixin.qq.com/s/7Bj_K1Vjp2FtfklfJsAMbQ)
 
 [2024年大模型LLM还有哪些可研究的方向？](https://www.zhihu.com/question/637595961)
 
