@@ -1,0 +1,1363 @@
+# LLM+推荐
+
+## 综述
+
+[https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
+
+[A Survey on Large Language Models for Recommendation](https://arxiv.org/pdf/2305.19860.pdf)
+[How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817.pdf)
+[Recommender Systems in the Era of Large Language Models (LLMs)](https://arxiv.org/pdf/2307.02046.pdf)
+
+
+
+中科大LDS实验室的tutorial：[XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf](https://github.com/daiwk/collections/blob/master/assets/XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf)
+
+对应的datafun talk：[当"狂飙"的大模型撞上推荐系统](https://mp.weixin.qq.com/s/rBGq7rDMK5Vxad5qUmK3nw)
+
+[大模型放进推荐系统怎么玩？微软亚研全面总结](https://mp.weixin.qq.com/s/x0qczJ8I8LZ_PyZw2HOI8A)
+
+生成式推荐综述：
+
+[Large Language Models for Generative Recommendation: A Survey and Visionary Discussions](https://arxiv.org/pdf/2309.01157.pdf)
+
+[A Review of Modern Recommender Systems Using Generative Models (Gen-RecSys)](https://arxiv.org/pdf/2404.00579.pdf)
+
+[大语言模型在推荐系统中的探索与应用](https://mp.weixin.qq.com/s/nEhynptVyx8aV8onCwozAA)
+
+### 概况
+
+CRM(conventional recommendation models)
+
+![llm-rec-where](../assets/llm-rec-where.png)
+
+![llm-rec-how](../assets/llm-rec-how.png)
+
+### where-LLM for feature engineering
+
+#### user-item level feature augmentation
+
+通过LLM的世界知识来获取更好的user/item表示
+
++ KAR：[Towards Open-World Recommendation with Knowledge Augmentation from Large Language Models](https://arxiv.org/pdf/2306.10933)通过LLM生成user侧的preference知识，和item侧的factual知识，并作为CRM的输入特征。代码：[https://github.com/YunjiaXi/Open-World-Knowledge-Augmented-Recommendation/blob/main/knowledge_encoding/utils.py](https://github.com/YunjiaXi/Open-World-Knowledge-Augmented-Recommendation/blob/main/knowledge_encoding/utils.py)，其实就是把模型输出的hidden states处理一下：
+
+```python
+
+x = tokenizer(x, padding=True, truncation=True, max_length=512, return_tensors="pt",
+                return_attention_mask=True).to(device)
+mask = x['attention_mask']
+outputs = model(**x, output_hidden_states=True, return_dict=True)
+pred = get_paragraph_representation(outputs, mask, aggregate_type)
+def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
+    last_hidden = outputs.last_hidden_state
+    hidden_states = outputs.hidden_states
+
+    # Apply different poolers
+
+    if pooler == 'cls':
+        # There is a linear+activation layer after CLS representation
+        return outputs.pooler_output.cpu()  # chatglm不能用，用于bert
+    elif pooler == 'cls_before_pooler':
+        return last_hidden[:, 0].cpu()
+    elif pooler == "avg":
+        return ((last_hidden * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)).cpu()
+    elif pooler == "avg_first_last":
+        first_hidden = hidden_states[1]
+        last_hidden = hidden_states[-1]
+        pooled_result = ((first_hidden + last_hidden) / 2.0 * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)
+        return pooled_result.cpu()
+    elif pooler == "avg_top2":
+        second_last_hidden = hidden_states[-2]
+        last_hidden = hidden_states[-1]
+        pooled_result = ((last_hidden + second_last_hidden) / 2.0 * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)
+        return pooled_result.cpu()
+    elif pooler == 'len_last':  # 根据padding方式last方式也不一样
+        lens = mask.unsqueeze(-1).sum(dim)
+        # index = torch.arange(last_hidden.shape[0])
+        # print(index)
+        pooled_result = [last_hidden[i, lens[i] - 1, :] for i in range(last_hidden.shape[0])]
+        pooled_result = torch.concat(pooled_result, dim=0)
+        return pooled_result.cpu()
+    elif pooler == 'last':
+        if dim == 0:
+            return last_hidden[-1, :, :]
+        else:
+            return last_hidden[:, -1, :]
+    elif pooler == 'wavg':
+        # Get weights of shape [bs, seq_len, hid_dim]
+        weights = (
+            torch.arange(start=1, end=last_hidden.shape[1] + 1)
+            .unsqueeze(0)
+            .unsqueeze(-1)
+            .expand(last_hidden.size())
+            .float().to(last_hidden.device)
+        )
+
+        # Get attn mask of shape [bs, seq_len, hid_dim]
+        input_mask_expanded = (
+            mask
+            .unsqueeze(-1)
+            .expand(last_hidden.size())
+            .float()
+        )
+
+        # Perform weighted mean pooling across seq_len: bs, seq_len, hidden_dim -> bs, hidden_dim
+        sum_embeddings = torch.sum(last_hidden * input_mask_expanded * weights, dim=dim)
+        sum_mask = torch.sum(input_mask_expanded * weights, dim=dim)
+
+        pooled_result = sum_embeddings / sum_mask
+        return pooled_result.cpu()
+    else:
+        raise NotImplementedError
+```
+
+#### instance-level sample generation
+
+
+
+### where-LLM as feature encoder
+
+### where-LLM for scoring/ranking function
+
+[Text Is All You Need: Learning Language Representations for Sequential Recommendation](https://arxiv.org/pdf/2305.13731) 亚马逊发的
+
+[https://github.com/AaronHeee/RecFormer](https://github.com/AaronHeee/RecFormer)
+
+### where-LLM for pipeline controller
+
+
+### how-tune LLM & infer with CRM
+
+### how-not tune LLM & infer w/o CRM
+
+### how-not tune LLM & infer with CRM
+
+### how-tune LLM & infer w/o CRM
+
+
+
+
+## DSI
+
+参考知乎：[https://zhuanlan.zhihu.com/p/470182510](https://zhuanlan.zhihu.com/p/470182510)
+
+[Transformer memory as a differentiable search index](https://proceedings.neurips.cc/paper_files/paper/2022/file/892840a6123b5ec99ebaab8be1530fba-Paper-Conference.pdf)，提出的可微搜索索引（differentiable search index, **DSI**），拆成两个阶段：
+
++ indexing：建立**文档**和**doc_id**的**一一映射**
++ retrieval：根据query生成候选doc_ids
+
+与[Autoregressive Entity Retrieval](https://arxiv.org/pdf/2010.00904)提出的**受限beam search**的GENRE（代码[https://github.com/facebookresearch/GENRE](https://github.com/facebookresearch/GENRE)，解读[Transformer中PrefixConstrainedLogitsProcessor类的解读](https://zhuanlan.zhihu.com/p/494082642)）对比：
+
++ GENRE生成的目标是**有具体语义的实体名**
++ DSI生成的目标则是**无任何语义的任意doc_id**
+
+### Indexing方法
+
++ Inputs2Target：即doc_tokens->doc_id
++ Target2Inputs：即doc_id->doc_tokens
++ bidirectional：同时用上两面两个任务，并且在开始时加一个前缀，表明任务的方向
++ span corruption：参考T5（[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)），将doc_id当做前缀和doc_tokens拼起来，2个好处：
+    + 在索引时进行通用的预训练
+    + 实现doc_id作为去噪目标和输入的平衡
+
+### 文档的表示
+
++ Direct Indexing：直接用文档的前L个单词当做文档的表示，并且保留单词的顺序。
++ Set Indexing：去掉文档中的重复的单词及停用词，然后和Direct Indexing一样的处理。
++ Inverted Index：随机对文档中的连续的k个单词（一个文档块）进行采样，并将它们与doc_id相关联
+
+### doc_id的表示
+
++ 非结构化的原子标识符：直接对所有的文档使用一个随机但互不相同的的整数标识。假设一共有N篇文档需要检索，假设原来解码器输出有V个单词，现在有V+N个单词。
++ 朴素的结构化字符串标识符：也使用一个随机的整数，但将这个整数当做一个字符串输出，用受限的beam search搜索前k个文档，因为需要保证**输出的是数字**。
++ 语义结构化的标识符：先用BERT产出每个doc的emb，然后**递归10-means**，第一次得到0-9作为第1个数字，第二次的0-9作为第2个数字，可以得到一个树，文档的最终标识符就是从根节点到当前结点的路径对应的编号组合。只要一个节点的文档数大于$$c=100$$，就继续分裂，当叶子的文档数小于c时，每个文档随机分配一个1到$$c-1$$的id，拼到doc_id的最后。
+
+### 训练方法
+
+&nbsp;
+
+用seq2seq，即**teacher forcing+交叉熵**，有如下两种方式：
+
++ 先对indexing进行预训练（memorization），再进行**将query映射为docid**的微调
++ 用多任务的方式**同时进行**，两个任务用**不同的标识符**，这样做效果会好很多
+
+后来有一篇[Bridging the Gap Between Indexing and Retrieval for Differentiable Search Index with Query Generation](https://arxiv.org/pdf/2206.10128.pdf)，对应的github：[https://github.com/ArvinZhuang/DSI-QG](https://github.com/ArvinZhuang/DSI-QG)，他也同时尝试复现DSI：[https://github.com/ArvinZhuang/DSI-transformers](https://github.com/ArvinZhuang/DSI-transformers)，主要有如下两个地方：
+
++ 准备数据，doc_id
+
+```python
+class IndexingTrainDataset(Dataset):
+    def __init__(
+            self,
+            path_to_data,
+            max_length: int,
+            cache_dir: str,
+            tokenizer: PreTrainedTokenizer,
+    ):
+        self.train_data = datasets.load_dataset(
+            'json',
+            data_files=path_to_data,
+            ignore_verifications=False,
+            cache_dir=cache_dir
+        )['train']
+
+        self.max_length = max_length
+        self.tokenizer = tokenizer
+        self.total_len = len(self.train_data)
+
+
+    def __len__(self):
+        return self.total_len
+
+    def __getitem__(self, item):
+        data = self.train_data[item]
+
+        input_ids = self.tokenizer(data['text'],
+                                   return_tensors="pt",
+                                   truncation='only_first',
+                                   max_length=self.max_length).input_ids[0]
+        return input_ids, str(data['text_id'])
+
+
+@dataclass
+class IndexingCollator(DataCollatorWithPadding):
+    def __call__(self, features):
+        input_ids = [{'input_ids': x[0]} for x in features]
+        docids = [x[1] for x in features]
+        inputs = super().__call__(input_ids)
+
+        # label是doc_id
+        labels = self.tokenizer(
+            docids, padding="longest", return_tensors="pt"
+        ).input_ids
+
+        # replace padding token id's of the labels by -100 
+        # according to https://huggingface.co/docs/transformers/model_doc/t5#training
+        labels[labels == self.tokenizer.pad_token_id] = -100
+        inputs['labels'] = labels
+        return inputs
+
+```
+
++ 训练和预测
+
+```python
+class IndexingTrainer(Trainer):
+    def __init__(self, restrict_decode_vocab, **kwds):
+        super().__init__(**kwds)
+        self.restrict_decode_vocab = restrict_decode_vocab
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        ## 输入文章，预测doc_id
+        loss = model(input_ids=inputs['input_ids'], 
+            attention_mask=inputs['attention_mask'], labels=inputs['labels']).loss
+        if return_outputs:
+            return loss, [None, None]  # fake outputs
+        return loss
+
+    def prediction_step(
+            self,
+            model: nn.Module,
+            inputs: Dict[str, Union[torch.Tensor, Any]],
+            prediction_loss_only: bool,
+            ignore_keys: Optional[List[str]] = None,
+    ) -> Tuple[Optional[torch.Tensor], Optional[torch.Tensor], Optional[torch.Tensor]]:
+        model.eval()
+        # eval_loss = super().prediction_step(model, inputs, True, ignore_keys)[0]
+        with torch.no_grad():
+            # greedy search
+            doc_ids = model.generate(
+                inputs['input_ids'].to(self.args.device),
+                max_length=20,
+                prefix_allowed_tokens_fn=self.restrict_decode_vocab,
+                early_stopping=True,)
+        return (None, doc_ids, inputs['labels'])
+```
+
++ 对解码空间的限制：
+
+```python
+    # docid generation constrain, we only generate integer docids.
+    SPIECE_UNDERLINE = "_"
+    INT_TOKEN_IDS = []
+    for token, id in tokenizer.get_vocab().items():
+        if token[0] == SPIECE_UNDERLINE:
+            if token[1:].isdigit():
+                INT_TOKEN_IDS.append(id)
+        if token == SPIECE_UNDERLINE:
+            INT_TOKEN_IDS.append(id)
+        elif token.isdigit():
+            INT_TOKEN_IDS.append(id)
+    INT_TOKEN_IDS.append(tokenizer.eos_token_id)
+
+    def restrict_decode_vocab(batch_idx, prefix_beam):
+        return INT_TOKEN_IDS
+```
+
+## vq-vae & rq-vae
+
+### vq-vae
+
+[Neural discrete representation learning](https://proceedings.neurips.cc/paper_files/paper/2017/file/7a98af17e63a0ac09ce2e96d03992fbc-Paper.pdf)
+
+[https://github.com/zalandoresearch/pytorch-vq-vae](https://github.com/zalandoresearch/pytorch-vq-vae)
+
+用在推荐：
+
+[Learning Vector-Quantized Item Representation for Transferable Sequential Recommenders](https://arxiv.org/pdf/2210.12316.pdf)
+
+[https://github.com/RUCAIBox/VQ-Rec](https://github.com/RUCAIBox/VQ-Rec)
+
+### rq-vae
+
+[Autoregressive Image Generation using Residual Quantization](https://arxiv.org/pdf/2203.01941.pdf)
+
+
+## TIGER
+
+[Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
+
+序列推荐的一些paper：
+
++ [Session-based recommendations with recurrent neural networks](https://arxiv.org/pdf/1511.06939.pdf)：GRU4Rec首先把RNN用到推荐里
++ [Neural attentive session-based recommendation](https://arxiv.org/pdf/1711.04725.pdf)：提出NARM(Neural Attentive Session-based Recommendation)，在GRU里加了attention
++ [Next item recommendation with self-attention](https://arxiv.org/pdf/1808.06414.pdf)：AttRec在metric learning里引入了self-attention
++ [Self-attentive sequential recommendation](https://arxiv.org/pdf/1808.09781.pdf)：SASRec用了类似decoder-only的self-attention
++ [Bert4rec: Sequential recommendation with bidirectional encoder representations from transformer](https://arxiv.org/pdf/1904.06690.pdf)和[Transformers4rec: Bridging the gap between nlp and sequential/session-based recommendation](https://scontent-sjc3-1.xx.fbcdn.net/v/t39.8562-6/246721374_422204999475172_9039387325224382577_n.pdf?_nc_cat=104&ccb=1-7&_nc_sid=e280be&_nc_ohc=pSC1QwlGTzIAX-yb9Ax&_nc_ht=scontent-sjc3-1.xx&oh=00_AfApZwRSd9KDBf4b-uGHf3bSS_SsZoRqhYS-lJRZltT97A&oe=6606DDFA)用了Transformer以及相关的mask策略
++ [S3-rec: Self-supervised learning for sequential recommendation with mutual information maximization](https://arxiv.org/pdf/2008.07873.pdf)：在预训练阶段引入了4个自监督的task，4个MIMM(mutual information maximization)
+  + item-attribute MIM
+  + sequence-item MIM：sequence和被mask掉的一个item间
+  + sequence-attribute MIM
+  + sequence-sequence MIM：sequence和被mask掉的连续item构成的片段间
+
+![s3-rec](../assets/s3-rec.png)
+
+这些方法都是学习item的向量，然后用MIPS去ANN，而TIGER(Transformer Index for GEnerative Recommenders)则是生成式地直接预测item的语义id
+
+![tiger](../assets/tiger.png)
+
+![tiger-quant](../assets/tiger-quant.png)
+
+![tiger-personalized](../assets/tiger-personalized.jpg)
+
+rq-vae的介绍：[](https://arxiv.org/pdf/2306.08121)
+
+![rq-vae](../assets/rq-vae.png)
+
+原图里的下标有一些问题
+
++ $$x$$经过encoder得到的$$z$$（可以看成就是$$r_1$$），$$l=1$$，在第一个码本里ann找到最近的$$c_1=1$$，$$z-\boldsymbol{e}_{c_1}$$得到$$r_2$$
++ $$l=2$$，$$r_2$$在第2个码本里ann找到最近的$$c_2=4$$，$$r_2-\boldsymbol{e}_{c_2}$$得到$$r_3$$
++ $$l=3$$，$$r_3$$在第3个码本里ann找到最近的$$c_3=6$$，$$r_3-\boldsymbol{e}_{c_3}$$得到$$r_4$$
++ $$l=4$$，$$r_4$$在第4个码本里ann找到最近的$$c_4=2$$，$$r_4-\boldsymbol{e}_{c_4}$$得到$$r_5$$，
++ 对应的semantic id就是(1,4,6,2)，拿$$\hat {z} = 1+4+6+2$$再去过decoder得到$$\hat {x}$$
+
+最终的loss：$$\mathcal{L}_{\text {recon }} + \mathcal{L}_{\text {rqvae }}$$：
+
++ $$\mathcal{L}_{\text {recon }}=\|\boldsymbol{x}-\hat{\boldsymbol{x}}\|^2$$
++ $$\mathcal{L}_{\text {rqvae }}=\sum_{l=1}^L \beta\left\|\boldsymbol{r}_l-\operatorname{sg}\left[\boldsymbol{e}_{c_l}\right]\right\|^2+\left\|\operatorname{sg}\left[\boldsymbol{r}_l\right]-\boldsymbol{e}_{c_l}\right\|^2$$，sg是stop gradient，这里原始的rq-vae是算的$$\mathcal{L}_{\text {commit }}=\sum_{d=1}^D\left\|\mathbf{Z}-\operatorname{sg}\left[\hat{\mathbf{Z}}^{(d)}\right]\right\|_2^2$$看来有点diff
++ 码本的emb通过moving average更新
+
+
+rqvae的代码：[https://github.com/kakaobrain/rq-vae-transformer/blob/main/rqvae/models/rqvae/quantizations.py#L237](https://github.com/kakaobrain/rq-vae-transformer/blob/main/rqvae/models/rqvae/quantizations.py#L237)
+
++ VQ部分：
+
+```python
+class VQEmbedding(nn.Embedding):
+    def compute_distances(self, inputs):
+        codebook_t = self.weight[:-1, :].t()
+
+        (embed_dim, _) = codebook_t.shape
+        inputs_shape = inputs.shape
+        assert inputs_shape[-1] == embed_dim
+
+        inputs_flat = inputs.reshape(-1, embed_dim)
+        # a^2
+        inputs_norm_sq = inputs_flat.pow(2.).sum(dim=1, keepdim=True)
+        # b^2
+        codebook_t_norm_sq = codebook_t.pow(2.).sum(dim=0, keepdim=True)
+        # (a-b)^2 = a^2 + b^2 - 2ab
+        distances = torch.addmm(
+            inputs_norm_sq + codebook_t_norm_sq,
+            inputs_flat,
+            codebook_t,
+            alpha=-2.0,
+        )
+        distances = distances.reshape(*inputs_shape[:-1], -1)  # [B, h, w, n_embed or n_embed+1]
+        return distances
+
+    @torch.no_grad()
+    def find_nearest_embedding(self, inputs):
+        distances = self.compute_distances(inputs)  # [B, h, w, n_embed or n_embed+1]
+        embed_idxs = distances.argmin(dim=-1)  # use padding index or not
+
+        return embed_idxs
+
+    @torch.no_grad()
+    def _update_embedding(self):
+
+        n_embed = self.weight.shape[0] - 1
+        n = self.cluster_size_ema.sum()
+        normalized_cluster_size = (
+            n * (self.cluster_size_ema + self.eps) / (n + n_embed * self.eps)
+        )
+        self.weight[:-1, :] = self.embed_ema / normalized_cluster_size.reshape(-1, 1)
+
+    def forward(self, inputs):
+        embed_idxs = self.find_nearest_embedding(inputs)
+        if self.training:
+            if self.ema:
+                self._update_buffers(inputs, embed_idxs)
+        
+        embeds = self.embed(embed_idxs)
+
+        if self.ema and self.training:
+            self._update_embedding()
+
+        return embeds, embed_idxs
+```
+
++ RQ部分
+
+```python
+class RQBottleneck(nn.Module):
+    def __init__(...):
+        codebooks = [VQEmbedding(self.n_embed[idx], 
+                                    embed_dim, 
+                                    decay=self.decay[idx], 
+                                    restart_unused_codes=restart_unused_codes,
+                                    ) for idx in range(self.code_shape[-1])]
+        self.codebooks = nn.ModuleList(codebooks)
+    def quantize(self, x):
+        r"""
+        Return list of quantized features and the selected codewords by the residual quantization.
+        The code is selected by the residuals between x and quantized features by the previous codebooks.
+
+        Arguments:
+            x (Tensor): bottleneck feature maps to quantize.
+
+        Returns:
+            quant_list (list): list of sequentially aggregated and quantized feature maps by codebooks.
+            codes (LongTensor): codewords index, corresponding to quants.
+
+        Shape:
+            - x: (B, h, w, embed_dim)
+            - quant_list[i]: (B, h, w, embed_dim)
+            - codes: (B, h, w, d)
+        """
+        B, h, w, embed_dim = x.shape
+
+        residual_feature = x.detach().clone()
+
+        quant_list = []
+        code_list = []
+        aggregated_quants = torch.zeros_like(x)
+        for i in range(self.code_shape[-1]):
+            quant, code = self.codebooks[i](residual_feature)
+            # 就地操作，从residual_feature中减去quant的值，覆盖原来的值
+            residual_feature.sub_(quant)
+            aggregated_quants.add_(quant)
+
+            quant_list.append(aggregated_quants.clone())
+            code_list.append(code.unsqueeze(-1))
+        
+        codes = torch.cat(code_list, dim=-1)
+        return quant_list, codes
+    def forward(self, x):
+        x_reshaped = self.to_code_shape(x)
+        quant_list, codes = self.quantize(x_reshaped)
+
+        commitment_loss = self.compute_commitment_loss(x_reshaped, quant_list)
+        quants_trunc = self.to_latent_shape(quant_list[-1])
+        quants_trunc = x + (quants_trunc - x).detach()
+
+        return quants_trunc, commitment_loss, codes
+    
+    def compute_commitment_loss(self, x, quant_list):
+        r"""
+        Compute the commitment loss for the residual quantization.
+        The loss is iteratively computed by aggregating quantized features.
+        """
+        loss_list = []
+        
+        for idx, quant in enumerate(quant_list):
+            partial_loss = (x-quant.detach()).pow(2.0).mean()
+            loss_list.append(partial_loss)
+        
+        commitment_loss = torch.mean(torch.stack(loss_list))
+        return commitment_loss
+```
+
+## HSTU
+
+[如何评价Meta最新推荐论文: 生成式推荐打败深度分层架构推荐？](https://mp.weixin.qq.com/s/MeH2drBIBML5OSfCujIJ0Q)
+
+[Actions Speak Louder than Words: Trillion-Parameter Sequential Transducers for Generative Recommendations](https://arxiv.org/pdf/2402.17152.pdf)
+
+### 背景
+
+&nbsp;
+
+大规模推荐系统依赖高基数(high cardinality)、异质特性(heterogeneous features)，每天要处理上百亿用户行为数据。将推荐系统重新定义为生成模型框架内的序列转化任务，提出HSTU(Hierarchical Sequential Transduction Unit)，专为高基数、非稳态的流式推荐数据设计。
+
++ 在公开数据集比基线NDCG+65.8%
++ 在8192的序列长度上的处理速度比基于flash attention2的transformer快5.3-15.2倍。
++ 1.5万亿（1.5 trillion）参数，线上ab测试指标+12.4%
+
+在[Breaking the curse of quality saturation with user-centric ranking](https://arxiv.org/pdf/2305.15333.pdf)中提到了NCE（normalized cross-entropy）指标：
+
+XXX
+\operatorname{NCE}(p, y)=\frac{\operatorname{CrossEntropy}(p, y)}{\operatorname{Entropy}(y)}
+XXX
+
+![nce-metric](../assets/nce-metric.png)
+
+可以发现，对于一个预训练好的模型来说，随着时间的变化，NCE的变化是很剧烈的，即数据分布是会漂移的，并不像nlp/cv一样有ground truth，所以传统推荐模型其实很难达到比较好的scaling能力。
+
+![nce-distribution-drift](../assets/nce-distribution-drift.png)
+
+需要克服的3个挑战：
+
++ 推荐系统中的特征**缺少显式的结构**。序列建模（bert4rec、S3-rec等）在小规模数据集上效果不错，但工业界则需要**异构特征**（高基数的id、交叉特征、统计特征、历史点击率等）。
++ 推荐系统使用**十亿规模的动态词表**，而nlp用的是10w的静态词表，要对上万候选进行target-aware操作（din、Cold等），训练和推理的代价很高。
++ 大规模序列模型的计算成本是瓶颈。GPT-3在300B token的数据集上用上千个GPU训练1-2个月，而在推荐场景一天就有十亿级的活跃用户和十亿级的候选进行交互，用户序列在极端情况下有近10w（[Twin: Two- stage interest network for lifelong user behavior modeling in ctr prediction at kuaishou](https://arxiv.org/pdf/2302.02352.pdf)），所以推荐系统每天要处理的tokens数量甚至比语言模型1-2个月处理的数量要大几个数量级
+
+本文将**用户action**看成一个新的模态，2个主要的insights：
+
++ 给定一个新的特征空间，核心的召回排序任务能被直接转换成生成式模型问题(序列直推任务，sequential transduction tasks)
++ 这种范式能够系统性地解决传统推荐中的特征冗余、计算冗余、推理冗余，提升效率
+
+### Sequential Transduction Tasks
+
+&nbsp;
+
+transductive learning（直推式学习） vs inductive learning（归纳式学习）[https://www.zhihu.com/question/68275921/answer/529156908](https://www.zhihu.com/question/68275921/answer/529156908)：
+
++ 归纳式学习：训练只使用训练集，不使用测试集，训出的模型对测试集做预测，如监督学习。
++ 直推式学习：训练时使用训练集，还使用测试集的特征，但不使用测试集的label，
+
+#### 异构特征的统一表示
+
+&nbsp;
+
++ 稀疏特征：itemid、类目、城市、语言、社区等
+    + 先选出**最长**的时间序列作为**主时间序列**，例如用户的交互序列。
+    + 剩下的特征随时间变化较慢，如关注作者的属性。对于连续出现的片段（consecutive segment），**只保留最开始的入口**，这样对于主时间序列而言，并不会增加太多的序列长度。
++ 数值型特征：这里指的是序列特征里**每个item的统计特征**，比如用户在时刻t对某个item的ctr。直接删了，因为DIN里提到随着序列长度增加，**target-aware**的序列建模方式能够捕捉到这种数值性特征
+
+![hstu-dlrm-vs-gr](../assets/hstu-dlrm-vs-gr.png)
+
+假设用户消费了9个item，
+
++ 绿色的有7个时间步，全保留，作为主序列；
++ 蓝色的有7个时间步，但只有G0和G1两种取值，所以对于连续的G0只保留第0个(出现在t1)，扔到主序列的最前面去，连续的G1也只保留第0个（出现在t8），插到主序列最后一个的前面
++ 黄色的全是H0，第0个出现在t7，所以保留t7，往主序列t8前面插入
++ 将数值型特征替换为target-aware的cross attention得到causal-masked的特征
++ 通过t0、t1、t2（**包括t2**）的特征生成t2的样本，以此类推
+
+#### 召回和排序的重定义
+
+&nbsp;
+
+输入token序列$$x_0, x_1, \ldots, x_{n-1}$$，输出的token序列$$y_0, y_1, \ldots, y_{n-1}$$是通过mask序列$$m_0, m_1, \ldots, m_{n-1}\left(m_i \in\{0,1\}\right)$$得到的。
+
+token对应的动态、非稳态词表是$$\mathbb{X}$$，用户交互的内容是$$\mathbb{X}_c \subseteq \mathbb{X}$$
+
++ 召回：预估$$p\left(x_{i+1} \mid u_i\right)$$，通过时间步i的用户特征预估$$x_{i+1} \in \mathbb{X}_c$$，一般是直接选择$$\arg \max _{x \in \mathbb{X}_c} p\left(x \mid u_i\right)$$来最大化**特定的reward**，和标准的自回归有两个不同：
+    + $$x_i,y_i$$的label并不一定是$$x_{i+1}$$，因为用户可以对$$x_{i+1}$$是负反馈
+    + $$y_i$$可能是比如人口属性等（因为是merge的序列，可能把城市之类的merge进来当做一个时间步），这个时候$$y_i$$未定义的，要把它mask掉，即$$m_i=0$$
++ 排序：推荐中的排序需要在尽量早的阶段进行target-aware的交互，而标准的自回归这种交互往往比较迟，例如在encoder的输出才用上了softmax。因此，设计了一种**target-aware的cross-attention**
+    + 把action和x穿插起来得到新序列$$x_0, a_0, x_1, a_1, \ldots, x_{n-1}, a_{n-1}$$
+        + 对于action的位置，$$m_i=0$$
+        + 对于content位置，使用一个小的nn将预估值转换成多任务的预估值（**感觉是输入0-n，第n项保留$$x_n$$，mask掉$$a_n$$，拿$$x_n$$去多目标地预估用户会用哪个action**）
+
+#### 生成式训练
+
+&nbsp;
+
+假设用户$$i$$有$$n_i$$个token，那么训练的复杂度就是$$\sum_i n_i\left(n_i^2 d+n_i d_{f f} d\right)$$，其中：
+
++ $$n_i^2 d$$是self-attention的复杂度，通过flash attention可以达到$$O(n^2)$$
++ $$n_i d_{f f} d$$是FFN的复杂度
++ 因为要自回归地算，可以理解为batch_size也是$$n_i$$，加一个下三角的mask，所以在$$\sum$$里还要乘一个$$n_i$$
+
+假设$$N=\max _i n_i$$，那复杂度就是$$O\left(N^3 d+N^2 d^2\right)$$，太巨大了
+
+但其实可以发现（这段是自己的理解），假设序列长度9，要预测第4个的时候，4-9的输入是mask掉的，但他们还是要进行后面的attention+ffn计算，其实是很浪费资源的，所以如上面“**异构特征的统一表示**”小节的那个图（生成主序列和辅助序列）所示，该模型直接只吐出x=x1-x3,y=x4作为训练样本就行了，这样既省掉了4-9的无用计算，也更便于并行（相比不拆batch的自回归）
+
+假设采样第$$i$$个用户的概率是$$s_u\left(n_i\right)$$，那么总的训练消耗就是
+
+XXX
+\sum_i s_u\left(n_i\right) n_i\left(n_i^2 d+n_i d^2\right)
+XXX
+
+如果设置$$s_u\left(n_i\right)=1/n_i$$，那消耗就降到了$$O\left(N^2 d+N d^2\right)$$。而在工业界中要实现这种采样其实很简单，在用户请求或者session结束的时候吐出训练样本就有$$\hat{s_u}\left(n_i\right) \propto 1 / n_i$$了
+
+### 生成式推荐中的高性能自注意力编码器
+
+&nbsp;
+
+![hstu-arch](../assets/hstu-arch.png)
+
+HSTU的单层包括3个部分：
+
+XXX
+\text{pointwise\ projection:} U(X), V(X), Q(X), K(X)=\operatorname{Split}\left(\phi_1\left(f_1(X)\right)\right)
+XXX
+
+XXX
+\text{spatial\ aggregation:} A(X) V(X)=\phi_2\left(Q(X) K(X)^T+\operatorname{rab}^{p, t}\right) V(X)
+XXX
+
+XXX
+\text{pointwise\ transformation:} Y(X)=f_2(\operatorname{Norm}(A(X) V(X)) \odot U(X))
+XXX
+
+其中，
+
++ $$f_i(x)$$是MLP，$$f_i(X)=W_i(X)+b_i$$
++ $$\phi_1$$和$$\phi_2$$是激活函数，都是SiLU([Sigmoid-weighted linear units for neural network function approximation in reinforcement learning](https://arxiv.org/pdf/1702.03118.pdf))，其实就是Swish，即$$f(x)=x \cdot sigmoid(x)$$
++ $${rab}^{p, t}$$是relative attention bias，考虑了位置$$p$$和时间$$t$$(参考T5论文，[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf))，其实是在[Self-attention with relative position representations](https://arxiv.org/pdf/1803.02155.pdf)一文提出的
+
+对应到代码([https://github.com/facebookresearch/generative-recommenders/blob/main/modeling/sequential/hstu.py](https://github.com/facebookresearch/generative-recommenders/blob/main/modeling/sequential/hstu.py))里：
+
+```python
+self._linear_dim: int = linear_hidden_dim
+self._uvqk = torch.nn.Parameter(
+    torch.empty((embedding_dim, linear_hidden_dim * 2 * num_heads + 
+        attention_dim * num_heads * 2)).normal_(mean=0, std=0.02),
+)
+
+##...
+
+batched_mm_output = torch.mm(normed_x, self._uvqk)
+if self._linear_activation == "silu":
+    batched_mm_output = F.silu(batched_mm_output)
+elif self._linear_activation == "none":
+    batched_mm_output = batched_mm_output
+# 其实就是先乘一个大矩阵，再拆成4份，等价于乘4个小矩阵
+u, v, q, k = torch.split(
+    batched_mm_output,
+    [self._linear_dim * self._num_heads, self._linear_dim * self._num_heads, 
+    self._attention_dim * self._num_heads, self._attention_dim * self._num_heads],
+    dim=1,
+)
+
+if self._normalization == "rel_bias" or self._normalization == "hstu_rel_bias":
+    if delta_x_offsets is not None:
+        padded_q, padded_k = cached_q, cached_k
+        flattened_offsets = delta_x_offsets[1] + torch.arange(start=0, end=B * n, 
+            step=n, device=delta_x_offsets[1].device, dtype=delta_x_offsets[1].dtype)
+        padded_q = padded_q.view(B * n, -1).index_copy_(
+            dim=0, index=flattened_offsets, source=q,
+        ).view(B, n, -1)
+        padded_k = padded_k.view(B * n, -1).index_copy_(
+            dim=0, index=flattened_offsets, source=k,
+        ).view(B, n, -1)
+    else:
+        padded_q = torch.ops.fbgemm.jagged_to_padded_dense(
+            values=q, offsets=[x_offsets], max_lengths=[n], padding_value=0.0
+        )
+        padded_k = torch.ops.fbgemm.jagged_to_padded_dense(
+            values=k, offsets=[x_offsets], max_lengths=[n], padding_value=0.0
+        )
+
+    qk_attn = torch.einsum(
+        "bnhd,bmhd->bhnm",
+        padded_q.view(B, n, self._num_heads, self._attention_dim),
+        padded_k.view(B, n, self._num_heads, self._attention_dim),
+    )
+    if all_timestamps is not None:
+        qk_attn = qk_attn + self._rel_attn_bias(all_timestamps).unsqueeze(1)
+    qk_attn = F.silu(qk_attn) / n
+    qk_attn = qk_attn * invalid_attn_mask.unsqueeze(0).unsqueeze(0)
+    attn_output = torch.ops.fbgemm.dense_to_jagged(
+        torch.einsum(
+            "bhnm,bmhd->bnhd",
+            qk_attn,
+            torch.ops.fbgemm.jagged_to_padded_dense(v, [x_offsets], [n]).\
+                reshape(B, n, self._num_heads, self._linear_dim)
+        ).reshape(B, n, self._num_heads * self._linear_dim),
+        [x_offsets],
+    )[0]
+
+```
+
+DLRM的3部分：
+
++ 特征抽取：常见的基础版本是离散特征pooling，高级版本是din。HSTU本来就能做这种target-aware的attention
++ 特征交互：常见的使用FMs、DCNv2、DHEN([DHEN: A Deep and Hierarchical Ensemble Network for Large-Scale Click-Through Rate Prediction](https://arxiv.org/pdf/2203.11014.pdf)，引入残差连接)。HSTU通过$$\operatorname{Norm}(A(X) V(X)) \odot U(X)$$来实现，将attention pooled后的结果直接和其他特征算element-wise product。
+    + 这个做法受[Neural collaborative filtering vs. matrix factorization revisited](https://arxiv.org/pdf/2005.09683.pdf)和[Revisiting neural retrieval on accelerators](https://arxiv.org/pdf/2306.04039.pdf)的启发，用MLP来近似点积是很困难的。原因大概是nn需要调超参和足够的训练数据，在线算得又慢，而且本来内积效果就不错了，nn能带来的边际收益其实不明确。
+    + 因为$$U(X)$$已经用过SiLU了，所以$$\operatorname{Norm}(A(X) V(X)) \odot U(X)$$可以看成是SwiGLU的变种（参考[Glu variants improve transformer](https://arxiv.org/pdf/2002.05202.pdf)），因为前面在对比LLM激活函数时讲了，$$\operatorname{SwiGLU}\left(\mathbf{x}_1, \mathbf{x}_2\right)=\operatorname{Swish}\left(\mathbf{x}_1\right) \odot \mathbf{x}_2$$
++ 表示转换：常见的如MoE、PLE等，主要思想就是对不同人群用特定的子网络。HSTU里的element-wise product也能达到MoE中的门控操作，只是可能有一个正则化因子的区别。
+
+其实就是原来一般会拆成attention+ffn，而它这3个公式，前两个是attention，第3个就是attention求个norm，然后过一个swiglu的ffn，还有一点，这里的$$U(x)$$是过attention之前的，感觉起到了类似resnet的作用
+
+
+#### pointwise聚合的注意力
+
+&nbsp;
+
+用的是pointwise聚合的注意力，而不是transformer里的softmax，主要有如下两点考虑：
+
++ 推荐中item的**强度**信息很重要，softmax会让这种强度失真，导致在预估（如时长）不准；如果只需要预估序，那其实softmax也可以，但推荐要**同时预估序和值**，所以要删掉softmax。
++ 虽然softmax对噪声有鲁棒性，但不太适用于流式setting下的非稳态词表。做了一个模拟流式数据的实验，发现只去掉relative attention bias比relative attention bias并加上softmax会好得多
+
+| Architecture              | HR @10 | HR @50 |
+|---------------------------|--------|--------|
+| Transformers              | .0442  | .2025  |
+| HSTU ($$-rab^{p,t}$$, Softmax) | .0617  | .2496  |
+| HSTU ($$-rab^{p,t}$$)          | .0893  | .3170  |
+
+#### 增加稀疏性
+
+&nbsp;
+
+使用了一种高效的attention kernel的GPU算子，类似FlashAttention，能够将**融合连续的矩阵操作**（fuse back-to-back GEMMs），但能够
+进行fully raggified（可能是不规则，即序列长度可变的？？）的attention计算，本质是将attention计算转换为**不同大小的分组GEMMs**。因此，HSTU变成了memory-bound，并且能够以$$\Theta\left(\sum_i n_i^2 d_{q k}^2 R^{-1}\right)$$进行scale，其中，$$n_i$$是样本$$i$$的序列长度，$$d_{qk}$$是attention的维度，$$R$$是寄存器的大小。
+
+受[Deep networks with stochastic depth]()启发，提出了SL(stochastic length)来增加用户历史序列的稀疏性，推荐系统中的用户行为往往有周期性，并且以不同形式呈现，因此引入稀疏性可以在效果不怎么损失的情况下显著减少encoder的代价，可以scale为$$\Theta\left(\sum_i n_i^2\right)$$
+
+定义$$\Gamma(n, L)$$为一个函数，从原序列$$x_0, \ldots, x_{n-1}$$中选出长度为$$L$$的子序列，具体方案如下：
+
+XXX
+\begin{aligned}
+& x_0, \ldots, x_{n_i-1} \text { if } n_i \leq N^{\alpha / 2} \\
+& \Gamma\left(n_i, N^{\alpha / 2}\right) \text { if } n_i>N^{\alpha / 2}, \text { w/ probability } 1-N^\alpha / n_i^2 \\
+& x_0, \ldots, x_{n_i-1} \text { if } n_i>N^{\alpha / 2}, \text { w/ probability } N^\alpha / n_i^2 \\
+&
+\end{aligned}
+XXX
+
+即：
+
++ $$n_i \leq N^{\alpha / 2}$$时，保留原始序列
++ $$n_i>N^{\alpha / 2}$$时，有$$N^\alpha / n_i^2 < 1$$：
+    + 以$$1-N^\alpha / n_i^2$$的概率只保留$$N^{\alpha / 2}$$长度的子序列
+    + 以$$N^\alpha / n_i^2$$的概率保留原始序列
+
+对于$$\alpha \in(1,2]$$，原来的attention相关的复杂度是$$O\left(N^2 d\right)$$，现在可以降低到$$O\left({N^{\alpha /2}}^2 d\right)=O\left(N^\alpha d\right)$$。
+
+其中的$$\Gamma(n, L)$$经过离线实验（原文附录D里），采用了feature-weighted sampler，即以$$1-f_{n, i} /\left(\sum_{j=1}^L f_{j, i}\right)$$的概率进行采样，其中$$f_i=t_n-t_i$$表示用户和item $$x_i$$交互的时间和当前的时间差。
+
+对稀疏性的改善如下，其中稀疏性指的是$$1-avg\_seq\_len/max\_seq\_len$$，越大表示短序列越多，即越稀疏($$\alpha=2$$表示不SL，即直接使用原序列)：
+
+| Alpha ($$\alpha$$) | seq_len=1,024 | seq_len=2,048 | seq_len=4,096 | seq_len=8,192 |
+|-----------|-------|-------|-------|-------|
+| 1.6       | 71.5% | 76.1% | 80.5% | 84.4% |
+| 1.7       | 56.1% | 63.6% | 69.8% | 75.6% |
+| 1.8       | 40.2% | 45.3% | 54.1% | 66.4% |
+| 1.9       | 17.2% | 21.0% | 36.3% | 64.1% |
+| 2.0       | 3.1%  | 6.6%  | 29.1% | 64.1% |
+
+#### 最小化激活值的内存使用
+
+&nbsp;
+
+在推荐系统中，**大的batchsize**很重要：
+
++ 训练吞吐：[Software-hardware co-design for fast and scalable training of deep learning recommendation model](https://arxiv.org/pdf/2104.05158.pdf)一文说的
++ 模型质量：[Mixed negative sampling for learning two-tower neural networks in recommendations](https://storage.googleapis.com/gweb-research2023-media/pubtools/pdf/b9f4e78a8830fe5afcf2f0452862fb3c0d6584ea.pdf)、[A simple framework for contrastive learning of visual representations](https://proceedings.mlr.press/v119/chen20j/chen20j.pdf)和[Revisiting neural retrieval on accelerators](https://arxiv.org/pdf/2306.04039.pdf)
+
+因此激活函数的内存占用就成为了主要的scaling瓶颈，这一点和llm不一样，llm一般是用小batchsize，并且内存主要由网络参数占据。HSTU设计了如下方式来减少激活函数的内存占用：
+
++ 把attention外的linear layers从6减小到2，同时使用elementwise gating来降低MLP的计算（[Transformer Quality in Linear Time](https://arxiv.org/pdf/2202.10447.pdf)和[Efficiently modeling long sequences with structured state spaces](https://arxiv.org/pdf/2111.00396.pdf)）。第一篇对应的结构如下：
+
+![gated-attention-unit](../assets/gated-attention-unit.png)
+
+假设$$d$$是embed size，$$h$$是head数，$$d_{q k}$$是attention的dim，$$d_{ff}$$是ffn的hidden size，
+
++ 将一些计算融合成一个op，包括$$\phi_1\left(f_1(\cdot)\right)$$、layer_norm、optional dropout和输出MLP，将每一层的激活的内存占用减小到了$$2 d+2 d+4 h d_{q k}+4 h d_v+2 h d_v=14 d$$（以bf16计算，一个参数2字节）---没懂
+
+自己的理解：layer_norm要存均值+方差，所以要$$2d\times 2bytes$$，所以上面式子就是，U($$2d$$)，V($$2d$$)，Q和K($$4hd_{qk}$$)，QKV的norm(因为有均值和方差，所以是$$4hd_v$$)，QKV($$2hd_v$$)
+
+对比transformer，在attention后用了ffn和dropout，假设中间状态是$$3hd_v$$，那么ffn包括layer_norm、linear、激活、linear、dropout，中间状态占用的就是$$2 d+4 d_{f f}+2 d+1 d=4 d+4 d_{f f}$$，一般来说，$$h d_v \geq d$$，$$d_{f f}=4 d$$，
+
+自己的理解：输入x($$2d$$)，linear($$2d_{ff}$$)，linear($$2d$$)，dropout(约等于$$1d$$)，layernorm一般是发生在最开始吧，所以应该是第一个$$2d$$改成$$4d$$吧，感觉不是在linear那里变成$$4d_{ff}$$。。
+
+然后，加上输入的input和input的layer_norm($$4d$$)，和qkv的映射，总的激活状态是$$33d$$---没懂
+
+所以HSTU的设计能够让scaling达到大于两倍的更深的layers(14d vs 33d)
+
+此外，词表中的id占用了极大的内存，对于10b的词表，512维的emb，Adam优化器，用fp32来存储emb和优化器状态要60TB的内存，因此，
+
++ 使用**row-wise的AdamW**优化器（[Training highly multiclass classifiers](https://www.jmlr.org/papers/volume15/gupta14a/gupta14a.pdf)和[FBGEMM: Enabling High-Performance Low-Precision Deep Learning Inference](https://arxiv.org/pdf/2101.05615.pdf)）
++ 将优化器状态存在DRAM里，从而每一个float在HBM的占用从12bytes降低到2bytes
+
+#### cost-amortization(摊销)的预估scale up 
+
+&nbsp;
+
+对于召回来说，已经有很多加速方法了，例如MIPS的ANN加速，或者OTM等的beam search方法。
+
+对于排序而言，提出了M-FALCON(Microbatched-Fast Attention Leveraging Cacheable OperatioNs)，用于对$$m$$个候选，序列长度为$$n$$的输入进行预估
+
++ 并行计算$$b_m$$个候选，修改attention masks和$$rab^{p,t}$$ bias，使得这$$b_m$$个候选的attention操作是完全一样的。从而将cross-attention的计算从$$O\left(b_m n^2 d\right)$$缩减到了$$O\left(\left(n+b_m\right)^2 d\right)=O(n^2d)$$，因为$$b_m$$相比$$n$$要小得多
++ (可选)将$$m$$个候选分成$$\left\lceil m / b_m\right\rceil$$个microbatches，每个batch有$$b_m$$个候选，从而在如下两个场合利用KV caching([Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf))：
+    + 前向pass中，用于降低消耗
+    + requests之间，降低长尾耗时
+
+#### 其他
+
+&nbsp;
+
+发现了scaling-law：
+
+![hstu-scaling-law](../assets/hstu-scaling-law.png)
+
+## Wukong
+
+[Wukong: Towards a Scaling Law for Large-Scale Recommendation](https://arxiv.org/pdf/2403.02545.pdf)
+
+
+## P5
+
+[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+
+## llm vs ID
+
+[推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
+
+[Exploring the Upper Limits of Text-Based Collaborative Filtering Using Large Language Models: Discoveries and Insights](http://arxiv.org/abs/2305.11700)
+
+
+[知乎的讨论](https://www.zhihu.com/question/630016669/answer/3380909598)
+
+SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
+
+[Where to Go Next for Recommender Systems? ID- vs. Modality-based Recommender Models Revisited](https://arxiv.org/abs/2303.13835)
+
+[https://github.com/westlake-repl/IDvs.MoRec](https://github.com/westlake-repl/IDvs.MoRec)
+
+[对应的ppt](https://github.com/westlake-repl/MicroLens/blob/master/MicroLens_DeepMind_Talk.pdf)
+
+
+## agent4rec
+
+[On Generative Agents in Recommendation](https://arxiv.org/pdf/2310.10108.pdf)
+
+word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx](https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx)
+
+[https://github.com/LehengTHU/Agent4Rec](https://github.com/LehengTHU/Agent4Rec)
+
+## 拿推荐语料微调LLM
+
+[谷歌: 利用推荐知识对齐大语言模型](https://mp.weixin.qq.com/s/62SaQofe9qi2LCApjIzLFA)
+
+[Aligning Large Language Models with Recommendation Knowledge](https://arxiv.org/pdf/2404.00245.pdf)
+
+## 快手的LEARN
+
+[https://zhuanlan.zhihu.com/p/705497209](https://zhuanlan.zhihu.com/p/705497209)
+
+[Knowledge Adaptation from Large Language Model to Recommendation for Practical Industrial Application](https://arxiv.org/pdf/2405.03988)
+
+过往的llm+推荐的两种思路：
+
++ freeze LLM参数并适应推荐领域数据：将用户行为历史改写成文本prompt，直接丢给LLM生成top-k推荐结果，例如：
+  + [Chat-rec: Towards interactive and explainable llms-augmented recommender system](https://arxiv.org/pdf/2303.14524)
+  + [Large Language Models are Zero-Shot Rankers for Recommender Systems](https://arxiv.org/pdf/2305.08845v2)
+  + [Is ChatGPT a Good Recommender? A Preliminary Study](https://arxiv.org/pdf/2304.10149)
+  + [LLM-Rec: Personalized Recommendation via Prompting Large Language Models](https://arxiv.org/pdf/2307.15780)
+  + [Large Language Models are Competitive Near Cold-start Recommenders for Language- and Item-based Preferences](https://arxiv.org/pdf/2307.14225)
+  + [Is ChatGPT Fair for Recommendation? Evaluating Fairness in Large Language Model Recommendation](https://arxiv.org/pdf/2305.07609)
++ 在推荐领域的特定文本数据集上微调LLM：利用LLM捕捉用户行为序列，通过设计提示prompt，使LLM学习用户和物品之间的潜在关系，在预测任务中理解用户的偏好变化和行为模式，从而更好地预测用户可能感兴趣的物品，例如：
+  + [A Bi-Step Grounding Paradigm for Large Language Models in Recommendation Systems](https://arxiv.org/pdf/2308.08434)
+  + [Tallrec: An effective and efficient tuning framework to align large language model with recommendation](https://arxiv.org/pdf/2305.00447)
+  + [Llara: Aligning large language models with sequential recommenders](https://arxiv.org/pdf/2312.02445)
+  + [ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131)
+  + [Where to Go Next for Recommender Systems? ID- vs. Modality-based Recommender Models Revisited](https://arxiv.org/abs/2303.13835)
+
+上面两种方法可以看成是Rec-to-LLM，即将推荐这个target domain适配到LLM这个source domain上去，有如下缺点：
+
++ 将用户历史全丢给LLM不现实：一方面开源的LLM目前只支持1k(baichuan)-4k(llama)，不支持这么长的序列，另一方面复杂度和序列长度呈二次关系
++ 微调的方案可能会出现灾难性遗忘(catastrophic forgetting)：全参数微调，会让模型**丢失在预训练过程中学到的开放世界的知识**，而LoRA的效果也不好。原因：
+  + domain gap：两个领域有巨大的差别(profound gap)，[Continual Learning of Large Language Models: A Comprehensive Survey](https://arxiv.org/pdf/2404.16789)发现了全量参数微调会导致LLM对原有知识domain的严重的灾难性遗忘。
+  + 训练目标不对齐（misalignment）：LLM是next token prediction，学习大语料的general知识；finetune则主要是检索类的任务，强依赖用户-item的交互行为
+
+![rec2llm-llm2rec](../assets/rec2llm-llm2rec.png)
+
+本文提出了LEARN(Llm-driven knowlEdge Adaptive RecommeNdation)，实现了LLM-to-Rec，让LLM作为content extractor，推荐任务是训练目标
+
+![learn](../assets/learn.png)
+
+![learn-ceg-pch](../assets/learn-ceg-pch.png)
+
+
+## ACL2024的recgpt
+
+[RecGPT: Generative Pre-training for Text-based Recommendation](https://arxiv.org/pdf/2405.12715)
+
+## 快手的recgpt
+
+[RecGPT: Generative Personalized Prompts for Sequential Recommendation via ChatGPT Training Paradigm](https://arxiv.org/pdf/2404.08675)
+
+[https://zhuanlan.zhihu.com/p/699985083](https://zhuanlan.zhihu.com/p/699985083)
+
+## 蚂蚁的SLIM
+
+[蚂蚁集团在大模型推荐上的算法和应用](https://mp.weixin.qq.com/s/z4Q3Imuqoxw52TteaPbveQ?from=groupmessage&isappinstalled=0&scene=1&clicktime=1720679311&enterid=1720679311)
+
+[Can Small Language Models be Good Reasoners for Sequential Recommendation?](https://arxiv.org/pdf/2403.04260)
+
+![slim](../assets/slim.png)
+
++ 第一阶段：蒸馏大型 GPT模型到较小的模型（如LLAMA2/3），来增强推理能力。
+  + 通过预设的 prompt，大模型生成推荐理由，这些理由基于预定义的模板。接着，
+  + 使用简化的推理模板请求小模型进行推荐和理由生成。
++ 第二阶段：利用生成式Loss来微调小模型，使其具备推理能力。
+  + 模型训练完成，将通过prompt为用户行为提供T+1推理。
+  + 推理结果通过文本编码器（Text Encoder）转化为表征，这些表征将直接应用于线上模型。
+
+接下来，希望将LLAMA进一步压缩至更小的序列模型。在实验中遇到几个挑战：
+
++ 蒸馏过程中教师模型的知识可靠性存疑
++ 从语言模型到序列模型的蒸馏跨越了不同的模型类型，带来两个主要问题：
+  + 参数差距大，学生模型难以容纳教师模型的知识
+  + 语义不一致，因为序列模型与原始语言模型之间存在天然差异
+
+
+参考[Distillation Matters: Empowering Sequential Recommenders to Match the Performance of Large Language Models](https://arxiv.org/pdf/2405.00338v1)
+
+![dllm2rec](../assets/dllm2rec.png)
+
+包含两个关键部分：基于Ranking的蒸馏策略(Importance-aware Ranking Distillation)和Embedding对齐(Collaborative Embedding Distillation)
+
+核心在于排名蒸馏，采取了如下三个策略
+
++ 选择LLAMA2作为教师模型，认为其排名靠前的分值更高；
++ 考虑LLM生成的描述与目标物品（Target Item）的接近程度，增加其排名；
++ 若教师模型（Teacher Model）认为某物品是优质且排名靠前的，学生模型（Student Model）也会给予其更高排名。
+
+通过这些策略，设计了Ranking Loss，用于蒸馏小型序列模型
+
+XXX
+\mathcal{L}_d=-\sum_{s \in \Gamma} \sum_{i \in O^T} w_{s i} \log \sigma\left(\hat{y}_{s i}\right)
+XXX
+
+其中，$$O^T$$是teacher返回的topk结果，$$\Gamma$$是训练集的序列数，$$w_{\mathrm{s} i}=\gamma_p \cdot w_{\mathrm{s} i}^p+\gamma_c \cdot w_{\mathrm{s} i}^c+\gamma_o \cdot w_{\mathrm{s} i}^o$$，包括如下3部分：
+
++ position-aware weight：$$w_{\mathrm{s} i}^p \propto \exp \left(-r_i / \beta\right)$$，$$r_i$$是item $$i$$在teacher返回结果里的排名，$$\beta$$是一个超参
++ confidence-aware weight：$$w_{\mathrm{s} i}^c \propto \exp \left(-d_{\mathrm{s} i^*} / \beta\right)$$，且$$d_{\mathbf{s} i^*}=\left\|\mathbf{z}_{d_{\mathrm{s}}}-\mathrm{z}_{i^*}\right\|^2$$，$$\mathbf{z}_{d_{\mathrm{s}}}$$是生成的item描述，$$\mathrm{z}_{i^*}$$是ground truth的item描述，分别通过一个llm encoder得到向量
++ consistency-aware weight：同时被teacher和student推荐的item更有可能是一个强正例
+XXX
+w_{\mathrm{s} i}^o= \begin{cases}1, & i \in O^T \cap O^S \\ 0, & i \notin O^T \cap O^S\end{cases}
+XXX
+
+
+
+
+## 推荐生态系统
+
+[Modeling Recommender Ecosystems: Research Challenges at the Intersection of Mechanism Design, Reinforcement Learning and Generative Models](https://storage.googleapis.com/gweb-research2023-media/pubtools/pdf/e00cc0ce4480c15339b7798943560ad1a0d593ce.pdf)
+
+## 发现性
+
+[Diversifying by Intent in Recommender Systems](https://arxiv.org/pdf/2405.12327)，涨了dau等指标
+
+## ILM
+
+[Item-Language Model for Conversational Recommendation](https://arxiv.org/pdf/2406.02844)
+
+适用场景如下，{user}可以看成一种特殊的{item}，{history}是若干个item
+
+![ILM-tasks](../assets/ILM-tasks.png)
+
+参考BLIP-2（[Blip-2: bootstrapping language-image pre-training with frozen image encoders and large language models](https://arxiv.org/pdf/2301.12597)）提出的Q-former：
+
+![](../assets/2-stage-blip-2.png)
+
+引入了Q-former
+
+![ILM](../assets/ILM.png)
+
++ phase1：表示学习，交替训练如下两类表示学习
+    + item-text表示学习:
+        + query的tokens和item的cf emb过cross attn后，拿cls的输出得到v1
+        + text过attn得到v2
+        + v1和v2算item-text对比学习
+        + v2走一个自回归的任务(item grounded text generation)
+    + item-item表示学习
+        + query的tokens和item的cf emb过cross attn后，拿cls的输出得到v1
+        + query的tokens和item的cf emb过cross attn后，拿cls的输出得到v2
+        + v1和v2算item-item的对比学习
++ phase2：item-language model训练
+    + Q-former的item encoder经过一个linear输入到LLM中
+    + LLM参数freeze，只tune Q-former的参数和linear
+
+
+## embSum
+
+[EmbSum: Leveraging the Summarization Capabilities of Large Language Models for Content-Based Recommendations](https://www.arxiv.org/pdf/2405.11441)
+
+## LLM for 检索
+
+### ChatRetriever
+
+[ChatRetriever: Adapting Large Language Models for Generalized and Robust Conversational Dense Retrieval](https://arxiv.org/pdf/2404.13556v1)
+
+思想：原来输入的prompt是x，输出的response是y，添加t个特殊的```[emb_i]``` token，输入
+
+XXX
+s=[x_1, \ldots, x_N,\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right], y_1^{+}\ldots, y_M^{+},\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right]]
+XXX
+
+然后训练的时候，每个生成的$$y_i$$只看得到它前面的y，还有x后面的那t个特殊token：
+
+XXX
+\mathcal{L}_{\mathrm{S}}=-\frac{1}{M} \sum_{i=1}^M \log p\left(y_i^{+} \mid y_1^{+}, \ldots, y_{i-1}^{+}, \mathbf{x}_{1: t}\right)
+XXX
+
+![chatretriever](../assets/chatretriever.png)
+
+对应的[代码](https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247)
+
+```python
+def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: bool):
+    inputs.pop("sample_ids", None)
+    inputs.pop("input_texts", None)
+    
+    if model_type in ['bge', 'llm_embedder']:
+        output = model(**inputs)
+        embs = output.last_hidden_state[:, 0]
+    elif model_type in set(['qwen', 'qwen_chat', 'qwen_chat_cot', 'qwen_chat_lora', 
+        'qwen_chat_lora_eval', 'qwen_chat_cot_lora', 'qwen_chat_cot_lora_eval', 
+        'qwen15_chat_cot_lora_eval', 'repllama', 'llama', 
+        'repllama-train', 'repllama_v2', 'repllama_v2-train', 
+        'repllama_v2-continue_train', 'repllama_chat', 
+        'repllama_chat-train', 'repllama_chat_cot', 'repllama_chat_cot-train', 
+        'mistrial_cot-train', 
+        'mistrial_chat_cot-train', 'mistrial_cot', 'mistrial_chat_cot', 
+        'qwen15', 'qwen15_chat', 
+        'qwen15_chat_lora', 'qwen15_chat_cot_lora', 'qwen15_chat_cot']):        
+        inputs['output_hidden_states'] = True
+        output = model(**inputs)
+        hidden_states = output.hidden_states[-1]
+        last_token_indices = inputs['attention_mask'].sum(dim=1) - 1
+        embs = hidden_states[torch.arange(hidden_states.size(0)), last_token_indices]
+    elif model_type in ['e5_mistrial', 'e5_mistrial-train']:
+        outputs = model(**inputs)
+        embs = last_token_pool(outputs.last_hidden_state, inputs['attention_mask'])
+    elif model_type in ['ance', 'gtr', 'splade']:
+        embs = model(**inputs)
+    elif model_type in ['bert']:
+        output = model(**inputs)
+        embs = output.pooler_output
+    else:
+        raise NotImplementedError("Model type {} is not supported now.".format(model_type))    
+    
+    if normalize_emb:
+        embs = torch.nn.functional.normalize(embs, p=2, dim=-1)
+    return embs
+```
+
+### Instructor
+
+[One Embedder, Any Task: Instruction-Finetuned Text Embeddings](https://aclanthology.org/2023.findings-acl.71.pdf)
+
+基于google的GTR(Generalizable T5-based dense Retrievers)模型（[Large Dual Encoders Are Generalizable Retrievers](https://arxiv.org/pdf/2112.07899)）加了task instruction，用对比学习loss训练
+
+### LLM-Embedder
+
+[Retrieve Anything To Augment Large Language Models](https://arxiv.org/pdf/2310.07554)
+
+[https://github.com/FlagOpen/FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding)
+
+### RepLLaMA
+
+[Fine-Tuning LLaMA for Multi-Stage Text Retrieval](https://arxiv.org/pdf/2310.08319)
+
+### $$E5_{mistral-7b}$$
+
+[Improving Text Embeddings with Large Language Models](https://arxiv.org/pdf/2401.00368)
+
+### GRIT
+
+[Generative Representational Instruction Tuning](https://arxiv.org/pdf/2402.09906)
+
+[https://github.com/ContextualAI/gritlm](https://github.com/ContextualAI/gritlm)
+
+
+### LLM2Vec
+
+[LLM2Vec: Large Language Models Are Secretly Powerful Text Encoders](https://arxiv.org/pdf/2404.05961)
+
+[https://github.com/McGill-NLP/llm2vec](https://github.com/McGill-NLP/llm2vec)
+
++ 由3步组成：
+ + Bi-directional：把causal mask干掉，改成全1mask
+ + 引入masked next token predtion任务：类似mlm，mask掉中间的词，拿周围的词预测
+ + 对比学习simcse：前两步让模型有了bi-directional的能力，把所有词的emb通过pooling（实验表明mean pooling最有效）得到句子表示，同一句话里mask掉几个词的为正例，不同句子为负例，对比学习
+
+### GDR
+
+[小红书搜索：生成式检索的探索与实践](https://mp.weixin.qq.com/s/yApGxCGxjWnZQu8PoO9Qeg)
+
+[Generative Dense Retrieval: Memory Can Be a Burden](https://arxiv.org/abs/2401.10487)
+
+## RecExplainer
+
+[RecExplainer: Aligning Large Language Models for Explaining Recommendation Models](https://arxiv.org/pdf/2311.10947)
+
+[https://github.com/microsoft/RecAI](https://github.com/microsoft/RecAI)
+
+
+## 其他
+
+[WWW 2024 | 工业界大模型在搜广推场景应用](https://zhuanlan.zhihu.com/p/686259205)
+
+[LLM+Recommendation大模型推荐近期进展|含WWW, SIGIR, AAAI等顶会文章](https://mp.weixin.qq.com/s/m8DMgSt_r-HVNHHzA8ceVw)
+
++ baidu：[Representation Learning with Large Language Models for Recommendation](https://arxiv.org/pdf/2310.15950.pdf)
++ huawei：[ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131.pdf)
++ microsoft：[Knowledge-Augmented Large Language Models for Personalized Contextual Query Suggestion](https://arxiv.org/pdf/2311.06318.pdf)
++ 阿里：[Modeling User Viewing Flow using Large Language Models for Article Recommendation](https://arxiv.org/pdf/2311.07619.pdf)
++ linkedin：[Collaborative Large Language Model for Recommender Systems](https://arxiv.org/pdf/2311.01343.pdf)
+
+[ClickPrompt: CTR Models are Strong Prompt Generators for Adapting Language Models to CTR Prediction](https://arxiv.org/pdf/2310.09234.pdf)
+
+[SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
+
+[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347.pdf)
+
+
+[LLM落地淘宝电商搜索场景，显著提升长尾query改写效果](https://mp.weixin.qq.com/s/GmogjAHt0Hrwd8RmtOqS7A)
+
+[Large Language Model based Long-tail Query Rewriting in Taobao Search](https://arxiv.org/pdf/2311.03758)
+
+recsys23的[Leveraging Large Language Models for Sequential Recommendation](https://arxiv.org/pdf/2309.09261) 还有一篇[Improving Sequential Recommendations with LLMs](https://arxiv.org/pdf/2402.01339)，对应的代码：[https://github.com/dh-r/LLM-Sequential-Recommendation/tree/RecSys23](https://github.com/dh-r/LLM-Sequential-Recommendation/tree/RecSys23)
+
+
+meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Models](https://arxiv.org/pdf/2307.15780)
+
+[生成式推荐系统近期研究工作梳理](https://mp.weixin.qq.com/s/u2kVzgv8ntUIkyCZZXIYWg)
+
+[腾讯广告基于混元大模型的生成式召回落地实践](https://mp.weixin.qq.com/s/ClmjgRzpNIVjX0PrikS3qg)
+
+### time-LLM
+
+[谁说大象不能起舞! 重编程大语言模型实现跨模态交互的时序预测 | ICLR 2024](https://mp.weixin.qq.com/s/K04haPMcbKiS6OkCihXAqQ)
+
+[Time-LLM: Time Series Forecasting by Reprogramming Large Language Models](https://arxiv.org/pdf/2310.01728.pdf)
+
+[https://github.com/KimMeen/Time-LLM](https://github.com/KimMeen/Time-LLM)
+
+将**时序预测任务**转换成一个可以由 LLMs 有效解决的**语言任务**，成功激活了llm做**高精度时序推理**的能力。
+
++ 时序输入重编程
++ 提示做前缀
+
+### NoteLLM
+
+[WWW'24 | 小红书NoteLLM: 大语言模型用于I2I笔记推荐](https://mp.weixin.qq.com/s/jcj4jKaEIg-L264uZgYuAw)
+
+[NoteLLM: A Retrievable Large Language Model for Note Recommendation](https://arxiv.org/pdf/2403.01744)
+
+3个任务：
+
++ I2I笔记推荐任务: 给定目标笔记,基于LLM从内容池中找出top-k个相似笔记。
++ 主题标签生成任务:基于笔记的标题和笔记的内容, 使用LLM生成对应的k个主题标签。
++ 类目生成任务:基于笔记的标题,内容,主题标签使用LLM生成对应的类目。
+
+笔记压缩prompt：
+
+```
+[bos]<instruction><input notes>The compression word is:"[EMB]".<output guidance><output>[eos]
+```
+
+其中的[EMB]是一个特殊token，
+
+![notellm](../assets/notellm.png)
+
+#### 生成式对比学习
+
+生成式对比学习(Generative-Contrastive Learning,GCL)
+
++ 通过统计共现信息，同时打压热门，得到item pair对
++ 由于LLMs的自回归特性, 将[EMB]的**前一个token**对应的**最后一个隐层输出**经过一个linear layer得到一个d维向量
+
+对于batchsize=B的batch来说，有B个pair对，即2B个item，那么对它们算一个对比学习的loss，其中的sim是cos相似度：
+
+XXX
+L_{c l}=-\frac{1}{2 B} \sum_{i=1}^{2 B} \log \frac{e^{\operatorname{sim}\left(\boldsymbol{n}_i, \boldsymbol{n}_i^{+}\right) \cdot e^\tau}}{\sum_{j \in[2 B] \backslash\{i\}} e^{\operatorname{sim}\left(\boldsymbol{n}_i, \boldsymbol{n}_j\right) \cdot e^\tau}}
+XXX
+
+#### 协同监督微调
+
+协同监督微调(Collaborative Supervised Fine-Tuning,CSFT)将主题标签生成任务和类目生成任务联合训练，一个batch里40%的样本执行主题标签生成任务，剩下的60%做类目预测任务，然后走正常的语言模型自回归任务：
+
+XXX
+L_{g e n}=-\frac{1}{T} \sum_{i=1}^T \log \left(p\left(o_i \mid o_{<i}, input\right)\right)
+XXX
+
+然后将这两个loss加权求和($$\alpha = 0.01$$)：
+
+XXX
+L=\frac{L_{c l}+\alpha L_{g e n}}{1+\alpha},
+XXX
+
+
+
+## C-Star
+
+[Shopping Trajectory Representation Learning with Pre-training for E-commerce Customer Understanding and Recommendation](https://assets.amazon.science/c3/ee/721654a94b0a800cb7c534ba5bd8/shopping-trajectory-representation-learning-with-pre-training-for-e-commerce-customer-understanding-and-recommendation.pdf)
+
+Customer Shopping TrAjectory Representation Learning framework (C-STAR) 
+PR-Graph（product relational graph）：$$\mathcal{G}=(\mathcal{T}, \mathcal{E}, \mathcal{V})$$
+
++ $$\mathcal{T}$$：所有节点，15k，可能是类目之类的，应该不是商品id
++ $$\mathcal{E}$$：所有边，417k，强关联的product才有边，例如共同购买
++ $$\mathcal{V}$$ ：每个节点对应的d维向量，$$\mathcal{V} \in \mathbb{R}^{|\mathcal{T}| \times d}$$。
+
+用户的长度为$$N_i$$的历史序列就可以看成 $$\mathcal{T}_i \subseteq \mathcal{T} \text {, i.e., } \mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i}$$，并构成了子图$$\mathcal{G}_i \subseteq \mathcal{G}$$
+
+基于最优运输理论（Optimal Transport theory）：将一个分布的质量（mass）搬到另一个分布的最小成本
+
+对于$$\boldsymbol{X} \sim P, \boldsymbol{X} \in \mathbb{R}^d$$，假设有一个函数$$f: \mathbb{R}^d \rightarrow \mathbb{R}$$，即$$f$$能把$$x$$从$$P$$分布变成另一个分布，称$$f_{\#} P$$是$$P$$的一个推前（push forward）。两个分布P和Q间的Wasserstein Distance定义为：
+
+XXX
+W_p(P, Q)=\left(\inf _{f \in T P(P, Q)} \int\|x-f(x)\|^p d P(x)\right)^{\frac{1}{p}}, p \geq 1
+XXX
+
+1维分布能直接算出最优距离，但对于高维分布来讲，没法直接算出来最优距离，SW距离(sliced-WD)通过将高维分布投影到一维，计算一维上的Wasserstein距离，然后对多个投影方向的距离取平均，从而降低计算复杂度。具体公式如下，其中$$g_{\boldsymbol{\theta}}(\boldsymbol{x})=\boldsymbol{\theta}^{\top} \boldsymbol{x}$$，而$$\boldsymbol{\theta} \in \mathbb{S}^{d-1}$$是一个d维的单位向量（unit vector，模长为1），$$\mathbb{S}^{d-1}$$是d维向量的超球面，$$g_{\theta_{\#}} P$$是$$P$$用$$g_{\boldsymbol{\theta}}$$的推前。这个距离同时满足正定、对称、三角不等式。
+
+XXX
+S W_p(P, Q)=\left(\int_{\mathbb{S}^{d-1}}\left(W_p\left(g_{\theta \#} P, g_{\theta \#} Q\right)\right)^p d \theta\right)^{\frac{1}{p}}
+XXX
+
+为了建模如下两种相似度：
+
++ inter-trajectory distribution similarity: 不同用户的行为序列间的分布相似度
++ intra-trajectory semantic correlation: 一个序列内部的语义相关性 
+
+
+小结：参考最优传输理论（Optimal Transport），即把每个购物路径视为一个概率分布，然后通过计算这些分布之间的距离来衡量路径之间的相似性。Wasserstein距离可以视为将一个分布“移动”到另一个分布所需的“工作量”，其中“工作量”由移动每个元素所需的“成本”（通常是欧几里得距离）决定。
+高维空间中直接计算Wasserstein距离很难，采用了Sliced-Wasserstein距离，将高维分布投影到多个一维分布上，然后将这些一维分布之间的Wasserstein距离进行pooling，来近似原始高维Wasserstein距离。
+
+Inter-SE和Intra-CE简单总结如下：
+
++ Inter-trajectory similarity encoding(inter-SE)：把原分布的n维特征向量映射成1维，参考分布（可以是原来特征的向量的avg之类的）也映射成1维，计算映射后的向量与参考向量的距离（可以证明这个距离就约等于sliced-WD），作为inter-SE
++ Intra-trajectory correlation encoder(intra-CE)：取每个item在graph里的邻居，用GCN得到其表示，然后和inter-SE一样也映射成1维，算映射后的向量与inter-SE里的参考向量的距离，作为intra-SE
+
+### 序列间
+
+对于$$M$$个序列，定义probability measures $$\left[P_i\right]_{i=1}^M$$，每个序列相对应的特征序列是$$\mathcal{V}_i=\left[v_{t_n^i} \in \mathbb{R}^d\right]_{n=1}^{N_i}$$，假设这些特征的底层分布是$$P_i$$，而对应的经验（离散）分布$$\widehat{P}_i$$对应的经验CDF是
+
+XXX
+F_{\widehat{P}_i}(x)=\frac{1}{N_i} \sum_{n=1}^{N_i} \delta\left(x \geq v_{t_n^i}\right)
+XXX
+
+其中$$\delta(\cdot)$$如果输入是0就返回1，否则返回0。认为$$\widehat{P}_i \approx P_i$$，所以后面直接用$$\widehat{P}_i$$来表示$$P_i$$。
+
+为了衡量两个序列分布的相似性，希望比较输入的序列分布和一个可训练的参考分布（当成序列特征空间的『原点』）。引入参考分布$$P_0$$，对应的特征list $$\mathcal{V}_0=\left[v_{t_n^0} \in \mathbb{R}^d\right]_{n=1}^N$$，每个元素是可训练的emb
+
+目标就是找到$$\left(P_0, P_i\right)$$的距离，然后指导对应的序列表示$$\left(E_0, E_i\right)$$的学习
+
+先进行一维WD的分布slice的计算，假设$$g_\theta(\boldsymbol{x})$$是一个线性映射，定义$$P_i^{\boldsymbol{\theta}}:=g_{\boldsymbol{\theta} \#} P_i$$为$$P_i$$关于$$g_\theta$$的一个slice
+
+
+#### Proposition 1
+
+从reference slice $$P_0^{\boldsymbol{\theta}}$$到输入分布slice $$P_i^{\boldsymbol{\theta}}$$的$$f^*$$可以表示为：
+
+XXX
+f^*\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_i^{\boldsymbol{\theta}}\right):=F_{P_i^{\boldsymbol{\theta}}}^{-1}\left(F_{P_0^{\boldsymbol{\theta}}}\left(x^{\boldsymbol{\theta}}\right)\right), \quad x^{\boldsymbol{\theta}} \in \mathcal{V}_0^{\boldsymbol{\theta}}
+XXX
+
+对应的CDF是$$F_{P_0^{\boldsymbol{\theta}}}\left(x^{\boldsymbol{\theta}}\right)=\frac{1}{N} \sum_{n=1}^N \delta\left(x^{\boldsymbol{\theta}}-\boldsymbol{\theta}^{\top} .\right.v_{t_n^0})$$是单调递增的。
+
+#### Proposition 2
+
+如果我们知道按升序排序的$$\mathcal{V}_0^\theta$$(因为这原始embedding的slice，是一维的，所以可以排序)对应的每个输入$$x^\theta$$的排名$$\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)$$，而且$$N=N_i$$，那么最优的transport plan $$f^*$$可以表示为：
+
+XXX
+f^*\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_i^{\boldsymbol{\theta}}\right)=\operatorname{argmin}_{x^{\prime} \in \mathcal{V}_i^\theta}\left(\tau\left(x^{\prime} \mid \mathcal{V}_i^\theta\right)=\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)\right)
+XXX
+
+
+#### inter-trajectory similarity encoding
+
+对于每个分布slice的pair对$$\left(P_0^{\boldsymbol{\theta}}, P_i^{\boldsymbol{\theta}}\right)$$，最优的transport plan产生了最短的一组距离$$W_p\left(P_0^{\boldsymbol{\theta}}, P_i^{\boldsymbol{\theta}}\right)$$。$$\boldsymbol{\theta}_s$$表示从$$\mathbb{S}^{d-1}$$中采样的第$$s$$个映射的参数，那么对原始序列分布的累积SW距离如下：
+
+XXX
+S W_p\left(P_0, P_i\right) \approx\left(\frac{1}{S} \sum_{s=1}^S W_p\left(P_0^{\theta_s}, P_i^{\theta_s}\right)^p\right)^{\frac{1}{p}}
+XXX
+
+用$$\Theta=\left\{\boldsymbol{\theta}_s\right\}_{s=1}^S$$表示采样的映射参数集合，首先将$$P_0$$的embedding参考$$\mathcal{V}_0=\left[\boldsymbol{v}_{t_n^0}\right]_{n=1}^N$$里的向量$$O \in \mathbb{R}^{N \cdot S}$$进行如下编码，其中$$\text { || }$$表示innermost维度的concat操作：
+
+XXX
+\boldsymbol{O}:=\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N \boldsymbol{\theta}_s^{\mathrm{T}} \boldsymbol{v}_{t_n^0}
+XXX
+
+给定输入特征list $$\mathcal{V}_i$$，定义inter-se（inter-trajectory similarity encoder）如下：
+
+XXX
+\operatorname{Inter}-\operatorname{SE}\left(\mathcal{V}_i \mid \Theta\right):=\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N f^*\left(\boldsymbol{\theta}_s^{\top} v_{t_n^0} \mid \mathcal{V}_i^{\boldsymbol{\theta}_s}\right)-\boldsymbol{O}
+XXX
+
+其中$$E_i \in \mathbb{R}^{N \cdot S}$$是编码后的表示
+
+定理1：对于任意两个输入序列及其对应分布$$P_i$$和$$P_j$$，他们对应的编码后表示$$E_i$$和$$E_j$$，有：
+
++ $$\left\|E_i-E_j\right\|_p \approx S W_p\left(P_i, P_j\right)$$
++ $$\left\|E_i\right\|_p \approx S W_p\left(P_i, P_0\right)$$
+
+### 序列内
+
+对于序列$$\mathcal{G}_i$$里的每个节点而言，它的邻居节点特征集合$$\mathcal{N}_i=\left[v_{t_\alpha^i}\right]_{t_\alpha^i \in N g h\left(\mathcal{T}_i\right)}$$，其中$$N g h\left(\mathcal{T}_i\right)$$是$$\mathcal{T}_{\boldsymbol{i}}$$的元素在PR-Graph里的所有邻居。对于$$\mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i}$$里的每个节点$$t_n^i$$，先将它在第$$l$$次迭代的邻居特征向量summarize起来：
+
+XXX
+v_{N g h\left(t_n^i\right)}^{(l)}=\sum_{t \in N g h\left(t_n^i\right)} \frac{w_{t, t_n^i}^{(l-1)}}{\sqrt{|N g h(t)|+1} \sqrt{\left|N g h\left(t_n^i\right)\right|+1}} v_{t_n^i}^{(l-1)}
+XXX
+
+其中$$w_{t, t_n^i}^{(l-1)} \in \mathbb{R}$$，$$v_{t_n^i}^{(0)}$$通过$$\mathcal{V}_i$$中的$$v_{t_n}^i$$初始化，定义如下的layer-wise邻居特征list：
+
+XXX
+\mathcal{N}_i^{(l)}=\left[v_{N g h\left(t_n^i\right)}^{(l)}\right]_{t_n^i \in \mathcal{T}_i}
+XXX
+
+最终定义Intra-Trajectory Correlation Encoder（Intra-CE）如下：
+
+XXX
+\operatorname{Intra-CE}\left(\mathcal{V}_i \mid \Theta\right):=\sum_{l=1}^L \alpha_l\left(\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N f^*\left(\boldsymbol{\theta}_s^{\top} \boldsymbol{v}_{t_n^0} \mid \mathcal{N}_i^{(l)}\right)-\boldsymbol{O}\right)
+XXX
+
+其中$$\alpha_l$$是第$$l$$个系数，简单地定义为$$\alpha_l=1/L$$。节点的emb一般通过邻居信息迭代更新，例如$$v_{t_n^i}^{(l)}=\operatorname{AGG}\left(v_{N g h\left(t_n^i\right)}^{(l)}, v_{t_n^i}^{(l-1)}\right)$$，AGG就是GNN的聚合函数。
+
+Inter-SE的输出是$$\boldsymbol{E}_{\boldsymbol{i}}$$，Intra-CE的输出是$$E_i^{\prime}$$，最终整个序列的表示是二者的融合$$E_i^{\star}=\left[\boldsymbol{E}_i, \boldsymbol{E}_i^{\prime}\right] \in \mathbb{R}^{2 N S}$$
+
+### C-Star预训练策略
+
+两个loss：
+
++ 序列间的element overlaps：两个序列的overlap越多，越相似。用$$\Omega_i$$表示与$$\mathcal{T}_i$$相关的ranking list，检索出一个序列pair $$\left(\mathcal{T}_j, \mathcal{T}_k\right) \in \Omega_i$$，使得$$\left|\mathcal{T}_i \cap \mathcal{T}_j\right|>\left|\mathcal{T}_i \cap \mathcal{T}_k\right|$$，即$$i$$与$$j$$的交集比$$i$$与$$k$$的大，loss如下：
+
+XXX
+\mathcal{L}_1=\sum_{i=1}^M \sum_{\left(\mathcal{G}_j, \mathcal{G}_k\right) \in \Omega_i}^H \max \left(0,\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_j^{\star}\right\|_2-\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_k^{\star}\right\|_2+\text { margin }\right)
+XXX
+
++ 序列内的contextual relalations：同一个序列里的是正样本，不同序列的是负样本，loss如下：
+
+XXX
+\mathcal{L}_2=\sum_{i=1}^M \sum_{t^{+} \in \mathcal{T}_i, t^{-} \notin \mathcal{T}_i}^H \max \left(0, \boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{+}}-\boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{-}}+\text {margin }\right)
+XXX
+
+整体loss，其中$$\|\Delta\|_2^2$$是正常的L2正则：
+
+XXX
+\mathcal{L}=\mathcal{L}_1+\mu \mathcal{L}_2+\mu^{\prime}\|\Delta\|_2^2
+XXX
+
+![c-star-algo](../assets/c-star-algo.png)
+
+## 多模态推荐系统
+
+[多模态推荐系统新突破，一文读懂前沿进展！](https://mp.weixin.qq.com/s/YDna7dvC55yWL61r8PljoQ)
+
+[Multimodal Recommender Systems: A Survey](https://arxiv.org/pdf/2302.03883)
+
+[https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems](https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems)
+
+## CCF-LLM
+
+[CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
