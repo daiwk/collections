@@ -27,6 +27,7 @@ change_format llm_alignment llm_alignment 1.5
 change_format llm_multimodal llm_multimodal 1.6
 change_format llm_recommend llm_recommend 1.7
 change_format llm_o1 llm_o1 1.8
+change_format llm_others llm_others 1.9
 
 cat ./posts/pre.md  \
         ./posts/pre_llm.md.raw \
