@@ -21,7 +21,27 @@ function change_format()
 
 change_format pre_llm pre_llm 1.1
 change_format llm_intro llm_intro 1.2
+change_format llm_archs llm_archs 1.3
+change_format llm_sft_and_usages llm_sft_and_usages 1.4
+change_format llm_alignment llm_alignment 1.5
+change_format llm_multimodal llm_multimodal 1.6
+change_format llm_recommend llm_recommend 1.7
+change_format llm_o1 llm_o1 1.8
+
+cat ./posts/pre.md  \
+        ./posts/pre_llm.md.raw \
+        ./posts/llm_intro.md.raw \
+        ./posts/llm_archs.md.raw \
+        ./posts/llm_sft_and_usages.md.raw \
+        ./posts/llm_alignment.md.raw \
+        ./posts/llm_multimodal.md.raw \
+        ./posts/llm_recommend.md.raw \
+        ./posts/llm_o1.md.raw \
+        ./posts/llm_others.md.raw \
+> ./posts/llm_aigc.md.raw
+
 change_format llm_aigc llm_aigc 1
+
 change_format recommend recommend 2
 change_format full collections 9
 change_format int-ml int-ml 8

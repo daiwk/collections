@@ -4,7 +4,6 @@
 
 [https://github.com/daiwk/llms_new](https://github.com/daiwk/llms_new)
 
-
 # 从word2v到Transformer
 
 ## LSTM
@@ -3006,804 +3005,6 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [https://github.com/QwenLM/Self-Lengthen](https://github.com/QwenLM/Self-Lengthen)
 
-# 训练框架
-
-mfu(Model Flops Utilization)模型算力利用率是分布式训练效率的优化目标。
-
-一个模型定义好之后，前向和反向的**计算量**就是固定（不考虑动态图的话）的，除以**每个step的latency**就是mfu。以nanoGPT中的代码为例：
-
-```python
-def estimate_mfu(self, fwdbwd_per_iter, dt):
-    """ estimate model flops utilization (MFU) in units of A100 bfloat16 peak FLOPS """
-    # first estimate the number of flops we do per iteration.
-    # see PaLM paper Appendix B as ref: https://arxiv.org/abs/2204.02311
-    N = self.get_num_params()
-    cfg = self.config
-    L, H, Q, T = cfg.n_layer, cfg.n_head, cfg.n_embd//cfg.n_head, cfg.block_size
-    flops_per_token = 6*N + 12*L*H*Q*T
-    flops_per_fwdbwd = flops_per_token * T # 计算量（T是序列长度）
-    flops_per_iter = flops_per_fwdbwd * fwdbwd_per_iter # 每个step的flops * 每一次更新梯度要多少个step
-    # express our flops throughput as ratio of A100 bfloat16 peak flops
-    flops_achieved = flops_per_iter * (1.0/dt) # per second 一轮的计算量/一轮的耗时
-    flops_promised = 312e12 # A100 GPU bfloat16 peak flops is 312 TFLOPS
-    mfu = flops_achieved / flops_promised
-    return mfu
-
-##...
-def xxx():
-    # timing and logging
-    t1 = time.time()
-    dt = t1 - t0 ## 一次gradient_accumulation_steps后 更新梯度
-    t0 = t1
-    if iter_num % log_interval == 0 and master_process:
-        # get loss as float. note: this is a CPU-GPU sync point
-        # scale up to undo the division above, approximating the true total loss
-        # (exact would have been a sum)
-        lossf = loss.item() * gradient_accumulation_steps
-        if local_iter_num >= 5: # let the training loop settle a bit
-            mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
-            running_mfu = mfu if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu
-        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%")
-    iter_num += 1
-    local_iter_num += 1
-
-```
-
-一般分布式训练参数量越多->卡数越多->通信占比越高->MFU越低，所以要优化通信效率。
-
-## 优化设置
-
-+ batchsize：通常用比较大的batchsize，提高训练**稳定性**和**吞吐量**。GPT-3和PaLM在训练时动态增加batshzie，最终达到百万级别，batchsize**从3.2w逐渐增加到320w个token**。
-+ 优化器：
-    + Adam和[AdamW](https://arxiv.org/pdf/1711.05101v2.pdf)：基于**一阶梯度优化的低阶矩自适应估计**，用于GPT-3等，超参$$\beta_1=0.9, \beta_2=0.95, \epsilon=10^{-8}$$。
-    + [Adafactor](https://arxiv.org/pdf/1804.04235.pdf)：在训练过程中节省显存，用于PaLM、T5等，超参$$\beta_1=0.9, \beta_2=1.0-k^{-0.8}$$
-+ 学习率：
-    + 预热（warm-up）：在训练的**初始0.1%到0.5%**的steps中，用**线性预热策略**逐渐增加学习率到最大值（$$5 \times 10^{-5}$$到$$1 \times 10^{-4}$$之间，GPT-3是$$6 \times 10^{-5}$$）
-    + 衰减（decay）：后续steps中**余弦衰减**，逐渐降低到**最大值的约10%**，直到收敛
-+ 稳定训练：
-    + 权重衰减和梯度裁剪：**权重衰减率**设为0.1，**梯度裁剪阈值**设为1.0
-    + 梯度检查点：容易出现loss突增，PaLM和OPT从**发生突增前的一个ckpt重新开始训练**，并**跳过可能有问题的数据**
-    + 缩减emb梯度：GLM发现emb的异常梯度通常会导致loss突增，故**缩减emb梯度**以缓解
-
-
-
-
-## 混合精度训练
-
-&nbsp;
-
-### FP16
-
-&nbsp;
-
-[Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
-
-![mixed-precision-training](../assets/mixed-precision-training.png)
-
-+ **推理（预测）**：所有参数都是fp16，相对fp32，存储变成一半，速度提升1倍。
-+ **训练**：参数和梯度用**fp32存储**，但是在**计算前**会**转成fp16**，**计算后**再**转回fp32**。主要为了**防止溢出**，loss要乘一个scale，然后在fp16的梯度要除以scale。
-
-以adam优化器为例，对于每1个参数来说，fp16的训练占用20bytes显存，包括（详见：[https://zhuanlan.zhihu.com/p/519264636](https://zhuanlan.zhihu.com/p/519264636)）
-
-+ fp16的参数：2bytes
-+ fp16的梯度：2bytes
-+ 优化器状态（optimizer state）：16bytes
-    + fp32参数（4bytes）
-    + fp32梯度（4bytes）([zero论文](https://arxiv.org/pdf/1910.02054v2.pdf)里提到的，用于reduce之类操作时需要的fp32内存，以1.5B的gpt2为例，需要6GB内存，倒推回来，就需要6/1.5byte=4byte)
-    + fp32 variance【历史梯度平方和】（4bytes）
-    + fp32 momentum【历史梯度滑动平均】（4bytes）
-
-而在预测时只要存一个fp16的参数(2bytes)就行，所以**预测的显存是训练的1/10**，对应1.3B参数量的gpt2-xl，训练要占用$$20B\times 1.3\times 10^9=26GB$$，预测只要2.6GB
-
-### BF16
-
-&nbsp;
-
-FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
-
-[https://blog.csdn.net/orangerfun/article/details/133106913](https://blog.csdn.net/orangerfun/article/details/133106913)
-
-![fp16-bf16](../assets/fp16-bf16.png)
-
-bf16的指数位和fp32一样多
-
-## 可扩展的训练
-
-需要**提高训练吞吐量**和**加载更大模型到显存中**
-
-### 3D并行
-
-&nbsp;
-
-如下三种并行（数据并行、流水线并行、张量并行）的组合
-
-#### 数据并行（Data Parallelism）
-
-&nbsp;
-
-将**模型参数和优化器状态复制**到多个GPU上，每个GPU只处理分给它的数据，不同GPU算出的梯度进行**聚合**得到batch的梯度，再更新**所有GPU上的模型**。高度可扩展，增加GPU数就能提高训练吞吐。
-
-torch的ddp
-
-```python
-from torch.nn.parallel import DistributedDataParallel as DDP
-
-ddp = int(os.environ.get('RANK', -1)) != -1 # is this a ddp run?
-if ddp:
-    init_process_group(backend=backend)
-    ddp_rank = int(os.environ['RANK'])
-    ddp_local_rank = int(os.environ['LOCAL_RANK'])
-    device = f'cuda:{ddp_local_rank}'
-    torch.cuda.set_device(device)
-    # this process will do logging, checkpointing etc.
-    master_process = ddp_rank == 0
-    seed_offset = ddp_rank # each process gets a different seed
-
-# wrap model into DDP container
-if ddp:
-    model = DDP(model, device_ids=[ddp_local_rank])
-```
-
-可以一起搞的技巧——**梯度累积**，当显存不够跑较大的batchsize时，训练效果可能会很差，可以先跑**多个mini-batch的前向和反向**，把梯度累积起来，再**更新一次参数**，在数学上等价于**跑一个较大的batchsize**。
-
-```python
-# forward backward update, with optional gradient accumulation to simulate larger batch size
-# and using the GradScaler if data type is float16
-for micro_step in range(gradient_accumulation_steps):
-    if ddp:
-        # in DDP training we only need to sync gradients at the last micro step.
-        # 最后一个micro step才要sync梯度
-        model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps - 1)
-    with ctx:
-        logits, loss = model(X, Y)
-    loss.backward() # 只是计算梯度，并不真的更新
-optimizer.step()
-optimizer.zero_grad(set_to_none=True)
-```
-
-也可以用torch的no_sync()：
-
-```python
-ddp = torch.nn.parallel.DistributedDataParallel(model, pg)
-with ddp.no_sync():
-    for input in inputs:
-        ddp(input).backward()  # no synchronization, accumulate grads
-ddp(another_input).backward()  # synchronize grads
-```
-
-#### 流水线并行（Pipeline Parallelism）
-
-&nbsp;
-
-将LLM的**不同层**分配到多个GPU上，一般Transformer模型中会**将连续的层加载到同一GPU上**，以减少在GPU间传输已计算的隐层状态或梯度的成本。简单的实现会导致**GPU利用率降低**，因为每个GPU要**等前一个完成计算**，导致不必要的**气泡开销**，如下方法可以提高流水线效率：
-
-+ GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
-+ PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
-
-##### 1) GPipe
-
-&nbsp;
-
-![gpipe](../assets/gpipe.png)
-
-Gpipe主要思想：
-
-+ 图a：把模型不同layers顺序放在4张卡上，0->3卡流水线前向计算loss，3->0再反向计算gradients
-+ 图b：从时间顺序上看，**每张卡有3/4时间是空闲的**，GPU利用率非常低
-+ 图c：配合**梯度累积**，多个mini-batch可以同时跑在流水线里面，每张卡则有3/(3+4)的时间空闲（Bubble）
-
-流水线并行的问题是中间有**Bubble**。当卡数$$K$$，梯度累积次数$$M$$，则$$Bubble=(K-1)/(K-1+M)$$
-
-GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效果，输入和输出共享vocab embedding
-
-##### 2) 重计算
-
-&nbsp;
-
-即gradient checkpointing，重计算(recomputation)是对于pipeline parallelism非常重要的一个优化，最开始在[Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/pdf/1604.06174.pdf)一文中提到，在**flash attention**中也用了。
-
-因为要做pipeline+梯度累积，前向过程中的**激活值**要保存，以留给反向过程使用，保存很多份的激活值对显存造成了很大压力。recomputation(也叫**checkpointing**)用时间来换空间（反向的时候进行一次激活值的重计算），可以缓解显存问题。
-
-pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/checkpoint.py)。大致逻辑是包了一个```autograd.Function```，前向时保存一些inputs/rng_state(RNG state是Random Number Generator state的缩写，**随机数生成器的状态**。在深度学习和其他计算任务中，随机数生成器用于初始化参数、决定正则化技术如dropout的行为，以及在训练过程中选择样本等。RNG状态是指随机数生成器当前的内部状态，它可以用来在需要时重现或恢复特定的随机数序列，确保实验或模型训练的可重复性)，反向时重新计算
-
-深度更深的时候，一般效果更好
-
-cpu offload：层数很深的时候，可能可以把一些计算挪到cpu上去，再搞回gpu
-
-#### 张量并行（Tensor Parallelism）
-
-&nbsp;
-
-[Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/pdf/1909.08053.pdf)
-
-**分解LLM的张量（参数矩阵）**，例如矩阵乘法$$Y=X A$$，$$A$$可以按列分成两个子矩阵$$A_1$$和$$A_2$$，从而改为$$Y=\left[X A_1, X A_2\right]$$，将$$A_1$$和$$A_2$$**放到不同GPU上**，然后就可能通过跨GPU通信将两个GPU的结果merge。
-
-+ Megatron-LM：能扩展到更高维度的张量
-+ Colossal-AI：
-    + 为更高维度的张量实现了张量并行，[An efficient 2d method for training super-large deep learning models](https://arxiv.org/pdf/2104.05343.pdf)、[Tesseract: Parallelize the tensor parallelism efficiently](https://arxiv.org/pdf/2105.14500.pdf)和[Maximizing Parallelism in Distributed Training for Huge Neural Networks](https://arxiv.org/pdf/2105.14450.pdf)
-    + 特别针对序列数据提出**序列并行**([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，详见下一节
-
-参考[https://zhuanlan.zhihu.com/p/622036840](https://zhuanlan.zhihu.com/p/622036840)
-
-![tensor parallelism](../assets/tensor-parallelism.png)
-
-原始矩阵乘法是```[m,k], [k, n] -> [m, n]```，有如下两种矩阵分解的等效：
-
-+ **列并行（column parallelism）**：第一个矩阵不变，第二个矩阵**竖着劈成两半**，即$$B=[B_1, B_2]$$
-    + ```[m,k], [k, n/2] -> [m, n/2]```
-    + ```concat([m, n/2], [m, n/2]) -> [m, n]```
-+ **行并行（row parallelism）**：两个矩阵都横着劈成两半，即$$A=\left[\begin{array}{l}A_1 \\A_2\end{array}\right],B=\left[\begin{array}{l}B_1 \\B_2\end{array}\right]$$。从2推广到k，其实就是**split-k算法**，把两个矩阵都分成k个小块，两两相乘后，最后reduce_sum一下。因为每个线程计算的矩阵更小了，开销小，可以通过加大线程数来提升并行效率。
-    + ```[m, k/2], [k/2, n] -> [m, n]```
-    + ```elemwise_add([m, n], [m, n]) -> [m, n]```
-
-**行并行**还可以扩展到**推荐**里，假设user有k/2维，item也是k/2维，concat在一起，然后过一个k*d的mlp，即```[1,k] * [k, d] -->[1,d]```，那么可以按行并行的方法，拆成2个```[1, k/2]```和```[k/2,d]```相乘，再相加。这样item侧的```[k/2,d]```可以把全库缓存过来，在线实时算user，排序时把对应item向量抽出来，和user加起来就行
-
-![megatron-transformer](../assets/megatron-transformer.png)
-
-megatron对transformer进行了如下优化：
-
-+ MLP第一个nn按**列分割**，第二个nn按**行分割**，中间省了一次通信
-+ Attention按照head来分割(类似**列分割**)，后面接的nn按**行分割**，中间也省了一次通信
-
-图里面的通信算子
-
-+ $$f$$是前向identity，反向all-reduce
-+ $$g$$是前向all-reduce，反向identity
-
-综合来看，一层transformer layer如下
-
-![megatron-transformer-1layer](../assets/megatron-transformer-1layer.png)
-
-具体的计算量可以参考[https://colossalai.org/docs/features/1D_tensor_parallel/#introduction](https://colossalai.org/docs/features/1D_tensor_parallel/#introduction)：
-
-![clossal-ai-efficiency](../assets/clossal-ai-efficiency.png)
-
-### ZeRO
-
-&nbsp;
-
-[ZeRO: Memory Optimization Towards Training A Trillion Parameter Models](https://arxiv.org/pdf/1910.02054v2.pdf)
-
-fp16那一节中，optimizer state的显存占用，在**前向**和**反向**的时候都**不用**，只有最后**optimizer step**的时候才用。
-
-===>zero的思想：把optimizer state**分shard存在不同的卡上**，只在**最后gather时才用**。
-
-ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并行**中的**内存冗余**问题。数据并行其实并不需要每个GPU都存整个模型、梯度和优化器参数，ZeRO在每个GPU仅保存部分数据，当需要其余数据时从其他GPU检索。3种解决方案：
-
-+ 优化器状态分区：zero1，对显存最大开销的部分进行shard
-+ 梯度分区：zero2
-+ 参数分区：zero3
-
-前两种方案不会增加通信开销，第三种方案增加约50%通信开销，但能节省和gpu数成比例的内存。
-
-![zero](../assets/zero.png)
-
-
-详见官方博客：[ZeRO & DeepSpeed: New system optimizations enable training models with over 100 billion parameters](https://www.microsoft.com/en-us/research/blog/zero-deepspeed-new-system-optimizations-enable-training-models-with-over-100-billion-parameters/)
-
-```python
-import deepspeed
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument("--local_rank", type=int, default=0)
-deepspeed.add_config_arguments(parser)
-args = parser.parse_args()
-
-model, optimizer, _, _ = deepspeed.initialize(args=args,
-                                              model=model,
-                                              model_parameters=model.parameters())
-X, Y = get_batch('train')
-logits, loss = model(X, Y)
-model.backward(loss)
-model.step()
-```
-
-需要指定deepspeed的配置：
-
-```python
-{
-  "train_batch_size": 64,
-  "gradient_accumulation_steps": 1,
-  "optimizer": {
-    "type": "Adam",
-    "params": {
-      "lr": 6e-4,
-      "weight_decay": 1e-2,
-      "betas": [0.9, 0.95]
-    }zer
-  },
-  "scheduler": {
-    "type": "WarmupLR",
-    "params": {
-        "warmup_min_lr": 6e-5,
-        "warmup_max_lr": 6e-4,
-        "warmup_num_steps": 2000
-    }
-  },
-  "bf16": {
-    "enabled": true
-  },
-  "zero_optimization": {
-    "stage": 1
-  }
-}
-```
-
-启动：
-
-```shell
-deepspeed --num_gpus=8 train.py --deepspeed_config xx.json
-```
-
-facebook的开源库**FSDP(full sharded data parallel)**([Fairscale: A general purpose modular pytorch library for high performance and large scale training](https://github.com/facebookresearch/fairscale))里基于pytorch实现了类似ZeRO的技术。
-
-```python
-from torch.distributed.fsdp import FullyShardedDataParallel as FSDP, ShardingStrategy
-model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
-```
-
-还有一些paper也能降低内存，如
-
-[Reducing activation recomputation in large transformer models](https://arxiv.org/pdf/2205.05198.pdf)
-
-[Training deep nets with sublinear memory cost](https://arxiv.org/pdf/1604.06174.pdf)
-
-### 序列并行
-
-&nbsp;
-
-**序列并行**([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
-
-[Reducing Activation Recomputation in Large Transformer Models](https://arxiv.org/pdf/2205.05198.pdf)这个也是
-
-对比TP：
-
-![tensor-parallel](../assets/tensor-parallel.png)
-
-SP：
-
-![sequence-parallel](../assets/sequence-parallel.png)
-
-### 综合对比各种并行
-
-&nbsp;
-
-几个缩写：params（p）/gradients(g)/optimizer states(os)/activation(a)
-
-| 并行方法 | 显存效率 | 计算效率 | 限制 | 
-|---|---|---|---|
-| DP（数据并行） | p/g/os都复制在每张卡上，显存效率很低| 计算和通信可以overlap，如果都在一个minipod内扩展性很好；梯度累积可以提高计算效率| batchsize不能太大，否则模型效果有损；batchsize/dp不能太小，不然打不满tensorcore|
-| ZeRO（解决DP的显存冗余） |zero1/2/3把os/g/p分别shard到每张卡上，显存效率很高| 需要做prefetch来减少通信对计算效率的影响| 同DP |
-| PP（流水线并行） | 切分p，提高显存效率；a需要存多次，降低显存效率| 通信次数最少，只发生在多层之间的切分点，但是有Bubble| 每个Stage之间需要负载均衡，对模型结构和卡数有限制|
-| TP（张量并行） | p/g/os/a被shard在每张卡上，显存效率也很高；有些层如layernorm是复制的，可以用sequence parallel优化| 梯度不需要同步，提高计算效率；每层插入了4次通信，而且是跟计算有依赖的，会降低计算效率；每层的计算量进行了切分，也会降低计算效率| 一般是单机内8卡使用nvlink时用TP |
-
-把神经网络看成是输入$$X$$和权重$$W$$的矩阵乘法$$XW$$，那么，**DP和PP其实是对$$X$$的拆分**，而**TP则是对$$W$$的拆分**
-
-整体对比可以看
-
-![megatron-results](../assets/megatron-results.png)
-
-一般这么整合：
-
-+ 把机器分成N组，**不同组之间用DP**
-+ 一组机器有M台机器，**不同机器之间用PP**
-+ 一台机器有K张卡，**不同卡之间用TP**
-
-## 编译优化
-
-pytorch的TorchDynamo
-
-[https://pytorch.org/docs/stable/torch.compiler_deepdive.html](https://pytorch.org/docs/stable/torch.compiler_deepdive.html)
-
-最简单的用法```torch.compile()```
-
-![TorchDynamo](../assets/TorchDynamo.png)
-
-## flash attention
-
-[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)
-
-FlashAttention其实是对$$softmax(QK^T)V$$的一种加速实现。
-
-一般的实现：需要先 用矩阵$$C$$存$$QK^T$$的结果，然后对$$C$$按行做softmax得到新的$$C$$，再用$$C$$乘以$$V$$得到最后结果。
-
-FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量，通过分块计算，**让临时变量总是可以放在cache里**，从而
-
-+ 减少Global Memory的大小
-+ 加速attenttion的计算，因为读cache比访问Global Memory快多了。
-
-## flexattention
-
-[新PyTorch API：几行代码实现不同注意力变体，兼具FlashAttention性能和PyTorch灵活性](https://mp.weixin.qq.com/s/8uoZZf4hNSLQYLKFr95jTw?poc_token=HAynt2ajgl8xoDMpMWq0t8R-ubMokh17VRDwmacE)
-
-## 训练稳定性
-
-学习率+batchsize的一些经验：
-
-[https://zhuanlan.zhihu.com/p/64864995](https://zhuanlan.zhihu.com/p/64864995)
-
-另外，swiglu会让act_norm变大，得加一些方式让模型能训动，一种方法是把weight_decay调小：
-
-+ loss会变高==>[https://poe.com/s/Cv6lODy94INz1ozQKJYJ](https://poe.com/s/Cv6lODy94INz1ozQKJYJ)，正则项变大，L+norm中的L相对影响变小了，所以会变大，即为了防止过拟合，但可能eval的时候会更好
-+ act_norm会降低20-30%，因为正则项更重要了，会让权重更接近0
-
-层数加深时的稳定性调优：[Transformers Get Stable: An End-to-End Signal Propagation Theory for Language Models](https://arxiv.org/pdf/2403.09635)
-
-## 数据/训练策略
-
-### 综述
-
-[A Survey on Data Selection for Language Models](https://arxiv.org/pdf/2402.16827)
-
-### 高质量数据
-
-[Llama架构比不上GPT2？神奇token提升10倍记忆？](https://mp.weixin.qq.com/s/TMkn6yMTUrrGhxCQnd7_2g)
-
-[Physics of Language Models: Part 3.3, Knowledge Capacity Scaling Laws](https://arxiv.org/pdf/2404.05405.pdf)
-
-制造**人工合成数据**，通过控制数据中知识的数量和类型，来严格调控数据中的**知识比特数 (bits)**。使用不同大小和架构的 LLM 在人工合成数据上进行训练，并给出数学定理，来精确计算训练好的模型从数据中**学到了多少比特的知识**。有如下几个发现：
-
-+ 如果**训练时间充足**，不论使用何种模型架构，模型的**存储效率**均可以达到**2bit/param**（即平均每个模型参数可以存储2比特的信息）。而且发现transformer中的知识**并非主要存储在MLP层**，因为即便移除所有MLP层，模型仍能达到 2bit/param 的存储效率。
-+ 如果**训练时间不充足**，GPT2模型能比LlaMA/Mistral存储超过30%的知识，主要是因为**GatedMLP(MoE)**会导致**训练不稳定**，因此对同样的知识，需要**更长的训练时间**。
-+ **压缩/量化**的影响：将训练好的模型从float32/16压缩到int8，对知识的存储**毫无影响**。LLM可以达到“**信息论极限**”的**1/4**——因为int8只有8比特，但平均每个参数可以存储2比特的知识。
-+ **高质量数据**的影响：如果我们的预训练数据中，有1/8来自高质量知识库（如百度百科），7/8来自低质量数据（如common crawl或论坛对话，甚至是完全随机的垃圾数据），会发现：
-    + 即使对高质量数据的训练时间保持一致，**低质量数据的存在本身**可能会让模型对**高质量知识的存储量下降20倍**，即便将高质量数据的训练时间延长 3倍，知识储量仍会降低3倍
-    + 解法：只需给所有的预训练数据**加上自己的网站域名token即可**，模型的知识存储量可以立即回升10倍，模型**不需要任何先验知识**来识别哪些网站上的知识是金子，而可以在预训练过程中，自动发现高质量知识的网站，并**自动为这些高质量数据腾出存储空间**。
-
-### DSIR
-
-[Data Selection for Language Models via Importance Resampling](https://arxiv.org/pdf/2302.03169)
-
-[https://github.com/p-lambda/dsir](https://github.com/p-lambda/dsir)
-
-大致思路：
-
-输入语料样本$$z_i$$
-
-+ 学习语料的特征分布（target data是$$\hat{p}$$，raw data是$$\hat{q}$$）
-+ 利用语料样本衡量样本间的重要性权重$$w_i=\frac{\hat{p}\left(z_i\right)}{\hat{q}\left(z_i\right)}$$
-+ 根据权重进行无放回的采样，兼顾多样性和分布一致性
-
-### DoReMi
-
-[DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining](https://arxiv.org/pdf/2305.10429) NeurIPS2023的spotlight
-
-[https://github.com/sangmichaelxie/doremi](https://github.com/sangmichaelxie/doremi)
-
-![doremi](../assets/doremi.png)
-
-+ 使用初始的reference domain weights来训练一个小的reference model $$p_{ref}$$，可以用简单的方式合并，例如用样本量加权
-+ 用reference mnodel来指导一个小的proxy model的训练，proxy model使用group DRO（group distributionally robust optimization）来得到domain weights，即让最大的loss gap最小化
-XXX
-\min _\theta \max _{\alpha \in \Delta^k} L(\theta, \alpha):=\sum_{i=1}^k \alpha_i \cdot\left[\frac{1}{\sum_{x \in D_i}|x|} \sum_{x \in D_i} \ell_\theta(x)-\ell_{\mathrm{ref}}(x)\right]
-XXX
-  + domain weights: $$\alpha$$
-  + proxy model参数：$$\theta$$
-  + domain语料：$$D$$
-  + $$\ell_\theta(x)=-\log p_\theta(x)$$
-+ 使用tune完的domain weights来训练大模型
-+ 可以重复这个过程，用新的domain weights重新训练ref_model，迭代下去
-
-
-### dataset decomposition
-
-[Dataset Decomposition: Faster LLM Training with Variable Sequence Length Curriculum](https://arxiv.org/pdf/2405.13226)
-
-LLM的训练语料大都是相同长度的sequence，一般是多篇文档concat到一起，然后再切分成等长的sequence，有可能一个sequence里有不同的毫不相关的文档，这样算attention就不太适合了。方法
-
-+ 将数据划分为多个桶，每个桶中的序列长度均为$$2^i$$，保证每个序列仅来自同一个文档
-+ 训练时可以给定一个固定的batch_len，即直接从某个桶里采样，也可以用特定长度策略，从多个桶里采样，组合为特定长度
-
-![dataset-decomposition](../assets/dataset-decomposition.png)
-
-### RHO-1
-
-[RHO-1: Not All Tokens Are What You Need](https://arxiv.org/pdf/2404.07965)
-
-[https://github.com/microsoft/rho](https://github.com/microsoft/rho)
-
-![rho-1](../assets/rho-1.png)
-
-把语料中的无用token从loss里删了
-
-![slm](../assets/slm.png)
-
-+ 训练ref_model，挑选少量高质量语料，建模语料的整体loss分布情况
-+ 拿ref_model在整个预训练语料上计算每个token的ppl
-+ 训练LLM，只关注得分比较高的tokens
-
-### infinit lr
-
-[Simple and Scalable Strategies to Continually Pre-train Large Language Models](https://arxiv.org/pdf/2403.08763)
-
-linear warmup and cosine decay schedule：
-
-+ linear warmup阶段：前$$T_{warmup}$$步线性增加学习率，即直到时间步$$t_{\text {ann }}=T_{\text {warmup }}$$，学习率设置为$$\eta_t=\eta_{\max } \cdot \frac{t}{T_{\text {warmup }}}$$
-+ annealing阶段：对于接下来的$$T_{ann}$$个时间步，改为cosine annealing方式，即对于时间步$$t_{e n d}=T_{a n n}+t_{a n n}$$：
-XXX
-\eta_t=\eta_{\min }+\frac{\left(\eta_{\max }-\eta_{\min }\right)}{2} \cdot\left(\cos \left(\pi \cdot \frac{t-t_{a n n}}{t_{\text {end }}-t_{\text {ann }}}\right)+1\right)
-XXX
-
-infinit lr decay：
-
-+ linear warmup阶段：同上
-+ cool down阶段：学习率逐渐decay到一个常量$$\eta_{\text {const }}$$
-+ 常数阶段：学习率保持为这个常数，该阶段结束时的ckpt可以用于新数据集的继续pretrain
-+ annealing阶段：逐渐减小到最小值
-
-XXX
-\eta_t=\left\{\begin{array}{lll}
-\eta_{\text {max }} \cdot \frac{t}{T_{\text {warmup }}} & t \in\left[0, t_{c d}\right] & \text { (warm-up) } \\
-f_{c d}(t) & t \in\left(t_{c d}, t_{\text {const }}\right] & \text { (cooldown) } \\
-\eta_{\text {const }} & t \in\left(t_{\text {const }}, t_{\text {ann }}\right] & \text { (constant) } \\
-\eta_{\text {const }} \cdot\left(\frac{\eta_{\min }}{\eta_{\text {const }}}\right)^{\frac{t-t_{\text {ann }}}{t_{\text {end }}-t_{\text {ann }}}} & t \in\left(t_{\text {ann }}, t_{\text {end }}\right] & \text { (annealing) }
-\end{array}\right.
-XXX
-
-
-### JEST
-
-[DeepMind新方法：训练时间减少13倍，算力降低90%](https://mp.weixin.qq.com/s/8rkE6Rp2yw31gw0XhFcZXg)
-
-[Data curation via joint example selection further accelerates multimodal learning](https://arxiv.org/pdf/2406.17711)
-
-现有的大规模预训练数据筛选方法速度慢、成本高，并且没有考虑到批次组成或训练过程中数据相关性的变化，这限制了多模态学习中的效率提升。因此，DeepMind团队研究了**联合选择数据批次**而非单个样本是否能够加速多模态学习。
-
-+ 挑选好的数据批次比单独挑选数据点更为有效
-+ 在线模型近似可用于更高效地过滤数据
-+ 可以引导小型高质量数据集以利用更大的非精选数据集
-
-JEST能够在仅使用10%的FLOP预算的情况下超越之前的最先进水平。
-
-
-## 硬件的可能影响
-
-[https://zhuanlan.zhihu.com/p/701623664?utm_psn=1784500156948938753](https://zhuanlan.zhihu.com/p/701623664?utm_psn=1784500156948938753)
-
-大模型训练（如InternLM-7B）实践中，曾经遇到过在A100集群上表现正常的代码和数据，迁移到A800集群却出现了模型准确度下降和梯度范数爆炸的问题。经过调查，我们发现这与**A800和A100 GPU的NVLink带宽差异**有关。通过在两个集群上使用nanoGPT模型进行的对照实验，我们确认了精度差异的原因在于**NCCL的Ring all-reduce算法实现**。进一步实验表明，设置环境变量NCCL_ALGO=Tree或使用gloo作为backend可以解决精度对齐问题。最终，我们提出了一个解决方案：**在A800集群上设置NCCL_ALGO=Tree**，强制使用Tree算法进行all-reduce操作，从而避免了Ring算法带来的精度问题，使得A800集群的模型能够正常收敛，并且与A100集群的训练精度对齐。
-
-
-## fastpersist
-
-[DeepSpeed 最新力作：大模型CKPT速度提升116倍](https://mp.weixin.qq.com/s/Gc-rMSMqWzycpn2Ye8lnIQ)
-
-[FastPersist: Accelerating Model Checkpointing in Deep Learning](https://arxiv.org/pdf/2406.13768)
-
-
-## pathways
-
-[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
-
-下载了，[pdf](../assets/LLM/pathways.pdf)
-
-这个回答分析得不错
-[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
-
-Google的大规模稀疏模型设计
-
-[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
-
-代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
-
-## megatron-lm
-
-[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
-
-## deepspeed
-
-[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
-
-
-## ray-llm
-
-[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
-
-
-## Google的几大LLM加速工具
-
-### maxdiffusion
-
-[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
-
-### JetStream
-
-[https://github.com/google/JetStream](https://github.com/google/JetStream)
-
-### maxtext
-
-[https://github.com/google/maxtext](https://github.com/google/maxtext)
-
-## Fire-Flyer AI-HPC
-
-[用60%成本干80%的事，DeepSeek分享沉淀多年的高性能深度学习架构](https://mp.weixin.qq.com/s/-OeGYiN15vzwv0INPfIU5w)
-
-[Fire-Flyer AI-HPC: A Cost-Effective Software-Hardware Co-Design for Deep Learning](https://arxiv.org/pdf/2408.14158)
-
-
-# 推理框架
-
-## KVCache
-
-kvcache的量化：[https://zhuanlan.zhihu.com/p/691537237](https://zhuanlan.zhihu.com/p/691537237)
-
-一些结论：
-
-+ 浅层KV cache相比于深层KV cache，对模型的重要性更大。
-
-## 量化
-
-[ZeroQuant-V2: Exploring Post-training Quantization in LLMs from Comprehensive Study to Low Rank Compensation](https://arxiv.org/pdf/2303.08302.pdf)和[Compression of generative pre- trained language models via quantization](https://arxiv.org/pdf/2203.10705.pdf)
-
-+ int8量化：[LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale](https://arxiv.org/pdf/2208.07339.pdf)
-+ int4量化：GLM中用了
-
-
-## PPL.LLM
-
-[高性能 LLM 推理框架的设计与实现](https://mp.weixin.qq.com/s/4o86rMuburB8jcbU0aYC7g)
-
-[https://github.com/openppl-public/ppl.llm.serving](https://github.com/openppl-public/ppl.llm.serving)
-
-
-## vLLM
-
-[https://github.com/vllm-project/vllm](https://github.com/vllm-project/vllm)
-
-[Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/pdf/2309.06180.pdf)
-
-## 并行推理方法
-
-[Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
-
-[3万字详细解析清华大学最新综述工作：大模型高效推理综述](https://mp.weixin.qq.com/s/U9ESiWehnoKc9SnDz7DVKg)
-
-[万字综述大模型高效推理：无问芯穹与清华、上交最新联合研究全面解析大模型推理优化](https://mp.weixin.qq.com/s/7LKfamTnCyFih6_grf9m3A)
-
-[A Survey on Efficient Inference for Large Language Models](https://arxiv.org/pdf/2404.14294)
-
-[LLM后端推理引擎性能大比拼](https://mp.weixin.qq.com/s/dPd84P_VdKog8v2IcHDOrQ)
-
-## LayerSkip
-
-[LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding](https://arxiv.org/pdf/2404.16710)
-
-[https://github.com/facebookresearch/LayerSkip](https://github.com/facebookresearch/LayerSkip)
-
-## speculative-decoding
-
-[Accelerating Large Language Model Decoding with Speculative Sampling](https://arxiv.org/pdf/2302.01318)
-
-## medusa
-
-decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
-
-[https://sites.google.com/view/medusa-llm](https://sites.google.com/view/medusa-llm)
-
-用了tree-attention
-
-[https://github.com/FasterDecoding/Medusa](https://github.com/FasterDecoding/Medusa)
-
-## CLLM
-
-[3倍生成速度还降内存成本，超越Medusa2的高效解码框架终于来了](https://mp.weixin.qq.com/s/Aw_bjXIQFdOJvN22UvW9UA)
-
-[CLLMs：Consistency Large Language Models](https://arxiv.org/pdf/2403.00835)
-
-## fasterTransformer/TensorRTLLM
-
-[https://github.com/NVIDIA/FasterTransformer](https://github.com/NVIDIA/FasterTransformer)
-
-[https://github.com/NVIDIA/TensorRT-LLM/](https://github.com/NVIDIA/TensorRT-LLM/)
-
-remove padding的逻辑如下，把整个batch的数据变成一行数据，加上offset标注是哪一条样本的
-
-![effective_transformer](../assets/effective_transformer.png)
-
-直接有这么个脚本：
-
-[https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/recurrentgemma/convert_checkpoint.py](https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/recurrentgemma/convert_checkpoint.py)
-
-[https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py](https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py)
-
-关于plugin：
-
-+ 自己加plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton)
-+ 已有plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins](https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins)
-
-一些参数设置：
-
-[https://www.bentoml.com/blog/tuning-tensor-rt-llm-for-optimal-serving-with-bentoml](https://www.bentoml.com/blog/tuning-tensor-rt-llm-for-optimal-serving-with-bentoml)
-
-```--multiple_profiles``` enables multiple TensorRT optimization profiles in the built engines, it will benefits the performance especially when GEMM plugin is disabled, because more optimization profiles help TensorRT have more chances to select better kernels. However, this feature will increase the engine build time.
-
-### trt-llm显存泄露解决
-
-因为用到了kvcache，py的runner的memory管理有问题，改成cpp的runner就行了
-
-[https://github.com/NVIDIA/TensorRT-LLM/issues/283](https://github.com/NVIDIA/TensorRT-LLM/issues/283)
-
-[https://nvidia.github.io/TensorRT-LLM/reference/memory.html#python-runtime-not-recommended-to-be-used](https://nvidia.github.io/TensorRT-LLM/reference/memory.html#python-runtime-not-recommended-to-be-used)
-
-## huggingface/text-generation-inference
-
-[https://huggingface.co/docs/text-generation-inference/index](https://huggingface.co/docs/text-generation-inference/index)
-
-[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/causal_lm.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/causal_lm.py)
-
-[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/seq2seq_lm.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/seq2seq_lm.py)
-
-[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py)
-
-
-## block transformer
-
-[KAIST-AI | 提出Block Transformer架构，大幅提升推理速度和内存效率，20倍增益！](https://mp.weixin.qq.com/s/H9qETDRwR9Q_3fG-XkBeeQ)
-
-[Block Transformer: Global-to-Local Language Modeling for Fast Inference](https://arxiv.org/pdf/2406.02657)
-
-[https://github.com/itsnamgyu/block-transformer](https://github.com/itsnamgyu/block-transformer)
-
-## MoonCake
-
-[月之暗面kimi底层推理系统方案揭秘](https://mp.weixin.qq.com/s/4SBRZKAjqcS2MkvnFPey_g)
-
-[Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving](https://github.com/kvcache-ai/Mooncake/blob/main/Mooncake-v1.pdf)
-
-[https://github.com/kvcache-ai/Mooncake/tree/main](https://github.com/kvcache-ai/Mooncake/tree/main)
-
-
-## MInference(microsoft)
-
-[MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention](https://arxiv.org/pdf/2407.02490)
-
-![minference](../assets/minference.png)
-
-## Sarathi-Serve(microsoft)
-
-[OSDI 2024系列-低延迟大模型推理服务1](https://mp.weixin.qq.com/s/lfIyLnR2l5KBeuvPzeLBnQ)
-
-[Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve](https://arxiv.org/pdf/2403.02310)
-
-## SGLang(uc berkerley)
-
-[贾扬清点赞：3K star量的SGLang上新，加速Llama 405B推理秒杀vLLM、TensorRT-LLM](https://mp.weixin.qq.com/s/FYwguU3USf12Wb5HXaHH3A)
-
-[吞吐量提升5倍，联合设计后端系统和前端语言的LLM接口来了](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650904838&idx=4&sn=81a9f09f54f1b89b98fdc3d6be11ce51&chksm=84e45d78b393d46e38fed5d7e1952c9f465488b6953b63206a077f9d886c1104028b06c987c4&scene=21#wechat_redirect)
-
-[https://github.com/sgl-project/sglang/](https://github.com/sgl-project/sglang/)
-
-[SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/pdf/2312.07104)
-
-[三个程序员奋战三天重写推理堆栈，Grok-2 mini直接提速两倍，马斯克亲发贺电](https://mp.weixin.qq.com/s/prC4R1Jjhc7r6mMXv_ZNcw)
-
-## LazyLLM
-
-[苹果让大模型学会偷懒：更快吐出第一个token，准确度还保住了](https://mp.weixin.qq.com/s/mAbiJEKd2zzNmt1pmGfmnQ)
-
-[LazyLLM: Dynamic Token Pruning for Efficient Long Context LLM Inference](https://arxiv.org/pdf/2407.14057)
-
-## 各框架对比
-
-[最佳LLM推理引擎？TensorRT vs vLLM vs LMDeploy vs MLC-LLM](https://mp.weixin.qq.com/s/AnqaukudFukLYSi55w9r2Q)
-
-## DuoAttention
-
-[MIT韩松团队长上下文LLM推理高效框架DuoAttention：单GPU实现330万Token上下文推理](https://mp.weixin.qq.com/s/avM4jketPuNGzx-8tZvxIQ)
-
-[DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads](https://arxiv.org/abs/2410.10819)
-
-[https://github.com/mit-han-lab/duo-attention](https://github.com/mit-han-lab/duo-attention)
-
-# 算子加速
-
-## Triton
-
-[天下苦英伟达久矣！PyTorch官方免CUDA加速推理，Triton时代要来？](https://mp.weixin.qq.com/s/6gkPA-xc7GsltM1Ywui_XQ)
-
-## Mirage
-
-[告别CUDA无需Triton！Mirage零门槛生成PyTorch算子，人均GPU编程大师？](https://mp.weixin.qq.com/s/M3WFt17QErAt46VuqkFjFQ)
-
 
 # 典型LLM简介
 
@@ -5061,7 +4262,803 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 ## 小结
 
-[开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
+[开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)# 训练框架
+
+mfu(Model Flops Utilization)模型算力利用率是分布式训练效率的优化目标。
+
+一个模型定义好之后，前向和反向的**计算量**就是固定（不考虑动态图的话）的，除以**每个step的latency**就是mfu。以nanoGPT中的代码为例：
+
+```python
+def estimate_mfu(self, fwdbwd_per_iter, dt):
+    """ estimate model flops utilization (MFU) in units of A100 bfloat16 peak FLOPS """
+    # first estimate the number of flops we do per iteration.
+    # see PaLM paper Appendix B as ref: https://arxiv.org/abs/2204.02311
+    N = self.get_num_params()
+    cfg = self.config
+    L, H, Q, T = cfg.n_layer, cfg.n_head, cfg.n_embd//cfg.n_head, cfg.block_size
+    flops_per_token = 6*N + 12*L*H*Q*T
+    flops_per_fwdbwd = flops_per_token * T # 计算量（T是序列长度）
+    flops_per_iter = flops_per_fwdbwd * fwdbwd_per_iter # 每个step的flops * 每一次更新梯度要多少个step
+    # express our flops throughput as ratio of A100 bfloat16 peak flops
+    flops_achieved = flops_per_iter * (1.0/dt) # per second 一轮的计算量/一轮的耗时
+    flops_promised = 312e12 # A100 GPU bfloat16 peak flops is 312 TFLOPS
+    mfu = flops_achieved / flops_promised
+    return mfu
+
+##...
+def xxx():
+    # timing and logging
+    t1 = time.time()
+    dt = t1 - t0 ## 一次gradient_accumulation_steps后 更新梯度
+    t0 = t1
+    if iter_num % log_interval == 0 and master_process:
+        # get loss as float. note: this is a CPU-GPU sync point
+        # scale up to undo the division above, approximating the true total loss
+        # (exact would have been a sum)
+        lossf = loss.item() * gradient_accumulation_steps
+        if local_iter_num >= 5: # let the training loop settle a bit
+            mfu = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
+            running_mfu = mfu if running_mfu == -1.0 else 0.9*running_mfu + 0.1*mfu
+        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%")
+    iter_num += 1
+    local_iter_num += 1
+
+```
+
+一般分布式训练参数量越多->卡数越多->通信占比越高->MFU越低，所以要优化通信效率。
+
+## 优化设置
+
++ batchsize：通常用比较大的batchsize，提高训练**稳定性**和**吞吐量**。GPT-3和PaLM在训练时动态增加batshzie，最终达到百万级别，batchsize**从3.2w逐渐增加到320w个token**。
++ 优化器：
+    + Adam和[AdamW](https://arxiv.org/pdf/1711.05101v2.pdf)：基于**一阶梯度优化的低阶矩自适应估计**，用于GPT-3等，超参$$\beta_1=0.9, \beta_2=0.95, \epsilon=10^{-8}$$。
+    + [Adafactor](https://arxiv.org/pdf/1804.04235.pdf)：在训练过程中节省显存，用于PaLM、T5等，超参$$\beta_1=0.9, \beta_2=1.0-k^{-0.8}$$
++ 学习率：
+    + 预热（warm-up）：在训练的**初始0.1%到0.5%**的steps中，用**线性预热策略**逐渐增加学习率到最大值（$$5 \times 10^{-5}$$到$$1 \times 10^{-4}$$之间，GPT-3是$$6 \times 10^{-5}$$）
+    + 衰减（decay）：后续steps中**余弦衰减**，逐渐降低到**最大值的约10%**，直到收敛
++ 稳定训练：
+    + 权重衰减和梯度裁剪：**权重衰减率**设为0.1，**梯度裁剪阈值**设为1.0
+    + 梯度检查点：容易出现loss突增，PaLM和OPT从**发生突增前的一个ckpt重新开始训练**，并**跳过可能有问题的数据**
+    + 缩减emb梯度：GLM发现emb的异常梯度通常会导致loss突增，故**缩减emb梯度**以缓解
+
+
+
+
+## 混合精度训练
+
+&nbsp;
+
+### FP16
+
+&nbsp;
+
+[Mixed precision training](https://arxiv.org/pdf/1710.03740.pdf)提出了用16位float（FP16）训练，减少**内存使用和通信开销**。A100等GPU具有的**FP16计算单元**是**FP32的两倍**，故FP16的计算效率能进一步提高。
+
+![mixed-precision-training](../assets/mixed-precision-training.png)
+
++ **推理（预测）**：所有参数都是fp16，相对fp32，存储变成一半，速度提升1倍。
++ **训练**：参数和梯度用**fp32存储**，但是在**计算前**会**转成fp16**，**计算后**再**转回fp32**。主要为了**防止溢出**，loss要乘一个scale，然后在fp16的梯度要除以scale。
+
+以adam优化器为例，对于每1个参数来说，fp16的训练占用20bytes显存，包括（详见：[https://zhuanlan.zhihu.com/p/519264636](https://zhuanlan.zhihu.com/p/519264636)）
+
++ fp16的参数：2bytes
++ fp16的梯度：2bytes
++ 优化器状态（optimizer state）：16bytes
+    + fp32参数（4bytes）
+    + fp32梯度（4bytes）([zero论文](https://arxiv.org/pdf/1910.02054v2.pdf)里提到的，用于reduce之类操作时需要的fp32内存，以1.5B的gpt2为例，需要6GB内存，倒推回来，就需要6/1.5byte=4byte)
+    + fp32 variance【历史梯度平方和】（4bytes）
+    + fp32 momentum【历史梯度滑动平均】（4bytes）
+
+而在预测时只要存一个fp16的参数(2bytes)就行，所以**预测的显存是训练的1/10**，对应1.3B参数量的gpt2-xl，训练要占用$$20B\times 1.3\times 10^9=26GB$$，预测只要2.6GB
+
+### BF16
+
+&nbsp;
+
+FP16可能导致**计算精度的损失**从而影响模型性能，BLOOM里用**BF16**(brain floating point)比FP16**分配更多指数位**和**更少的有效位**，在准确性方面更好
+
+[https://blog.csdn.net/orangerfun/article/details/133106913](https://blog.csdn.net/orangerfun/article/details/133106913)
+
+![fp16-bf16](../assets/fp16-bf16.png)
+
+bf16的指数位和fp32一样多
+
+## 可扩展的训练
+
+需要**提高训练吞吐量**和**加载更大模型到显存中**
+
+### 3D并行
+
+&nbsp;
+
+如下三种并行（数据并行、流水线并行、张量并行）的组合
+
+#### 数据并行（Data Parallelism）
+
+&nbsp;
+
+将**模型参数和优化器状态复制**到多个GPU上，每个GPU只处理分给它的数据，不同GPU算出的梯度进行**聚合**得到batch的梯度，再更新**所有GPU上的模型**。高度可扩展，增加GPU数就能提高训练吞吐。
+
+torch的ddp
+
+```python
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+ddp = int(os.environ.get('RANK', -1)) != -1 # is this a ddp run?
+if ddp:
+    init_process_group(backend=backend)
+    ddp_rank = int(os.environ['RANK'])
+    ddp_local_rank = int(os.environ['LOCAL_RANK'])
+    device = f'cuda:{ddp_local_rank}'
+    torch.cuda.set_device(device)
+    # this process will do logging, checkpointing etc.
+    master_process = ddp_rank == 0
+    seed_offset = ddp_rank # each process gets a different seed
+
+# wrap model into DDP container
+if ddp:
+    model = DDP(model, device_ids=[ddp_local_rank])
+```
+
+可以一起搞的技巧——**梯度累积**，当显存不够跑较大的batchsize时，训练效果可能会很差，可以先跑**多个mini-batch的前向和反向**，把梯度累积起来，再**更新一次参数**，在数学上等价于**跑一个较大的batchsize**。
+
+```python
+# forward backward update, with optional gradient accumulation to simulate larger batch size
+# and using the GradScaler if data type is float16
+for micro_step in range(gradient_accumulation_steps):
+    if ddp:
+        # in DDP training we only need to sync gradients at the last micro step.
+        # 最后一个micro step才要sync梯度
+        model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps - 1)
+    with ctx:
+        logits, loss = model(X, Y)
+    loss.backward() # 只是计算梯度，并不真的更新
+optimizer.step()
+optimizer.zero_grad(set_to_none=True)
+```
+
+也可以用torch的no_sync()：
+
+```python
+ddp = torch.nn.parallel.DistributedDataParallel(model, pg)
+with ddp.no_sync():
+    for input in inputs:
+        ddp(input).backward()  # no synchronization, accumulate grads
+ddp(another_input).backward()  # synchronize grads
+```
+
+#### 流水线并行（Pipeline Parallelism）
+
+&nbsp;
+
+将LLM的**不同层**分配到多个GPU上，一般Transformer模型中会**将连续的层加载到同一GPU上**，以减少在GPU间传输已计算的隐层状态或梯度的成本。简单的实现会导致**GPU利用率降低**，因为每个GPU要**等前一个完成计算**，导致不必要的**气泡开销**，如下方法可以提高流水线效率：
+
++ GPipe：[Gpipe: Efficient training of giant neural networks using pipeline parallelism](https://arxiv.org/pdf/1811.06965.pdf)
++ PipeDream：[PipeDream: Fast and Efficient Pipeline Parallel DNN Training](https://arxiv.org/pdf/1806.03377.pdf)，填充多个数据batch+异步梯度更新？看下paper先。。。
+
+##### 1) GPipe
+
+&nbsp;
+
+![gpipe](../assets/gpipe.png)
+
+Gpipe主要思想：
+
++ 图a：把模型不同layers顺序放在4张卡上，0->3卡流水线前向计算loss，3->0再反向计算gradients
++ 图b：从时间顺序上看，**每张卡有3/4时间是空闲的**，GPU利用率非常低
++ 图c：配合**梯度累积**，多个mini-batch可以同时跑在流水线里面，每张卡则有3/(3+4)的时间空闲（Bubble）
+
+流水线并行的问题是中间有**Bubble**。当卡数$$K$$，梯度累积次数$$M$$，则$$Bubble=(K-1)/(K-1+M)$$
+
+GPT里用[Weight Tying](https://paperswithcode.com/method/weight-tying)提升效果，输入和输出共享vocab embedding
+
+##### 2) 重计算
+
+&nbsp;
+
+即gradient checkpointing，重计算(recomputation)是对于pipeline parallelism非常重要的一个优化，最开始在[Training Deep Nets with Sublinear Memory Cost](https://arxiv.org/pdf/1604.06174.pdf)一文中提到，在**flash attention**中也用了。
+
+因为要做pipeline+梯度累积，前向过程中的**激活值**要保存，以留给反向过程使用，保存很多份的激活值对显存造成了很大压力。recomputation(也叫**checkpointing**)用时间来换空间（反向的时候进行一次激活值的重计算），可以缓解显存问题。
+
+pytorch的[实现](https://github.com/pytorch/pytorch/blob/main/torch/utils/checkpoint.py)。大致逻辑是包了一个```autograd.Function```，前向时保存一些inputs/rng_state(RNG state是Random Number Generator state的缩写，**随机数生成器的状态**。在深度学习和其他计算任务中，随机数生成器用于初始化参数、决定正则化技术如dropout的行为，以及在训练过程中选择样本等。RNG状态是指随机数生成器当前的内部状态，它可以用来在需要时重现或恢复特定的随机数序列，确保实验或模型训练的可重复性)，反向时重新计算
+
+深度更深的时候，一般效果更好
+
+cpu offload：层数很深的时候，可能可以把一些计算挪到cpu上去，再搞回gpu
+
+#### 张量并行（Tensor Parallelism）
+
+&nbsp;
+
+[Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism](https://arxiv.org/pdf/1909.08053.pdf)
+
+**分解LLM的张量（参数矩阵）**，例如矩阵乘法$$Y=X A$$，$$A$$可以按列分成两个子矩阵$$A_1$$和$$A_2$$，从而改为$$Y=\left[X A_1, X A_2\right]$$，将$$A_1$$和$$A_2$$**放到不同GPU上**，然后就可能通过跨GPU通信将两个GPU的结果merge。
+
++ Megatron-LM：能扩展到更高维度的张量
++ Colossal-AI：
+    + 为更高维度的张量实现了张量并行，[An efficient 2d method for training super-large deep learning models](https://arxiv.org/pdf/2104.05343.pdf)、[Tesseract: Parallelize the tensor parallelism efficiently](https://arxiv.org/pdf/2105.14500.pdf)和[Maximizing Parallelism in Distributed Training for Huge Neural Networks](https://arxiv.org/pdf/2105.14450.pdf)
+    + 特别针对序列数据提出**序列并行**([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，详见下一节
+
+参考[https://zhuanlan.zhihu.com/p/622036840](https://zhuanlan.zhihu.com/p/622036840)
+
+![tensor parallelism](../assets/tensor-parallelism.png)
+
+原始矩阵乘法是```[m,k], [k, n] -> [m, n]```，有如下两种矩阵分解的等效：
+
++ **列并行（column parallelism）**：第一个矩阵不变，第二个矩阵**竖着劈成两半**，即$$B=[B_1, B_2]$$
+    + ```[m,k], [k, n/2] -> [m, n/2]```
+    + ```concat([m, n/2], [m, n/2]) -> [m, n]```
++ **行并行（row parallelism）**：两个矩阵都横着劈成两半，即$$A=\left[\begin{array}{l}A_1 \\A_2\end{array}\right],B=\left[\begin{array}{l}B_1 \\B_2\end{array}\right]$$。从2推广到k，其实就是**split-k算法**，把两个矩阵都分成k个小块，两两相乘后，最后reduce_sum一下。因为每个线程计算的矩阵更小了，开销小，可以通过加大线程数来提升并行效率。
+    + ```[m, k/2], [k/2, n] -> [m, n]```
+    + ```elemwise_add([m, n], [m, n]) -> [m, n]```
+
+**行并行**还可以扩展到**推荐**里，假设user有k/2维，item也是k/2维，concat在一起，然后过一个k*d的mlp，即```[1,k] * [k, d] -->[1,d]```，那么可以按行并行的方法，拆成2个```[1, k/2]```和```[k/2,d]```相乘，再相加。这样item侧的```[k/2,d]```可以把全库缓存过来，在线实时算user，排序时把对应item向量抽出来，和user加起来就行
+
+![megatron-transformer](../assets/megatron-transformer.png)
+
+megatron对transformer进行了如下优化：
+
++ MLP第一个nn按**列分割**，第二个nn按**行分割**，中间省了一次通信
++ Attention按照head来分割(类似**列分割**)，后面接的nn按**行分割**，中间也省了一次通信
+
+图里面的通信算子
+
++ $$f$$是前向identity，反向all-reduce
++ $$g$$是前向all-reduce，反向identity
+
+综合来看，一层transformer layer如下
+
+![megatron-transformer-1layer](../assets/megatron-transformer-1layer.png)
+
+具体的计算量可以参考[https://colossalai.org/docs/features/1D_tensor_parallel/#introduction](https://colossalai.org/docs/features/1D_tensor_parallel/#introduction)：
+
+![clossal-ai-efficiency](../assets/clossal-ai-efficiency.png)
+
+### ZeRO
+
+&nbsp;
+
+[ZeRO: Memory Optimization Towards Training A Trillion Parameter Models](https://arxiv.org/pdf/1910.02054v2.pdf)
+
+fp16那一节中，optimizer state的显存占用，在**前向**和**反向**的时候都**不用**，只有最后**optimizer step**的时候才用。
+
+===>zero的思想：把optimizer state**分shard存在不同的卡上**，只在**最后gather时才用**。
+
+ZeRO（Zero Redundancy Optimizer）在DeepSpeed库中提出，解决**数据并行**中的**内存冗余**问题。数据并行其实并不需要每个GPU都存整个模型、梯度和优化器参数，ZeRO在每个GPU仅保存部分数据，当需要其余数据时从其他GPU检索。3种解决方案：
+
++ 优化器状态分区：zero1，对显存最大开销的部分进行shard
++ 梯度分区：zero2
++ 参数分区：zero3
+
+前两种方案不会增加通信开销，第三种方案增加约50%通信开销，但能节省和gpu数成比例的内存。
+
+![zero](../assets/zero.png)
+
+
+详见官方博客：[ZeRO & DeepSpeed: New system optimizations enable training models with over 100 billion parameters](https://www.microsoft.com/en-us/research/blog/zero-deepspeed-new-system-optimizations-enable-training-models-with-over-100-billion-parameters/)
+
+```python
+import deepspeed
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--local_rank", type=int, default=0)
+deepspeed.add_config_arguments(parser)
+args = parser.parse_args()
+
+model, optimizer, _, _ = deepspeed.initialize(args=args,
+                                              model=model,
+                                              model_parameters=model.parameters())
+X, Y = get_batch('train')
+logits, loss = model(X, Y)
+model.backward(loss)
+model.step()
+```
+
+需要指定deepspeed的配置：
+
+```python
+{
+  "train_batch_size": 64,
+  "gradient_accumulation_steps": 1,
+  "optimizer": {
+    "type": "Adam",
+    "params": {
+      "lr": 6e-4,
+      "weight_decay": 1e-2,
+      "betas": [0.9, 0.95]
+    }zer
+  },
+  "scheduler": {
+    "type": "WarmupLR",
+    "params": {
+        "warmup_min_lr": 6e-5,
+        "warmup_max_lr": 6e-4,
+        "warmup_num_steps": 2000
+    }
+  },
+  "bf16": {
+    "enabled": true
+  },
+  "zero_optimization": {
+    "stage": 1
+  }
+}
+```
+
+启动：
+
+```shell
+deepspeed --num_gpus=8 train.py --deepspeed_config xx.json
+```
+
+facebook的开源库**FSDP(full sharded data parallel)**([Fairscale: A general purpose modular pytorch library for high performance and large scale training](https://github.com/facebookresearch/fairscale))里基于pytorch实现了类似ZeRO的技术。
+
+```python
+from torch.distributed.fsdp import FullyShardedDataParallel as FSDP, ShardingStrategy
+model = FSDP(model)  #, sharding_strategy=ShardingStrategy.SHARD_GRAD_OP)
+```
+
+还有一些paper也能降低内存，如
+
+[Reducing activation recomputation in large transformer models](https://arxiv.org/pdf/2205.05198.pdf)
+
+[Training deep nets with sublinear memory cost](https://arxiv.org/pdf/1604.06174.pdf)
+
+### 序列并行
+
+&nbsp;
+
+**序列并行**([Sequence Parallelism: Long Sequence Training from System Perspective](https://arxiv.org/pdf/2105.13120.pdf))，可以进一步分解Transformer的注意力操作。
+
+[Reducing Activation Recomputation in Large Transformer Models](https://arxiv.org/pdf/2205.05198.pdf)这个也是
+
+对比TP：
+
+![tensor-parallel](../assets/tensor-parallel.png)
+
+SP：
+
+![sequence-parallel](../assets/sequence-parallel.png)
+
+### 综合对比各种并行
+
+&nbsp;
+
+几个缩写：params（p）/gradients(g)/optimizer states(os)/activation(a)
+
+| 并行方法 | 显存效率 | 计算效率 | 限制 | 
+|---|---|---|---|
+| DP（数据并行） | p/g/os都复制在每张卡上，显存效率很低| 计算和通信可以overlap，如果都在一个minipod内扩展性很好；梯度累积可以提高计算效率| batchsize不能太大，否则模型效果有损；batchsize/dp不能太小，不然打不满tensorcore|
+| ZeRO（解决DP的显存冗余） |zero1/2/3把os/g/p分别shard到每张卡上，显存效率很高| 需要做prefetch来减少通信对计算效率的影响| 同DP |
+| PP（流水线并行） | 切分p，提高显存效率；a需要存多次，降低显存效率| 通信次数最少，只发生在多层之间的切分点，但是有Bubble| 每个Stage之间需要负载均衡，对模型结构和卡数有限制|
+| TP（张量并行） | p/g/os/a被shard在每张卡上，显存效率也很高；有些层如layernorm是复制的，可以用sequence parallel优化| 梯度不需要同步，提高计算效率；每层插入了4次通信，而且是跟计算有依赖的，会降低计算效率；每层的计算量进行了切分，也会降低计算效率| 一般是单机内8卡使用nvlink时用TP |
+
+把神经网络看成是输入$$X$$和权重$$W$$的矩阵乘法$$XW$$，那么，**DP和PP其实是对$$X$$的拆分**，而**TP则是对$$W$$的拆分**
+
+整体对比可以看
+
+![megatron-results](../assets/megatron-results.png)
+
+一般这么整合：
+
++ 把机器分成N组，**不同组之间用DP**
++ 一组机器有M台机器，**不同机器之间用PP**
++ 一台机器有K张卡，**不同卡之间用TP**
+
+## 编译优化
+
+pytorch的TorchDynamo
+
+[https://pytorch.org/docs/stable/torch.compiler_deepdive.html](https://pytorch.org/docs/stable/torch.compiler_deepdive.html)
+
+最简单的用法```torch.compile()```
+
+![TorchDynamo](../assets/TorchDynamo.png)
+
+## flash attention
+
+[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/abs/2205.14135)
+
+FlashAttention其实是对$$softmax(QK^T)V$$的一种加速实现。
+
+一般的实现：需要先 用矩阵$$C$$存$$QK^T$$的结果，然后对$$C$$按行做softmax得到新的$$C$$，再用$$C$$乘以$$V$$得到最后结果。
+
+FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量，通过分块计算，**让临时变量总是可以放在cache里**，从而
+
++ 减少Global Memory的大小
++ 加速attenttion的计算，因为读cache比访问Global Memory快多了。
+
+## flexattention
+
+[新PyTorch API：几行代码实现不同注意力变体，兼具FlashAttention性能和PyTorch灵活性](https://mp.weixin.qq.com/s/8uoZZf4hNSLQYLKFr95jTw?poc_token=HAynt2ajgl8xoDMpMWq0t8R-ubMokh17VRDwmacE)
+
+## 训练稳定性
+
+学习率+batchsize的一些经验：
+
+[https://zhuanlan.zhihu.com/p/64864995](https://zhuanlan.zhihu.com/p/64864995)
+
+另外，swiglu会让act_norm变大，得加一些方式让模型能训动，一种方法是把weight_decay调小：
+
++ loss会变高==>[https://poe.com/s/Cv6lODy94INz1ozQKJYJ](https://poe.com/s/Cv6lODy94INz1ozQKJYJ)，正则项变大，L+norm中的L相对影响变小了，所以会变大，即为了防止过拟合，但可能eval的时候会更好
++ act_norm会降低20-30%，因为正则项更重要了，会让权重更接近0
+
+层数加深时的稳定性调优：[Transformers Get Stable: An End-to-End Signal Propagation Theory for Language Models](https://arxiv.org/pdf/2403.09635)
+
+## 数据/训练策略
+
+### 综述
+
+[A Survey on Data Selection for Language Models](https://arxiv.org/pdf/2402.16827)
+
+### 高质量数据
+
+[Llama架构比不上GPT2？神奇token提升10倍记忆？](https://mp.weixin.qq.com/s/TMkn6yMTUrrGhxCQnd7_2g)
+
+[Physics of Language Models: Part 3.3, Knowledge Capacity Scaling Laws](https://arxiv.org/pdf/2404.05405.pdf)
+
+制造**人工合成数据**，通过控制数据中知识的数量和类型，来严格调控数据中的**知识比特数 (bits)**。使用不同大小和架构的 LLM 在人工合成数据上进行训练，并给出数学定理，来精确计算训练好的模型从数据中**学到了多少比特的知识**。有如下几个发现：
+
++ 如果**训练时间充足**，不论使用何种模型架构，模型的**存储效率**均可以达到**2bit/param**（即平均每个模型参数可以存储2比特的信息）。而且发现transformer中的知识**并非主要存储在MLP层**，因为即便移除所有MLP层，模型仍能达到 2bit/param 的存储效率。
++ 如果**训练时间不充足**，GPT2模型能比LlaMA/Mistral存储超过30%的知识，主要是因为**GatedMLP(MoE)**会导致**训练不稳定**，因此对同样的知识，需要**更长的训练时间**。
++ **压缩/量化**的影响：将训练好的模型从float32/16压缩到int8，对知识的存储**毫无影响**。LLM可以达到“**信息论极限**”的**1/4**——因为int8只有8比特，但平均每个参数可以存储2比特的知识。
++ **高质量数据**的影响：如果我们的预训练数据中，有1/8来自高质量知识库（如百度百科），7/8来自低质量数据（如common crawl或论坛对话，甚至是完全随机的垃圾数据），会发现：
+    + 即使对高质量数据的训练时间保持一致，**低质量数据的存在本身**可能会让模型对**高质量知识的存储量下降20倍**，即便将高质量数据的训练时间延长 3倍，知识储量仍会降低3倍
+    + 解法：只需给所有的预训练数据**加上自己的网站域名token即可**，模型的知识存储量可以立即回升10倍，模型**不需要任何先验知识**来识别哪些网站上的知识是金子，而可以在预训练过程中，自动发现高质量知识的网站，并**自动为这些高质量数据腾出存储空间**。
+
+### DSIR
+
+[Data Selection for Language Models via Importance Resampling](https://arxiv.org/pdf/2302.03169)
+
+[https://github.com/p-lambda/dsir](https://github.com/p-lambda/dsir)
+
+大致思路：
+
+输入语料样本$$z_i$$
+
++ 学习语料的特征分布（target data是$$\hat{p}$$，raw data是$$\hat{q}$$）
++ 利用语料样本衡量样本间的重要性权重$$w_i=\frac{\hat{p}\left(z_i\right)}{\hat{q}\left(z_i\right)}$$
++ 根据权重进行无放回的采样，兼顾多样性和分布一致性
+
+### DoReMi
+
+[DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining](https://arxiv.org/pdf/2305.10429) NeurIPS2023的spotlight
+
+[https://github.com/sangmichaelxie/doremi](https://github.com/sangmichaelxie/doremi)
+
+![doremi](../assets/doremi.png)
+
++ 使用初始的reference domain weights来训练一个小的reference model $$p_{ref}$$，可以用简单的方式合并，例如用样本量加权
++ 用reference mnodel来指导一个小的proxy model的训练，proxy model使用group DRO（group distributionally robust optimization）来得到domain weights，即让最大的loss gap最小化
+XXX
+\min _\theta \max _{\alpha \in \Delta^k} L(\theta, \alpha):=\sum_{i=1}^k \alpha_i \cdot\left[\frac{1}{\sum_{x \in D_i}|x|} \sum_{x \in D_i} \ell_\theta(x)-\ell_{\mathrm{ref}}(x)\right]
+XXX
+  + domain weights: $$\alpha$$
+  + proxy model参数：$$\theta$$
+  + domain语料：$$D$$
+  + $$\ell_\theta(x)=-\log p_\theta(x)$$
++ 使用tune完的domain weights来训练大模型
++ 可以重复这个过程，用新的domain weights重新训练ref_model，迭代下去
+
+
+### dataset decomposition
+
+[Dataset Decomposition: Faster LLM Training with Variable Sequence Length Curriculum](https://arxiv.org/pdf/2405.13226)
+
+LLM的训练语料大都是相同长度的sequence，一般是多篇文档concat到一起，然后再切分成等长的sequence，有可能一个sequence里有不同的毫不相关的文档，这样算attention就不太适合了。方法
+
++ 将数据划分为多个桶，每个桶中的序列长度均为$$2^i$$，保证每个序列仅来自同一个文档
++ 训练时可以给定一个固定的batch_len，即直接从某个桶里采样，也可以用特定长度策略，从多个桶里采样，组合为特定长度
+
+![dataset-decomposition](../assets/dataset-decomposition.png)
+
+### RHO-1
+
+[RHO-1: Not All Tokens Are What You Need](https://arxiv.org/pdf/2404.07965)
+
+[https://github.com/microsoft/rho](https://github.com/microsoft/rho)
+
+![rho-1](../assets/rho-1.png)
+
+把语料中的无用token从loss里删了
+
+![slm](../assets/slm.png)
+
++ 训练ref_model，挑选少量高质量语料，建模语料的整体loss分布情况
++ 拿ref_model在整个预训练语料上计算每个token的ppl
++ 训练LLM，只关注得分比较高的tokens
+
+### infinit lr
+
+[Simple and Scalable Strategies to Continually Pre-train Large Language Models](https://arxiv.org/pdf/2403.08763)
+
+linear warmup and cosine decay schedule：
+
++ linear warmup阶段：前$$T_{warmup}$$步线性增加学习率，即直到时间步$$t_{\text {ann }}=T_{\text {warmup }}$$，学习率设置为$$\eta_t=\eta_{\max } \cdot \frac{t}{T_{\text {warmup }}}$$
++ annealing阶段：对于接下来的$$T_{ann}$$个时间步，改为cosine annealing方式，即对于时间步$$t_{e n d}=T_{a n n}+t_{a n n}$$：
+XXX
+\eta_t=\eta_{\min }+\frac{\left(\eta_{\max }-\eta_{\min }\right)}{2} \cdot\left(\cos \left(\pi \cdot \frac{t-t_{a n n}}{t_{\text {end }}-t_{\text {ann }}}\right)+1\right)
+XXX
+
+infinit lr decay：
+
++ linear warmup阶段：同上
++ cool down阶段：学习率逐渐decay到一个常量$$\eta_{\text {const }}$$
++ 常数阶段：学习率保持为这个常数，该阶段结束时的ckpt可以用于新数据集的继续pretrain
++ annealing阶段：逐渐减小到最小值
+
+XXX
+\eta_t=\left\{\begin{array}{lll}
+\eta_{\text {max }} \cdot \frac{t}{T_{\text {warmup }}} & t \in\left[0, t_{c d}\right] & \text { (warm-up) } \\
+f_{c d}(t) & t \in\left(t_{c d}, t_{\text {const }}\right] & \text { (cooldown) } \\
+\eta_{\text {const }} & t \in\left(t_{\text {const }}, t_{\text {ann }}\right] & \text { (constant) } \\
+\eta_{\text {const }} \cdot\left(\frac{\eta_{\min }}{\eta_{\text {const }}}\right)^{\frac{t-t_{\text {ann }}}{t_{\text {end }}-t_{\text {ann }}}} & t \in\left(t_{\text {ann }}, t_{\text {end }}\right] & \text { (annealing) }
+\end{array}\right.
+XXX
+
+
+### JEST
+
+[DeepMind新方法：训练时间减少13倍，算力降低90%](https://mp.weixin.qq.com/s/8rkE6Rp2yw31gw0XhFcZXg)
+
+[Data curation via joint example selection further accelerates multimodal learning](https://arxiv.org/pdf/2406.17711)
+
+现有的大规模预训练数据筛选方法速度慢、成本高，并且没有考虑到批次组成或训练过程中数据相关性的变化，这限制了多模态学习中的效率提升。因此，DeepMind团队研究了**联合选择数据批次**而非单个样本是否能够加速多模态学习。
+
++ 挑选好的数据批次比单独挑选数据点更为有效
++ 在线模型近似可用于更高效地过滤数据
++ 可以引导小型高质量数据集以利用更大的非精选数据集
+
+JEST能够在仅使用10%的FLOP预算的情况下超越之前的最先进水平。
+
+
+## 硬件的可能影响
+
+[https://zhuanlan.zhihu.com/p/701623664?utm_psn=1784500156948938753](https://zhuanlan.zhihu.com/p/701623664?utm_psn=1784500156948938753)
+
+大模型训练（如InternLM-7B）实践中，曾经遇到过在A100集群上表现正常的代码和数据，迁移到A800集群却出现了模型准确度下降和梯度范数爆炸的问题。经过调查，我们发现这与**A800和A100 GPU的NVLink带宽差异**有关。通过在两个集群上使用nanoGPT模型进行的对照实验，我们确认了精度差异的原因在于**NCCL的Ring all-reduce算法实现**。进一步实验表明，设置环境变量NCCL_ALGO=Tree或使用gloo作为backend可以解决精度对齐问题。最终，我们提出了一个解决方案：**在A800集群上设置NCCL_ALGO=Tree**，强制使用Tree算法进行all-reduce操作，从而避免了Ring算法带来的精度问题，使得A800集群的模型能够正常收敛，并且与A100集群的训练精度对齐。
+
+
+## fastpersist
+
+[DeepSpeed 最新力作：大模型CKPT速度提升116倍](https://mp.weixin.qq.com/s/Gc-rMSMqWzycpn2Ye8lnIQ)
+
+[FastPersist: Accelerating Model Checkpointing in Deep Learning](https://arxiv.org/pdf/2406.13768)
+
+
+## pathways
+
+[Pathways: Asynchronous Distributed Dataflow for ML](https://arxiv.org/pdf/2203.12533.pdf)
+
+下载了，[pdf](../assets/LLM/pathways.pdf)
+
+这个回答分析得不错
+[https://www.zhihu.com/question/524596983/answer/2420225275](https://www.zhihu.com/question/524596983/answer/2420225275)
+
+Google的大规模稀疏模型设计
+
+[DESIGNING EFFECTIVE SPARSE EXPERT MODELS](https://arxiv.org/pdf/2202.08906.pdf)
+
+代码：[https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py](https://github.com/tensorflow/mesh/blob/master/mesh_tensorflow/transformer/moe.py)
+
+## megatron-lm
+
+[https://zhuanlan.zhihu.com/p/646406772](https://zhuanlan.zhihu.com/p/646406772)
+
+## deepspeed
+
+[https://zhuanlan.zhihu.com/p/343570325](https://zhuanlan.zhihu.com/p/343570325)
+
+
+## ray-llm
+
+[https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
+
+
+## Google的几大LLM加速工具
+
+### maxdiffusion
+
+[https://github.com/google/maxdiffusion](https://github.com/google/maxdiffusion)
+
+### JetStream
+
+[https://github.com/google/JetStream](https://github.com/google/JetStream)
+
+### maxtext
+
+[https://github.com/google/maxtext](https://github.com/google/maxtext)
+
+## Fire-Flyer AI-HPC
+
+[用60%成本干80%的事，DeepSeek分享沉淀多年的高性能深度学习架构](https://mp.weixin.qq.com/s/-OeGYiN15vzwv0INPfIU5w)
+
+[Fire-Flyer AI-HPC: A Cost-Effective Software-Hardware Co-Design for Deep Learning](https://arxiv.org/pdf/2408.14158)
+
+
+# 推理框架
+
+## KVCache
+
+kvcache的量化：[https://zhuanlan.zhihu.com/p/691537237](https://zhuanlan.zhihu.com/p/691537237)
+
+一些结论：
+
++ 浅层KV cache相比于深层KV cache，对模型的重要性更大。
+
+## 量化
+
+[ZeroQuant-V2: Exploring Post-training Quantization in LLMs from Comprehensive Study to Low Rank Compensation](https://arxiv.org/pdf/2303.08302.pdf)和[Compression of generative pre- trained language models via quantization](https://arxiv.org/pdf/2203.10705.pdf)
+
++ int8量化：[LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale](https://arxiv.org/pdf/2208.07339.pdf)
++ int4量化：GLM中用了
+
+
+## PPL.LLM
+
+[高性能 LLM 推理框架的设计与实现](https://mp.weixin.qq.com/s/4o86rMuburB8jcbU0aYC7g)
+
+[https://github.com/openppl-public/ppl.llm.serving](https://github.com/openppl-public/ppl.llm.serving)
+
+
+## vLLM
+
+[https://github.com/vllm-project/vllm](https://github.com/vllm-project/vllm)
+
+[Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/pdf/2309.06180.pdf)
+
+## 并行推理方法
+
+[Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
+
+[3万字详细解析清华大学最新综述工作：大模型高效推理综述](https://mp.weixin.qq.com/s/U9ESiWehnoKc9SnDz7DVKg)
+
+[万字综述大模型高效推理：无问芯穹与清华、上交最新联合研究全面解析大模型推理优化](https://mp.weixin.qq.com/s/7LKfamTnCyFih6_grf9m3A)
+
+[A Survey on Efficient Inference for Large Language Models](https://arxiv.org/pdf/2404.14294)
+
+[LLM后端推理引擎性能大比拼](https://mp.weixin.qq.com/s/dPd84P_VdKog8v2IcHDOrQ)
+
+## LayerSkip
+
+[LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding](https://arxiv.org/pdf/2404.16710)
+
+[https://github.com/facebookresearch/LayerSkip](https://github.com/facebookresearch/LayerSkip)
+
+## speculative-decoding
+
+[Accelerating Large Language Model Decoding with Speculative Sampling](https://arxiv.org/pdf/2302.01318)
+
+## medusa
+
+decoder的并行化： [https://zhuanlan.zhihu.com/p/368592551](https://zhuanlan.zhihu.com/p/368592551)
+
+[https://sites.google.com/view/medusa-llm](https://sites.google.com/view/medusa-llm)
+
+用了tree-attention
+
+[https://github.com/FasterDecoding/Medusa](https://github.com/FasterDecoding/Medusa)
+
+## CLLM
+
+[3倍生成速度还降内存成本，超越Medusa2的高效解码框架终于来了](https://mp.weixin.qq.com/s/Aw_bjXIQFdOJvN22UvW9UA)
+
+[CLLMs：Consistency Large Language Models](https://arxiv.org/pdf/2403.00835)
+
+## fasterTransformer/TensorRTLLM
+
+[https://github.com/NVIDIA/FasterTransformer](https://github.com/NVIDIA/FasterTransformer)
+
+[https://github.com/NVIDIA/TensorRT-LLM/](https://github.com/NVIDIA/TensorRT-LLM/)
+
+remove padding的逻辑如下，把整个batch的数据变成一行数据，加上offset标注是哪一条样本的
+
+![effective_transformer](../assets/effective_transformer.png)
+
+直接有这么个脚本：
+
+[https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/recurrentgemma/convert_checkpoint.py](https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/recurrentgemma/convert_checkpoint.py)
+
+[https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py](https://github.com/daiwk/TensorRT-LLM/blob/main/tensorrt_llm/models/recurrentgemma/model.py)
+
+关于plugin：
+
++ 自己加plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/openai_triton)
++ 已有plugins：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins](https://github.com/NVIDIA/TensorRT-LLM/tree/main/cpp/tensorrt_llm/plugins)
+
+一些参数设置：
+
+[https://www.bentoml.com/blog/tuning-tensor-rt-llm-for-optimal-serving-with-bentoml](https://www.bentoml.com/blog/tuning-tensor-rt-llm-for-optimal-serving-with-bentoml)
+
+```--multiple_profiles``` enables multiple TensorRT optimization profiles in the built engines, it will benefits the performance especially when GEMM plugin is disabled, because more optimization profiles help TensorRT have more chances to select better kernels. However, this feature will increase the engine build time.
+
+### trt-llm显存泄露解决
+
+因为用到了kvcache，py的runner的memory管理有问题，改成cpp的runner就行了
+
+[https://github.com/NVIDIA/TensorRT-LLM/issues/283](https://github.com/NVIDIA/TensorRT-LLM/issues/283)
+
+[https://nvidia.github.io/TensorRT-LLM/reference/memory.html#python-runtime-not-recommended-to-be-used](https://nvidia.github.io/TensorRT-LLM/reference/memory.html#python-runtime-not-recommended-to-be-used)
+
+## huggingface/text-generation-inference
+
+[https://huggingface.co/docs/text-generation-inference/index](https://huggingface.co/docs/text-generation-inference/index)
+
+[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/causal_lm.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/causal_lm.py)
+
+[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/seq2seq_lm.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/seq2seq_lm.py)
+
+[https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py](https://github.com/huggingface/text-generation-inference/blob/main/server/text_generation_server/models/mamba.py)
+
+
+## block transformer
+
+[KAIST-AI | 提出Block Transformer架构，大幅提升推理速度和内存效率，20倍增益！](https://mp.weixin.qq.com/s/H9qETDRwR9Q_3fG-XkBeeQ)
+
+[Block Transformer: Global-to-Local Language Modeling for Fast Inference](https://arxiv.org/pdf/2406.02657)
+
+[https://github.com/itsnamgyu/block-transformer](https://github.com/itsnamgyu/block-transformer)
+
+## MoonCake
+
+[月之暗面kimi底层推理系统方案揭秘](https://mp.weixin.qq.com/s/4SBRZKAjqcS2MkvnFPey_g)
+
+[Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving](https://github.com/kvcache-ai/Mooncake/blob/main/Mooncake-v1.pdf)
+
+[https://github.com/kvcache-ai/Mooncake/tree/main](https://github.com/kvcache-ai/Mooncake/tree/main)
+
+
+## MInference(microsoft)
+
+[MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention](https://arxiv.org/pdf/2407.02490)
+
+![minference](../assets/minference.png)
+
+## Sarathi-Serve(microsoft)
+
+[OSDI 2024系列-低延迟大模型推理服务1](https://mp.weixin.qq.com/s/lfIyLnR2l5KBeuvPzeLBnQ)
+
+[Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve](https://arxiv.org/pdf/2403.02310)
+
+## SGLang(uc berkerley)
+
+[贾扬清点赞：3K star量的SGLang上新，加速Llama 405B推理秒杀vLLM、TensorRT-LLM](https://mp.weixin.qq.com/s/FYwguU3USf12Wb5HXaHH3A)
+
+[吞吐量提升5倍，联合设计后端系统和前端语言的LLM接口来了](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650904838&idx=4&sn=81a9f09f54f1b89b98fdc3d6be11ce51&chksm=84e45d78b393d46e38fed5d7e1952c9f465488b6953b63206a077f9d886c1104028b06c987c4&scene=21#wechat_redirect)
+
+[https://github.com/sgl-project/sglang/](https://github.com/sgl-project/sglang/)
+
+[SGLang: Efficient Execution of Structured Language Model Programs](https://arxiv.org/pdf/2312.07104)
+
+[三个程序员奋战三天重写推理堆栈，Grok-2 mini直接提速两倍，马斯克亲发贺电](https://mp.weixin.qq.com/s/prC4R1Jjhc7r6mMXv_ZNcw)
+
+## LazyLLM
+
+[苹果让大模型学会偷懒：更快吐出第一个token，准确度还保住了](https://mp.weixin.qq.com/s/mAbiJEKd2zzNmt1pmGfmnQ)
+
+[LazyLLM: Dynamic Token Pruning for Efficient Long Context LLM Inference](https://arxiv.org/pdf/2407.14057)
+
+## 各框架对比
+
+[最佳LLM推理引擎？TensorRT vs vLLM vs LMDeploy vs MLC-LLM](https://mp.weixin.qq.com/s/AnqaukudFukLYSi55w9r2Q)
+
+## DuoAttention
+
+[MIT韩松团队长上下文LLM推理高效框架DuoAttention：单GPU实现330万Token上下文推理](https://mp.weixin.qq.com/s/avM4jketPuNGzx-8tZvxIQ)
+
+[DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads](https://arxiv.org/abs/2410.10819)
+
+[https://github.com/mit-han-lab/duo-attention](https://github.com/mit-han-lab/duo-attention)
+
+# 算子加速
+
+## Triton
+
+[天下苦英伟达久矣！PyTorch官方免CUDA加速推理，Triton时代要来？](https://mp.weixin.qq.com/s/6gkPA-xc7GsltM1Ywui_XQ)
+
+## Mirage
+
+[告别CUDA无需Triton！Mirage零门槛生成PyTorch算子，人均GPU编程大师？](https://mp.weixin.qq.com/s/M3WFt17QErAt46VuqkFjFQ)
 
 # 微调
 
@@ -5523,140 +5520,7 @@ Flan-T5和Flan-PaLM（[Scaling instruction-finetuned language models](https://ar
     + 思维链能力的来源：
     + 提示中组成部分的影响：
 
-# 能力评测
-
-## 基础评测
-
-### 语言生成
-
-#### 语言建模
-
-&nbsp;
-
-#### 条件文本生成
-
-&nbsp;
-
-#### 代码合成
-
-&nbsp;
-
-#### 存在问题
-
-+ 可控生成
-+ 专业化生成
-
-### 知识利用
-
-#### 闭卷问答
-
-&nbsp;
-
-#### 开卷问答
-
-&nbsp;
-
-#### 知识补全
-
-&nbsp;
-
-#### 存在问题
-
-+ 幻觉（Hallucination）
-+ 知识实时性
-
-### 复杂推理
-
-#### 知识推理
-
-&nbsp;
-
-#### 符号推理
-
-&nbsp;
-
-#### 数学推理
-
-&nbsp;
-
-#### 存在问题
-
-+ 不一致性
-+ 数值计算
-
-## 高级评估
-
-### 与人类对齐
-
-### 与外部环境互动
-
-### 工具使用
-
-## 公开基准
-
-[LLM常用基准测试科普](https://zhuanlan.zhihu.com/p/694391642)
-
-+ MMLU：
-+ BIG-bench：
-+ HELM：
-
-## 比较有用的数据集
-
-### 中文glue
-
-[ChineseGLUE：为中文NLP模型定制的自然语言理解基准](https://mp.weixin.qq.com/s/14XQqFcLG1wMyB2tMABsCA)
-
-[超30亿中文数据首发！首个专为中文NLP打造的GLUE基准发布](https://mp.weixin.qq.com/s/9yxYErAMy9o3BOEDzsgvPw)
-
-[https://github.com/CLUEbenchmark/CLUE](https://github.com/CLUEbenchmark/CLUE)
-
-[https://www.cluebenchmarks.com/](https://www.cluebenchmarks.com/)
-
-[https://github.com/brightmart/nlp_chinese_corpus](https://github.com/brightmart/nlp_chinese_corpus)
-
-[http://thuctc.thunlp.org/#%E4%B8%AD%E6%96%87%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E9%9B%86THUCNews](http://thuctc.thunlp.org/#%E4%B8%AD%E6%96%87%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE%E9%9B%86THUCNews)
-
-### 中文阅读理解数据集
-
-[首个中文多项选择阅读理解数据集：BERT最好成绩只有68%，86%问题需要先验知识](https://mp.weixin.qq.com/s/Jr8ALNxD1Uw7O8sQdFpX_g)
-
-[Investigating Prior Knowledge for Challenging Chinese Machine Reading Comprehension](https://arxiv.org/abs/1904.09679)
-
-[https://github.com/nlpdata/c3](https://github.com/nlpdata/c3)
-
-### 物理常识推理任务数据集
-
-[PIQA: Reasoning about Physical Commonsense in Natural Language](https://arxiv.org/pdf/1911.11641.pdf)
-
-「在不使用刷子涂眼影的情况下，我应该用棉签还是牙签？」类似这种需要物理世界常识的问题对现今的自然语言理解系统提出了挑战。虽然最近的预训练模型 (如 BERT) 在更抽象的如新闻文章和百科词条这种具有丰富文本信息的领域问答方面取得了进展，但在更现实的领域，由于报导的偏差，文本本质上是有限的，类似于「用牙签涂眼影是一个坏主意」这样的事实很少得到直接报道。人工智能系统能够在不经历物理世界的情况下可靠地回答物理常识问题吗？是否能够捕获有关日常物品的常识知识，包括它们的物理特性、承受能力以及如何操纵它们。
-
-在本文中，研究者介绍了一个关于物理常识推理任务和相应的基准数据集 PIQA（Physical Interaction：Question Answering）进行评估。虽然人类应对这一数据集很容易 (95% 的准确率)，但是大型的预训模型很难 (77%)。作者分析了现有模型所缺乏的知识为未来的研究提供了重要的机遇。
-
-### 常识推理数据集WinoGrande
-
-[WinoGrande: An Adversarial Winograd Schema Challenge at Scale](https://arxiv.org/abs/1907.10641)
-
-研究者提出了 WINOGRANDE，一个有着 44k 个问题的大规模数据集。该数据集在规模和难度上较之前的数据集更大。该数据集的构建包括两个步骤：首先使用众包的方式设计问题，然后使用一个新的 AFLITE 算法缩减系统偏见（systematic bias），使得人类可以察觉到的词汇联想转换成机器可以检测到的嵌入联想（embedding association）。现在最好的 SOTA 模型可以达到的性能是 59.4 – 79.1%，比人脸性能水平（94%）低 15-35%（绝对值）。这种性能波动取决于训练数据量（2% 到 100%）。
-
-本论文荣获了 AAAI 2020 最佳论文奖，文中提出的 WINOGRANDE 是一个很好的迁移学习资源；但同时也说明我们现在高估了模型的常识推理的能力。研究者希望通过这项研究能够让学界重视减少算法的偏见。
-
-
-### 对话数据集
-
-[谷歌发布世界最大任务型对话数据集SGD，让虚拟助手更智能](https://mp.weixin.qq.com/s/hNghBThK4FX0ON4Ypp2HzQ)
-
-[Towards Scalable Multi-domain Conversational Agents: The Schema-Guided Dialogue Dataset](https://arxiv.org/abs/1909.05855)
-
-### BelleGroup
-
-[https://huggingface.co/BelleGroup](https://huggingface.co/BelleGroup) 里有很多中文的instruct和输出的数据集
-
-### OpenEQA
-
-[从文字模型到世界模型！Meta新研究让AI Agent理解物理世界](https://mp.weixin.qq.com/s/Qeuq8v5-ruKGNlcw884RXg)
-
-
-# RLHF & InstructGPT
+# 能力评测# RLHF & InstructGPT
 
 [OpenAI魔改大模型，参数减少100倍！13亿参数InstructGPT碾压GPT-3](https://mp.weixin.qq.com/s/_lsTzx-NbiSmI7KrRXyYZg)
 
@@ -6308,7 +6172,6 @@ XXX
 [Weak-to-Strong Search: Align Large Language Models via Searching over Small Language Models](https://arxiv.org/abs/2405.19262)
 
 [https://github.com/ZHZisZZ/weak-to-strong-search](https://github.com/ZHZisZZ/weak-to-strong-search)
-
 # 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
@@ -7163,9 +7026,7 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [多模态大模型不够灵活，谷歌DeepMind创新架构Zipper：分开训练再「压缩」](https://mp.weixin.qq.com/s/F8wstkJyYiNJCbSqYq3Pbw)
 
-[Zipper: A Multi-Tower Decoder Architecture for Fusing Modalities](https://arxiv.org/pdf/2405.18669)
-
-# LLM+推荐
+[Zipper: A Multi-Tower Decoder Architecture for Fusing Modalities](https://arxiv.org/pdf/2405.18669)# LLM+推荐
 
 ## 综述
 
@@ -8528,49 +8389,6 @@ XXX
 ## CCF-LLM
 
 [CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
-
-
-# 世界模型
-
-[怒斥Sora之后，LeCun放出「视觉世界模型」论文，揭示AI学习物理世界的关键​](https://mp.weixin.qq.com/s/KY-bTD-bxdB3Q-q97Gv7fg)
-
-[100万token，一次能分析1小时YouTube视频，「大世界模型」火了](https://mp.weixin.qq.com/s/8ONe7_ejQQIT1UwqDGK-vg)
-
-[WORLD MODEL ON MILLION-LENGTH VIDEO AND LANGUAGE WITH RINGATTENTION](https://arxiv.org/pdf/2402.08268.pdf)
-
-[https://github.com/LargeWorldModel/LWM](https://github.com/LargeWorldModel/LWM)
-
-[Sora是世界模拟器吗？全球首篇综述全面解析通用世界模型](https://mp.weixin.qq.com/s/rkq7NXGvB0O1Kstd_mTNJQ)
-
-[Is Sora a World Simulator? A Comprehensive Survey on General World Models and Beyond](https://arxiv.org/pdf/2405.03520)
-
-[世界模型也扩散！训练出的智能体竟然不错](https://mp.weixin.qq.com/s/AWt1Jgvr2aj6sjkGRV9-hg)
-
-[Diffusion for World Modeling: Visual Details Matter in Atari](https://arxiv.org/pdf/2405.12399)
-
-[https://github.com/eloialonso/diamond](https://github.com/eloialonso/diamond)
-
-
-
-## pandora
-
-[通用世界模型问世：不学习就能生成新领域视频，可实时控制](https://mp.weixin.qq.com/s/Vj2W3BtKITV4mxwVhDJHzg)
-
-[Pandora : Towards General World Model with Natural Language Actions and Video States](https://world-model.maitrix.org/assets/pandora.pdf)
-
-[https://github.com/maitrix-org/Pandora](https://github.com/maitrix-org/Pandora)
-
-
-[ACL 2024论文盖棺定论：大语言模型≠世界模拟器，Yann LeCun：太对了](https://mp.weixin.qq.com/s/FBqYb_gcBr5D204mDtmCOA)
-
-[Can Language Models Serve as Text-Based World Simulators?](https://arxiv.org/pdf/2406.06485)
-
-## WHALE
-
-[WHALE来了，南大周志华团队做出更强泛化的世界模型](https://mp.weixin.qq.com/s/9vk__IpfMdYj57VjtV1HvQ)
-
-[WHALE: TOWARDS GENERALIZABLE AND SCALABLE WORLD MODELS FOR EMBODIED DECISION-MAKING](https://arxiv.org/pdf/2411.05619)
-
 # O1
 
 ## from r to Q*
@@ -8945,7 +8763,46 @@ XXX
 
 [大模型是否有推理能力？DeepMind数月前的论文让AI社区吵起来了](https://mp.weixin.qq.com/s/NdRBGFT6systLwn7p2ER7Q)
 
-[Amortized Planning with Large-Scale Transformers: A Case Study on Chess](https://arxiv.org/pdf/2402.04494)
+[Amortized Planning with Large-Scale Transformers: A Case Study on Chess](https://arxiv.org/pdf/2402.04494)# 世界模型
+
+[怒斥Sora之后，LeCun放出「视觉世界模型」论文，揭示AI学习物理世界的关键​](https://mp.weixin.qq.com/s/KY-bTD-bxdB3Q-q97Gv7fg)
+
+[100万token，一次能分析1小时YouTube视频，「大世界模型」火了](https://mp.weixin.qq.com/s/8ONe7_ejQQIT1UwqDGK-vg)
+
+[WORLD MODEL ON MILLION-LENGTH VIDEO AND LANGUAGE WITH RINGATTENTION](https://arxiv.org/pdf/2402.08268.pdf)
+
+[https://github.com/LargeWorldModel/LWM](https://github.com/LargeWorldModel/LWM)
+
+[Sora是世界模拟器吗？全球首篇综述全面解析通用世界模型](https://mp.weixin.qq.com/s/rkq7NXGvB0O1Kstd_mTNJQ)
+
+[Is Sora a World Simulator? A Comprehensive Survey on General World Models and Beyond](https://arxiv.org/pdf/2405.03520)
+
+[世界模型也扩散！训练出的智能体竟然不错](https://mp.weixin.qq.com/s/AWt1Jgvr2aj6sjkGRV9-hg)
+
+[Diffusion for World Modeling: Visual Details Matter in Atari](https://arxiv.org/pdf/2405.12399)
+
+[https://github.com/eloialonso/diamond](https://github.com/eloialonso/diamond)
+
+
+
+## pandora
+
+[通用世界模型问世：不学习就能生成新领域视频，可实时控制](https://mp.weixin.qq.com/s/Vj2W3BtKITV4mxwVhDJHzg)
+
+[Pandora : Towards General World Model with Natural Language Actions and Video States](https://world-model.maitrix.org/assets/pandora.pdf)
+
+[https://github.com/maitrix-org/Pandora](https://github.com/maitrix-org/Pandora)
+
+
+[ACL 2024论文盖棺定论：大语言模型≠世界模拟器，Yann LeCun：太对了](https://mp.weixin.qq.com/s/FBqYb_gcBr5D204mDtmCOA)
+
+[Can Language Models Serve as Text-Based World Simulators?](https://arxiv.org/pdf/2406.06485)
+
+## WHALE
+
+[WHALE来了，南大周志华团队做出更强泛化的世界模型](https://mp.weixin.qq.com/s/9vk__IpfMdYj57VjtV1HvQ)
+
+[WHALE: TOWARDS GENERALIZABLE AND SCALABLE WORLD MODELS FOR EMBODIED DECISION-MAKING](https://arxiv.org/pdf/2411.05619)
 
 # 语言物理学
 

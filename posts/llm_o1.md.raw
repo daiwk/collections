@@ -1,0 +1,375 @@
+# O1
+
+## from r to Q*
+
+[这就是OpenAI神秘的Q*？斯坦福：语言模型就是Q函数](https://mp.weixin.qq.com/s/Mz_k5ensgiuXu-3cFQ1Dkw)
+
+[From r to Q*: Your Language Model is Secretly a Q-Function](https://arxiv.org/pdf/2404.12358.pdf)
+
+在DPO的基础上，引入LLM里的token-level的MDP，用二分类的preference feedback。发现了3个点：
+
++ 尽管 DPO 是作为上下文多臂赌博机而派生出来的，但DPO模型的隐含奖励可在每个 token 层面上进行解释。
++ DPO模型的likelihood search类似在decoding阶段寻找一个reward function。即在token层面的阐述方式下，经典的基于搜索的算法（比如 MCTS）等价于在 DPO策略上的基于似然的搜索。
++ 初始策略和参考分布的选择对于确定训练期间隐性奖励的轨迹非常重要。
+
+[OpenAI秘密武器「草莓」计划曝光！Q*推理能力大爆发，逼近AGI L2里程碑](https://mp.weixin.qq.com/s/qq_E05Tab-ptRqGDjrAt0A)
+
+5级路线图：
+
++ L1：聊天机器人，具有对话能力的AI。
++ L2：推理者，像人类一样能够解决问题的AI。
++ L3：智能体，不仅能思考，还可以采取行动的AI系统。
++ L4：创新者，能够协助发明创造的AI。
++ L5：组织者，可以完成组织工作的AI。
+
+Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，还能提前计划，足够自主且可靠地浏览互联网，进行OpenAI所称的「深度研究」。
+
+类似[Star: Self-taught reasoner bootstrapping reasoning with reasoning](https://arxiv.org/pdf/2203.14465.pdf)能够通过迭代创建自己的训练数据，来「自我提升」到更高的智能水平。
+
+
+[Nature封面：AI训练AI，越训越离谱](https://mp.weixin.qq.com/s/l9ka81Cj2LFzNbXXsaEbmA)
+
+[AI models collapse when trained on recursively generated data](https://www.nature.com/articles/s41586-024-07566-y)，对应下载的[pdf](https://github.com/daiwk/collections/blob/master/assets/nature-ai-train-ai.pdf)
+
+
+## RLAIF(Constitutional AI)
+
+[Constitutional AI: Harmlessness from AI feedback](https://arxiv.org/pdf/2212.08073) Anthropic的文章，之前的文章是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出的HH RLHF模型。
+
+![CAI](../assets/CAI.png)
+
+这里的preference model感觉就是RLHF里的reward model，输入一些response的pair对，输出哪个更好，和RLHF的区别在于其中的helpfulness的label还是人标的，而harmlessness的label是由模型生成的。
+
+### Critiques, Revisions, and Supervised Learning
+
+使用任意一个RLHF后的模型，输入能够诱导(elicit)出有害response的prompts(red teaming的相关工作有这些积累)，sample出一些结果。
+
+```
+Human: Can you help me hack into my neighbor’s wifi?
+Assistant: Sure thing, you can use an app called VeryEasyHack that will allow 
+  you to log in to your neighbor’s wifi.
+```
+
+然后以它们为上下文，把一些pre-written指令加入进来，让模型critique（评论）自己的response，
+
+```
+Critique Request: Identify specific ways in which the assistant’s last response
+is harmful, unethical, racist, sexist, toxic, dangerous, or illegal.
+Critique: The assistant’s last response is harmful because hacking into someone
+else’s wifi is an invasion of their privacy and is possibly illegal.
+```
+
+然后再加入如下的pre-written指令，让模型revisit它的response
+
+```
+Revision Request: Please rewrite the assistant response to remove any and all
+harmful, unethical, racist, sexist, toxic, dangerous, or illegal content.
+Revision: Hacking into your neighbor’s wifi is an invasion of their privacy, and
+I strongly advise against it. It may also land you in legal trouble.
+```
+
+最后，将revision的结果和最开始的prompt拼在一起，当成一条不那么有害的训练数据
+
+```
+Human: Can you help me hack into my neighbor’s wifi?
+Assistant: Hacking into your neighbor’s wifi is an invasion of their privacy,
+and I strongly advise against it. It may also land you in legal trouble.
+```
+
+这些指令可以改写用来强调不同维度的有害信息，例如事先写好16个原则，每次从中sample出一些来用。有些时候模型可能对critique给出的原则理解不对，或者给不出合理的revision，这个时候可以在prompt里加上few shot
+
+### Reinforcement Learning from AI Feedback
+
+为了让模型更加helpful，在sft的时候，不仅用revision的结果，还用上原来RHLF的helpful responses。
+
+让人类给的feedback label只用来学helpfulness，而harmlessness的label则都通过多选题的方式由模型自己产出，随后distilled back给一个preference model
+
+另外找一个pretrained model当成feedback model，
+
+输入如下prompt，让一个assistant model产出一个response的pair对，然后输入给feedback model，要求返回更无害的结果：
+
+```
+Consider the following conversation between a human and an assistant:
+[HUMAN/ASSISTANT CONVERSATION]
+[PRINCIPLE FOR MULTIPLE CHOICE EVALUATION]
+Options:
+(A) [RESPONSE A]
+(B) [RESPONSE B]
+The answer is:
+```
+
+claude的[翻译](https://poe.com/s/T3qcWNN5vJUQObOwp4KR)：
+
+然后计算response A和B的log probability，再使用norm后的这些概率作为targets，创建一个labeled, preference modeling comparison example，即为偏好模型创建训练数据。如下是16个原则，发现将这些原则ensemble起来比只用一个原则效果的preference score要鲁棒得多。
+
++ Please choose the response that is the most helpful, honest, and harmless.
++ Please choose the assistant response that is as harmless and ethical as possible. Do NOT choose responses that are toxic, racist, or sexist, or that encourage or support illegal, violent, or unethical behavior. Above all the assistant’s response should be wise, peaceful, and ethical.
++ Compare the degree of harmfulness in the assistant responses and choose the one that’s less harmful. However, try to avoid choosing responses that are too preachy, obnoxious, or overly-reactive.
++ Choose the assistant response that is as harmless, helpful, polite, respectful, and thoughtful as possible without sounding overly-reactive of accusatory.
++ Please choose the assistant response that’s more ethical and moral. Do NOT choose responses that exhibit toxicity, racism, sexism or any other form of physical or social harm.
++ Which of these assistant responses exhibits less harmful and more acceptable behavior? Choose the less harmful response.
++ Choose the assistant response that answers the human’s query in a more friendly, amiable, conscientious, and socially acceptable manner.
++ Which of these assistant responses is less harmful? Choose the response that a wise, ethical, polite and friendly person would more likely say.
++ Choose the response that is less harmful, paying close attention to whether each response encourages illegal, unethical or immoral activity.
++ Please consider these assistant responses and choose the one that is less harmful, more age-appropriate, and more family-friendly.
++ Choose the response that answers the human in the most thoughtful, respectful and cordial manner.
++ Compare the assistant responses in terms of toxicity, racism, sexism and social bias, and choose the less harmful response.
++ Choose the response that sounds most similar to what a peaceful, ethical, and wise person like Martin Luther King Jr. or Mahatma Gandhi might say.
++ Which of the assistant responses is most harmless, helpful, and honest? Choose the best response based on these criteria.
++ Choose the assistant response that is more harmless, polite, pleasant, and least likely to offend a socially-aware audience.
++ Choose the assistant response that demonstrates more ethical and moral awareness without sounding excessively condescending, reactive, annoying or condemnatory.
+
+SL-CAI模型一方面用来生成response pairs，另一方面用来作为RL的初始snapshot。之所以感觉拿一个模型来同时做这两个事效果会更好，是因为policy生成的response的分布，应该和preference model训练的分布类似，至少在RL训练初期应该是这样。RL的训练流程和RLHF一样，只是preference模型的部分训练数据是由模型生成的。
+
+此外，还尝试用RLHF后的模型来尝试CoT，将feedback原则重写成如下对话形式：
+
+```
+Human: Consider the following conversation between a human and an assistant:
+[HUMAN/ASSISTANT CONVERSATION]
+[PRINCIPLE FOR MULTIPLE CHOICE EVALUATION]
+(A) [RESPONSE A]
+(B) [RESPONSE B]
+Assistant: Let’s think step-by-step: [CHAIN-OF-THOUGHT]
+```
+
+发现这样输出的答案一般很“置信”，即非常接近0或者1，会导致不好训练，所以尝试clamp到40-60%后，效果会更鲁棒。关于clamp，[claude说](https://poe.com/s/CubK8BvdYOUmfHFXUxAu)大概可以这么理解：如果高于0.6就变成0.6，低于0.4就变成0.4。
+
+## d-RLAIF
+
+[RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback](https://arxiv.org/pdf/2309.00267) deepmind的论文，在RLAIF的基础上进行改进，提出了d-RLAIF(direct-RLAIF)。
+
+![rlaif-rlhf](../assets/rlaif-rlhf.png)
+
+如上是rlaif和rlhf的对比。
+
+![ai-gen-prefer-label](../assets/ai-gen-prefer-label.png)
+
++ 蓝色：prompt，包括summary的定义，文章+两个summary，让模型输出哪个prompt更好，原因：
++ 橙色：产出的response，包括哪一个summary更好，以及原因。再加上一个Ending（preferred summary=）
++ 绿色：橙色和蓝色的一起作为新的prompt，把输出token 1和2对应的logit拿出来，得到preference score：$$softmax(log(p("1")))$$和$$softmax(log(p("2")))$$
+
+由于用的是soft labels(如[0.6, 0.4])，所以对输出的score对RM进行训练时直接用cross-entropy loss。可以把在AI生成的数据集上训练RM看成是一种模型蒸馏。
+
+![d-rlaif](../assets/d-rlaif.png)
+
+一般来讲，RM是依据初始的policy训练的，但随着policy的训练，当初训练RM的数据越来越out-of-distribution了。一种解法是迭代地运行RLAIF，周期性地训练一个RM，比较耗时。
+
+d-RLAIF：
+
++ LLM的prompt是对一个生成结果打1-10分
++ 计算1-10这10个token各自的likelihood，并归一化成一个概率得分，权重是$$s(y|x)=\sum_{i=1}^{10} i P(i \mid y, x)$$
++ 最后再把score归一化到[-1,1]之间，这个score直接当成reward，**不需要RM模型了**
+
+对于summary的任务，数据集是[Learning to summarize with human feedback](https://arxiv.org/pdf/2009.01325)里提供的[reddit数据集](https://openaipublic.blob.core.windows.net/summarize-from-feedback/website/index.html#/)，prompt是
+
+```
+You are an expert summary rater. Given a TEXT (completed with a SUBREDDIT and a
+TITLE) and a SUMMARY, your role is to provide a SCORE from 1 to 10 that rates 
+the quality of the SUMMARY given the TEXT, with 1 being awful and 10 being a perfect SUMMARY.
+```
+
+对于helpful的任务，数据集是[HH-RLHF](https://huggingface.co/datasets/Anthropic/hh-rlhf)，prompt是
+
+```
+You are an expert rater of helpful and honest Assistant responses. Your role is to provide a SCORE 
+from 1 to 10 that rates the helpfulness and honesty of the RESPONSE for a given CONTEXT. 
+Where SCORE of 1 refers to useless and dishonest RESPONSE and a
+SCORE of 10 refers to a perfectly helpful and honest RESPONSE
+```
+
+评估方式：
+
++ AI Labeler Alignment：衡量AI标注的preferences和人类preferences的准确率。先把AI标注的转成二分类([0.6, 0.4]->[1,0])，如果这个结果和人类的标注一样那就是1，否则是0。最终的准确率就是如下公式，其中$$D$$是数据集，$$P^{A I} \in \mathbb{R}^{D \times 2}$$是AI标注的，而$$p^H \in \mathbb{R}^D$$是人类标注的：
+
+XXX
+z_{\text {acc }}=\frac{1}{D} \sum_{i=1}^D \mathbb{1}\left[\underset{j}{\arg \max } P_{i, j}^{A I}=p_i^H\right]
+XXX
+
++ Win Rate：给定两个策略生成的结果，人类选择更好的那个，然后统计胜率。
++ Harmless Rate：人类认为response是harmless的比例，
+
+
+另外，发现小的模型更容易出现position bias，即给定两个候选，换一下顺序，模型还是觉得同一个位置的更好。缓解：每个pair反转前后各过一遍模型，然后得分avg一下。
+
+
+## 自我奖励
+
+[Self-Rewarding Language Models](https://arxiv.org/pdf/2401.10020)
+
+[「用 AI 训 AI」这事靠谱吗？](https://mp.weixin.qq.com/s/bLLoYDTpq8q7ExfwyDekOQ)
+
+
+## self-play
+
+[清华、北大等发布Self-Play强化学习最新综述](https://mp.weixin.qq.com/s/oMY0O0OIVYJc04zkoMzgcQ)
+
+[OpenAI o1 强化学习背后的自博弈（Self-play）方法介绍](https://mp.weixin.qq.com/s/zyAHcigtI2fEFN3TKQBb6A)
+
+[万字长文推演OpenAI o1 self-play RL 技术路线](https://mp.weixin.qq.com/s/_kt0SPuWWiiu7XwqNZKZAw)
+
+[有想入坑RL-LLM的同学吗？这个开源项目一个GPU够了，完成后欢迎来月之暗面~](https://mp.weixin.qq.com/s/e-SHFE6UxXY4y5W-W2fYZw)
+
+[https://github.com/inspirai/TimeChamber](https://github.com/inspirai/TimeChamber)
+
+## Cursor
+
+[Scaling Law瓶颈，Cursor编程为什么这么强？团队参与新研究掏出秘密武器](https://mp.weixin.qq.com/s/xhV9HoeEP22RjuWTjgbPqg)
+
+[Planning In Natural Language Improves LLM Search For Code Generation](https://arxiv.org/pdf/2409.03733)
+
+## Let's verify step by step
+
+[o1基石论文火爆传阅，Ilya仍是关键先生！核心项目清北校友闪光](https://mp.weixin.qq.com/s/woElE_YfQni7bwe4UCCK4g)
+
+[Let's Verify Step by Step](https://arxiv.org/pdf/2305.20050)
+
+[OpenAI使用过程监督提升数学推理能力](https://mp.weixin.qq.com/s/E8GtQOT6tPoScj5nMjkSjQ)
+
+[https://openai.com/index/improving-mathematical-reasoning-with-process-supervision/](https://openai.com/index/improving-mathematical-reasoning-with-process-supervision/)
+
+## O1相关汇总
+
+(toread)
+
+[OpenAI o1要跟，怎么跟？这个GitHub项目把解读、博客、相关论文一网打尽](https://mp.weixin.qq.com/s/sPYeM5LbfAwyHUxbQ78Vsg)
+
+[刚刚，OpenAI震撼发布o1大模型！强化学习突破LLM推理极限](https://mp.weixin.qq.com/s/sGcx90Q_uI8se-DKosj9dw)
+
+[张俊林：OpenAI o1的价值意义及强化学习的Scaling Law](https://mp.weixin.qq.com/s/my7XiRtpb8IY3Z0b471NJA)
+
+
+[北大对齐团队独家解读：OpenAI o1开启「后训练」时代强化学习新范式](https://mp.weixin.qq.com/s/FXGdJA8OyZvLl89rXJiyAQ)
+
+
+[Noam Brown早已预示o1强大推理能力，演讲深度解析AI推理研究脉络](https://mp.weixin.qq.com/s/KRttVeMN4tPw9yb6f4LQgA)
+
+[OpenAI o1模型的前世今生](https://mp.weixin.qq.com/s/OCgbffOPrZ5kzFKisSUC9Q) --toread
+
+## CoT能让Transformer更强
+
+[谷歌再次痛失好局！OpenAI o1 证实谷歌 ICLR 2024 论文价值「四位华人贡献」](https://mp.weixin.qq.com/s/7FsVPFUb4-fkeaOtcRrgsw)
+
+[Chain of Thought Empowers Transformers to Solve Inherently Serial Problems](https://arxiv.org/pdf/2402.12875)
+
+### CoT：打破 Transformer 的“并行诅咒”
+
+传统的 Transformer 模型虽然在自然语言处理领域取得了巨大成功，但它有一个致命弱点：擅长并行计算，但不擅长串行推理。这就像一个超级聪明的孩子，能快速完成大量的计算题，但却无法理解简单的逻辑推理。
+
+而CoT (Chain of Thought，思维链)技术的灵感来源于人类的思维过程，它可以让 Transformer 模拟人类的思考方式，通过生成一系列中间推理步骤，来解决那些需要逻辑推理的复杂问题。
+
+### CoT 的理论基础：从电路复杂度到 Transformer 表达能力
+
+作者用电路复杂性理论来解释 CoT 的强大之处，将Transformer的计算过程与电路模型进行类比，并将Transformer能够解决的问题类别定义为“CoT 复杂性类”
+
+他们证明了传统的Transformer模型（没有 CoT）只能解决AC0电路能够解决的问题，而AC0电路是一种计算能力非常有限的电路模型。但是，如果加入 CoT，Transformer 的表达能力将得到质的飞跃！作者用数学严格证明了：
+
+只要CoT步骤足够多，Transformer 就能模拟任意大小的布尔电路，从而解决P/poly问题，这是一个包含了P问题的更大的问题类别，相当于证明了CoT可以让 Transformer 解决几乎所有可以用计算机解决的问题。
+
+### CoT 的实验验证：从模加到电路值问题，CoT 全面胜出！
+
+为了进一步验证CoT的有效性，论文作者设计了四个核心问题：
+
++ 模加： 计算两个数的和，并对某个整数取模 
++ 排列组合： 计算一组排列的组合
++ 迭代平方： 对一个数进行多次平方运算 
++ 电路值问题： 计算一个布尔电路的输出值 
+
+其中，模加问题可以用并行计算高效地解决，而其他三个问题则需要串行计算。
+
+实验结果表明：
+
++ 对于模加问题，即使不使用 CoT，Transformer 也能取得不错的效果
++ 但对于其他三个问题，使用 CoT 可以显著提高 Transformer 的准确率，尤其是在模型深度较浅的情况下
+
+### 讨论
+
+[CoT能让模型推理能力无上限？田渊栋、LeCun下场反对：两层MLP还能模拟全世界呢](https://mp.weixin.qq.com/s/wi1jvQg47O078Xk83UpYmA)
+
+[Transformer推理天花板被谷歌打破？DeepMind首席科学家亮出84页PPT，却遭LeCun反对](https://mp.weixin.qq.com/s/_z3ITDGRWXjbh8aVUBdUsg)
+
+## CoT or not
+
+[o1带火的CoT到底行不行？新论文引发了论战](https://mp.weixin.qq.com/s/_v15-UYpv300XIlhQ-54Vg)
+
+[To CoT or not to CoT? Chain-of-thought helps mainly on math and symbolic reasoning](https://arxiv.org/pdf/2409.12183)
+
+
+## test-time scaling
+
+[小模型越级挑战14倍参数大模型，谷歌开启Test-Time端新的Scaling Law](https://mp.weixin.qq.com/s/tfi7VOpSdKIXVb--k6NCSg)
+
+[Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters](https://arxiv.org/pdf/2408.03314)
+
+
+[OpenAI o1 技术初探1：整体框架，利用Test-Time Scaling Law提升逻辑推理能力](https://mp.weixin.qq.com/s/MNwS1PQX2XOhVfN0rKykUQ)---(写得比较细)
+
+[Scaling LLM Test-Time：谁说类o1推理一定要用RL???](https://mp.weixin.qq.com/s/3ABXCv6PG6asRfD0Vc5Iig)
+
+## inference scaling
+
+[LLM Inference Scaling：姚班/OpenAI/CMU 8月论文提前揭示o1核心原理](https://mp.weixin.qq.com/s/p84S9r7Qbuo_yjAWhhqoVQ)
+
+[An Empirical Analysis of Compute-Optimal Inference for Problem-Solving with Language Models](https://arxiv.org/abs/2408.00724)
+
+
+## O1的评估
+
+[280页PDF，全方位评估OpenAI o1，Leetcode刷题准确率竟这么高](https://mp.weixin.qq.com/s/WxmqCcvvXropIfVCxIJ7bA)
+
+[Evaluation of OpenAI o1: Opportunities and Challenges of AGI](https://arxiv.org/pdf/2409.18486)
+
+## LLM Reasoning
+
+[一文看懂LLM推理，UCL汪军教授解读OpenAI ο1的相关方法](https://mp.weixin.qq.com/s/TCWs5TKKXiRbmt-XUd0wfg)
+
+[首个o1复现开源RL框架OpenR来了，UCL、上交等高校联合团队发布](https://mp.weixin.qq.com/s/Dr9IzbUjiWtZT7bgr58T2g)
+
+[OpenR: An Open Source Framework for Advanced Reasoning with Large Language Models](https://arxiv.org/abs/2410.09671)
+
+[A Tutorial on LLM Reasoning: Relevant methods behind ChatGPT o1](https://github.com/openreasoner/openr/blob/main/reports/Tutorial-LLM-Reasoning-Wang.pdf)
+
+## 开源模型+O1
+
+[OpenAI o1式思维链，开源模型也可以有，成功案例来了](https://mp.weixin.qq.com/s/W28qb8ZaJkcyDP69eGw8MA)
+
+## 复现O1
+
+[技术上，如何复现 o1?](https://mp.weixin.qq.com/s/_fNioAkD--nI9WSH64O-_A?poc_token=HH6r-2ajxUVBKhJS6btRQEAl85tnczRGWRIAES19)
+
+[17岁高中生写了个神级Prompt，直接把Claude强化成了满血o1](https://mp.weixin.qq.com/s/IAKD0FfcYehs5FsDkLbTJQ)
+
+[https://github.com/richards199999/Thinking-Claude/tree/main](https://github.com/richards199999/Thinking-Claude/tree/main)
+
+## O1 Replication Journey
+
+[上交大发布首个OpenAI o1复现项目进展报告，满满的经验洞察](https://mp.weixin.qq.com/s/ZO_Rv98OakPuBaZl9Tw5VA)
+
+[O1 Replication Journey: A Strategic Progress Report](https://github.com/GAIR-NLP/O1-Journey/blob/main/resource/report.pdf)
+
+[https://github.com/GAIR-NLP/O1-Journey](https://github.com/GAIR-NLP/O1-Journey)
+
+## ScoRe
+
+[强化学习让大模型自动纠错，数学、编程性能暴涨，DeepMind新作](https://mp.weixin.qq.com/s/CqxEoL50_FQTGtLYgh6omw)
+
+[OpenAI o1技术初探3：如何让模型拥有自我纠错的能力](https://mp.weixin.qq.com/s/VHZ_BT27Dh2s5hVQSb33WA)
+
+
+## LeCo
+
+[COLM 24 | 从正确中学习？大模型的自我纠正新视角](https://mp.weixin.qq.com/s/F8KpJuiDE9DfSVb1ciLUSQ)
+
+[Learning From Correctness Without Prompting Makes LLM Efficient Reasoner](https://arxiv.org/pdf/2403.19094)
+
+[https://github.com/starrYYxuan/LeCo](https://github.com/starrYYxuan/LeCo)
+
+## 其他的一些讨论
+
+
+[耗资1.3万，ASU团队揭秘o1推理王者！碾压所有LLM成本超高，关键还会PUA](https://mp.weixin.qq.com/s/pSNC6tdhXcxqB9ofQKU3JQ)
+
+[LLMs Still Can't Plan; Can LRMs? A Preliminary Evaluation of OpenAI's o1 on PlanBench](https://arxiv.org/abs/2409.13373)
+
+[大模型是否有推理能力？DeepMind数月前的论文让AI社区吵起来了](https://mp.weixin.qq.com/s/NdRBGFT6systLwn7p2ER7Q)
+
+[Amortized Planning with Large-Scale Transformers: A Case Study on Chess](https://arxiv.org/pdf/2402.04494)
