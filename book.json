@@ -1,5 +1,5 @@
 {
-        "plugins": ["mathjax", "meta-single", "meta"],
+        "plugins": ["mathjax", "meta-single", "meta", "expandable-chapters"],
   "pluginsConfig": {
         "meta-single": {
             "name": "google-site-verification",
