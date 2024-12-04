@@ -1,6 +1,9 @@
 {
         "plugins": ["mathjax", "meta-single", "meta", "expandable-chapters"],
   "pluginsConfig": {
+    "expandable-chapters": {
+      "default": true
+    },
         "meta-single": {
             "name": "google-site-verification",
             "content": "0qcy8GQkagehLcsUgmwFwiE_XlSQzGXKrjJD_hBldkY"
