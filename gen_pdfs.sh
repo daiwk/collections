@@ -29,7 +29,7 @@ change_format llm_recommend llm_recommend 1.7
 change_format llm_o1 llm_o1 1.8
 change_format llm_others llm_others 1.9
 
-cat ./posts/pre.md  \
+cat ./posts/pre.md.raw  \
         ./posts/pre_llm.md.raw \
         ./posts/llm_intro.md.raw \
         ./posts/llm_archs.md.raw \
