@@ -331,6 +331,10 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [A Tutorial on LLM Reasoning: Relevant methods behind ChatGPT o1](https://github.com/openreasoner/openr/blob/main/reports/Tutorial-LLM-Reasoning-Wang.pdf)
 
+[大模型不会推理，为什么也能有思路？有人把原理搞明白了](https://mp.weixin.qq.com/s/2_ccqg23n05iGK3zUH5KMg)
+
+[Procedural Knowledge in Pretraining Drives Reasoning in Large Language Models](https://arxiv.org/abs/2411.12580)
+
 ## 开源模型+O1
 
 [OpenAI o1式思维链，开源模型也可以有，成功案例来了](https://mp.weixin.qq.com/s/W28qb8ZaJkcyDP69eGw8MA)
@@ -347,9 +351,15 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [上交大发布首个OpenAI o1复现项目进展报告，满满的经验洞察](https://mp.weixin.qq.com/s/ZO_Rv98OakPuBaZl9Tw5VA)
 
+[上交大o1复现新突破：蒸馏超越原版，警示AI研发"捷径陷阱"](https://mp.weixin.qq.com/s/bJc_hSrXsUgrzAfSxAoYoA)
+
 [O1 Replication Journey: A Strategic Progress Report](https://github.com/GAIR-NLP/O1-Journey/blob/main/resource/report.pdf)
 
+[https://github.com/GAIR-NLP/O1-Journey/blob/main/resource/report-part2.pdf](https://github.com/GAIR-NLP/O1-Journey/blob/main/resource/report-part2.pdf)
+
 [https://github.com/GAIR-NLP/O1-Journey](https://github.com/GAIR-NLP/O1-Journey)
+
+
 
 ## ScoRe
 
@@ -365,6 +375,24 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 [Learning From Correctness Without Prompting Makes LLM Efficient Reasoner](https://arxiv.org/pdf/2403.19094)
 
 [https://github.com/starrYYxuan/LeCo](https://github.com/starrYYxuan/LeCo)
+
+## Marco-O1
+
+[阿里推理模型来了！Marco-o1 发布即开源](https://mp.weixin.qq.com/s/taWAZsK_ITJYKM3q_Ssqwg)
+
+[阿里国际版o1来了，Marco-o1：聚焦开放式问题推理](https://mp.weixin.qq.com/s/k1gwBWNYIn_tfviWxbj8fw)
+
+[Marco-o1: Towards Open Reasoning Models for Open-Ended Solutions](https://arxiv.org/abs/2411.14405)
+
+[https://github.com/AIDC-AI/Marco-o1](https://github.com/AIDC-AI/Marco-o1)
+
+## OmniSearch
+
+[阿里多模态检索智能体，自带o1式思考过程！复杂问题逐步拆解，动态调整下一步检索策略](https://mp.weixin.qq.com/s/IU1SokQC5RwRNL2sr7qQLg)
+
+[Benchmarking Multimodal Retrieval Augmented Generation with Dynamic VQA Dataset and Self-adaptive Planning Agent](https://arxiv.org/abs/2411.02937)
+
+[https://github.com/Alibaba-NLP/OmniSearch](https://github.com/Alibaba-NLP/OmniSearch)
 
 ## 其他的一些讨论
 
