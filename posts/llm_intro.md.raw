@@ -629,6 +629,8 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 
 [Decoder-only的LLM为什么需要位置编码？](https://mp.weixin.qq.com/s/3sBYrKyEPP93nwigaOAAAA)
 
+[HuggingFace工程师亲授：如何在Transformer中实现最好的位置编码](https://mp.weixin.qq.com/s/_vhyBrTM041FfHEohwLqMA)
+
 (toread)
 
 ### 注意力机制和Bias
@@ -2308,6 +2310,16 @@ Llama 3.2
 
 [Sebastian Raschka最新博客：从头开始，用Llama 2构建Llama 3.2](https://mp.weixin.qq.com/s/RuTRkJPeEP1hqWevxn9h6Q)
 
+### Llama-3.3
+
+[新版Llama 3 70B反超405B！Meta开卷后训练，谷歌马斯克都来抢镜](https://mp.weixin.qq.com/s/6Iv4VzMlYrkmSsAo_IRGTg)
+
+Llama 3.3能用70B实现405B的效果，主要是“运用了后训练技术的最新进展”，其中包括在线偏好优化（online preference optimization）。
+
+[https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct)
+
+[https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/MODEL_CARD.md](https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/MODEL_CARD.md)
+
 
 ### Alpaca
 
@@ -2383,6 +2395,8 @@ Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一�
 [​Mistral首个多模态模型Pixtral 12B来了！还是直接放出24GB磁力链接](https://mp.weixin.qq.com/s/c_fmpkuimmEtY6pD9f_bZQ)
 
 [https://huggingface.co/mistral-community/pixtral-12b-240910](https://huggingface.co/mistral-community/pixtral-12b-240910)
+
+[发力了，Mistral对标ChatGPT全面升级le Chat，还祭出超大杯多模态模型](https://mp.weixin.qq.com/s/sABAaxKNGM-odULaM0-_Zg)
 
 ### phi-3
 
@@ -2766,6 +2780,12 @@ XXX
 
 [力压GPT-4o！新王Claude 3.5 Sonnet来了，直接免费可用](https://mp.weixin.qq.com/s/HnQ7D4iDVgWteZZdTJoadg)
 
+[大模型代肝，自动刷《崩铁》升级材料，Claude操纵计算机还能这么用！](https://mp.weixin.qq.com/s/F8CX6_VWebWLy26NeRNQsw)
+
+[The Dawn of GUI Agent: A Preliminary Case Study with Claude 3.5 Computer Use](https://arxiv.org/pdf/2411.10323)
+
+[https://github.com/showlab/computer_use_ootb](https://github.com/showlab/computer_use_ootb)
+
 ### grok
 
 &nbsp;
@@ -3049,6 +3069,22 @@ XXX
 
 [https://llm.hunyuan.tencent.com/](https://llm.hunyuan.tencent.com/)
 
+### 阶跃星辰
+
+[在「最难LLM评测榜单」上，阶跃万亿参数模型拿下中国第一](https://mp.weixin.qq.com/s/rGv2r_-owZ3jIx3IPk6XfQ)
+
+### Tülu 3(基于llama3.1)
+
+(toread)
+
+[这才是真・开源模型！公开「后训练」一切，性能超越Llama 3.1 Instruct](https://mp.weixin.qq.com/s/sTtBkVkqy0CQtpzcR6SN-A)
+
+[TÜLU 3: Pushing Frontiers in Open Language Model Post-Training](https://arxiv.org/pdf/2411.15124)
+
+[https://github.com/allenai/open-instruct](https://github.com/allenai/open-instruct)
+
+[https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B](https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B)
+
 
 ## 小模型
 
@@ -3071,6 +3107,12 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [Computational Bottlenecks of Training Small-scale Large Language Models](https://arxiv.org/pdf/2410.19456)
 
+[研究大模型门槛太高？不妨看看小模型SLM，知识点都在这](https://mp.weixin.qq.com/s/sg7HveGDjMEj-ZcHS3YizA)
+
+[A Comprehensive Survey of Small Language Models in the Era of Large Language Models: Techniques, Enhancements, Applications, Collaboration with LLMs, and Trustworthiness](https://arxiv.org/abs/2411.03350)
+
+[https://github.com/FairyFali/SLMs-Survey](https://github.com/FairyFali/SLMs-Survey)
+
 ### BitNet
 
 [微软开源爆火1.58bit大模型推理框架！千亿参数模型量化后单CPU可跑，速度每秒5-7个token](https://mp.weixin.qq.com/s/gerCRxj4eULOut9PtMlNog)
@@ -3092,6 +3134,9 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 + hf版本：[https://huggingface.co/Zyphra/Zamba2-2.7B](https://huggingface.co/Zyphra/Zamba2-2.7B)
 + 纯pytorch版本：[https://github.com/Zyphra/Zamba2](https://github.com/Zyphra/Zamba2)
 
+
+
 ## 小结
 
 [开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
+

@@ -611,6 +611,22 @@ Google的大规模稀疏模型设计
 
 [Fire-Flyer AI-HPC: A Cost-Effective Software-Hardware Co-Design for Deep Learning](https://arxiv.org/pdf/2408.14158)
 
+## megatron-kwai
+
+[万字干货！手把手教你如何训练超大规模集群下的大语言模型](https://mp.weixin.qq.com/s/SRwSnQtxx2Zyb6iIHOZPQw)
+
+[Accelerating the Training of Large Language Models using Efficient Activation Rematerialization and Optimal Hybrid Parallelism](https://www.usenix.org/conference/atc24/presentation/yuan)
+
+[https://github.com/kwai/Megatron-Kwai](https://github.com/kwai/Megatron-Kwai)
+
+## DiPaCo
+
+[DiPaCo | Google分布式训练和分布式MoE 新范式 （上）](https://mp.weixin.qq.com/s/_SdQy10mcUVLcW-r-VoTsw)
+
+[DiPaCo | Google分布式训练和分布式MoE 新范式 （下）](https://mp.weixin.qq.com/s?__biz=MzA5MTQxMTM0Nw==&mid=2247486316&idx=1&sn=467b6ae104b32f79d9e25d53a5771f97)
+
+[DiPaCo: Distributed Path Composition](https://arxiv.org/pdf/2403.10616)
+
 
 # 推理框架
 
@@ -787,6 +803,17 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 [DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads](https://arxiv.org/abs/2410.10819)
 
 [https://github.com/mit-han-lab/duo-attention](https://github.com/mit-han-lab/duo-attention)
+
+## prompt-lookup decoding & REST
+
+[https://www.zhihu.com/question/3266943961/answer/28177009964](https://www.zhihu.com/question/3266943961/answer/28177009964)
+
+prompt-lookup decoding：[https://github.com/apoorvumang/prompt-lookup-decoding](https://github.com/apoorvumang/prompt-lookup-decoding)
+
+[REST: Retrieval-Based Speculative Decoding](https://arxiv.org/abs/2311.08252)
+
+[https://zhuanlan.zhihu.com/p/685234708](https://zhuanlan.zhihu.com/p/685234708)
+
 
 # 算子加速
 
