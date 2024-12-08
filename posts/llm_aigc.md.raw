@@ -6263,7 +6263,13 @@ XXX
 
 [Reward Hacking in Reinforcement Learning](https://lilianweng.github.io/posts/2024-11-28-reward-hacking/)
 
-# 多模态（图像）
+## 强化微调
+
+[OpenAI 12连发第2弹：强化微调，少量样本就能训练自己的专家模型](https://mp.weixin.qq.com/s/qpprEm3rzvqHsS1dhiUehg)
+
+评分器（grader）会比较模型输出与正确答案，然后返回一个0到1之间的分数。0 表示模型的输出中不包含正确答案，而1表示正确答案在输出的第一个位置。例如正确答案在第2个位置，评分器可能会给出0.7的分数。
+
+![rft-grader](../assets/rft-grader.png)# 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
 
