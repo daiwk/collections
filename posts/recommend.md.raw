@@ -97,6 +97,10 @@ log(1+exp(x)) = log(1+exp(x)) - log(exp(x)) + x = log(1+exp(-x)) + x
 def softplus_math(x): return math.log1p(math.exp(-abs(x))) + max(x, 0)
 ```
 
+## 一些tricks
+
+[深度学习刷SOTA有哪些trick？](https://www.zhihu.com/question/540433389/answer/2549775065)
+
 # 特征、样本、数据流
 
 [浅谈微视推荐系统中的特征工程](https://mp.weixin.qq.com/s/NqVP0ksfLiRLSGkuWxiz5A)
@@ -726,7 +730,7 @@ gbdt与Adaboost对比
 
 [DCN V2：Google提出改进版DCN，用于大规模排序系统中的特征交叉学习(附代码)](https://zhuanlan.zhihu.com/p/353223660)
 
-
+[抖音/阿里/美团/微信/快手长序列兴趣建模经典方案探索](https://mp.weixin.qq.com/s/xKsT8b9cwrD1i8l-oSQ25g)
 
 ## 保序回归
 
