@@ -1259,6 +1259,10 @@ XXX
 
 [https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems](https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems)
 
+BM3：[Bootstrap Latent Representations for Multi-modal Recommendation](https://arxiv.org/pdf/2207.05969)
+
+EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.org/pdf/2404.06078v1)
+
 ## CCF-LLM
 
 [CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
