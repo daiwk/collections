@@ -378,6 +378,19 @@ XXX
 
 [From Individual to Society: A Survey on Social Simulation Driven by Large Language Model-based Agents](https://arxiv.org/abs/2412.03563)
 
+
+## MetaGPT
+
+ICLR2024
+
++ [MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework](https://arxiv.org/pdf/2308.00352)
++ [Data Interpreter: An LLM Agent For Data Science](https://arxiv.org/abs/2402.18679)
++ [AFlow: Automating Agentic Workflow Generation](https://arxiv.org/abs/2410.10762)
+
+4w+的stars了
+
+[https://github.com/geekan/MetaGPT](https://github.com/geekan/MetaGPT)
+
 # 一些其他比较重要的工作
 
 ## 几篇出现频率比较高的论文
