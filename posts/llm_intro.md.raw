@@ -2617,10 +2617,15 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/221
 + 更新的 Gemini 1.5 Pro，其大部分功能和基准都超过了 2 月份的版本
 + Gemini 1.5 Flash，一种更轻量级的变体，专为提高效率而设计，并且在性能方面的减益很小。
 
-#### 更大的上下文窗口
-
 此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
 
+#### gemini 2.0
+
+[OpenAI深夜被狙，谷歌Gemini 2.0掀翻牌桌！最强智能体组团击毙o1](https://mp.weixin.qq.com/s/RfTGAlYVlH1RlTzuzugrKQ)
+
+[谷歌“狙击”OpenAI，发布新一代大模型！主打Agent+多模态](https://mp.weixin.qq.com/s/c39MbjULBW5M_8vdO-VUXQ)
+
+[我扒出了Gemini 2.0超实时多模态幕后的黑科技，第六代TPU芯片Trillium！](https://mp.weixin.qq.com/s/BZpL9PwvCWmR4R6h2502Kw)
 
 ### gemma
 
