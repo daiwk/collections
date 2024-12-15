@@ -3785,10 +3785,15 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/221
 + 更新的 Gemini 1.5 Pro，其大部分功能和基准都超过了 2 月份的版本
 + Gemini 1.5 Flash，一种更轻量级的变体，专为提高效率而设计，并且在性能方面的减益很小。
 
-#### 更大的上下文窗口
-
 此前的SOTA模型能处理**20万(200K)**的token，Gemini 1.5能稳定处理**100万(1M)**的token（极限为**1000万(10M)**的token），能够处理11小时的音频、1小时的视频、超过3w行的代码库、超过70w个单词
 
+#### gemini 2.0
+
+[OpenAI深夜被狙，谷歌Gemini 2.0掀翻牌桌！最强智能体组团击毙o1](https://mp.weixin.qq.com/s/RfTGAlYVlH1RlTzuzugrKQ)
+
+[谷歌“狙击”OpenAI，发布新一代大模型！主打Agent+多模态](https://mp.weixin.qq.com/s/c39MbjULBW5M_8vdO-VUXQ)
+
+[我扒出了Gemini 2.0超实时多模态幕后的黑科技，第六代TPU芯片Trillium！](https://mp.weixin.qq.com/s/BZpL9PwvCWmR4R6h2502Kw)
 
 ### gemma
 
@@ -6274,7 +6279,11 @@ XXX
 
 评分器（grader）会比较模型输出与正确答案，然后返回一个0到1之间的分数。0 表示模型的输出中不包含正确答案，而1表示正确答案在输出的第一个位置。例如正确答案在第2个位置，评分器可能会给出0.7的分数。
 
-![rft-grader](../assets/rft-grader.png)# 多模态（图像）
+![rft-grader](../assets/rft-grader.png)
+
+可能相关的论文：[字节再送神助攻，大模型继续狂飙。](https://mp.weixin.qq.com/s/HeauFZHZcFOsDOgAahEIhQ)，ACL2024的[ReFT: Reasoning with Reinforced Fine-Tuning](https://arxiv.org/pdf/2401.08967)
+
+# 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
 
@@ -6734,6 +6743,18 @@ DALL-E3：
 
 [https://github.com/YWolfeee/Training-Free-Guidance](https://github.com/YWolfeee/Training-Free-Guidance)
 
+## Deepseek-VL2
+
+[久等了，DeepSeek-VL2](https://mp.weixin.qq.com/s/rE6Dh_OzolgDTAh3ubM5KA)
+
+[https://github.com/deepseek-ai/DeepSeek-VL2](https://github.com/deepseek-ai/DeepSeek-VL2)
+
+[DeepSeek-VL2: Mixture-of-Experts Vision-Language Models for Advanced Multimodal Understanding](https://github.com/deepseek-ai/DeepSeek-VL2/blob/main/DeepSeek_VL2_paper.pdf)
+
++ 数据：比一代 DeepSeek-VL 多一倍优质训练数据，引入梗图理解、视觉定位、视觉故事生成等新能力
++ 架构：视觉部分使用切图策略支持动态分辨率图像，语言部分采用MoE架构低成本高性能
++ 训练：继承DeepSeek-VL的三阶段训练流程，同时通过负载均衡适配图像切片数量不定的困难，对图像和文本数据使用不同流水并行策略，对MoE语言模型引入专家并行，实现高效训练
+
 ## 其他
 
 (toread)
@@ -7152,6 +7173,14 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [HunyuanVideo: A Systematic Framework For Large Video Generative Models](https://github.com/Tencent/HunyuanVideo/blob/main/assets/hunyuanvideo.pdf)
 
 [https://github.com/Tencent/HunyuanVideo](https://github.com/Tencent/HunyuanVideo)
+
+## STIV
+
+(toread)
+
+[Sora之后，苹果发布视频生成大模型STIV，87亿参数一统T2V、TI2V任务](https://mp.weixin.qq.com/s/6mbe80LmzkH-5eGgIys6PQ)
+
+[STIV: Scalable Text and Image Conditioned Video Generation](https://arxiv.org/pdf/2412.07730)
 
 ## 其他
 
@@ -8549,6 +8578,13 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 [小红书搜索：生成式检索的探索与实践](https://mp.weixin.qq.com/s/yApGxCGxjWnZQu8PoO9Qeg)
 
 [Generative Dense Retrieval: Memory Can Be a Burden](https://arxiv.org/abs/2401.10487)
+
+## LLM-CF
+
+[2024'快手提出LLM-CF框架，借助LLM的链式思维（COT）推理提升推荐系统性能](https://mp.weixin.qq.com/s/-NJPxj-1JknKl0JdVYIB5g)
+
+CIKM24，[Large Language Models Enhanced Collaborative Filtering](https://arxiv.org/pdf/2403.17688)
+
 # 从RLAIF说起
 
 ## RLAIF(Constitutional AI)
@@ -8944,6 +8980,26 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 [Benchmarking Multimodal Retrieval Augmented Generation with Dynamic VQA Dataset and Self-adaptive Planning Agent](https://arxiv.org/abs/2411.02937)
 
 [https://github.com/Alibaba-NLP/OmniSearch](https://github.com/Alibaba-NLP/OmniSearch)
+
+## Coconut
+
+[田渊栋团队论文火了！连续思维链优于CoT，打开LLM推理新范式](https://mp.weixin.qq.com/s/cqh3pCLMFJgSVpF0nNgt6w)
+
+(toread)
+
+[Training Large Language Models to Reason in a Continuous Latent Space](https://arxiv.org/pdf/2412.06769)
+
+一般而言，LLM 被限制在语言空间（language space）内进行推理，并通过思维链（CoT）来表达推理过程，从而解决复杂的推理问题。然而，语言空间可能并不总是最适合推理的。例如，很多单词token主要用于文本连贯性，而不是推理本身，而一些关键token则需要复杂的规划。
+
+Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模型头（language model head）和嵌入层将隐藏状态与语言 token 进行映射，而是直接将最后的隐藏状态（即连续思维）作为下一个token的输入嵌入。 
+
+## O1的安全机制
+
+[OpenAI发布49页长文，讲述o1的安全机制](https://mp.weixin.qq.com/s/-zPVmr6_dA35j-YZAIqGJg)
+
+[OpenAI o1 System Card](https://cdn.openai.com/o1-system-card-20241205.pdf)
+
+
 
 ## 其他的一些讨论
 
@@ -9346,6 +9402,14 @@ ICLR2024
 4w+的stars了
 
 [https://github.com/geekan/MetaGPT](https://github.com/geekan/MetaGPT)
+
+## insight-V
+
+[多智能体架构Insight-V来了！突破长链视觉推理瓶颈](https://mp.weixin.qq.com/s/-8TvvTDa7zeEUlzcbtuPWg)
+
+[Insight-V: Exploring Long-Chain Visual Reasoning with Multimodal Large Language Models](https://arxiv.org/abs/2411.14432)
+
+[https://github.com/dongyh20/Insight-V](https://github.com/dongyh20/Insight-V)
 
 # 一些其他比较重要的工作
 
