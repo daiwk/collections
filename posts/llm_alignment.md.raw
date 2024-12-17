@@ -402,6 +402,9 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [https://github.com/OpenLLMAI/OpenRLHF](https://github.com/OpenLLMAI/OpenRLHF)
 
+[图解OpenRLHF中基于Ray的分布式训练流程](https://mp.weixin.qq.com/s/BXmItS8nlOYqJbVY_8tKoQ)
+
+
 # Alignment：RLHF变种
 
 ## Alignment综述
