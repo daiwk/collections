@@ -3022,6 +3022,12 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [https://github.com/QwenLM/Self-Lengthen](https://github.com/QwenLM/Self-Lengthen)
 
+## BLT
+
+[Tokenization不存在了？Meta最新研究，无需Tokenizer的架构来了](https://mp.weixin.qq.com/s/7ju-PjPZVPrBLQ1qFnFoKw)
+
+[Byte Latent Transformer: Patches Scale Better Than Tokens](https://arxiv.org/pdf/2412.09871)
+
 
 # 典型LLM简介
 
@@ -4272,6 +4278,10 @@ XXX
 [https://github.com/allenai/open-instruct](https://github.com/allenai/open-instruct)
 
 [https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B](https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B)
+
+## post training的一些总结
+
+[工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
 
 
 ## 小模型
@@ -6025,6 +6035,9 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [https://github.com/OpenLLMAI/OpenRLHF](https://github.com/OpenLLMAI/OpenRLHF)
 
+[图解OpenRLHF中基于Ray的分布式训练流程](https://mp.weixin.qq.com/s/BXmItS8nlOYqJbVY_8tKoQ)
+
+
 # Alignment：RLHF变种
 
 ## Alignment综述
@@ -6606,6 +6619,7 @@ DALL-E3：
 
 [Imagen 3支持人物生成，人人可用！谷歌Gemini AI重大升级来了](https://mp.weixin.qq.com/s/4gYFpljgF64vA5ojulEmYQ)
 
+[https://deepmind.google/technologies/imagen-3/](https://deepmind.google/technologies/imagen-3/)
 
 ## Chameleon
 
@@ -7191,6 +7205,14 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [Sora之后，苹果发布视频生成大模型STIV，87亿参数一统T2V、TI2V任务](https://mp.weixin.qq.com/s/6mbe80LmzkH-5eGgIys6PQ)
 
 [STIV: Scalable Text and Image Conditioned Video Generation](https://arxiv.org/pdf/2412.07730)
+
+## Veo 2
+
+[谷歌版Sora升级4K高清！一句话控制镜头运动，跑分叫板可灵海螺](https://mp.weixin.qq.com/s/8-H286tyxbTeZrtEBDZHaA)
+
+[https://deepmind.google/technologies/veo/veo-2/](https://deepmind.google/technologies/veo/veo-2/)
+
+
 
 ## 其他
 
@@ -8673,6 +8695,13 @@ Commence with the chain of thought immediately:
 
 ### 在线部分
 
+
+## ECR
+
+[RecSys'24最佳长论文|腾讯ECR:富有情感的对话式推荐系统](https://mp.weixin.qq.com/s/K9LUSywox6IeAb4XIhe_qA)
+
+[Towards Empathetic Conversational Recommender Systems](https://arxiv.org/pdf/2409.10527)
+
 # 从RLAIF说起
 
 ## RLAIF(Constitutional AI)
@@ -9087,6 +9116,9 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 
 [OpenAI o1 System Card](https://cdn.openai.com/o1-system-card-20241205.pdf)
 
+## O1架构
+
+[「七万字长文」从认知架构到实践部署：o1与o1 Pro的系统性分析与内涵洞察 · 上篇](https://mp.weixin.qq.com/s/ioqtgG2nOr3fT5sNqLNZdg)
 
 
 ## 其他的一些讨论
