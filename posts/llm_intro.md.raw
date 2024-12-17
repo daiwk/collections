@@ -1854,6 +1854,12 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [https://github.com/QwenLM/Self-Lengthen](https://github.com/QwenLM/Self-Lengthen)
 
+## BLT
+
+[Tokenization不存在了？Meta最新研究，无需Tokenizer的架构来了](https://mp.weixin.qq.com/s/7ju-PjPZVPrBLQ1qFnFoKw)
+
+[Byte Latent Transformer: Patches Scale Better Than Tokens](https://arxiv.org/pdf/2412.09871)
+
 
 # 典型LLM简介
 
@@ -3104,6 +3110,10 @@ XXX
 [https://github.com/allenai/open-instruct](https://github.com/allenai/open-instruct)
 
 [https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B](https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B)
+
+## post training的一些总结
+
+[工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
 
 
 ## 小模型
