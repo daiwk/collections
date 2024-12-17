@@ -1435,8 +1435,20 @@ CIKM24，[Large Language Models Enhanced Collaborative Filtering](https://arxiv.
 
 &nbsp;
 
+通过如下的CoT prompt $$\mathcal{P}$$，可以实现如下过程：
 
-CoT prompt：
++ 用RecGen-llama系统性地分析用户的交互历史和反馈，建立一个详细的用户profile。
++ RecGen-llama对目标的新商品进行特征的详细描述。
++ RecGen-llama考虑用户画像与目标商品特性之间的契合度。
++ RecGen-llama反思用户在购买中可能对多样化的需求。
+
+即RecGen-llama的输出是
+
+XXX
+c_i=\operatorname{RecGen}-\operatorname{LLaMA}\left(\mathbf{x}_{\mathbf{i}}, y_i, \mathcal{P}\right)
+XXX
+
+其中的CoT prompt $$\mathcal{P}$$是：
 
 ```
 <<SYS>> As an AI model developed for analyzing consumer behavior, your task is to
@@ -1469,6 +1481,8 @@ Commence with the chain of thought immediately:
 让我们一步一步地开发上述考虑因素的思维链。
 立即开始思维链：
 ```
+
+从原始的推荐数据集随机sample出M个$$(x_i, y_i)$$，生成对应的$$c_i$$，可以得到CoT数据集：$$C=\left\{\left(\mathbf{x}_m, c_m, y_m\right)\right\}_{m=1}^M$$
 
 
 ### 在线部分
