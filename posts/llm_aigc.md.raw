@@ -1775,7 +1775,7 @@ T5中把bias干掉了
 
 XXX\operatorname{FFN}_{\operatorname{ReLU}}\left(x, W_1, W_2\right)=\max \left(x W_1, 0\right) W_2XXX
 
-然后，$\operatorname{GELU}(x)=x \Phi(x)$，同时$\operatorname{Swish}_\beta(x)=x \sigma(\beta x)$，接下来
+然后，$$\operatorname{GELU}(x)=x \Phi(x)$$，同时$$\operatorname{Swish}_\beta(x)=x \sigma(\beta x)$$，接下来
 
 XXX\operatorname{GLU}(x, W, V, b, c)=\sigma(x W+b) \otimes(x V+c)XXX
 XXX\operatorname{Bilinear}(x, W, V, b, c)=(x W+b) \otimes(x V+c)XXX
@@ -8573,9 +8573,9 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 基于google的GTR(Generalizable T5-based dense Retrievers)模型（[Large Dual Encoders Are Generalizable Retrievers](https://arxiv.org/pdf/2112.07899)）加了task instruction，用对比学习loss训练
 
-## LLM-Embedder
+## LLM-Embedder(BGE)
 
-[Retrieve Anything To Augment Large Language Models](https://arxiv.org/pdf/2310.07554)
+[Retrieve Anything To Augment Large Language Models](https://arxiv.org/pdf/2310.07554)和[C-Pack: Packed Resources For General Chinese Embeddings](https://arxiv.org/pdf/2309.07597)这两个对应的是一样的代码
 
 [https://github.com/FlagOpen/FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding)
 
@@ -8617,7 +8617,9 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 CIKM24，[Large Language Models Enhanced Collaborative Filtering](https://arxiv.org/pdf/2403.17688)
 
-文中用到的instruction prompt参考（Recsys23的[TALLRec: An Effective and Efficient Tuning Framework to Align Large Language Model with Recommendation](https://arxiv.org/pdf/2305.00447)和WWW24的[ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131)），把推荐变成了一个让模型输出yes/no的2分类任务。
+[https://anonymous.4open.science/r/LLM-CF-AD78/readme.md](https://anonymous.4open.science/r/LLM-CF-AD78/readme.md)
+
+文中用到的instruction prompt参考（Recsys23的[TALLRec: An Effective and Efficient Tuning Framework to Align Large Language Model with Recommendation](https://arxiv.org/pdf/2305.00447)和WWW24的[ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131)），把推荐变成了一个让模型输出yes/no的2分类任务。这里的$$x_i$$是包括用户特征和当前item特征的文本描述，$$y_i$$是点击的label(0/1)。
 
 ![](../assets/text-features.png)
 
@@ -8650,7 +8652,7 @@ CIKM24，[Large Language Models Enhanced Collaborative Filtering](https://arxiv.
 + Wise-FT：[Robust Fine-Tuning of Zero-Shot Models](https://arxiv.org/pdf/2109.01903)，这个引用量挺高的，[https://github.com/mlfoundations/wise-ft](https://github.com/mlfoundations/wise-ft)，将pretrained和finetuned的权重加权融合：$$W_{\text {ensemble }}=\alpha \cdot W_{\text {fine-tuned }}+(1-\alpha) \cdot W_{\text {pre-trained }}$$
 + RecGen：[How Abilities in Large Language Models are Affected by Supervised Fine-tuning Data Composition](https://arxiv.org/pdf/2310.05492)发现通过mixed-data finetuning能够保持通用能力的情况下，提升数学和代码能力
 
-对比下来发现，R3F在推荐和MMLU上都最差，full在推荐上效果最好但在MMLU上不太行，RecGen在推荐的效果还不错在MMLU也没降多少，所以将推荐数据和通用数据(如LIMA([Lima: Less is more for alignment](https://arxiv.org/pdf/2305.11206))和alpaca-gpt4([Instruction tuning with gpt-4](https://arxiv.org/pdf/2304.03277)))混合，
+对比下来发现，R3F在推荐和MMLU上都最差，full在推荐上效果最好但在MMLU上不太行，RecGen在推荐的效果还不错在MMLU也没降多少，所以将推荐数据和通用数据(如LIMA([Lima: Less is more for alignment](https://arxiv.org/pdf/2305.11206))和alpaca-gpt4([Instruction tuning with gpt-4](https://arxiv.org/pdf/2304.03277)))混合。
 
 
 #### CoT Reasoning生成
@@ -8706,8 +8708,51 @@ Commence with the chain of thought immediately:
 
 从原始的推荐数据集随机sample出M个$$(x_i, y_i)$$，生成对应的$$c_i$$，可以得到CoT数据集：$$C=\left\{\left(\mathbf{x}_m, c_m, y_m\right)\right\}_{m=1}^M$$
 
+#### 性能分析
+
+&nbsp;
+
++ 训练：发现相比用全量数据训练，用一半的数据训出来的模型在MMLU上效果更好，在推荐上的效果差不多，所以可以用小数据集来finetune
++ 生成：对比[Towards Open-World Recom- mendation with Knowledge Augmentation from Large Language Model](https://arxiv.org/pdf/2306.10933)提出的KAR(用户特征和item特征相对固定，可以提前存生成结果)，LLM-CF应用的场景有很多新用户和新item，但并不需要流式更新
 
 ### 在线部分
+
+![](../assets/llm-cf-total.png)
+
+#### In-context CoT Examples Retrieval
+
+&nbsp;
+
+对于上面的CoT数据集，拿$$x_i$$对应的文本$$x_i^t$$作为query，而数据集$$C$$里的$$M$$个examples对应的key是$$\mathcal{K}=\left[\mathbf{x}_1^t, \ldots, \mathbf{x}_m^t, \ldots, \mathbf{x}_M^t\right]$$。
+
+先通过BGE embedding([C-Pack: Packed Resources For General Chinese Embeddings](https://arxiv.org/pdf/2309.07597))作为encoder把query $$x_i^t$$和keys $$\mathcal{K}$$转成向量$$\mathbf{e}\left(\mathbf{x}_i^t\right), \mathbf{e}(\mathcal{K})=\operatorname{encoder}\left(\mathbf{x}_i^t\right), \text { encoder }(\mathcal{K})$$
+
+然后通过ANN找出top K个examples $$\mathcal{I}_i=\left\{\mathcal{E}_1, \ldots, \mathcal{E}_k, \ldots, \mathcal{E}_K\right\},\ \mathcal{E}_k=\left(\mathbf{x}_k, c_k, y_k\right)$$
+
+做了2个trick：
+
++ 避免穿越，保证$$\mathcal{I}_i$$不包括$$x_i$$未来的steps的交互信息
++ 为了让正负例比例对下游任务不造成影响，保证$$\mathcal{I}_i$$中的正例和负例比例是1:1
+
+#### In-context Chain of Thought Module
+
+&nbsp;
+
+
+
+#### Model-Agnostic Application
+
+&nbsp;
+
+#### Model Training
+
+&nbsp;
+
+#### Efficiency Analysis of Online Service
+
+&nbsp;
+
+
 
 
 ## ECR
