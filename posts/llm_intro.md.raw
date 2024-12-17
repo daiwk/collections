@@ -607,7 +607,7 @@ T5中把bias干掉了
 
 XXX\operatorname{FFN}_{\operatorname{ReLU}}\left(x, W_1, W_2\right)=\max \left(x W_1, 0\right) W_2XXX
 
-然后，$\operatorname{GELU}(x)=x \Phi(x)$，同时$\operatorname{Swish}_\beta(x)=x \sigma(\beta x)$，接下来
+然后，$$\operatorname{GELU}(x)=x \Phi(x)$$，同时$$\operatorname{Swish}_\beta(x)=x \sigma(\beta x)$$，接下来
 
 XXX\operatorname{GLU}(x, W, V, b, c)=\sigma(x W+b) \otimes(x V+c)XXX
 XXX\operatorname{Bilinear}(x, W, V, b, c)=(x W+b) \otimes(x V+c)XXX
