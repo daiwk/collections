@@ -8627,6 +8627,10 @@ CIKM24，[Large Language Models Enhanced Collaborative Filtering](https://arxiv.
 
 [https://anonymous.4open.science/r/LLM-CF-AD78/readme.md](https://anonymous.4open.science/r/LLM-CF-AD78/readme.md)
 
+简单总结：
+
+拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss。
+
 文中用到的instruction prompt参考（Recsys23的[TALLRec: An Effective and Efficient Tuning Framework to Align Large Language Model with Recommendation](https://arxiv.org/pdf/2305.00447)和WWW24的[ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131)），把推荐变成了一个让模型输出yes/no的2分类任务。这里的$$x_i$$是包括用户特征和当前item特征的文本描述，$$y_i$$是点击的label(0/1)。
 
 ![](../assets/text-features.png)
@@ -8746,21 +8750,56 @@ Commence with the chain of thought immediately:
 
 &nbsp;
 
+ICT模块将$$\mathcal{I}_i$$当成in-context examples，并把$$x_i$$当成query，对应的ICT tokens就是
 
+XXX
+\mathbf{T}=\left[\mathbf{x}_1, c_1, y_1, \ldots, \mathbf{x}_K, c_K, y_K, \mathbf{x}_i\right]
+XXX
 
-#### Model-Agnostic Application
+然后得到这些token对应的embs：
 
-&nbsp;
+XXX
+\mathbf{E}=\left[\mathbf{r}_1, \mathbf{c}_1, \mathbf{l}_1, \ldots, \mathbf{r}_K, \mathbf{c}_K, \mathbf{l}_K, \mathbf{r}_i\right] 
+XXX
+
+其中，（图中右上角橙色部分）
+
++ 文本特征同样经过BGE encoder，
++ $$x_i$$里的推荐特征则经过推荐模型的feature encoder得到$$r_i$$，
++ CoT reasoning $$c$$则是通过text encoder和MLP映射
++ label $$l$$也是一个0/1的id对应的embedding
+
+然后把$$\mathbf{E}$$经过若干层transformer decoder，得到输出的表示:
+
+XXX
+\left.\mathbf{H}=\left[\mathbf{h}\left(\mathbf{r}_1\right), \mathbf{h}\left(\mathbf{c}_1\right), \mathbf{h}\left(\mathbf{l}_1\right), \cdots, \mathbf{h}\left(\mathbf{r}_i\right)\right)\right]=\operatorname{Decoder}(\mathbf{E}) 
+XXX
+
+最终得到的表示可以是这个输出的last hidden state：$$\mathbf{w}=\mathbf{h}\left(\mathbf{r}_i\right)$$
+
+在各数据集上评估时，发现CoT examples的个数K=4效果就不错了，对应的ICT tokens $$T$$的长度也只有12左右。
 
 #### Model Training
 
 &nbsp;
 
+原来推荐的loss是$$\mathcal{L}_o^i$$，这里加上一个对CoT examples的emb的重建loss：
+
+XXX
+\mathcal{L}_r^i=\frac{1}{K} \sum_{i=1}^K\left(1-\frac{\mathbf{c}_i \cdot \mathbf{h}\left(\mathbf{r}_i\right)}{\left\|\mathbf{c}_i\right\|\left\|\mathbf{h}\left(\mathbf{r}_i\right)\right\|}\right)
+XXX
+
+最终的loss如下
+
+XXX
+\mathcal{L}=\frac{1}{N} \sum_{i=1}^N\left(\alpha \mathcal{L}_r^i+\mathcal{L}_o^i\right)
+XXX
+
 #### Efficiency Analysis of Online Service
 
 &nbsp;
 
-
+图中的蓝色火焰部分需要在线计算，而因为$$K=4$$，所以很轻量
 
 
 ## ECR
@@ -9078,6 +9117,8 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 [OpenAI o1 技术初探1：整体框架，利用Test-Time Scaling Law提升逻辑推理能力](https://mp.weixin.qq.com/s/MNwS1PQX2XOhVfN0rKykUQ)---(写得比较细)
 
 [Scaling LLM Test-Time：谁说类o1推理一定要用RL???](https://mp.weixin.qq.com/s/3ABXCv6PG6asRfD0Vc5Iig)
+
+[3B模型长思考后击败70B！HuggingFace逆向出o1背后技术细节并开源](https://mp.weixin.qq.com/s/E1FaaOurAb-QlCX3BASi9Q)
 
 ## inference scaling
 
