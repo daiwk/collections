@@ -3819,6 +3819,10 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/abs/221
 
 [我扒出了Gemini 2.0超实时多模态幕后的黑科技，第六代TPU芯片Trillium！](https://mp.weixin.qq.com/s/BZpL9PwvCWmR4R6h2502Kw)
 
+[谷歌逆风翻盘暴击OpenAI，90天王者归来！44页报告押注25年三大技术前沿](https://mp.weixin.qq.com/s/b0yqPre6wMlP59cH6Qrbdw)
+
+[data and ai trends report 2024](https://services.google.com/fh/files/misc/data_ai_trends_report.pdf)
+
 ### gemma
 
 [https://blog.google/technology/developers/gemma-open-models/](https://blog.google/technology/developers/gemma-open-models/)
@@ -6314,7 +6318,12 @@ XXX
 
 可能相关的论文：[字节再送神助攻，大模型继续狂飙。](https://mp.weixin.qq.com/s/HeauFZHZcFOsDOgAahEIhQ)，ACL2024的[ReFT: Reasoning with Reinforced Fine-Tuning](https://arxiv.org/pdf/2401.08967)
 
-# 多模态（图像）
+
+## 伪对齐
+
+[震惊！Claude伪对齐率竟能高达78％，Anthropic 137页长论文自揭短](https://mp.weixin.qq.com/s/UpTjO8ATcYC6-PSnJkZMMg)
+
+[Alignment Faking in Large Language Models](https://assets.anthropic.com/m/983c85a201a962f/original/Alignment-Faking-in-Large-Language-Models-full-paper.pdf)# 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
 
@@ -6787,6 +6796,14 @@ DALL-E3：
 + 架构：视觉部分使用切图策略支持动态分辨率图像，语言部分采用MoE架构低成本高性能
 + 训练：继承DeepSeek-VL的三阶段训练流程，同时通过负载均衡适配图像切片数量不定的困难，对图像和文本数据使用不同流水并行策略，对MoE语言模型引入专家并行，实现高效训练
 
+## Florence-VL
+
+[Florence-VL来了！使用生成式视觉编码器，重新定义多模态大语言模型视觉信息](https://mp.weixin.qq.com/s/sAf-FxUithvgA6noaew4sQ)
+
+[Florence-VL: Enhancing Vision-Language Models with Generative Vision Encoder and Depth-Breadth Fusion](https://arxiv.org/pdf/2412.04424)
+
+[https://github.com/JiuhaiChen/Florence-VL](https://github.com/JiuhaiChen/Florence-VL)
+
 ## 其他
 
 (toread)
@@ -7219,7 +7236,6 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [谷歌版Sora升级4K高清！一句话控制镜头运动，跑分叫板可灵海螺](https://mp.weixin.qq.com/s/8-H286tyxbTeZrtEBDZHaA)
 
 [https://deepmind.google/technologies/veo/veo-2/](https://deepmind.google/technologies/veo/veo-2/)
-
 
 
 ## 其他
@@ -8802,6 +8818,16 @@ XXX
 图中的蓝色火焰部分需要在线计算，而因为$$K=4$$，所以很轻量
 
 
+## STAR
+
+[谷歌用大模型搞推荐，拿到收益了](https://mp.weixin.qq.com/s/IuPLKwPnDwWgke4SFy2Bnw)
+
+[STAR: A Simple Training-free Approach for Recommendations using Large Language Models](https://arxiv.org/pdf/2410.16458)
+
+## PRECISE
+
+[PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)
+
 ## ECR
 
 [RecSys'24最佳长论文|腾讯ECR:富有情感的对话式推荐系统](https://mp.weixin.qq.com/s/K9LUSywox6IeAb4XIhe_qA)
@@ -10019,6 +10045,19 @@ Neel Nanda（deepmind）的项目
 [强化学习训练一两个小时，100%自主完成任务：机器人ChatGPT时刻真来了？](https://mp.weixin.qq.com/s/5pVajhtp8KSFz4AnV8PVTQ)
 
 [Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning](https://hil-serl.github.io/static/hil-serl-paper.pdf)
+
+## Genesis
+
+[历时2年，华人团队力作，震撼开源生成式物理引擎Genesis，可模拟世界万物](https://mp.weixin.qq.com/s/ioYK3YV07f9m0Iu-l6tLsg)
+
+[https://github.com/Genesis-Embodied-AI/Genesis](https://github.com/Genesis-Embodied-AI/Genesis)
+
+## language of motion
+
+[李飞飞团队统一动作与语言，新的多模态模型不仅超懂指令，还能读懂隐含情绪](https://mp.weixin.qq.com/s/W8wS87YlW_z9rsDfnmtDLQ)
+
+[The Language of Motion: Unifying Verbal and Non-verbal Language of 3D Human Motion](https://arxiv.org/abs/2412.10523v1)
+
 
 # 语音
 
