@@ -471,6 +471,14 @@ DALL-E3：
 + 架构：视觉部分使用切图策略支持动态分辨率图像，语言部分采用MoE架构低成本高性能
 + 训练：继承DeepSeek-VL的三阶段训练流程，同时通过负载均衡适配图像切片数量不定的困难，对图像和文本数据使用不同流水并行策略，对MoE语言模型引入专家并行，实现高效训练
 
+## Florence-VL
+
+[Florence-VL来了！使用生成式视觉编码器，重新定义多模态大语言模型视觉信息](https://mp.weixin.qq.com/s/sAf-FxUithvgA6noaew4sQ)
+
+[Florence-VL: Enhancing Vision-Language Models with Generative Vision Encoder and Depth-Breadth Fusion](https://arxiv.org/pdf/2412.04424)
+
+[https://github.com/JiuhaiChen/Florence-VL](https://github.com/JiuhaiChen/Florence-VL)
+
 ## 其他
 
 (toread)
@@ -903,7 +911,6 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [谷歌版Sora升级4K高清！一句话控制镜头运动，跑分叫板可灵海螺](https://mp.weixin.qq.com/s/8-H286tyxbTeZrtEBDZHaA)
 
 [https://deepmind.google/technologies/veo/veo-2/](https://deepmind.google/technologies/veo/veo-2/)
-
 
 
 ## 其他
