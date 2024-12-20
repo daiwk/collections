@@ -9254,6 +9254,17 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 
 [「七万字长文」从认知架构到实践部署：o1与o1 Pro的系统性分析与内涵洞察 · 上篇](https://mp.weixin.qq.com/s/ioqtgG2nOr3fT5sNqLNZdg)
 
+## gemini 2.0 flash thinking
+
+[推理最强也最快，谷歌发布Gemini 2.0 Flash Thinking，全面超越o1-preview](https://mp.weixin.qq.com/s/NkTP17j6HYIz95sHxCameA)
+
+[https://ai.google.dev/gemini-api/docs/thinking-mode?hl=zh-cn](https://ai.google.dev/gemini-api/docs/thinking-mode?hl=zh-cn)
+
+[https://colab.research.google.com/github/google-gemini/cookbook/blob/main/gemini-2/thinking.ipynb](https://colab.research.google.com/github/google-gemini/cookbook/blob/main/gemini-2/thinking.ipynb)
+
+我自己复制的一个：[https://colab.research.google.com/github/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb](https://colab.research.google.com/github/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb)
+
+对应的github：[https://github.com/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb](https://github.com/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb)
 
 ## 其他的一些讨论
 
@@ -9664,6 +9675,11 @@ ICLR2024
 [Insight-V: Exploring Long-Chain Visual Reasoning with Multimodal Large Language Models](https://arxiv.org/abs/2411.14432)
 
 [https://github.com/dongyh20/Insight-V](https://github.com/dongyh20/Insight-V)
+
+## 世界经济论坛的agent报告
+
+[Navigating the AI Frontier: A Primer on the Evolution and Impact of AI Agents](https://reports.weforum.org/docs/WEF_Navigating_the_AI_Frontier_2024.pdf)
+
 
 # 一些其他比较重要的工作
 
