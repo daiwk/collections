@@ -1006,6 +1006,10 @@ XXX
 
 [EmbSum: Leveraging the Summarization Capabilities of Large Language Models for Content-Based Recommendations](https://www.arxiv.org/pdf/2405.11441)
 
+[RecSys'24 | Meta:使用LLM的摘要能力提升内容推荐](https://mp.weixin.qq.com/s/gDOo5qjcZgy5fRQJtd2GLw)
+
+
+
 ## RecExplainer
 
 [RecExplainer: Aligning Large Language Models for Explaining Recommendation Models](https://arxiv.org/pdf/2311.10947)
@@ -1284,6 +1288,16 @@ EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.
 [Non-autoregressive Generative Models for Reranking Recommendation](https://arxiv.org/pdf/2402.06871)
 
 
+## PRECISE
+
+[微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
+
+[PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)\
+
+## 小结
+
+xxx
+
 # LLM for 检索
 
 ## ChatRetriever
@@ -1361,7 +1375,7 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 [Fine-Tuning LLaMA for Multi-Stage Text Retrieval](https://arxiv.org/pdf/2310.08319)
 
-## $$E5_{mistral-7b}$$
+## E5_mistral-7b
 
 [Improving Text Embeddings with Large Language Models](https://arxiv.org/pdf/2401.00368)
 
@@ -1587,4 +1601,9 @@ XXX
 [RecSys'24最佳长论文|腾讯ECR:富有情感的对话式推荐系统](https://mp.weixin.qq.com/s/K9LUSywox6IeAb4XIhe_qA)
 
 [Towards Empathetic Conversational Recommender Systems](https://arxiv.org/pdf/2409.10527)
+
+## 快手广告LLM推荐
+
+[快手广告领域的大模型技术探索与实践](https://mp.weixin.qq.com/s/9VmOb3q4enWhqqJ_f7jnFA)
+
 
