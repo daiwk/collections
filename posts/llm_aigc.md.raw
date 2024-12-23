@@ -4295,6 +4295,13 @@ XXX
 
 [工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
 
+### baichuan
+
+[百川新模型超GPT-4o近20%，首创自约束训练方案突破瓶颈，主打「领域增强」](https://mp.weixin.qq.com/s/7oupuln3BQHPa7zpfGdMXQ)
+
+Baichuan4-Finance
+
+[https://github.com/FLAME-ruc/FLAME/tree/main](https://github.com/FLAME-ruc/FLAME/tree/main)
 
 ## 小模型
 
@@ -9304,7 +9311,15 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 
 # O3
 
-[刚刚，OpenAI放出最后大惊喜o3，高计算模式每任务花费数千美元](https://mp.weixin.qq.com/s/KmxARRFsjXiLTF8HScsmOQ)# 世界模型
+[刚刚，OpenAI放出最后大惊喜o3，高计算模式每任务花费数千美元](https://mp.weixin.qq.com/s/KmxARRFsjXiLTF8HScsmOQ)
+
+## Monkey
+
+[o3并非独门秘技，谷歌已发背后关键机制，方法更简单、成本更低](https://mp.weixin.qq.com/s/qdxC_QyJW17gyRfN66D59A)
+
+[Large Language Monkeys: Scaling Inference Compute with Repeated Sampling](https://arxiv.org/abs/2407.21787)
+
+# 世界模型
 
 [怒斥Sora之后，LeCun放出「视觉世界模型」论文，揭示AI学习物理世界的关键​](https://mp.weixin.qq.com/s/KY-bTD-bxdB3Q-q97Gv7fg)
 
