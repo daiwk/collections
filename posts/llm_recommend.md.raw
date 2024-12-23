@@ -994,8 +994,8 @@ XXX
         + v1和v2算item-text对比学习
         + v2走一个自回归的任务(item grounded text generation)
     + item-item表示学习
-        + query的tokens和item的cf emb过cross attn后，拿cls的输出得到v1
-        + query的tokens和item的cf emb过cross attn后，拿cls的输出得到v2
+        + query的tokens和item1的cf emb过cross attn后，拿cls的输出得到v1
+        + query的tokens和item2的cf emb过cross attn后，拿cls的输出得到v2
         + v1和v2算item-item的对比学习
 + phase2：item-language model训练
     + Q-former的item encoder经过一个linear输入到LLM中
