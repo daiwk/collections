@@ -8152,12 +8152,32 @@ word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/mult
 
 ![rec2llm-llm2rec](../assets/rec2llm-llm2rec.png)
 
-本文提出了LEARN(Llm-driven knowlEdge Adaptive RecommeNdation)，实现了LLM-to-Rec，让LLM作为content extractor，推荐任务是训练目标
+本文提出了LEARN(Llm-driven knowlEdge Adaptive RecommeNdation)，实现了LLM-to-Rec，让LLM作为content extractor，推荐任务是训练目标。
+
+![learn-cex-pal](../assets/learn-cex-pal.png)
+
++ Content EXtraction(CEX)：输入item描述，过预训练的LLM（参数freeze）得到的每个token的输出pooling得到item的emb $$E^c$$
++ Preference ALignment(PAL)：把$$H$$个$$E^c$$输入一个content adapter(就是一个MLP)，然后过12层的可训练的transformer得到$$H$$个输出emb，最后再过一个online projection(也是一个MLP)降维到64，得到$$E^{user}$$
 
 ![learn](../assets/learn.png)
 
-![learn-ceg-pch](../assets/learn-ceg-pch.png)
+假设用户点击了H+T个item，拆成1~H和H+1~H+T这两部分，
 
++ user tower：1~H的item输入CEX+PAL，得到H个输出
++ item tower：有3个，结构都是输入H+1~H+T的item，网络参数和user tower共享；infer时只输入一个item
+    + item tower a：经过CEX得到$$E^c$$，再经过PAL得到$$E^{item}$$，和user tower一样用causal attention
+    + item tower b：经过CEX得到$$E^c$$，再经过PAL得到$$E^{item}$$，使用self-attention，每个item只关注自己
+    + item tower c：只经过CEX，直接得到$$E^{item}$$
+
+消融后发现item tower a效果最好，所以用了a
+
+loss用的是pinnerformer的dense all action loss（[PinnerFormer: Sequence Modeling for User Representation at Pinterest](https://arxiv.org/pdf/2205.04507)），即从1~H里随机挑m个出来，每一个去预估H+1~H+T里的随机一个正样本
+
+![](../assets/pinnerformer-loss.png)
+
+在线使用时如下图，其中user emb和item emb就是两个tower的输出，会先concat并过个小fusion module得到fusion emb，然后一方面过个mlp算个cvr loss，另一方面和user emb、item emb还有其他特征concat再送给后面的模块正常算ranking loss
+
+![](../assets/learn-adaptor.png)
 
 ## ACL2024的recgpt
 
