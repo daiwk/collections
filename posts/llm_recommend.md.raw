@@ -978,7 +978,7 @@ loss用的是pinnerformer的dense all action loss（[PinnerFormer: Sequence Mode
 
 ![slim](../assets/slim.png)
 
-+ 第一阶段：蒸馏大型 GPT模型到较小的模型（如LLAMA2/3），来增强推理能力。
++ 第一阶段：蒸馏大型GPT模型到较小的模型（如LLAMA2/3），来增强推理能力。
   + 通过预设的 prompt，大模型生成推荐理由，这些理由基于预定义的模板。接着，
   + 使用简化的推理模板请求小模型进行推荐和理由生成。
 + 第二阶段：利用生成式Loss来微调小模型，使其具备推理能力。
@@ -1082,7 +1082,7 @@ XXX
 + user poly embedding（upe）：把decoder最后一个token（```[EOS]```）拿出来，和前面的k个session encoding一起得到一个$$Z \in \mathrm{R}^{(k+1) \times d}$$，然后过一个poly-attention layer，得到用户的$$m$$个兴趣表示$$A \in \mathrm{R}^{m \times d}$$，其中每个向量是$$\alpha_a=\operatorname{softmax}\left[c_a \tanh \left(Z W^f\right)^{\top}\right] Z$$，其中$$c_a \in \mathrm{R}^{1 \times p}$$和$$W^f \in \mathrm{R}^{d \times p}$$是可训练的参数
 
 + content poly embedding（cpe）：和upe类似，k个session encoding换成当前item的encoder输出，UPE里的```[EOS]```换成当前content的下一个token即```[SOS]```，然后得到$$n$$个$$d$$维表示$$B$$
-+ 融合：$$A^TB$$可以算出一个$$m\timesn$$的相似矩阵，然后flatten，得到一个$$mn$$维的向量，同理算一下，得到的$$s^i_j$$就是两个向量的内积，即相似度的得分了
++ 融合：$$A^TB$$可以算出一个$$m\times n$$的相似矩阵，然后flatten，得到一个$$mn$$维的向量，同理算一下，得到的$$s^i_j$$就是两个向量的内积，即相似度的得分了
 
 XXX
 \begin{aligned}
@@ -1426,19 +1426,23 @@ XXX
 
 ## 小结
 
-工业界
+落地的
 
 | 论文 | 公司 | 类别 | 做法 | ab收益|
-|----------|-----|------|-------------| ------------|
-|[Knowledge Adaptation from Large Language Model to Recommendation for Practical Industrial Application](https://arxiv.org/pdf/2405.03988) LEARN | 快手 | ItemLLM+user decoder| item LLM固定，输入item特征得到item emb；输入item emb过user的12层trans算dense all-action loss，线上推荐模型里加user emb和item emb | 广告cvr+收入 |
-|[Can Small Language Models be Good Reasoners for Sequential Recommendation?](https://arxiv.org/pdf/2403.04260) SLIM | 蚂蚁 | 蒸馏推荐理由| 输入用户行为历史，大LLM(gpt)产出的推荐理由；小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由，通过BERT得到emb | 广告cvr+收入 |
+|----------|-----|------|-------------| -----|
+|[Knowledge Adaptation from Large Language Model to Recommendation for Practical Industrial Application](https://arxiv.org/pdf/2405.03988)【LEARN】 | 快手 | ItemLLM+user decoder| item LLM固定，输入item特征得到item emb；输入item emb过user的12层trans算dense all-action loss，线上推荐模型里加user emb和item emb | 广告cvr+收入 |
+|[]()【】 | xx | xx| xx | xx |
 
 
-学术界
+没落地的
 
-| 论文+公司 |类别| 做法 | 
-|----------|------|-------------| 
-| x | x | x|
+| 论文 | 公司 |类别| 做法 | 
+|----------|-----|------|-------------|
+|[SLIM](https://arxiv.org/pdf/2403.04260) | 蚂蚁 | 蒸馏推荐理由| 输入用户行为历史，大LLM(gpt)产出的推荐理由；小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由，通过BERT得到emb，给推荐模型用 |
+| [LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
+|[ILM](https://arxiv.org/pdf/2406.02844)| google | | |
+|[embsum](https://arxiv.org/pdf/2406.02844)| meta | | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br> - item过t5 encoder过poly；|
+
 
 
 
