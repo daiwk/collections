@@ -7285,6 +7285,8 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 ### 概况
 
+&nbsp;
+
 CRM(conventional recommendation models)
 
 ![llm-rec-where](../assets/llm-rec-where.png)
@@ -7293,7 +7295,11 @@ CRM(conventional recommendation models)
 
 ### where-LLM for feature engineering
 
+&nbsp;
+
 #### user-item level feature augmentation
+
+&nbsp;
 
 通过LLM的世界知识来获取更好的user/item表示
 
@@ -7371,11 +7377,17 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 
 #### instance-level sample generation
 
+&nbsp;
+
 
 
 ### where-LLM as feature encoder
 
+&nbsp;
+
 ### where-LLM for scoring/ranking function
+
+&nbsp;
 
 [Text Is All You Need: Learning Language Representations for Sequential Recommendation](https://arxiv.org/pdf/2305.13731) 亚马逊发的
 
@@ -7383,15 +7395,24 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 
 ### where-LLM for pipeline controller
 
+&nbsp;
+
 
 ### how-tune LLM & infer with CRM
 
+&nbsp;
+
 ### how-not tune LLM & infer w/o CRM
+
+&nbsp;
 
 ### how-not tune LLM & infer with CRM
 
+&nbsp;
+
 ### how-tune LLM & infer w/o CRM
 
+&nbsp;
 
 
 
@@ -7411,6 +7432,8 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 
 ### Indexing方法
 
+&nbsp;
+
 + Inputs2Target：即doc_tokens->doc_id
 + Target2Inputs：即doc_id->doc_tokens
 + bidirectional：同时用上两面两个任务，并且在开始时加一个前缀，表明任务的方向
@@ -7420,11 +7443,15 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 
 ### 文档的表示
 
+&nbsp;
+
 + Direct Indexing：直接用文档的前L个单词当做文档的表示，并且保留单词的顺序。
 + Set Indexing：去掉文档中的重复的单词及停用词，然后和Direct Indexing一样的处理。
 + Inverted Index：随机对文档中的连续的k个单词（一个文档块）进行采样，并将它们与doc_id相关联
 
 ### doc_id的表示
+
+&nbsp;
 
 + 非结构化的原子标识符：直接对所有的文档使用一个随机但互不相同的的整数标识。假设一共有N篇文档需要检索，假设原来解码器输出有V个单词，现在有V+N个单词。
 + 朴素的结构化字符串标识符：也使用一个随机的整数，但将这个整数当做一个字符串输出，用受限的beam search搜索前k个文档，因为需要保证**输出的是数字**。
@@ -7556,6 +7583,8 @@ class IndexingTrainer(Trainer):
 
 ### vq-vae
 
+&nbsp;
+
 [Neural discrete representation learning](https://proceedings.neurips.cc/paper_files/paper/2017/file/7a98af17e63a0ac09ce2e96d03992fbc-Paper.pdf)
 
 [https://github.com/zalandoresearch/pytorch-vq-vae](https://github.com/zalandoresearch/pytorch-vq-vae)
@@ -7567,6 +7596,8 @@ class IndexingTrainer(Trainer):
 [https://github.com/RUCAIBox/VQ-Rec](https://github.com/RUCAIBox/VQ-Rec)
 
 ### rq-vae
+
+&nbsp;
 
 [Autoregressive Image Generation using Residual Quantization](https://arxiv.org/pdf/2203.01941.pdf)
 
@@ -8356,7 +8387,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 [腾讯广告基于混元大模型的生成式召回落地实践](https://mp.weixin.qq.com/s/ClmjgRzpNIVjX0PrikS3qg)
 
-### time-LLM
+## time-LLM
 
 [谁说大象不能起舞! 重编程大语言模型实现跨模态交互的时序预测 | ICLR 2024](https://mp.weixin.qq.com/s/K04haPMcbKiS6OkCihXAqQ)
 
@@ -8369,7 +8400,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 + 时序输入重编程
 + 提示做前缀
 
-### NoteLLM
+## NoteLLM
 
 [WWW'24 | 小红书NoteLLM: 大语言模型用于I2I笔记推荐](https://mp.weixin.qq.com/s/jcj4jKaEIg-L264uZgYuAw)
 
@@ -8391,7 +8422,9 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 ![notellm](../assets/notellm.png)
 
-#### 生成式对比学习
+### 生成式对比学习
+
+&nbsp;
 
 生成式对比学习(Generative-Contrastive Learning,GCL)
 
@@ -8404,7 +8437,9 @@ XXX
 L_{c l}=-\frac{1}{2 B} \sum_{i=1}^{2 B} \log \frac{e^{\operatorname{sim}\left(\boldsymbol{n}_i, \boldsymbol{n}_i^{+}\right) \cdot e^\tau}}{\sum_{j \in[2 B] \backslash\{i\}} e^{\operatorname{sim}\left(\boldsymbol{n}_i, \boldsymbol{n}_j\right) \cdot e^\tau}}
 XXX
 
-#### 协同监督微调
+### 协同监督微调
+
+&nbsp;
 
 协同监督微调(Collaborative Supervised Fine-Tuning,CSFT)将主题标签生成任务和类目生成任务联合训练，一个batch里40%的样本执行主题标签生成任务，剩下的60%做类目预测任务，然后走正常的语言模型自回归任务：
 
@@ -8418,159 +8453,6 @@ XXX
 L=\frac{L_{c l}+\alpha L_{g e n}}{1+\alpha},
 XXX
 
-
-
-## C-Star
-
-[Shopping Trajectory Representation Learning with Pre-training for E-commerce Customer Understanding and Recommendation](https://assets.amazon.science/c3/ee/721654a94b0a800cb7c534ba5bd8/shopping-trajectory-representation-learning-with-pre-training-for-e-commerce-customer-understanding-and-recommendation.pdf)
-
-Customer Shopping TrAjectory Representation Learning framework (C-STAR) 
-PR-Graph（product relational graph）：$$\mathcal{G}=(\mathcal{T}, \mathcal{E}, \mathcal{V})$$
-
-+ $$\mathcal{T}$$：所有节点，15k，可能是类目之类的，应该不是商品id
-+ $$\mathcal{E}$$：所有边，417k，强关联的product才有边，例如共同购买
-+ $$\mathcal{V}$$ ：每个节点对应的d维向量，$$\mathcal{V} \in \mathbb{R}^{|\mathcal{T}| \times d}$$。
-
-用户的长度为$$N_i$$的历史序列就可以看成 $$\mathcal{T}_i \subseteq \mathcal{T} \text {, i.e., } \mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i}$$，并构成了子图$$\mathcal{G}_i \subseteq \mathcal{G}$$
-
-基于最优运输理论（Optimal Transport theory）：将一个分布的质量（mass）搬到另一个分布的最小成本
-
-对于$$\boldsymbol{X} \sim P, \boldsymbol{X} \in \mathbb{R}^d$$，假设有一个函数$$f: \mathbb{R}^d \rightarrow \mathbb{R}$$，即$$f$$能把$$x$$从$$P$$分布变成另一个分布，称$$f_{\#} P$$是$$P$$的一个推前（push forward）。两个分布P和Q间的Wasserstein Distance定义为：
-
-XXX
-W_p(P, Q)=\left(\inf _{f \in T P(P, Q)} \int\|x-f(x)\|^p d P(x)\right)^{\frac{1}{p}}, p \geq 1
-XXX
-
-1维分布能直接算出最优距离，但对于高维分布来讲，没法直接算出来最优距离，SW距离(sliced-WD)通过将高维分布投影到一维，计算一维上的Wasserstein距离，然后对多个投影方向的距离取平均，从而降低计算复杂度。具体公式如下，其中$$g_{\boldsymbol{\theta}}(\boldsymbol{x})=\boldsymbol{\theta}^{\top} \boldsymbol{x}$$，而$$\boldsymbol{\theta} \in \mathbb{S}^{d-1}$$是一个d维的单位向量（unit vector，模长为1），$$\mathbb{S}^{d-1}$$是d维向量的超球面，$$g_{\theta_{\#}} P$$是$$P$$用$$g_{\boldsymbol{\theta}}$$的推前。这个距离同时满足正定、对称、三角不等式。
-
-XXX
-S W_p(P, Q)=\left(\int_{\mathbb{S}^{d-1}}\left(W_p\left(g_{\theta \#} P, g_{\theta \#} Q\right)\right)^p d \theta\right)^{\frac{1}{p}}
-XXX
-
-为了建模如下两种相似度：
-
-+ inter-trajectory distribution similarity: 不同用户的行为序列间的分布相似度
-+ intra-trajectory semantic correlation: 一个序列内部的语义相关性 
-
-
-小结：参考最优传输理论（Optimal Transport），即把每个购物路径视为一个概率分布，然后通过计算这些分布之间的距离来衡量路径之间的相似性。Wasserstein距离可以视为将一个分布“移动”到另一个分布所需的“工作量”，其中“工作量”由移动每个元素所需的“成本”（通常是欧几里得距离）决定。
-高维空间中直接计算Wasserstein距离很难，采用了Sliced-Wasserstein距离，将高维分布投影到多个一维分布上，然后将这些一维分布之间的Wasserstein距离进行pooling，来近似原始高维Wasserstein距离。
-
-Inter-SE和Intra-CE简单总结如下：
-
-+ Inter-trajectory similarity encoding(inter-SE)：把原分布的n维特征向量映射成1维，参考分布（可以是原来特征的向量的avg之类的）也映射成1维，计算映射后的向量与参考向量的距离（可以证明这个距离就约等于sliced-WD），作为inter-SE
-+ Intra-trajectory correlation encoder(intra-CE)：取每个item在graph里的邻居，用GCN得到其表示，然后和inter-SE一样也映射成1维，算映射后的向量与inter-SE里的参考向量的距离，作为intra-SE
-
-### 序列间
-
-对于$$M$$个序列，定义probability measures $$\left[P_i\right]_{i=1}^M$$，每个序列相对应的特征序列是$$\mathcal{V}_i=\left[v_{t_n^i} \in \mathbb{R}^d\right]_{n=1}^{N_i}$$，假设这些特征的底层分布是$$P_i$$，而对应的经验（离散）分布$$\widehat{P}_i$$对应的经验CDF是
-
-XXX
-F_{\widehat{P}_i}(x)=\frac{1}{N_i} \sum_{n=1}^{N_i} \delta\left(x \geq v_{t_n^i}\right)
-XXX
-
-其中$$\delta(\cdot)$$如果输入是0就返回1，否则返回0。认为$$\widehat{P}_i \approx P_i$$，所以后面直接用$$\widehat{P}_i$$来表示$$P_i$$。
-
-为了衡量两个序列分布的相似性，希望比较输入的序列分布和一个可训练的参考分布（当成序列特征空间的『原点』）。引入参考分布$$P_0$$，对应的特征list $$\mathcal{V}_0=\left[v_{t_n^0} \in \mathbb{R}^d\right]_{n=1}^N$$，每个元素是可训练的emb
-
-目标就是找到$$\left(P_0, P_i\right)$$的距离，然后指导对应的序列表示$$\left(E_0, E_i\right)$$的学习
-
-先进行一维WD的分布slice的计算，假设$$g_\theta(\boldsymbol{x})$$是一个线性映射，定义$$P_i^{\boldsymbol{\theta}}:=g_{\boldsymbol{\theta} \#} P_i$$为$$P_i$$关于$$g_\theta$$的一个slice
-
-
-#### Proposition 1
-
-从reference slice $$P_0^{\boldsymbol{\theta}}$$到输入分布slice $$P_i^{\boldsymbol{\theta}}$$的$$f^*$$可以表示为：
-
-XXX
-f^*\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_i^{\boldsymbol{\theta}}\right):=F_{P_i^{\boldsymbol{\theta}}}^{-1}\left(F_{P_0^{\boldsymbol{\theta}}}\left(x^{\boldsymbol{\theta}}\right)\right), \quad x^{\boldsymbol{\theta}} \in \mathcal{V}_0^{\boldsymbol{\theta}}
-XXX
-
-对应的CDF是$$F_{P_0^{\boldsymbol{\theta}}}\left(x^{\boldsymbol{\theta}}\right)=\frac{1}{N} \sum_{n=1}^N \delta\left(x^{\boldsymbol{\theta}}-\boldsymbol{\theta}^{\top} .\right.v_{t_n^0})$$是单调递增的。
-
-#### Proposition 2
-
-如果我们知道按升序排序的$$\mathcal{V}_0^\theta$$(因为这原始embedding的slice，是一维的，所以可以排序)对应的每个输入$$x^\theta$$的排名$$\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)$$，而且$$N=N_i$$，那么最优的transport plan $$f^*$$可以表示为：
-
-XXX
-f^*\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_i^{\boldsymbol{\theta}}\right)=\operatorname{argmin}_{x^{\prime} \in \mathcal{V}_i^\theta}\left(\tau\left(x^{\prime} \mid \mathcal{V}_i^\theta\right)=\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)\right)
-XXX
-
-
-#### inter-trajectory similarity encoding
-
-对于每个分布slice的pair对$$\left(P_0^{\boldsymbol{\theta}}, P_i^{\boldsymbol{\theta}}\right)$$，最优的transport plan产生了最短的一组距离$$W_p\left(P_0^{\boldsymbol{\theta}}, P_i^{\boldsymbol{\theta}}\right)$$。$$\boldsymbol{\theta}_s$$表示从$$\mathbb{S}^{d-1}$$中采样的第$$s$$个映射的参数，那么对原始序列分布的累积SW距离如下：
-
-XXX
-S W_p\left(P_0, P_i\right) \approx\left(\frac{1}{S} \sum_{s=1}^S W_p\left(P_0^{\theta_s}, P_i^{\theta_s}\right)^p\right)^{\frac{1}{p}}
-XXX
-
-用$$\Theta=\left\{\boldsymbol{\theta}_s\right\}_{s=1}^S$$表示采样的映射参数集合，首先将$$P_0$$的embedding参考$$\mathcal{V}_0=\left[\boldsymbol{v}_{t_n^0}\right]_{n=1}^N$$里的向量$$O \in \mathbb{R}^{N \cdot S}$$进行如下编码，其中$$\text { || }$$表示innermost维度的concat操作：
-
-XXX
-\boldsymbol{O}:=\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N \boldsymbol{\theta}_s^{\mathrm{T}} \boldsymbol{v}_{t_n^0}
-XXX
-
-给定输入特征list $$\mathcal{V}_i$$，定义inter-se（inter-trajectory similarity encoder）如下：
-
-XXX
-\operatorname{Inter}-\operatorname{SE}\left(\mathcal{V}_i \mid \Theta\right):=\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N f^*\left(\boldsymbol{\theta}_s^{\top} v_{t_n^0} \mid \mathcal{V}_i^{\boldsymbol{\theta}_s}\right)-\boldsymbol{O}
-XXX
-
-其中$$E_i \in \mathbb{R}^{N \cdot S}$$是编码后的表示
-
-定理1：对于任意两个输入序列及其对应分布$$P_i$$和$$P_j$$，他们对应的编码后表示$$E_i$$和$$E_j$$，有：
-
-+ $$\left\|E_i-E_j\right\|_p \approx S W_p\left(P_i, P_j\right)$$
-+ $$\left\|E_i\right\|_p \approx S W_p\left(P_i, P_0\right)$$
-
-### 序列内
-
-对于序列$$\mathcal{G}_i$$里的每个节点而言，它的邻居节点特征集合$$\mathcal{N}_i=\left[v_{t_\alpha^i}\right]_{t_\alpha^i \in N g h\left(\mathcal{T}_i\right)}$$，其中$$N g h\left(\mathcal{T}_i\right)$$是$$\mathcal{T}_{\boldsymbol{i}}$$的元素在PR-Graph里的所有邻居。对于$$\mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i}$$里的每个节点$$t_n^i$$，先将它在第$$l$$次迭代的邻居特征向量summarize起来：
-
-XXX
-v_{N g h\left(t_n^i\right)}^{(l)}=\sum_{t \in N g h\left(t_n^i\right)} \frac{w_{t, t_n^i}^{(l-1)}}{\sqrt{|N g h(t)|+1} \sqrt{\left|N g h\left(t_n^i\right)\right|+1}} v_{t_n^i}^{(l-1)}
-XXX
-
-其中$$w_{t, t_n^i}^{(l-1)} \in \mathbb{R}$$，$$v_{t_n^i}^{(0)}$$通过$$\mathcal{V}_i$$中的$$v_{t_n}^i$$初始化，定义如下的layer-wise邻居特征list：
-
-XXX
-\mathcal{N}_i^{(l)}=\left[v_{N g h\left(t_n^i\right)}^{(l)}\right]_{t_n^i \in \mathcal{T}_i}
-XXX
-
-最终定义Intra-Trajectory Correlation Encoder（Intra-CE）如下：
-
-XXX
-\operatorname{Intra-CE}\left(\mathcal{V}_i \mid \Theta\right):=\sum_{l=1}^L \alpha_l\left(\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N f^*\left(\boldsymbol{\theta}_s^{\top} \boldsymbol{v}_{t_n^0} \mid \mathcal{N}_i^{(l)}\right)-\boldsymbol{O}\right)
-XXX
-
-其中$$\alpha_l$$是第$$l$$个系数，简单地定义为$$\alpha_l=1/L$$。节点的emb一般通过邻居信息迭代更新，例如$$v_{t_n^i}^{(l)}=\operatorname{AGG}\left(v_{N g h\left(t_n^i\right)}^{(l)}, v_{t_n^i}^{(l-1)}\right)$$，AGG就是GNN的聚合函数。
-
-Inter-SE的输出是$$\boldsymbol{E}_{\boldsymbol{i}}$$，Intra-CE的输出是$$E_i^{\prime}$$，最终整个序列的表示是二者的融合$$E_i^{\star}=\left[\boldsymbol{E}_i, \boldsymbol{E}_i^{\prime}\right] \in \mathbb{R}^{2 N S}$$
-
-### C-Star预训练策略
-
-两个loss：
-
-+ 序列间的element overlaps：两个序列的overlap越多，越相似。用$$\Omega_i$$表示与$$\mathcal{T}_i$$相关的ranking list，检索出一个序列pair $$\left(\mathcal{T}_j, \mathcal{T}_k\right) \in \Omega_i$$，使得$$\left|\mathcal{T}_i \cap \mathcal{T}_j\right|>\left|\mathcal{T}_i \cap \mathcal{T}_k\right|$$，即$$i$$与$$j$$的交集比$$i$$与$$k$$的大，loss如下：
-
-XXX
-\mathcal{L}_1=\sum_{i=1}^M \sum_{\left(\mathcal{G}_j, \mathcal{G}_k\right) \in \Omega_i}^H \max \left(0,\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_j^{\star}\right\|_2-\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_k^{\star}\right\|_2+\text { margin }\right)
-XXX
-
-+ 序列内的contextual relalations：同一个序列里的是正样本，不同序列的是负样本，loss如下：
-
-XXX
-\mathcal{L}_2=\sum_{i=1}^M \sum_{t^{+} \in \mathcal{T}_i, t^{-} \notin \mathcal{T}_i}^H \max \left(0, \boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{+}}-\boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{-}}+\text {margin }\right)
-XXX
-
-整体loss，其中$$\|\Delta\|_2^2$$是正常的L2正则：
-
-XXX
-\mathcal{L}=\mathcal{L}_1+\mu \mathcal{L}_2+\mu^{\prime}\|\Delta\|_2^2
-XXX
-
-![c-star-algo](../assets/c-star-algo.png)
 
 ## 多模态推荐系统
 
@@ -8593,122 +8475,6 @@ EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.
 [KDD 2024 | 快手生成式推荐](https://mp.weixin.qq.com/s/2Clup2_JPELWBuHqMBc97w)
 
 [Non-autoregressive Generative Models for Reranking Recommendation](https://arxiv.org/pdf/2402.06871)
-
-
-## PRECISE
-
-[微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
-
-[PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)\
-
-## 小结
-
-xxx
-
-# LLM for 检索
-
-## ChatRetriever
-
-[ChatRetriever: Adapting Large Language Models for Generalized and Robust Conversational Dense Retrieval](https://arxiv.org/pdf/2404.13556v1)
-
-思想：原来输入的prompt是x，输出的response是y，添加t个特殊的```[emb_i]``` token，输入
-
-XXX
-s=[x_1, \ldots, x_N,\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right], y_1^{+}\ldots, y_M^{+},\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right]]
-XXX
-
-然后训练的时候，每个生成的$$y_i$$只看得到它前面的y，还有x后面的那t个特殊token：
-
-XXX
-\mathcal{L}_{\mathrm{S}}=-\frac{1}{M} \sum_{i=1}^M \log p\left(y_i^{+} \mid y_1^{+}, \ldots, y_{i-1}^{+}, \mathbf{x}_{1: t}\right)
-XXX
-
-![chatretriever](../assets/chatretriever.png)
-
-对应的[代码](https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247)
-
-```python
-def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: bool):
-    inputs.pop("sample_ids", None)
-    inputs.pop("input_texts", None)
-    
-    if model_type in ['bge', 'llm_embedder']:
-        output = model(**inputs)
-        embs = output.last_hidden_state[:, 0]
-    elif model_type in set(['qwen', 'qwen_chat', 'qwen_chat_cot', 'qwen_chat_lora', 
-        'qwen_chat_lora_eval', 'qwen_chat_cot_lora', 'qwen_chat_cot_lora_eval', 
-        'qwen15_chat_cot_lora_eval', 'repllama', 'llama', 
-        'repllama-train', 'repllama_v2', 'repllama_v2-train', 
-        'repllama_v2-continue_train', 'repllama_chat', 
-        'repllama_chat-train', 'repllama_chat_cot', 'repllama_chat_cot-train', 
-        'mistrial_cot-train', 
-        'mistrial_chat_cot-train', 'mistrial_cot', 'mistrial_chat_cot', 
-        'qwen15', 'qwen15_chat', 
-        'qwen15_chat_lora', 'qwen15_chat_cot_lora', 'qwen15_chat_cot']):        
-        inputs['output_hidden_states'] = True
-        output = model(**inputs)
-        hidden_states = output.hidden_states[-1]
-        last_token_indices = inputs['attention_mask'].sum(dim=1) - 1
-        embs = hidden_states[torch.arange(hidden_states.size(0)), last_token_indices]
-    elif model_type in ['e5_mistrial', 'e5_mistrial-train']:
-        outputs = model(**inputs)
-        embs = last_token_pool(outputs.last_hidden_state, inputs['attention_mask'])
-    elif model_type in ['ance', 'gtr', 'splade']:
-        embs = model(**inputs)
-    elif model_type in ['bert']:
-        output = model(**inputs)
-        embs = output.pooler_output
-    else:
-        raise NotImplementedError("Model type {} is not supported now.".format(model_type))    
-    
-    if normalize_emb:
-        embs = torch.nn.functional.normalize(embs, p=2, dim=-1)
-    return embs
-```
-
-## Instructor
-
-[One Embedder, Any Task: Instruction-Finetuned Text Embeddings](https://aclanthology.org/2023.findings-acl.71.pdf)
-
-基于google的GTR(Generalizable T5-based dense Retrievers)模型（[Large Dual Encoders Are Generalizable Retrievers](https://arxiv.org/pdf/2112.07899)）加了task instruction，用对比学习loss训练
-
-## LLM-Embedder(BGE)
-
-[Retrieve Anything To Augment Large Language Models](https://arxiv.org/pdf/2310.07554)和[C-Pack: Packed Resources For General Chinese Embeddings](https://arxiv.org/pdf/2309.07597)这两个对应的是一样的代码
-
-[https://github.com/FlagOpen/FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding)
-
-## RepLLaMA
-
-[Fine-Tuning LLaMA for Multi-Stage Text Retrieval](https://arxiv.org/pdf/2310.08319)
-
-## E5_mistral-7b
-
-[Improving Text Embeddings with Large Language Models](https://arxiv.org/pdf/2401.00368)
-
-## GRIT
-
-[Generative Representational Instruction Tuning](https://arxiv.org/pdf/2402.09906)
-
-[https://github.com/ContextualAI/gritlm](https://github.com/ContextualAI/gritlm)
-
-
-## LLM2Vec
-
-[LLM2Vec: Large Language Models Are Secretly Powerful Text Encoders](https://arxiv.org/pdf/2404.05961)
-
-[https://github.com/McGill-NLP/llm2vec](https://github.com/McGill-NLP/llm2vec)
-
-+ 由3步组成：
- + Bi-directional：把causal mask干掉，改成全1mask
- + 引入masked next token predtion任务：类似mlm，mask掉中间的词，拿周围的词预测
- + 对比学习simcse：前两步让模型有了bi-directional的能力，把所有词的emb通过pooling（实验表明mean pooling最有效）得到句子表示，同一句话里mask掉几个词的为正例，不同句子为负例，对比学习
-
-## GDR
-
-[小红书搜索：生成式检索的探索与实践](https://mp.weixin.qq.com/s/yApGxCGxjWnZQu8PoO9Qeg)
-
-[Generative Dense Retrieval: Memory Can Be a Burden](https://arxiv.org/abs/2401.10487)
 
 ## LLM-CF
 
@@ -8913,6 +8679,121 @@ XXX
 
 [快手广告领域的大模型技术探索与实践](https://mp.weixin.qq.com/s/9VmOb3q4enWhqqJ_f7jnFA)
 
+
+## PRECISE
+
+[微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
+
+[PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)\
+
+## 小结
+
+xxx
+
+# LLM for 检索
+
+## ChatRetriever
+
+[ChatRetriever: Adapting Large Language Models for Generalized and Robust Conversational Dense Retrieval](https://arxiv.org/pdf/2404.13556v1)
+
+思想：原来输入的prompt是x，输出的response是y，添加t个特殊的```[emb_i]``` token，输入
+
+XXX
+s=[x_1, \ldots, x_N,\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right], y_1^{+}\ldots, y_M^{+},\left[\mathrm{EMB}_1\right], \ldots,\left[\mathrm{EMB}_t\right]]
+XXX
+
+然后训练的时候，每个生成的$$y_i$$只看得到它前面的y，还有x后面的那t个特殊token：
+
+XXX
+\mathcal{L}_{\mathrm{S}}=-\frac{1}{M} \sum_{i=1}^M \log p\left(y_i^{+} \mid y_1^{+}, \ldots, y_{i-1}^{+}, \mathbf{x}_{1: t}\right)
+XXX
+
+![chatretriever](../assets/chatretriever.png)
+
+对应的[代码](https://github.com/kyriemao/ChatRetriever/blob/cbcd9b10f7d0e1dc27ae299f463a5d27e423fca7/src/kindred/models/model_utils.py#L247)
+
+```python
+def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: bool):
+    inputs.pop("sample_ids", None)
+    inputs.pop("input_texts", None)
+    
+    if model_type in ['bge', 'llm_embedder']:
+        output = model(**inputs)
+        embs = output.last_hidden_state[:, 0]
+    elif model_type in set(['qwen', 'qwen_chat', 'qwen_chat_cot', 'qwen_chat_lora', 
+        'qwen_chat_lora_eval', 'qwen_chat_cot_lora', 'qwen_chat_cot_lora_eval', 
+        'qwen15_chat_cot_lora_eval', 'repllama', 'llama', 
+        'repllama-train', 'repllama_v2', 'repllama_v2-train', 
+        'repllama_v2-continue_train', 'repllama_chat', 
+        'repllama_chat-train', 'repllama_chat_cot', 'repllama_chat_cot-train', 
+        'mistrial_cot-train', 
+        'mistrial_chat_cot-train', 'mistrial_cot', 'mistrial_chat_cot', 
+        'qwen15', 'qwen15_chat', 
+        'qwen15_chat_lora', 'qwen15_chat_cot_lora', 'qwen15_chat_cot']):        
+        inputs['output_hidden_states'] = True
+        output = model(**inputs)
+        hidden_states = output.hidden_states[-1]
+        last_token_indices = inputs['attention_mask'].sum(dim=1) - 1
+        embs = hidden_states[torch.arange(hidden_states.size(0)), last_token_indices]
+    elif model_type in ['e5_mistrial', 'e5_mistrial-train']:
+        outputs = model(**inputs)
+        embs = last_token_pool(outputs.last_hidden_state, inputs['attention_mask'])
+    elif model_type in ['ance', 'gtr', 'splade']:
+        embs = model(**inputs)
+    elif model_type in ['bert']:
+        output = model(**inputs)
+        embs = output.pooler_output
+    else:
+        raise NotImplementedError("Model type {} is not supported now.".format(model_type))    
+    
+    if normalize_emb:
+        embs = torch.nn.functional.normalize(embs, p=2, dim=-1)
+    return embs
+```
+
+## Instructor
+
+[One Embedder, Any Task: Instruction-Finetuned Text Embeddings](https://aclanthology.org/2023.findings-acl.71.pdf)
+
+基于google的GTR(Generalizable T5-based dense Retrievers)模型（[Large Dual Encoders Are Generalizable Retrievers](https://arxiv.org/pdf/2112.07899)）加了task instruction，用对比学习loss训练
+
+## LLM-Embedder(BGE)
+
+[Retrieve Anything To Augment Large Language Models](https://arxiv.org/pdf/2310.07554)和[C-Pack: Packed Resources For General Chinese Embeddings](https://arxiv.org/pdf/2309.07597)这两个对应的是一样的代码
+
+[https://github.com/FlagOpen/FlagEmbedding](https://github.com/FlagOpen/FlagEmbedding)
+
+## RepLLaMA
+
+[Fine-Tuning LLaMA for Multi-Stage Text Retrieval](https://arxiv.org/pdf/2310.08319)
+
+## E5_mistral-7b
+
+[Improving Text Embeddings with Large Language Models](https://arxiv.org/pdf/2401.00368)
+
+## GRIT
+
+[Generative Representational Instruction Tuning](https://arxiv.org/pdf/2402.09906)
+
+[https://github.com/ContextualAI/gritlm](https://github.com/ContextualAI/gritlm)
+
+
+## LLM2Vec
+
+[LLM2Vec: Large Language Models Are Secretly Powerful Text Encoders](https://arxiv.org/pdf/2404.05961)
+
+[https://github.com/McGill-NLP/llm2vec](https://github.com/McGill-NLP/llm2vec)
+
++ 由3步组成：
+ + Bi-directional：把causal mask干掉，改成全1mask
+ + 引入masked next token predtion任务：类似mlm，mask掉中间的词，拿周围的词预测
+ + 对比学习simcse：前两步让模型有了bi-directional的能力，把所有词的emb通过pooling（实验表明mean pooling最有效）得到句子表示，同一句话里mask掉几个词的为正例，不同句子为负例，对比学习
+
+## GDR
+
+[小红书搜索：生成式检索的探索与实践](https://mp.weixin.qq.com/s/yApGxCGxjWnZQu8PoO9Qeg)
+
+[Generative Dense Retrieval: Memory Can Be a Burden](https://arxiv.org/abs/2401.10487)
 
 # 从RLAIF说起
 

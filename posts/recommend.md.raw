@@ -631,6 +631,171 @@ ICLR2020 cmu+google：
 
 [Pre-training Tasks for Embedding-based Large-scale Retrieval](https://arxiv.org/abs/2002.03932)
 
+## C-Star
+
+[Shopping Trajectory Representation Learning with Pre-training for E-commerce Customer Understanding and Recommendation](https://assets.amazon.science/c3/ee/721654a94b0a800cb7c534ba5bd8/shopping-trajectory-representation-learning-with-pre-training-for-e-commerce-customer-understanding-and-recommendation.pdf)
+
+Customer Shopping TrAjectory Representation Learning framework (C-STAR) 
+PR-Graph（product relational graph）：$$\mathcal{G}=(\mathcal{T}, \mathcal{E}, \mathcal{V})$$
+
++ $$\mathcal{T}$$：所有节点，15k，可能是类目之类的，应该不是商品id
++ $$\mathcal{E}$$：所有边，417k，强关联的product才有边，例如共同购买
++ $$\mathcal{V}$$ ：每个节点对应的d维向量，$$\mathcal{V} \in \mathbb{R}^{|\mathcal{T}| \times d}$$。
+
+用户的长度为$$N_i$$的历史序列就可以看成 $$\mathcal{T}_i \subseteq \mathcal{T} \text {, i.e., } \mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i}$$，并构成了子图$$\mathcal{G}_i \subseteq \mathcal{G}$$
+
+基于最优运输理论（Optimal Transport theory）：将一个分布的质量（mass）搬到另一个分布的最小成本
+
+对于$$\boldsymbol{X} \sim P, \boldsymbol{X} \in \mathbb{R}^d$$，假设有一个函数$$f: \mathbb{R}^d \rightarrow \mathbb{R}$$，即$$f$$能把$$x$$从$$P$$分布变成另一个分布，称$$f_{\#} P$$是$$P$$的一个推前（push forward）。两个分布P和Q间的Wasserstein Distance定义为：
+
+XXX
+W_p(P, Q)=\left(\inf _{f \in T P(P, Q)} \int\|x-f(x)\|^p d P(x)\right)^{\frac{1}{p}}, p \geq 1
+XXX
+
+1维分布能直接算出最优距离，但对于高维分布来讲，没法直接算出来最优距离，SW距离(sliced-WD)通过将高维分布投影到一维，计算一维上的Wasserstein距离，然后对多个投影方向的距离取平均，从而降低计算复杂度。具体公式如下，其中$$g_{\boldsymbol{\theta}}(\boldsymbol{x})=\boldsymbol{\theta}^{\top} \boldsymbol{x}$$，而$$\boldsymbol{\theta} \in \mathbb{S}^{d-1}$$是一个d维的单位向量（unit vector，模长为1），$$\mathbb{S}^{d-1}$$是d维向量的超球面，$$g_{\theta_{\#}} P$$是$$P$$用$$g_{\boldsymbol{\theta}}$$的推前。这个距离同时满足正定、对称、三角不等式。
+
+XXX
+S W_p(P, Q)=\left(\int_{\mathbb{S}^{d-1}}\left(W_p\left(g_{\theta \#} P, g_{\theta \#} Q\right)\right)^p d \theta\right)^{\frac{1}{p}}
+XXX
+
+为了建模如下两种相似度：
+
++ inter-trajectory distribution similarity: 不同用户的行为序列间的分布相似度
++ intra-trajectory semantic correlation: 一个序列内部的语义相关性 
+
+
+小结：参考最优传输理论（Optimal Transport），即把每个购物路径视为一个概率分布，然后通过计算这些分布之间的距离来衡量路径之间的相似性。Wasserstein距离可以视为将一个分布“移动”到另一个分布所需的“工作量”，其中“工作量”由移动每个元素所需的“成本”（通常是欧几里得距离）决定。
+高维空间中直接计算Wasserstein距离很难，采用了Sliced-Wasserstein距离，将高维分布投影到多个一维分布上，然后将这些一维分布之间的Wasserstein距离进行pooling，来近似原始高维Wasserstein距离。
+
+Inter-SE和Intra-CE简单总结如下：
+
++ Inter-trajectory similarity encoding(inter-SE)：把原分布的n维特征向量映射成1维，参考分布（可以是原来特征的向量的avg之类的）也映射成1维，计算映射后的向量与参考向量的距离（可以证明这个距离就约等于sliced-WD），作为inter-SE
++ Intra-trajectory correlation encoder(intra-CE)：取每个item在graph里的邻居，用GCN得到其表示，然后和inter-SE一样也映射成1维，算映射后的向量与inter-SE里的参考向量的距离，作为intra-SE
+
+### 序列间
+
+&nbsp;
+
+对于$$M$$个序列，定义probability measures $$\left[P_i\right]_{i=1}^M$$，每个序列相对应的特征序列是$$\mathcal{V}_i=\left[v_{t_n^i} \in \mathbb{R}^d\right]_{n=1}^{N_i}$$，假设这些特征的底层分布是$$P_i$$，而对应的经验（离散）分布$$\widehat{P}_i$$对应的经验CDF是
+
+XXX
+F_{\widehat{P}_i}(x)=\frac{1}{N_i} \sum_{n=1}^{N_i} \delta\left(x \geq v_{t_n^i}\right)
+XXX
+
+其中$$\delta(\cdot)$$如果输入是0就返回1，否则返回0。认为$$\widehat{P}_i \approx P_i$$，所以后面直接用$$\widehat{P}_i$$来表示$$P_i$$。
+
+为了衡量两个序列分布的相似性，希望比较输入的序列分布和一个可训练的参考分布（当成序列特征空间的『原点』）。引入参考分布$$P_0$$，对应的特征list $$\mathcal{V}_0=\left[v_{t_n^0} \in \mathbb{R}^d\right]_{n=1}^N$$，每个元素是可训练的emb
+
+目标就是找到$$\left(P_0, P_i\right)$$的距离，然后指导对应的序列表示$$\left(E_0, E_i\right)$$的学习
+
+先进行一维WD的分布slice的计算，假设$$g_\theta(\boldsymbol{x})$$是一个线性映射，定义$$P_i^{\boldsymbol{\theta}}:=g_{\boldsymbol{\theta} \#} P_i$$为$$P_i$$关于$$g_\theta$$的一个slice
+
+
+#### Proposition 1
+
+&nbsp;
+
+从reference slice $$P_0^{\boldsymbol{\theta}}$$到输入分布slice $$P_i^{\boldsymbol{\theta}}$$的$$f^*$$可以表示为：
+
+XXX
+f^*\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_i^{\boldsymbol{\theta}}\right):=F_{P_i^{\boldsymbol{\theta}}}^{-1}\left(F_{P_0^{\boldsymbol{\theta}}}\left(x^{\boldsymbol{\theta}}\right)\right), \quad x^{\boldsymbol{\theta}} \in \mathcal{V}_0^{\boldsymbol{\theta}}
+XXX
+
+对应的CDF是$$F_{P_0^{\boldsymbol{\theta}}}\left(x^{\boldsymbol{\theta}}\right)=\frac{1}{N} \sum_{n=1}^N \delta\left(x^{\boldsymbol{\theta}}-\boldsymbol{\theta}^{\top} .\right.v_{t_n^0})$$是单调递增的。
+
+#### Proposition 2
+
+&nbsp;
+
+如果我们知道按升序排序的$$\mathcal{V}_0^\theta$$(因为这原始embedding的slice，是一维的，所以可以排序)对应的每个输入$$x^\theta$$的排名$$\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)$$，而且$$N=N_i$$，那么最优的transport plan $$f^*$$可以表示为：
+
+XXX
+f^*\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_i^{\boldsymbol{\theta}}\right)=\operatorname{argmin}_{x^{\prime} \in \mathcal{V}_i^\theta}\left(\tau\left(x^{\prime} \mid \mathcal{V}_i^\theta\right)=\tau\left(x^{\boldsymbol{\theta}} \mid \mathcal{V}_0^{\boldsymbol{\theta}}\right)\right)
+XXX
+
+
+#### inter-trajectory similarity encoding
+
+&nbsp;
+
+对于每个分布slice的pair对$$\left(P_0^{\boldsymbol{\theta}}, P_i^{\boldsymbol{\theta}}\right)$$，最优的transport plan产生了最短的一组距离$$W_p\left(P_0^{\boldsymbol{\theta}}, P_i^{\boldsymbol{\theta}}\right)$$。$$\boldsymbol{\theta}_s$$表示从$$\mathbb{S}^{d-1}$$中采样的第$$s$$个映射的参数，那么对原始序列分布的累积SW距离如下：
+
+XXX
+S W_p\left(P_0, P_i\right) \approx\left(\frac{1}{S} \sum_{s=1}^S W_p\left(P_0^{\theta_s}, P_i^{\theta_s}\right)^p\right)^{\frac{1}{p}}
+XXX
+
+用$$\Theta=\left\{\boldsymbol{\theta}_s\right\}_{s=1}^S$$表示采样的映射参数集合，首先将$$P_0$$的embedding参考$$\mathcal{V}_0=\left[\boldsymbol{v}_{t_n^0}\right]_{n=1}^N$$里的向量$$O \in \mathbb{R}^{N \cdot S}$$进行如下编码，其中$$\text { || }$$表示innermost维度的concat操作：
+
+XXX
+\boldsymbol{O}:=\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N \boldsymbol{\theta}_s^{\mathrm{T}} \boldsymbol{v}_{t_n^0}
+XXX
+
+给定输入特征list $$\mathcal{V}_i$$，定义inter-se（inter-trajectory similarity encoder）如下：
+
+XXX
+\operatorname{Inter}-\operatorname{SE}\left(\mathcal{V}_i \mid \Theta\right):=\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N f^*\left(\boldsymbol{\theta}_s^{\top} v_{t_n^0} \mid \mathcal{V}_i^{\boldsymbol{\theta}_s}\right)-\boldsymbol{O}
+XXX
+
+其中$$E_i \in \mathbb{R}^{N \cdot S}$$是编码后的表示
+
+定理1：对于任意两个输入序列及其对应分布$$P_i$$和$$P_j$$，他们对应的编码后表示$$E_i$$和$$E_j$$，有：
+
++ $$\left\|E_i-E_j\right\|_p \approx S W_p\left(P_i, P_j\right)$$
++ $$\left\|E_i\right\|_p \approx S W_p\left(P_i, P_0\right)$$
+
+### 序列内
+
+&nbsp;
+
+对于序列$$\mathcal{G}_i$$里的每个节点而言，它的邻居节点特征集合$$\mathcal{N}_i=\left[v_{t_\alpha^i}\right]_{t_\alpha^i \in N g h\left(\mathcal{T}_i\right)}$$，其中$$N g h\left(\mathcal{T}_i\right)$$是$$\mathcal{T}_{\boldsymbol{i}}$$的元素在PR-Graph里的所有邻居。对于$$\mathcal{T}_i=\left[t_n^i\right]_{n=1}^{N_i}$$里的每个节点$$t_n^i$$，先将它在第$$l$$次迭代的邻居特征向量summarize起来：
+
+XXX
+v_{N g h\left(t_n^i\right)}^{(l)}=\sum_{t \in N g h\left(t_n^i\right)} \frac{w_{t, t_n^i}^{(l-1)}}{\sqrt{|N g h(t)|+1} \sqrt{\left|N g h\left(t_n^i\right)\right|+1}} v_{t_n^i}^{(l-1)}
+XXX
+
+其中$$w_{t, t_n^i}^{(l-1)} \in \mathbb{R}$$，$$v_{t_n^i}^{(0)}$$通过$$\mathcal{V}_i$$中的$$v_{t_n}^i$$初始化，定义如下的layer-wise邻居特征list：
+
+XXX
+\mathcal{N}_i^{(l)}=\left[v_{N g h\left(t_n^i\right)}^{(l)}\right]_{t_n^i \in \mathcal{T}_i}
+XXX
+
+最终定义Intra-Trajectory Correlation Encoder（Intra-CE）如下：
+
+XXX
+\operatorname{Intra-CE}\left(\mathcal{V}_i \mid \Theta\right):=\sum_{l=1}^L \alpha_l\left(\frac{1}{S N}\left\|_{s=1}^S\right\|_{n=1}^N f^*\left(\boldsymbol{\theta}_s^{\top} \boldsymbol{v}_{t_n^0} \mid \mathcal{N}_i^{(l)}\right)-\boldsymbol{O}\right)
+XXX
+
+其中$$\alpha_l$$是第$$l$$个系数，简单地定义为$$\alpha_l=1/L$$。节点的emb一般通过邻居信息迭代更新，例如$$v_{t_n^i}^{(l)}=\operatorname{AGG}\left(v_{N g h\left(t_n^i\right)}^{(l)}, v_{t_n^i}^{(l-1)}\right)$$，AGG就是GNN的聚合函数。
+
+Inter-SE的输出是$$\boldsymbol{E}_{\boldsymbol{i}}$$，Intra-CE的输出是$$E_i^{\prime}$$，最终整个序列的表示是二者的融合$$E_i^{\star}=\left[\boldsymbol{E}_i, \boldsymbol{E}_i^{\prime}\right] \in \mathbb{R}^{2 N S}$$
+
+### C-Star预训练策略
+
+&nbsp;
+
+两个loss：
+
++ 序列间的element overlaps：两个序列的overlap越多，越相似。用$$\Omega_i$$表示与$$\mathcal{T}_i$$相关的ranking list，检索出一个序列pair $$\left(\mathcal{T}_j, \mathcal{T}_k\right) \in \Omega_i$$，使得$$\left|\mathcal{T}_i \cap \mathcal{T}_j\right|>\left|\mathcal{T}_i \cap \mathcal{T}_k\right|$$，即$$i$$与$$j$$的交集比$$i$$与$$k$$的大，loss如下：
+
+XXX
+\mathcal{L}_1=\sum_{i=1}^M \sum_{\left(\mathcal{G}_j, \mathcal{G}_k\right) \in \Omega_i}^H \max \left(0,\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_j^{\star}\right\|_2-\left\|\boldsymbol{E}_i^{\star}-\boldsymbol{E}_k^{\star}\right\|_2+\text { margin }\right)
+XXX
+
++ 序列内的contextual relalations：同一个序列里的是正样本，不同序列的是负样本，loss如下：
+
+XXX
+\mathcal{L}_2=\sum_{i=1}^M \sum_{t^{+} \in \mathcal{T}_i, t^{-} \notin \mathcal{T}_i}^H \max \left(0, \boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{+}}-\boldsymbol{E}_i^{\star} \cdot \boldsymbol{v}_{t^{-}}+\text {margin }\right)
+XXX
+
+整体loss，其中$$\|\Delta\|_2^2$$是正常的L2正则：
+
+XXX
+\mathcal{L}=\mathcal{L}_1+\mu \mathcal{L}_2+\mu^{\prime}\|\Delta\|_2^2
+XXX
+
+![c-star-algo](../assets/c-star-algo.png)
+
+
 
 # 粗排
 
