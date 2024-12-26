@@ -891,7 +891,14 @@ word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/mult
   + domain gap：两个领域有巨大的差别(profound gap)，[Continual Learning of Large Language Models: A Comprehensive Survey](https://arxiv.org/pdf/2404.16789)发现了全量参数微调会导致LLM对原有知识domain的严重的灾难性遗忘。
   + 训练目标不对齐（misalignment）：LLM是next token prediction，学习大语料的general知识；finetune则主要是检索类的任务，强依赖用户-item的交互行为
 
+其实有rec-to-llm和llm-to-rec两类想法
+
 ![rec2llm-llm2rec](../assets/rec2llm-llm2rec.png)
+
+快手商业化把llm用到推荐的思路变化：
+
+![](../assets/learn-roadmap.png)
+
 
 本文提出了LEARN(Llm-driven knowlEdge Adaptive RecommeNdation)，实现了LLM-to-Rec，让LLM作为content extractor，推荐任务是训练目标。
 
