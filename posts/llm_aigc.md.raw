@@ -8681,7 +8681,16 @@ XXX
 
 [微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
 
-[PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)\
+[PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)
+
+## BAHE
+
+[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347)
+
+![](../assets/bahe.png)
+
++ 防止由于重复编码相同用户行为而产生的计算冗余：利用LLMs的预训练浅层提取来自用户序列的最细粒度的原子用户行为的emb，并将它们存储在离线数据库中
++ 从db里查出来，和item一起过LLMs的更深层可训练层
 
 ## 小结
 
@@ -8689,18 +8698,18 @@ XXX
 
 | 论文 | 公司 | 类别 | 做法 | ab收益|
 |----------|-----|------|-------------| -----|
-|[Knowledge Adaptation from Large Language Model to Recommendation for Practical Industrial Application](https://arxiv.org/pdf/2405.03988)【LEARN】 | 快手 | ItemLLM+user decoder| item LLM固定，输入item特征得到item emb；输入item emb过user的12层trans算dense all-action loss，线上推荐模型里加user emb和item emb | 广告cvr+收入 |
-|[]()【】 | xx | xx| xx | xx |
+|[LEARN](https://arxiv.org/pdf/2405.03988) | 快手 | ItemLLM+user decoder| item LLM固定，输入item特征得到item emb；输入item emb过user的12层trans算dense all-action loss，线上推荐模型里加user emb和item emb | 广告cvr+收入 |
+|[BAHE](https://arxiv.org/pdf/2403.19347) | 蚂蚁 | 预先计算原子用户行为 | - LLMs的预训练浅层提取来原子用户行为的emb，并存进离线db<br> - 从db里查出来，和item一起过LLMs的更深层可训练层  | 广告ctr+cpm |
 
 
 没落地的
 
 | 论文 | 公司 |类别| 做法 | 
 |----------|-----|------|-------------|
-|[SLIM](https://arxiv.org/pdf/2403.04260) | 蚂蚁 | 蒸馏推荐理由| 输入用户行为历史，大LLM(gpt)产出的推荐理由；小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由，通过BERT得到emb，给推荐模型用 |
-| [LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
-|[ILM](https://arxiv.org/pdf/2406.02844)| google | | |
-|[embsum](https://arxiv.org/pdf/2406.02844)| meta | | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br> - item过t5 encoder过poly；|
+|[SLIM](https://arxiv.org/pdf/2403.04260) | 蚂蚁 | 蒸馏推荐理由| - 输入用户行为历史，大LLM(gpt)产出的推荐理由；<br> - 小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由，<br> - 通过BERT得到emb，给推荐模型用 |
+| [LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。<br> - 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
+|[ILM](https://arxiv.org/pdf/2406.02844)| google | 2阶段训练+q-former | - phase1：表示学习，交替训练两类表示学习（item-text表示学习，item-item表示学习）<br> - phase2：item-language model训练 |
+|[embsum](https://arxiv.org/pdf/2406.02844)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br> - item过t5 encoder过poly；|
 
 
 
