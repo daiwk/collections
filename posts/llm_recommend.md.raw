@@ -895,6 +895,8 @@ word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/mult
 
 ## 快手的LEARN
 
+[快手广告领域的大模型技术探索与实践](https://mp.weixin.qq.com/s/9VmOb3q4enWhqqJ_f7jnFA)
+
 [https://zhuanlan.zhihu.com/p/705497209](https://zhuanlan.zhihu.com/p/705497209)
 
 [Knowledge Adaptation from Large Language Model to Recommendation for Practical Industrial Application](https://arxiv.org/pdf/2405.03988)
@@ -1416,11 +1418,6 @@ XXX
 
 [Towards Empathetic Conversational Recommender Systems](https://arxiv.org/pdf/2409.10527)
 
-## 快手广告LLM推荐
-
-[快手广告领域的大模型技术探索与实践](https://mp.weixin.qq.com/s/9VmOb3q4enWhqqJ_f7jnFA)
-
-
 ## PRECISE
 
 [微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
@@ -1429,7 +1426,22 @@ XXX
 
 ## 小结
 
-xxx
+工业界
+
+| 论文 | 公司 | 类别 | 做法 | ab收益|
+|----------|-----|------|-------------| ------------|
+|[Knowledge Adaptation from Large Language Model to Recommendation for Practical Industrial Application](https://arxiv.org/pdf/2405.03988)  | 快手 |
+ItemLLM+user decoder| item LLM固定，输入item特征得到item emb；输入item emb过user的12层trans算dense all-action loss，线上推荐模型里加user emb和item emb | 广告cvr+收入 |
+|[Can Small Language Models be Good Reasoners for Sequential Recommendation?](https://arxiv.org/pdf/2403.04260)  | 蚂蚁 | 蒸馏推荐理由| 输入用户行为历史，大LLM(gpt)产出的推荐理由；小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由，通过BERT得到emb | 广告cvr+收入 |
+
+
+学术界
+
+| 论文+公司 |类别| 做法 | 
+|----------|------|-------------| 
+| x | x | x|
+
+
 
 # LLM for 检索
 
