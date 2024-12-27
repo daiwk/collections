@@ -6817,6 +6817,20 @@ DALL-E3：
 
 [MetaMorph: Multimodal Understanding and Generation via Instruction Tuning](https://arxiv.org/pdf/2412.14164v1)
 
+
+
+## 多模态推荐系统
+
+[多模态推荐系统新突破，一文读懂前沿进展！](https://mp.weixin.qq.com/s/YDna7dvC55yWL61r8PljoQ)
+
+[Multimodal Recommender Systems: A Survey](https://arxiv.org/pdf/2302.03883)
+
+[https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems](https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems)
+
+BM3：[Bootstrap Latent Representations for Multi-modal Recommendation](https://arxiv.org/pdf/2207.05969)
+
+EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.org/pdf/2404.06078v1)
+
 ## 其他
 
 (toread)
@@ -7259,7 +7273,7 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [Zipper: A Multi-Tower Decoder Architecture for Fusing Modalities](https://arxiv.org/pdf/2405.18669)
 
-# LLM+推荐
+# LLM+推荐：概述
 
 ## 综述
 
@@ -7268,7 +7282,6 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [A Survey on Large Language Models for Recommendation](https://arxiv.org/pdf/2305.19860.pdf)
 [How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817.pdf)
 [Recommender Systems in the Era of Large Language Models (LLMs)](https://arxiv.org/pdf/2307.02046.pdf)
-
 
 
 中科大LDS实验室的tutorial：[XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf](https://github.com/daiwk/collections/blob/master/assets/XadC3O-large-language-models-for-recommendation-tutorial-slides.pdf)
@@ -7417,6 +7430,50 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 &nbsp;
 
 
+## llm vs ID
+
+[推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
+
+[Exploring the Upper Limits of Text-Based Collaborative Filtering Using Large Language Models: Discoveries and Insights](http://arxiv.org/abs/2305.11700)
+
+
+[知乎的讨论](https://www.zhihu.com/question/630016669/answer/3380909598)
+
+SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
+
+[Where to Go Next for Recommender Systems? ID- vs. Modality-based Recommender Models Revisited](https://arxiv.org/abs/2303.13835)
+
+[https://github.com/westlake-repl/IDvs.MoRec](https://github.com/westlake-repl/IDvs.MoRec)
+
+[对应的ppt](https://github.com/westlake-repl/MicroLens/blob/master/MicroLens_DeepMind_Talk.pdf)
+
+
+## 多智能体+推荐
+
+### agent4rec
+
+[On Generative Agents in Recommendation](https://arxiv.org/pdf/2310.10108.pdf)
+
+word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx](https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx)
+
+[https://github.com/LehengTHU/Agent4Rec](https://github.com/LehengTHU/Agent4Rec)
+
+### MACRec
+
+[MACRec: a Multi-Agent Collaboration Framework for Recommendation](https://arxiv.org/pdf/2402.15235)
+
+
+
+## 推荐生态系统
+
+[Modeling Recommender Ecosystems: Research Challenges at the Intersection of Mechanism Design, Reinforcement Learning and Generative Models](https://storage.googleapis.com/gweb-research2023-media/pubtools/pdf/e00cc0ce4480c15339b7798943560ad1a0d593ce.pdf)
+
+## 发现性
+
+[Diversifying by Intent in Recommender Systems](https://arxiv.org/pdf/2405.12327)，涨了dau等指标
+
+
+# LLM+推荐：生成索引
 
 ## DSI
 
@@ -7785,8 +7842,15 @@ class RQBottleneck(nn.Module):
 [Better Generalization with Semantic IDs: A Case Study in Ranking for Recommendations](https://arxiv.org/pdf/2306.08121)
 
 
+# LLM+推荐：输入ID
 
-## HSTU
+## 快手的recgpt
+
+[RecGPT: Generative Personalized Prompts for Sequential Recommendation via ChatGPT Training Paradigm](https://arxiv.org/pdf/2404.08675)
+
+[https://zhuanlan.zhihu.com/p/699985083](https://zhuanlan.zhihu.com/p/699985083)
+
+## Meta的HSTU
 
 [如何评价Meta最新推荐论文: 生成式推荐打败深度分层架构推荐？](https://mp.weixin.qq.com/s/MeH2drBIBML5OSfCujIJ0Q)
 
@@ -8103,58 +8167,21 @@ XXX
 
 ![hstu-scaling-law](../assets/hstu-scaling-law.png)
 
-## Wukong
+# LLM+推荐：输入文本
 
-[Wukong: Towards a Scaling Law for Large-Scale Recommendation](https://arxiv.org/pdf/2403.02545.pdf)
+## 蚂蚁的BAHE（落地）
 
+[SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
 
-## P5
+[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347)
 
-[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+![](../assets/bahe.png)
 
-## llm vs ID
-
-[推荐系统范式之争，LLM vs. ID？](https://mp.weixin.qq.com/s/7pQ891pnp_BM7qH7ROiWwg)
-
-[Exploring the Upper Limits of Text-Based Collaborative Filtering Using Large Language Models: Discoveries and Insights](http://arxiv.org/abs/2305.11700)
++ 防止由于重复编码相同用户行为而产生的计算冗余：利用LLMs的预训练浅层提取来自用户序列的最细粒度的原子用户行为的emb，并将它们存储在离线数据库中
++ 从db里查出来，和item一起过LLMs的更深层可训练层
 
 
-[知乎的讨论](https://www.zhihu.com/question/630016669/answer/3380909598)
-
-SIGIR2023 \| ID vs 模态: 推荐系统ID范式有望被颠覆？
-
-[Where to Go Next for Recommender Systems? ID- vs. Modality-based Recommender Models Revisited](https://arxiv.org/abs/2303.13835)
-
-[https://github.com/westlake-repl/IDvs.MoRec](https://github.com/westlake-repl/IDvs.MoRec)
-
-[对应的ppt](https://github.com/westlake-repl/MicroLens/blob/master/MicroLens_DeepMind_Talk.pdf)
-
-
-## 多智能体+推荐
-
-### agent4rec
-
-[On Generative Agents in Recommendation](https://arxiv.org/pdf/2310.10108.pdf)
-
-word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx](https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx)
-
-[https://github.com/LehengTHU/Agent4Rec](https://github.com/LehengTHU/Agent4Rec)
-
-### MACRec
-
-[MACRec: a Multi-Agent Collaboration Framework for Recommendation](https://arxiv.org/pdf/2402.15235)
-
-
-
-
-
-## 拿推荐语料微调LLM
-
-[谷歌: 利用推荐知识对齐大语言模型](https://mp.weixin.qq.com/s/62SaQofe9qi2LCApjIzLFA)
-
-[Aligning Large Language Models with Recommendation Knowledge](https://arxiv.org/pdf/2404.00245.pdf)
-
-## 快手的LEARN
+## 快手的LEARN（落地）
 
 [快手广告领域的大模型技术探索与实践](https://mp.weixin.qq.com/s/9VmOb3q4enWhqqJ_f7jnFA)
 
@@ -8221,15 +8248,13 @@ loss用的是pinnerformer的dense all action loss（[PinnerFormer: Sequence Mode
 
 ![](../assets/learn-adaptor.png)
 
-## ACL2024的recgpt
 
-[RecGPT: Generative Pre-training for Text-based Recommendation](https://arxiv.org/pdf/2405.12715)
+## Google拿推荐语料微调LLM
 
-## 快手的recgpt
+[谷歌: 利用推荐知识对齐大语言模型](https://mp.weixin.qq.com/s/62SaQofe9qi2LCApjIzLFA)
 
-[RecGPT: Generative Personalized Prompts for Sequential Recommendation via ChatGPT Training Paradigm](https://arxiv.org/pdf/2404.08675)
+[Aligning Large Language Models with Recommendation Knowledge](https://arxiv.org/pdf/2404.00245.pdf)
 
-[https://zhuanlan.zhihu.com/p/699985083](https://zhuanlan.zhihu.com/p/699985083)
 
 ## 蚂蚁的SLIM
 
@@ -8246,15 +8271,16 @@ loss用的是pinnerformer的dense all action loss（[PinnerFormer: Sequence Mode
   + 模型训练完成，将通过prompt为用户行为提供T+1推理。
   + 推理结果通过文本编码器（Text Encoder）转化为表征，这些表征将直接应用于线上模型。
 
-接下来，希望将LLAMA进一步压缩至更小的序列模型。在实验中遇到几个挑战：
+## OPPO的DLLM2REC
+
+在蚂蚁的SLIM的基础上，希望将LLAMA进一步压缩至更小的序列模型。在实验中遇到几个挑战：
 
 + 蒸馏过程中教师模型的知识可靠性存疑
 + 从语言模型到序列模型的蒸馏跨越了不同的模型类型，带来两个主要问题：
   + 参数差距大，学生模型难以容纳教师模型的知识
   + 语义不一致，因为序列模型与原始语言模型之间存在天然差异
 
-
-参考[Distillation Matters: Empowering Sequential Recommenders to Match the Performance of Large Language Models](https://arxiv.org/pdf/2405.00338v1)
+[Distillation Matters: Empowering Sequential Recommenders to Match the Performance of Large Language Models](https://arxiv.org/pdf/2405.00338v1)
 
 ![dllm2rec](../assets/dllm2rec.png)
 
@@ -8282,17 +8308,7 @@ w_{\mathrm{s} i}^o= \begin{cases}1, & i \in O^T \cap O^S \\ 0, & i \notin O^T \c
 XXX
 
 
-
-
-## 推荐生态系统
-
-[Modeling Recommender Ecosystems: Research Challenges at the Intersection of Mechanism Design, Reinforcement Learning and Generative Models](https://storage.googleapis.com/gweb-research2023-media/pubtools/pdf/e00cc0ce4480c15339b7798943560ad1a0d593ce.pdf)
-
-## 发现性
-
-[Diversifying by Intent in Recommender Systems](https://arxiv.org/pdf/2405.12327)，涨了dau等指标
-
-## ILM
+## Google的ILM
 
 [Item-Language Model for Conversational Recommendation](https://arxiv.org/pdf/2406.02844)
 
@@ -8323,7 +8339,7 @@ XXX
     + LLM参数freeze，只tune Q-former的参数和linear
 
 
-## embSum
+## Meta的embSum
 
 [EmbSum: Leveraging the Summarization Capabilities of Large Language Models for Content-Based Recommendations](https://www.arxiv.org/pdf/2405.11441)
 
@@ -8352,59 +8368,14 @@ s_j^i & =W^p \cdot K_j^i,
 \end{aligned}
 XXX
 
-## RecExplainer
+## 微软的RecExplainer
 
 [RecExplainer: Aligning Large Language Models for Explaining Recommendation Models](https://arxiv.org/pdf/2311.10947)
 
 [https://github.com/microsoft/RecAI](https://github.com/microsoft/RecAI)
 
 
-## 其他
-
-[WWW 2024 | 工业界大模型在搜广推场景应用](https://zhuanlan.zhihu.com/p/686259205)
-
-[LLM+Recommendation大模型推荐近期进展|含WWW, SIGIR, AAAI等顶会文章](https://mp.weixin.qq.com/s/m8DMgSt_r-HVNHHzA8ceVw)
-
-+ baidu：[Representation Learning with Large Language Models for Recommendation](https://arxiv.org/pdf/2310.15950.pdf)
-+ huawei：[ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131.pdf)
-+ microsoft：[Knowledge-Augmented Large Language Models for Personalized Contextual Query Suggestion](https://arxiv.org/pdf/2311.06318.pdf)
-+ 阿里：[Modeling User Viewing Flow using Large Language Models for Article Recommendation](https://arxiv.org/pdf/2311.07619.pdf)
-+ linkedin：[Collaborative Large Language Model for Recommender Systems](https://arxiv.org/pdf/2311.01343.pdf)
-
-[ClickPrompt: CTR Models are Strong Prompt Generators for Adapting Language Models to CTR Prediction](https://arxiv.org/pdf/2310.09234.pdf)
-
-[SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
-
-[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347.pdf)
-
-
-[LLM落地淘宝电商搜索场景，显著提升长尾query改写效果](https://mp.weixin.qq.com/s/GmogjAHt0Hrwd8RmtOqS7A)
-
-[Large Language Model based Long-tail Query Rewriting in Taobao Search](https://arxiv.org/pdf/2311.03758)
-
-recsys23的[Leveraging Large Language Models for Sequential Recommendation](https://arxiv.org/pdf/2309.09261) 还有一篇[Improving Sequential Recommendations with LLMs](https://arxiv.org/pdf/2402.01339)，对应的代码：[https://github.com/dh-r/LLM-Sequential-Recommendation/tree/RecSys23](https://github.com/dh-r/LLM-Sequential-Recommendation/tree/RecSys23)
-
-
-meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Models](https://arxiv.org/pdf/2307.15780)
-
-[生成式推荐系统近期研究工作梳理](https://mp.weixin.qq.com/s/u2kVzgv8ntUIkyCZZXIYWg)
-
-[腾讯广告基于混元大模型的生成式召回落地实践](https://mp.weixin.qq.com/s/ClmjgRzpNIVjX0PrikS3qg)
-
-## time-LLM
-
-[谁说大象不能起舞! 重编程大语言模型实现跨模态交互的时序预测 | ICLR 2024](https://mp.weixin.qq.com/s/K04haPMcbKiS6OkCihXAqQ)
-
-[Time-LLM: Time Series Forecasting by Reprogramming Large Language Models](https://arxiv.org/pdf/2310.01728.pdf)
-
-[https://github.com/KimMeen/Time-LLM](https://github.com/KimMeen/Time-LLM)
-
-将**时序预测任务**转换成一个可以由 LLMs 有效解决的**语言任务**，成功激活了llm做**高精度时序推理**的能力。
-
-+ 时序输入重编程
-+ 提示做前缀
-
-## NoteLLM
+## 小红书的NoteLLM
 
 [WWW'24 | 小红书NoteLLM: 大语言模型用于I2I笔记推荐](https://mp.weixin.qq.com/s/jcj4jKaEIg-L264uZgYuAw)
 
@@ -8458,29 +8429,8 @@ L=\frac{L_{c l}+\alpha L_{g e n}}{1+\alpha},
 XXX
 
 
-## 多模态推荐系统
 
-[多模态推荐系统新突破，一文读懂前沿进展！](https://mp.weixin.qq.com/s/YDna7dvC55yWL61r8PljoQ)
-
-[Multimodal Recommender Systems: A Survey](https://arxiv.org/pdf/2302.03883)
-
-[https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems](https://github.com/Applied-Machine-Learning-Lab/Awesome-Multimodal-Recommender-Systems)
-
-BM3：[Bootstrap Latent Representations for Multi-modal Recommendation](https://arxiv.org/pdf/2207.05969)
-
-EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.org/pdf/2404.06078v1)
-
-## CCF-LLM
-
-[CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
-
-## NAR4Rec
-
-[KDD 2024 | 快手生成式推荐](https://mp.weixin.qq.com/s/2Clup2_JPELWBuHqMBc97w)
-
-[Non-autoregressive Generative Models for Reranking Recommendation](https://arxiv.org/pdf/2402.06871)
-
-## LLM-CF
+## 快手的LLM-CF
 
 [2024'快手提出LLM-CF框架，借助LLM的链式思维（COT）推理提升推荐系统性能](https://mp.weixin.qq.com/s/-NJPxj-1JknKl0JdVYIB5g)
 
@@ -8663,36 +8613,61 @@ XXX
 图中的蓝色火焰部分需要在线计算，而因为$$K=4$$，所以很轻量
 
 
-## STAR
+## Google的STAR
 
 [谷歌用大模型搞推荐，拿到收益了](https://mp.weixin.qq.com/s/IuPLKwPnDwWgke4SFy2Bnw)
 
 [STAR: A Simple Training-free Approach for Recommendations using Large Language Models](https://arxiv.org/pdf/2410.16458)
 
-## PRECISE
-
-[PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)
-
-## ECR
+## 腾讯的ECR
 
 [RecSys'24最佳长论文|腾讯ECR:富有情感的对话式推荐系统](https://mp.weixin.qq.com/s/K9LUSywox6IeAb4XIhe_qA)
 
 [Towards Empathetic Conversational Recommender Systems](https://arxiv.org/pdf/2409.10527)
 
-## PRECISE
+## 微信的PRECISE
 
 [微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
 
 [PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)
 
-## BAHE
+## P5（学术界）
 
-[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347)
+[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
 
-![](../assets/bahe.png)
 
-+ 防止由于重复编码相同用户行为而产生的计算冗余：利用LLMs的预训练浅层提取来自用户序列的最细粒度的原子用户行为的emb，并将它们存储在离线数据库中
-+ 从db里查出来，和item一起过LLMs的更深层可训练层
+## CCF-LLM（学术界）
+
+[CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
+
+[Collaborative Cross-modal Fusion with Large Language Model for Recommendation](https://arxiv.org/pdf/2408.08564)
+
+
+## 其他
+
+ACL2024的recgpt 这个好像没啥用，[RecGPT: Generative Pre-training for Text-based Recommendation](https://arxiv.org/pdf/2405.12715)
+
+[WWW 2024 | 工业界大模型在搜广推场景应用](https://zhuanlan.zhihu.com/p/686259205)
+
+[LLM+Recommendation大模型推荐近期进展|含WWW, SIGIR, AAAI等顶会文章](https://mp.weixin.qq.com/s/m8DMgSt_r-HVNHHzA8ceVw)
+
++ baidu：[Representation Learning with Large Language Models for Recommendation](https://arxiv.org/pdf/2310.15950.pdf)
++ huawei：[ReLLa: Retrieval-enhanced Large Language Models for Lifelong Sequential Behavior Comprehension in Recommendation](https://arxiv.org/pdf/2308.11131.pdf)
++ microsoft：[Knowledge-Augmented Large Language Models for Personalized Contextual Query Suggestion](https://arxiv.org/pdf/2311.06318.pdf)
++ 阿里：[Modeling User Viewing Flow using Large Language Models for Article Recommendation](https://arxiv.org/pdf/2311.07619.pdf)
++ linkedin：[Collaborative Large Language Model for Recommender Systems](https://arxiv.org/pdf/2311.01343.pdf)
+
+[ClickPrompt: CTR Models are Strong Prompt Generators for Adapting Language Models to CTR Prediction](https://arxiv.org/pdf/2310.09234.pdf)
+
+recsys23的[Leveraging Large Language Models for Sequential Recommendation](https://arxiv.org/pdf/2309.09261) 还有一篇[Improving Sequential Recommendations with LLMs](https://arxiv.org/pdf/2402.01339)，对应的代码：[https://github.com/dh-r/LLM-Sequential-Recommendation/tree/RecSys23](https://github.com/dh-r/LLM-Sequential-Recommendation/tree/RecSys23)
+
+
+meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Models](https://arxiv.org/pdf/2307.15780)
+
+[生成式推荐系统近期研究工作梳理](https://mp.weixin.qq.com/s/u2kVzgv8ntUIkyCZZXIYWg)
+
+[腾讯广告基于混元大模型的生成式召回落地实践](https://mp.weixin.qq.com/s/ClmjgRzpNIVjX0PrikS3qg)
+
 
 ## 小结
 
@@ -8710,16 +8685,20 @@ XXX
 | 论文 | 公司 | 关键词 | 做法 | 
 |------|-----|------|---------------------|
 |[SLIM](https://arxiv.org/pdf/2403.04260) | 蚂蚁 | 蒸馏推荐理由| - 输入用户行为历史，大LLM(gpt)产出的推荐理由；<br> - 小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由， <br> - 通过BERT得到emb，给推荐模型用 |
-| [LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。 <br>- 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
+|[LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。 <br>- 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
 |[ILM](https://arxiv.org/pdf/2406.02844)| google | 2阶段训练+q-former | - phase1：表示学习，交替训练两类表示学习（item-text表示学习，item-item表示学习）<br> - phase2：item-language model训练 |
 |[embsum](https://arxiv.org/pdf/2406.02844)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br>- item过t5 encoder过poly；|
 
 
 
 
-
-
 # LLM for 检索
+
+## BEQUE
+
+[LLM落地淘宝电商搜索场景，显著提升长尾query改写效果](https://mp.weixin.qq.com/s/GmogjAHt0Hrwd8RmtOqS7A)
+
+[Large Language Model based Long-tail Query Rewriting in Taobao Search](https://arxiv.org/pdf/2311.03758)
 
 ## ChatRetriever
 
@@ -10180,6 +10159,20 @@ Neel Nanda（deepmind）的项目
 [First-Person Fairness in Chatbots](https://cdn.openai.com/papers/first-person-fairness-in-chatbots.pdf)
 
 [翁荔B站分享原文：AI安全与“培养”之道](https://mp.weixin.qq.com/s/92QyZcwteFXaKfJk3GdTcQ)
+
+## time-LLM
+
+[谁说大象不能起舞! 重编程大语言模型实现跨模态交互的时序预测 | ICLR 2024](https://mp.weixin.qq.com/s/K04haPMcbKiS6OkCihXAqQ)
+
+[Time-LLM: Time Series Forecasting by Reprogramming Large Language Models](https://arxiv.org/pdf/2310.01728.pdf)
+
+[https://github.com/KimMeen/Time-LLM](https://github.com/KimMeen/Time-LLM)
+
+将**时序预测任务**转换成一个可以由 LLMs 有效解决的**语言任务**，成功激活了llm做**高精度时序推理**的能力。
+
++ 时序输入重编程
++ 提示做前缀
+
 
 ## 长尾
 

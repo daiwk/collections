@@ -902,6 +902,20 @@ Neel Nanda（deepmind）的项目
 
 [翁荔B站分享原文：AI安全与“培养”之道](https://mp.weixin.qq.com/s/92QyZcwteFXaKfJk3GdTcQ)
 
+## time-LLM
+
+[谁说大象不能起舞! 重编程大语言模型实现跨模态交互的时序预测 | ICLR 2024](https://mp.weixin.qq.com/s/K04haPMcbKiS6OkCihXAqQ)
+
+[Time-LLM: Time Series Forecasting by Reprogramming Large Language Models](https://arxiv.org/pdf/2310.01728.pdf)
+
+[https://github.com/KimMeen/Time-LLM](https://github.com/KimMeen/Time-LLM)
+
+将**时序预测任务**转换成一个可以由 LLMs 有效解决的**语言任务**，成功激活了llm做**高精度时序推理**的能力。
+
++ 时序输入重编程
++ 提示做前缀
+
+
 ## 长尾
 
 [A Systematic Review on Long-Tailed Learning](https://arxiv.org/pdf/2408.00483)
