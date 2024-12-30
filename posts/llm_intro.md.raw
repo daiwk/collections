@@ -456,8 +456,6 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 
 ### HMOE
 
-(toread)
-
 [优化传统MoE结构，腾讯混元团队提出专家差异化新思路](https://mp.weixin.qq.com/s/gOXGL_MReneAZCmO7lBIng)
 
 [HMoE: Heterogeneous Mixture of Experts for Language Modeling](https://arxiv.org/pdf/2408.10681)
@@ -465,8 +463,6 @@ MoE的核心问题是一个**如何把token分配给哪个专家**的**离散优
 在 HMoE 中，**每个专家的大小不再相同**，从而赋予了每个专家不同的表达能力。这种差异化设计使得路由可以根据专家的实际能力动态分配不同难度的 token，有效解决了专家专业化程度不足的问题。 
 
 ### OLMoE
-
-(toread)
 
 [OLMoE: Open Mixture-of-Experts Language Models](https://arxiv.org/pdf/2409.02060)
 
@@ -1218,8 +1214,6 @@ GRU：
 [SAMBA: Simple Hybrid State Space Models for Efficient Unlimited Context Language Modeling](https://arxiv.org/pdf/2406.07522)
 
 ## Mamba in llama
-
-(toread)
 
 [Mamba作者新作：将Llama3蒸馏成混合线性 RNN](https://mp.weixin.qq.com/s/jZGcBxhVUfb-Qv1UkqYK4A)
 
