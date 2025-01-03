@@ -666,13 +666,8 @@ kvcache的量化：[https://zhuanlan.zhihu.com/p/691537237](https://zhuanlan.zhi
 [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/pdf/2309.06180.pdf)
 
 ```
-As an example, for the 13B parameter
-OPT model [62], the KV cache of a single token demands 800
-KB of space, calculated as 2 (key and value vectors) × 5120
-(hidden state size) × 40 (number of layers) × 2 (bytes per
-FP16). 
+As an example, for the 13B parameter OPT model, the KV cache of a single token demands 800 KB of space, calculated as 2 (key and value vectors) x 5120 (hidden state size) x 40 (number of layers) x 2 (bytes per FP16). 
 ```
-
 
 对比sglang/trt-llm：[https://blog.vllm.ai/2024/09/05/perf-update.html](https://blog.vllm.ai/2024/09/05/perf-update.html)，看着和trt-llm差不多，sglang更菜
 
