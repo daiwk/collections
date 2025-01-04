@@ -3030,6 +3030,20 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [Byte Latent Transformer: Patches Scale Better Than Tokens](https://arxiv.org/pdf/2412.09871)
 
+## R2L tokenizer
+
+[从2019年到现在，是时候重新审视Tokenization了](https://mp.weixin.qq.com/s/zmeFYfxWD1nZq_MocgGeeQ)
+
+[https://huggingface.co/spaces/huggingface/number-tokenization-blog](https://huggingface.co/spaces/huggingface/number-tokenization-blog)
+
+## memory layers at scale
+
+[Meta探索大模型记忆层，扩展至1280亿个参数，优于MoE](https://mp.weixin.qq.com/s/R5JOMkLVbbI7yPJmdcT2pQ)
+
+[Memory Layers at Scale](https://arxiv.org/pdf/2412.09764)
+
+[https://github.com/facebookresearch/memory](https://github.com/facebookresearch/memory)
+
 
 # 典型LLM简介
 
@@ -4229,9 +4243,15 @@ XXX
 
 #### Deepseek-v3
 
+(toread)
+
 [DeepSeek-V3 正式发布](https://mp.weixin.qq.com/s/iFZOQsUNkpkXPDvOkE99wQ)
 
 [论文](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/DeepSeek_V3.pdf)
+
+[DeepSeek-V3技术报告解读](https://mp.weixin.qq.com/s/-Ggy94bM8k-AaYarTMSI5Q)
+
+[Deepseek V3 预训练策略解读](https://mp.weixin.qq.com/s/TzaaOOwe32V1IXxiLwcKGw)
 
 ### FALCON 2
 
@@ -4281,7 +4301,7 @@ XXX
 
 (toread)
 
-[这才是真・开源模型！公开「后训练」一切，性能超越Llama 3.1 Instruct](https://mp.weixin.qq.com/s/sTtBkVkqy0CQtpzcR6SN-A)
+[这才是真开源模型！公开「后训练」一切，性能超越Llama 3.1 Instruct](https://mp.weixin.qq.com/s/sTtBkVkqy0CQtpzcR6SN-A)
 
 [TÜLU 3: Pushing Frontiers in Open Language Model Post-Training](https://arxiv.org/pdf/2411.15124)
 
@@ -4294,6 +4314,8 @@ XXX
 ## post training的一些总结
 
 [工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
+
+[长文 | 大模型Post-Training总结](https://mp.weixin.qq.com/s/mL3Zc85zoHCjNOaTX2icTA)
 
 ### baichuan
 
@@ -4949,6 +4971,7 @@ Google的大规模稀疏模型设计
 
 [https://github.com/ray-project/ray/releases/tag/ray-2.4.0](https://github.com/ray-project/ray/releases/tag/ray-2.4.0)
 
+[Data+AI标配：Ray的2024年度总结](https://mp.weixin.qq.com/s/eiucaLEqcPyqoP17cjCr2w)
 
 ## Google的几大LLM加速工具
 
@@ -9246,6 +9269,10 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [https://github.com/richards199999/Thinking-Claude/tree/main](https://github.com/richards199999/Thinking-Claude/tree/main)
 
+[OpenAI最大秘密，竟被中国研究者破解？复旦等惊人揭秘o1路线图](https://mp.weixin.qq.com/s/IOKFBgoWyietVe3NNNw9Hg)
+
+[Scaling of Search and Learning: A Roadmap to Reproduce o1 from Reinforcement Learning Perspective](https://arxiv.org/abs/2412.14135)
+
 ## O1 Replication Journey
 
 [上交大发布首个OpenAI o1复现项目进展报告，满满的经验洞察](https://mp.weixin.qq.com/s/ZO_Rv98OakPuBaZl9Tw5VA)
@@ -9337,6 +9364,17 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 [大模型是否有推理能力？DeepMind数月前的论文让AI社区吵起来了](https://mp.weixin.qq.com/s/NdRBGFT6systLwn7p2ER7Q)
 
 [Amortized Planning with Large-Scale Transformers: A Case Study on Chess](https://arxiv.org/pdf/2402.04494)
+
+[联手OpenAI，吴恩达推出一门o1推理新课程，还免费](https://mp.weixin.qq.com/s/J4uQWL_zccyW7PKsb8eSlw)
+
+[https://www.deeplearning.ai/short-courses/reasoning-with-o1/](https://www.deeplearning.ai/short-courses/reasoning-with-o1/)
+
+[4o-mini只有8B，o1也才300B！微软论文意外曝光GPT核心机密](https://mp.weixin.qq.com/s/bT_w-T9ElmPUXbYA1f7kCg)
+
++ o1-preview约300B；o1-mini约100B
++ GPT-4o约200B；GPT-4o-mini约8B
++ Claude 3.5 Sonnet 2024-10-22版本约175B
+
 
 # O3
 
@@ -9470,18 +9508,6 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 [语义熵识破LLM幻觉！牛津大学新研究登Nature](https://mp.weixin.qq.com/s/fdLZ9DDqG9C_uxAAlKgQbw)
 
 [Detecting hallucinations in large language models using semantic entropy](https://www.nature.com/articles/s41586-024-07421-0)
-
-## 知识冲突
-
-[深度解析RAG大模型知识冲突，清华西湖大学港中文联合发布](https://mp.weixin.qq.com/s/y9-DwgNb3Yftgf_Ulf6yDQ)
-
-[Knowledge Conflicts for LLMs: A Survey](https://arxiv.org/pdf/2403.08319)
-
-## llm+db
-
-[长文本杀不死RAG：SQL+向量驱动大模型和大数据新范式，MyScale AI数据库正式开源](https://mp.weixin.qq.com/s/JvyKnEbdOSb1fTwhiQTO5A)
-
-[https://github.com/myscale/myscaledb](https://github.com/myscale/myscaledb)
 
 ## Zilliz
 
@@ -10001,6 +10027,23 @@ XXX
 ## 2024 rags
 
 [RAG七十二式：2024年度RAG清单](https://mp.weixin.qq.com/s/icIduUFsJxOka4orKM2pCw)
+
+
+## RAG的知识冲突
+
+[深度解析RAG大模型知识冲突，清华西湖大学港中文联合发布](https://mp.weixin.qq.com/s/y9-DwgNb3Yftgf_Ulf6yDQ)
+
+[Knowledge Conflicts for LLMs: A Survey](https://arxiv.org/pdf/2403.08319)
+
+## myscaledb
+
+[长文本杀不死RAG：SQL+向量驱动大模型和大数据新范式，MyScale AI数据库正式开源](https://mp.weixin.qq.com/s/JvyKnEbdOSb1fTwhiQTO5A)
+
+[https://github.com/myscale/myscaledb](https://github.com/myscale/myscaledb)
+
+## 多模态RAG
+
+[多模态RAG技术：从语义抽取到VLM](https://mp.weixin.qq.com/s/VyW6xXHt39o5FTD6JkpcuA)
 
 
 # LLM模型融合
