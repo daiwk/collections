@@ -121,18 +121,6 @@
 
 [Detecting hallucinations in large language models using semantic entropy](https://www.nature.com/articles/s41586-024-07421-0)
 
-## 知识冲突
-
-[深度解析RAG大模型知识冲突，清华西湖大学港中文联合发布](https://mp.weixin.qq.com/s/y9-DwgNb3Yftgf_Ulf6yDQ)
-
-[Knowledge Conflicts for LLMs: A Survey](https://arxiv.org/pdf/2403.08319)
-
-## llm+db
-
-[长文本杀不死RAG：SQL+向量驱动大模型和大数据新范式，MyScale AI数据库正式开源](https://mp.weixin.qq.com/s/JvyKnEbdOSb1fTwhiQTO5A)
-
-[https://github.com/myscale/myscaledb](https://github.com/myscale/myscaledb)
-
 ## Zilliz
 
 [向量数据库的中场战事：长期主义者Zilliz如何全球突围](https://mp.weixin.qq.com/s/lRryjRiUGKdT11qfi62pUg)
@@ -651,6 +639,23 @@ XXX
 ## 2024 rags
 
 [RAG七十二式：2024年度RAG清单](https://mp.weixin.qq.com/s/icIduUFsJxOka4orKM2pCw)
+
+
+## RAG的知识冲突
+
+[深度解析RAG大模型知识冲突，清华西湖大学港中文联合发布](https://mp.weixin.qq.com/s/y9-DwgNb3Yftgf_Ulf6yDQ)
+
+[Knowledge Conflicts for LLMs: A Survey](https://arxiv.org/pdf/2403.08319)
+
+## myscaledb
+
+[长文本杀不死RAG：SQL+向量驱动大模型和大数据新范式，MyScale AI数据库正式开源](https://mp.weixin.qq.com/s/JvyKnEbdOSb1fTwhiQTO5A)
+
+[https://github.com/myscale/myscaledb](https://github.com/myscale/myscaledb)
+
+## 多模态RAG
+
+[多模态RAG技术：从语义抽取到VLM](https://mp.weixin.qq.com/s/VyW6xXHt39o5FTD6JkpcuA)
 
 
 # LLM模型融合

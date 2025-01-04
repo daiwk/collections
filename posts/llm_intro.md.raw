@@ -1862,6 +1862,20 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [Byte Latent Transformer: Patches Scale Better Than Tokens](https://arxiv.org/pdf/2412.09871)
 
+## R2L tokenizer
+
+[从2019年到现在，是时候重新审视Tokenization了](https://mp.weixin.qq.com/s/zmeFYfxWD1nZq_MocgGeeQ)
+
+[https://huggingface.co/spaces/huggingface/number-tokenization-blog](https://huggingface.co/spaces/huggingface/number-tokenization-blog)
+
+## memory layers at scale
+
+[Meta探索大模型记忆层，扩展至1280亿个参数，优于MoE](https://mp.weixin.qq.com/s/R5JOMkLVbbI7yPJmdcT2pQ)
+
+[Memory Layers at Scale](https://arxiv.org/pdf/2412.09764)
+
+[https://github.com/facebookresearch/memory](https://github.com/facebookresearch/memory)
+
 
 # 典型LLM简介
 
@@ -3061,9 +3075,15 @@ XXX
 
 #### Deepseek-v3
 
+(toread)
+
 [DeepSeek-V3 正式发布](https://mp.weixin.qq.com/s/iFZOQsUNkpkXPDvOkE99wQ)
 
 [论文](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/DeepSeek_V3.pdf)
+
+[DeepSeek-V3技术报告解读](https://mp.weixin.qq.com/s/-Ggy94bM8k-AaYarTMSI5Q)
+
+[Deepseek V3 预训练策略解读](https://mp.weixin.qq.com/s/TzaaOOwe32V1IXxiLwcKGw)
 
 ### FALCON 2
 
@@ -3113,7 +3133,7 @@ XXX
 
 (toread)
 
-[这才是真・开源模型！公开「后训练」一切，性能超越Llama 3.1 Instruct](https://mp.weixin.qq.com/s/sTtBkVkqy0CQtpzcR6SN-A)
+[这才是真开源模型！公开「后训练」一切，性能超越Llama 3.1 Instruct](https://mp.weixin.qq.com/s/sTtBkVkqy0CQtpzcR6SN-A)
 
 [TÜLU 3: Pushing Frontiers in Open Language Model Post-Training](https://arxiv.org/pdf/2411.15124)
 
@@ -3126,6 +3146,8 @@ XXX
 ## post training的一些总结
 
 [工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
+
+[长文 | 大模型Post-Training总结](https://mp.weixin.qq.com/s/mL3Zc85zoHCjNOaTX2icTA)
 
 ### baichuan
 
