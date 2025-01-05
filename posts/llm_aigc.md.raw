@@ -8267,7 +8267,7 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 
 ![](../assets/bahe.png)
 
-+ 防止由于重复编码相同用户行为而产生的计算冗余：利用LLMs的预训练浅层提取来自用户序列的最细粒度的原子用户行为的emb，并将它们存储在离线数据库中
++ 防止由于重复编码相同用户行为而产生的计算冗余：利用LLMs的预训练浅层提取来自用户序列的最细粒度的原子用户行为(例如购买星巴克、订酒店)的emb，并将它们存储在离线数据库中
 + 从db里查出来，和item一起过LLMs的更深层可训练层
 
 
@@ -8744,6 +8744,7 @@ XXX
 
 ![](../assets/llama4rec-prompts.png)
 
+通过如上prompt构建一个instruct-tuning数据集，然后finetune一个llama2
 
 ## CCF-LLM（学术界）
 
@@ -8829,8 +8830,8 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 | 论文 | 公司 | 关键词 | 做法 | ab收益|
 |------|-----|------|----------------| -----|
-|[KAR](https://arxiv.org/pdf/2306.10933) | 华为 | item+user llm | - 让LLM总结item得到item emb；<br> - 让LLM总结user历史得到user emb <br> - 两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用 | 音乐推荐 涨了播放量 |
-|[LEARN](https://arxiv.org/pdf/2405.03988) | 快手 | ItemLLM+user decoder| - item LLM固定，输入item特征得到item emb；<br> - 输入item emb过user的12层trans算dense all-action loss，<br> - 线上推荐模型里加user emb和item emb | 广告cvr+收入 |
+|[KAR](https://arxiv.org/pdf/2306.10933) | 华为 | item+user llm，不finetune LLM | - 让LLM总结item得到item emb；<br> - 让LLM总结user历史得到user emb <br> - 两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用 | 音乐推荐 涨了播放量 |
+|[LEARN](https://arxiv.org/pdf/2405.03988) | 快手 | ItemLLM+user decoder，不finetune LLM| - item LLM固定，输入item特征得到item emb；<br> - 输入item emb过user的12层trans算dense all-action loss，<br> - 线上推荐模型里加user emb和item emb | 广告cvr+收入 |
 |[BAHE](https://arxiv.org/pdf/2403.19347) | 蚂蚁 | 预先计算原子用户行为 | - LLMs的预训练浅层提取来原子用户行为的emb，并存进离线db <br> - 从db里查出来，和item一起过LLMs的更深层可训练层  | 广告ctr+cpm |
 
 
@@ -8847,8 +8848,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 | 论文 | 关键词 | 做法 | 
 |------|------|---------------------|
-|[Llama4rec](https://arxiv.org/pdf/2401.13870) | prompt增强+数据增强 | - prompt增强：在prompt里引入推荐模型的信息；<br> - 数据增强：通过LLM给推荐模型增加样本 <br> - adaptive aggregation：llm和推荐模型各自打分并用融合公式融合|
-
+|[Llama4rec](https://arxiv.org/pdf/2401.13870) | prompt增强+数据增强，finetune | - prompt增强：在prompt里引入推荐模型的信息；<br> - 数据增强：通过LLM给推荐模型增加样本 <br> - adaptive aggregation：llm和推荐模型各自打分并用融合公式融合|
 
 
 
