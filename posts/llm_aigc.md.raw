@@ -7351,7 +7351,6 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
 
 [A Survey on Large Language Models for Recommendation](https://arxiv.org/pdf/2305.19860.pdf)
-[How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817.pdf)
 [Recommender Systems in the Era of Large Language Models (LLMs)](https://arxiv.org/pdf/2307.02046.pdf)
 
 
@@ -7373,6 +7372,8 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 &nbsp;
 
+[How Can Recommender Systems Benefit from Large Language Models: A Survey](https://arxiv.org/pdf/2306.05817v6) 基于这个组织
+
 CRM(conventional recommendation models)
 
 ![llm-rec-where](../assets/llm-rec-where.png)
@@ -7389,77 +7390,7 @@ CRM(conventional recommendation models)
 
 通过LLM的世界知识来获取更好的user/item表示
 
-+ KAR：[Towards Open-World Recommendation with Knowledge Augmentation from Large Language Models](https://arxiv.org/pdf/2306.10933)通过LLM生成user侧的preference知识，和item侧的factual知识，并作为CRM的输入特征。代码：[https://github.com/YunjiaXi/Open-World-Knowledge-Augmented-Recommendation/blob/main/knowledge_encoding/utils.py](https://github.com/YunjiaXi/Open-World-Knowledge-Augmented-Recommendation/blob/main/knowledge_encoding/utils.py)，其实就是把模型输出的hidden states处理一下：
-
-```python
-
-x = tokenizer(x, padding=True, truncation=True, max_length=512, return_tensors="pt",
-                return_attention_mask=True).to(device)
-mask = x['attention_mask']
-outputs = model(**x, output_hidden_states=True, return_dict=True)
-pred = get_paragraph_representation(outputs, mask, aggregate_type)
-def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
-    last_hidden = outputs.last_hidden_state
-    hidden_states = outputs.hidden_states
-
-    # Apply different poolers
-
-    if pooler == 'cls':
-        # There is a linear+activation layer after CLS representation
-        return outputs.pooler_output.cpu()  # chatglm不能用，用于bert
-    elif pooler == 'cls_before_pooler':
-        return last_hidden[:, 0].cpu()
-    elif pooler == "avg":
-        return ((last_hidden * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)).cpu()
-    elif pooler == "avg_first_last":
-        first_hidden = hidden_states[1]
-        last_hidden = hidden_states[-1]
-        pooled_result = ((first_hidden + last_hidden) / 2.0 * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)
-        return pooled_result.cpu()
-    elif pooler == "avg_top2":
-        second_last_hidden = hidden_states[-2]
-        last_hidden = hidden_states[-1]
-        pooled_result = ((last_hidden + second_last_hidden) / 2.0 * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)
-        return pooled_result.cpu()
-    elif pooler == 'len_last':  # 根据padding方式last方式也不一样
-        lens = mask.unsqueeze(-1).sum(dim)
-        # index = torch.arange(last_hidden.shape[0])
-        # print(index)
-        pooled_result = [last_hidden[i, lens[i] - 1, :] for i in range(last_hidden.shape[0])]
-        pooled_result = torch.concat(pooled_result, dim=0)
-        return pooled_result.cpu()
-    elif pooler == 'last':
-        if dim == 0:
-            return last_hidden[-1, :, :]
-        else:
-            return last_hidden[:, -1, :]
-    elif pooler == 'wavg':
-        # Get weights of shape [bs, seq_len, hid_dim]
-        weights = (
-            torch.arange(start=1, end=last_hidden.shape[1] + 1)
-            .unsqueeze(0)
-            .unsqueeze(-1)
-            .expand(last_hidden.size())
-            .float().to(last_hidden.device)
-        )
-
-        # Get attn mask of shape [bs, seq_len, hid_dim]
-        input_mask_expanded = (
-            mask
-            .unsqueeze(-1)
-            .expand(last_hidden.size())
-            .float()
-        )
-
-        # Perform weighted mean pooling across seq_len: bs, seq_len, hidden_dim -> bs, hidden_dim
-        sum_embeddings = torch.sum(last_hidden * input_mask_expanded * weights, dim=dim)
-        sum_mask = torch.sum(input_mask_expanded * weights, dim=dim)
-
-        pooled_result = sum_embeddings / sum_mask
-        return pooled_result.cpu()
-    else:
-        raise NotImplementedError
-```
++ KAR：
 
 #### instance-level sample generation
 
@@ -8240,6 +8171,94 @@ XXX
 
 # LLM+推荐：输入文本
 
+## 华为的KAR（落地）
+
+[Towards Open-World Recommendation with Knowledge Augmentation from Large Language Models](https://arxiv.org/pdf/2306.10933)
+
+![](../assets/kar-arch.png)
+
++ LLM生成user侧的preference reasoning知识
++ LLM生成item侧的factual知识
++ 这两部分知识输入一个encoder得到两个表示，然后再过个mmoe产出merge后reasoning augmented vec和fact augmented vec，一起作为CRM的输入特征。
+
+对应的prompt如下：
+
+![](../assets/kar-prompts.png)
+
+看实验应该是用在召回，每个user和vec去找最像的k个item，但没法ann，只能暴力算
+
+代码：[https://github.com/YunjiaXi/Open-World-Knowledge-Augmented-Recommendation/blob/main/knowledge_encoding/utils.py](https://github.com/YunjiaXi/Open-World-Knowledge-Augmented-Recommendation/blob/main/knowledge_encoding/utils.py)，其实就是把模型输出的hidden states处理一下：
+
+```python
+
+x = tokenizer(x, padding=True, truncation=True, max_length=512, return_tensors="pt",
+                return_attention_mask=True).to(device)
+mask = x['attention_mask']
+outputs = model(**x, output_hidden_states=True, return_dict=True)
+pred = get_paragraph_representation(outputs, mask, aggregate_type)
+def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
+    last_hidden = outputs.last_hidden_state
+    hidden_states = outputs.hidden_states
+
+    # Apply different poolers
+
+    if pooler == 'cls':
+        # There is a linear+activation layer after CLS representation
+        return outputs.pooler_output.cpu()  # chatglm不能用，用于bert
+    elif pooler == 'cls_before_pooler':
+        return last_hidden[:, 0].cpu()
+    elif pooler == "avg":
+        return ((last_hidden * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)).cpu()
+    elif pooler == "avg_first_last":
+        first_hidden = hidden_states[1]
+        last_hidden = hidden_states[-1]
+        pooled_result = ((first_hidden + last_hidden) / 2.0 * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)
+        return pooled_result.cpu()
+    elif pooler == "avg_top2":
+        second_last_hidden = hidden_states[-2]
+        last_hidden = hidden_states[-1]
+        pooled_result = ((last_hidden + second_last_hidden) / 2.0 * mask.unsqueeze(-1)).sum(dim) / mask.sum(dim).unsqueeze(-1)
+        return pooled_result.cpu()
+    elif pooler == 'len_last':  # 根据padding方式last方式也不一样
+        lens = mask.unsqueeze(-1).sum(dim)
+        # index = torch.arange(last_hidden.shape[0])
+        # print(index)
+        pooled_result = [last_hidden[i, lens[i] - 1, :] for i in range(last_hidden.shape[0])]
+        pooled_result = torch.concat(pooled_result, dim=0)
+        return pooled_result.cpu()
+    elif pooler == 'last':
+        if dim == 0:
+            return last_hidden[-1, :, :]
+        else:
+            return last_hidden[:, -1, :]
+    elif pooler == 'wavg':
+        # Get weights of shape [bs, seq_len, hid_dim]
+        weights = (
+            torch.arange(start=1, end=last_hidden.shape[1] + 1)
+            .unsqueeze(0)
+            .unsqueeze(-1)
+            .expand(last_hidden.size())
+            .float().to(last_hidden.device)
+        )
+
+        # Get attn mask of shape [bs, seq_len, hid_dim]
+        input_mask_expanded = (
+            mask
+            .unsqueeze(-1)
+            .expand(last_hidden.size())
+            .float()
+        )
+
+        # Perform weighted mean pooling across seq_len: bs, seq_len, hidden_dim -> bs, hidden_dim
+        sum_embeddings = torch.sum(last_hidden * input_mask_expanded * weights, dim=dim)
+        sum_mask = torch.sum(input_mask_expanded * weights, dim=dim)
+
+        pooled_result = sum_embeddings / sum_mask
+        return pooled_result.cpu()
+    else:
+        raise NotImplementedError
+```
+
 ## 蚂蚁的BAHE（落地）
 
 [SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
@@ -8410,7 +8429,7 @@ XXX
     + LLM参数freeze，只tune Q-former的参数和linear
 
 
-## Meta的embSum
+## Meta的EmbSum
 
 [EmbSum: Leveraging the Summarization Capabilities of Large Language Models for Content-Based Recommendations](https://www.arxiv.org/pdf/2405.11441)
 
@@ -8792,6 +8811,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 | 论文 | 公司 | 关键词 | 做法 | ab收益|
 |------|-----|------|----------------| -----|
+|[KAR](https://arxiv.org/pdf/2306.10933) | 华为 | item+user llm | - 让LLM总结item得到item emb；<br> - 让LLM总结user历史得到user emb <br> - 两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用 | 音乐推荐 涨了播放量 |
 |[LEARN](https://arxiv.org/pdf/2405.03988) | 快手 | ItemLLM+user decoder| - item LLM固定，输入item特征得到item emb；<br> - 输入item emb过user的12层trans算dense all-action loss，<br> - 线上推荐模型里加user emb和item emb | 广告cvr+收入 |
 |[BAHE](https://arxiv.org/pdf/2403.19347) | 蚂蚁 | 预先计算原子用户行为 | - LLMs的预训练浅层提取来原子用户行为的emb，并存进离线db <br> - 从db里查出来，和item一起过LLMs的更深层可训练层  | 广告ctr+cpm |
 
@@ -8803,7 +8823,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 |[SLIM](https://arxiv.org/pdf/2403.04260) | 蚂蚁 | 蒸馏推荐理由| - 输入用户行为历史，大LLM(gpt)产出的推荐理由；<br> - 小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由， <br> - 通过BERT得到emb，给推荐模型用 |
 |[LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。 <br>- 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
 |[ILM](https://arxiv.org/pdf/2406.02844)| google | 2阶段训练+q-former | - phase1：表示学习，交替训练两类表示学习（item-text表示学习，item-item表示学习）<br> - phase2：item-language model训练 |
-|[embsum](https://arxiv.org/pdf/2406.02844)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br>- item过t5 encoder过poly；|
+|[EmbSum](https://arxiv.org/pdf/2406.02844)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br>- item过t5 encoder过poly；|
 
 
 
