@@ -7390,7 +7390,10 @@ CRM(conventional recommendation models)
 
 通过LLM的世界知识来获取更好的user/item表示
 
-+ KAR：
++ [Llama4rec](https://arxiv.org/pdf/2401.13870) ：prompt增强：在prompt里引入推荐模型的信息；数据增强：通过LLM给推荐模型增加样本；adaptive aggregation：llm和推荐模型各自打分并用融合公式融合
++ [KAR](https://arxiv.org/pdf/2306.10933)：让LLM总结item得到item emb；让LLM总结user历史得到user emb，两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用
++ [SAGCN](https://arxiv.org/pdf/2312.16275)：通过LLM标识出用户对item的评论是属于哪些aspect的，然后u有A个emb，i也有A个emb，构建A个U-I图，然后揉在一起过GCN
+
 
 #### instance-level sample generation
 
@@ -8746,6 +8749,23 @@ XXX
 
 通过如上prompt构建一个instruct-tuning数据集，然后finetune一个llama2
 
+## SAGCN（学术界）
+
+[Understanding Before Recommendation: Semantic Aspect-Aware Review Exploitation via Large Language Models](https://arxiv.org/pdf/2312.16275)
+
+[https://github.com/HuilinChenJN/LLMSAGCN](https://github.com/HuilinChenJN/LLMSAGCN)
+
+通过LLM标识出用户对item的评论是属于哪些aspect的，然后u有A个emb，i也有A个emb，构建A个U-I图，然后揉在一起过GCN
+
+![](../assets/sagcn.png)
+
++ 拿一些数据先用prompt1让LLM粗略标出用户评论所属的aspects，然后merge并去重得到候选的aspects列表
++ 把这个候选aspects列表（图中的蓝色文字）丢给prompt2，让LLM对所有用户的评论打标
+
+然后为每个aspect构建一个graph，过GCN
+
+![](../assets/sagcn-graph.png)
+
 ## CCF-LLM（学术界）
 
 [CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
@@ -8826,29 +8846,39 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 ## 小结
 
++ FFT：full finetuning
++ PT：prompt tuning
++ LAT：layerwise adapter tuning
++ OT：option tuning
++ T-FEW：few-shot peft
+
 看着落地的
 
-| 论文 | 公司 | 关键词 | 做法 | ab收益|
-|------|-----|------|----------------| -----|
-|[KAR](https://arxiv.org/pdf/2306.10933) | 华为 | item+user llm，不finetune LLM | - 让LLM总结item得到item emb；<br> - 让LLM总结user历史得到user emb <br> - 两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用 | 音乐推荐 涨了播放量 |
-|[LEARN](https://arxiv.org/pdf/2405.03988) | 快手 | ItemLLM+user decoder，不finetune LLM| - item LLM固定，输入item特征得到item emb；<br> - 输入item emb过user的12层trans算dense all-action loss，<br> - 线上推荐模型里加user emb和item emb | 广告cvr+收入 |
-|[BAHE](https://arxiv.org/pdf/2403.19347) | 蚂蚁 | 预先计算原子用户行为 | - LLMs的预训练浅层提取来原子用户行为的emb，并存进离线db <br> - 从db里查出来，和item一起过LLMs的更深层可训练层  | 广告ctr+cpm |
+| 论文 | 公司 | 关键词 | 做法 | ab收益| tune方式|
+|------|-----|------|----------------| -----|------|
+|[KAR](https://arxiv.org/pdf/2306.10933) | 华为 | item llm+user llm | - 让LLM总结item得到item emb；<br> - 让LLM总结user历史得到user emb <br> - 两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用 | 音乐推荐 涨了播放量 | frozen|
+|[LEARN](https://arxiv.org/pdf/2405.03988) | 快手 | ItemLLM+user decoder| - item LLM固定，输入item特征得到item emb；<br> - 输入item emb过user的12层trans算dense all-action loss，<br> - 线上推荐模型里加user emb和item emb | 广告cvr+收入 | frozen|
+|[BAHE](https://arxiv.org/pdf/2403.19347) | 蚂蚁 | 预先计算原子用户行为 | - LLMs的预训练浅层提取来原子用户行为的emb，并存进离线db <br> - 从db里查出来，和item一起过LLMs的更深层可训练层  | 广告ctr+cpm | FFT上层LLM|
 
 
 看着没落地的
 
-| 论文 | 公司 | 关键词 | 做法 | 
-|------|-----|------|---------------------|
-|[SLIM](https://arxiv.org/pdf/2403.04260) | 蚂蚁 | 蒸馏推荐理由| - 输入用户行为历史，大LLM(gpt)产出的推荐理由；<br> - 小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由， <br> - 通过BERT得到emb，给推荐模型用 |
-|[LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。 <br>- 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
-|[ILM](https://arxiv.org/pdf/2406.02844)| google | 2阶段训练+q-former | - phase1：表示学习，交替训练两类表示学习（item-text表示学习，item-item表示学习）<br> - phase2：item-language model训练 |
-|[EmbSum](https://arxiv.org/pdf/2406.02844)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br>- item过t5 encoder过poly；|
+
+| 论文 | 公司 | 关键词 | 做法 | tune方式|
+|------|-----|------|---------------------|------|
+|[SLIM](https://arxiv.org/pdf/2403.04260) | 蚂蚁 | 蒸馏推荐理由| - 输入用户行为历史，大LLM(gpt)产出的推荐理由；<br> - 小llm(llama2)去蒸馏这个理由拿小llm去给出全量user的推荐理由， <br> - 通过BERT得到emb，给推荐模型用 | FFT |
+|[LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。 <br>- 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss | FFT|
+|[ILM](https://arxiv.org/pdf/2406.02844)| google | 2阶段训练+q-former | - phase1：表示学习，交替训练两类表示学习（item-text表示学习，item-item表示学习）<br> - phase2：item-language model训练 | frozen|
+|[EmbSum](https://www.arxiv.org/pdf/2405.11441)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br>- item过t5 encoder过poly；| frozen|
 
 纯学术界
 
-| 论文 | 关键词 | 做法 | 
-|------|------|---------------------|
-|[Llama4rec](https://arxiv.org/pdf/2401.13870) | prompt增强+数据增强，finetune | - prompt增强：在prompt里引入推荐模型的信息；<br> - 数据增强：通过LLM给推荐模型增加样本 <br> - adaptive aggregation：llm和推荐模型各自打分并用融合公式融合|
+| 论文 | 关键词 | 做法 |tune方式 |
+|------|------|---------------------|------|
+|[Llama4rec](https://arxiv.org/pdf/2401.13870) | prompt增强+数据增强，finetune | - prompt增强：在prompt里引入推荐模型的信息；<br> - 数据增强：通过LLM给推荐模型增加样本 <br> - adaptive aggregation：llm和推荐模型各自打分并用融合公式融合| FFT |
+|[SAGCN](https://arxiv.org/pdf/2312.16275) | 分aspect打标、构图+gcn | - LLM为用户评论打标，确定aspect；<br> - 分aspect构建u-i图，并gcn| frozen|
+|[TransRec](https://arxiv.org/pdf/2310.06491) |  | - 将一个item表示成3部分：id+title+attr，设计三种对应的instruct-tuning任务；<br> - 引入一个特殊的数据结构（FM-index），并进行constrained beam search，让模型能生成候选集中的id/title/attr，<br> 再遍历全库候选，看不同facet的相似度（会考虑高热打压），加权融合出一个排序| lora|
+
 
 
 
