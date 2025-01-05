@@ -1379,6 +1379,25 @@ XXX
 
 [Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
 
+## Llama4Rec（学术界）
+
+[Integrating Large Language Models into Recommendation via Mutual Augmentation and Adaptive Aggregation](https://arxiv.org/pdf/2401.13870) SIGIR 24
+
+![](../assets/llama4rec.png)
+
++ prompt增强：在prompt里引入推荐模型的信息
+    + 相似用户也喜欢item4、item5
+    + 另一个推荐模型给出的预估是xxx
++ 数据增强：通过LLM给推荐模型增加样本
+    + 直接推荐：给定2个候选item，LLM判断哪个更好
+    + 序列推荐：给定候选list，LLM给出topk
+    + 评分预测：给定候选item，LLM给出打分
++ adaptive aggregation：llm和推荐模型都给出排序，然后自定义融合公式算出融合分，得到最终排序
+
+示例prompt如下
+
+![](../assets/llama4rec-prompts.png)
+
 
 ## CCF-LLM（学术界）
 
@@ -1386,7 +1405,7 @@ XXX
 
 [Collaborative Cross-modal Fusion with Large Language Model for Recommendation](https://arxiv.org/pdf/2408.08564)
 
-## Transrec
+## Transrec（学术界）
 
 [Bridging Items and Language: A Transition Paradigm for Large Language Model-Based Recommendation](https://arxiv.org/pdf/2310.06491)
 
@@ -1460,7 +1479,6 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 ## 小结
 
-
 看着落地的
 
 | 论文 | 公司 | 关键词 | 做法 | ab收益|
@@ -1478,6 +1496,13 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 |[LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。 <br>- 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss |
 |[ILM](https://arxiv.org/pdf/2406.02844)| google | 2阶段训练+q-former | - phase1：表示学习，交替训练两类表示学习（item-text表示学习，item-item表示学习）<br> - phase2：item-language model训练 |
 |[EmbSum](https://arxiv.org/pdf/2406.02844)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br>- item过t5 encoder过poly；|
+
+纯学术界
+
+| 论文 | 关键词 | 做法 | 
+|------|------|---------------------|
+|[Llama4rec](https://arxiv.org/pdf/2401.13870) | prompt增强+数据增强 | - prompt增强：在prompt里引入推荐模型的信息；<br> - 数据增强：通过LLM给推荐模型增加样本 <br> - adaptive aggregation：llm和推荐模型各自打分并用融合公式融合|
+
 
 
 
