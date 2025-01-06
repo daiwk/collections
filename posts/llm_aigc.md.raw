@@ -8728,6 +8728,92 @@ XXX
 
 [Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
 
+## CUP（学术界）
+
+[Recommendations by Concise User Profiles from Review Text](https://arxiv.org/pdf/2311.01314)
+
+把用户的一堆历史评论扔给chatgpt，让它总结出128个token，然后丢给双塔bert，另一个塔是item的描述，freeze bert底层，只tune上层
+
+## LLaMA-E（学术界）
+
+[LLaMA-E: Empowering E-commerce Authoring with Object-Interleaved Instruction Following](https://arxiv.org/pdf/2308.04913)
+
+[https://huggingface.co/DSMI/LLaMA-E#/](https://huggingface.co/DSMI/LLaMA-E#/)
+
+### 设计的任务
+
+![](../assets/llama-e-tasks.png)
+
++ 广告生成
+
+```
+为以下产品创建一个有吸引力的广告：
+复古美学植物草本丝质挂毯墙面装饰
+
+输出：
+获取植物野花挂毯，为您的空间增添宁静氛围，也可作为波西米亚风格的礼物。立即购买！
+```
+
++ query增强的标题重写
+
+```
+将以下产品标题自然地与查询 “定制冠军圆领衫” 结合并重写。
+输入：
+定制冠军卫衣（正面和背面），冠军卫衣定制
+输出：
+定制冠军圆领卫衣（前后个性化设计）
+```
+
++ 产品分类
+
+```
+此产品属于哪个类别？
+输入：
+红宝石书架，高书架
+输出：
+家居与生活
+```
+
++ 购买意图推测
+
+```
+根据以下查询，指出用户感兴趣的类别。
+输入：
+周末旅行包
+输出：
+包包与钱包
+```
+
++ 电商常见问题
+
+```
+问题：如何支付广告费用？
+输出：
+广告按点击收费。费用因广告位置和点击次数而异。不超出预算，达到预算上限时广告停止。
+```
+
+### 整体流程
+
+![](../assets/llama-e.png)
+
+
+
+
+## EcomGPT（学术界）
+
+[EcomGPT: Instruction-tuning Large Language Model with Chain-of-Task Tasks for E-commerce](https://arxiv.org/pdf/2308.06966v1)
+
+清华，AAAI 24
+
+![](../assets/ecomgpt.png)
+
+设置一系列的task(100多个task)来finetune LLM
+
++ 命名实体识别：输入描述，输出brand、attr、component、product等
++ 描述生成：输入query和候选doc list，选出最match的k个
++ 对话intent提取：输入对话和候选intents（使用咨询、恢复订单、退款异常等），选出对应intent
+
+
 ## Llama4Rec（学术界）
 
 [Integrating Large Language Models into Recommendation via Mutual Augmentation and Adaptive Aggregation](https://arxiv.org/pdf/2401.13870) SIGIR 24
