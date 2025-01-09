@@ -10019,6 +10019,14 @@ Anthropic有一个上下文协议（Model Context Protocol，MCP），允许开�
 
 ![](../assets/auto-agents.png)
 
+## google ai agents白皮书
+
+[https://github.com/daiwk/collections/blob/master/assets/google-ai-agents-whitepaper.pdf](https://github.com/daiwk/collections/blob/master/assets/google-ai-agents-whitepaper.pdf)
+
+## stanford的agent综述
+
+[Agent AI: Surveying the Horizons of Multimodal Interaction](https://arxiv.org/pdf/2401.03568)
+
 # 一些其他比较重要的工作
 
 ## 几篇出现频率比较高的论文
@@ -10577,6 +10585,14 @@ ppt：[链接](https://pan.baidu.com/s/1tbckFpa8W8qJ5yRw9yvJ9A#list/path=%2F) �
 [https://mit-6s978.github.io/assets/pdfs/lec4_gan.pdf](https://mit-6s978.github.io/assets/pdfs/lec4_gan.pdf)
 
 [https://mit-6s978.github.io/assets/pdfs/lec5_diffusion.pdf](https://mit-6s978.github.io/assets/pdfs/lec5_diffusion.pdf)
+
+## 时序db
+
+influxdb
+
+[https://github.com/influxdata/influxdb](https://github.com/influxdata/influxdb)
+
+[https://jasper-zhang1.gitbooks.io/influxdb/content/Introduction/getting_start.html](https://jasper-zhang1.gitbooks.io/influxdb/content/Introduction/getting_start.html)
 
 ## 其他
 
