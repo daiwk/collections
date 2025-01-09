@@ -2329,6 +2329,9 @@ Llama 3的主要亮点：
 
 ![](../assets/fp8.jpeg)
 
+- 离线量化： 在推理前，利用离线dump数据/训练依赖/权重本身，产生量化scale，保存在模型中，推理中直接使用。history 
+- 在线量化： 推理中，利用输入数据在线计算scale，需要在线统计a/b的amax，推理速度慢。就是current scale
+
 ### LLama-3.1-Minitron
 
 [英伟达玩转剪枝、蒸馏：把Llama 3.1 8B参数减半，性能同尺寸更强](https://mp.weixin.qq.com/s/zxW9EagxGJX-rS5loNLKXw)
@@ -3085,6 +3088,8 @@ XXX
 [DeepSeek-V3 正式发布](https://mp.weixin.qq.com/s/iFZOQsUNkpkXPDvOkE99wQ)
 
 [论文](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/DeepSeek_V3.pdf)
+
+下载了一个：[https://github.com/daiwk/collections/blob/master/assets/DeepSeek_V3.pdf](https://github.com/daiwk/collections/blob/master/assets/DeepSeek_V3.pdf)
 
 [DeepSeek-V3技术报告解读](https://mp.weixin.qq.com/s/-Ggy94bM8k-AaYarTMSI5Q)
 
