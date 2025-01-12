@@ -47,12 +47,16 @@ CRM(conventional recommendation models)
 + [Llama4rec](https://arxiv.org/pdf/2401.13870) ：prompt增强：在prompt里引入推荐模型的信息；数据增强：通过LLM给推荐模型增加样本；adaptive aggregation：llm和推荐模型各自打分并用融合公式融合
 + [KAR](https://arxiv.org/pdf/2306.10933)：让LLM总结item得到item emb；让LLM总结user历史得到user emb，两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用
 + [SAGCN](https://arxiv.org/pdf/2312.16275)：通过LLM标识出用户对item的评论是属于哪些aspect的，然后u有A个emb，i也有A个emb，构建A个U-I图，然后揉在一起过GCN
-
++ [CUP](https://arxiv.org/pdf/2311.01314)：把用户的一堆历史评论扔给chatgpt，让它总结出128个token，然后丢给双塔bert，另一个塔是item的描述，freeze bert底层，只tune上层
++ [LLaMA-E](https://arxiv.org/pdf/2308.04913)：instruction formulating为写300个种子指令，让gpt作为teacher，对300个种子指令进行扩展，并由领域专家评估后，去重并保证质量，得到120k个指令作为训练集，再用lora去instruct tuning
++ [EcomGPT](https://arxiv.org/pdf/2308.06966v1)：设置一系列的task(100多个task)来finetune BLOOMZ，包括命名实体识别、描述生成、对话intent提取等
 
 #### instance-level sample generation
 
 &nbsp;
 
++ [GReaT](https://arxiv.org/pdf/2210.06280)：把表格化（tabular）数据转成自然语言，然后打乱顺序，自回归地finetune一个LLM，再拿tune完的LLM来合成（synthesize）逼真的（realistic）表格化数据
++ [ONCE](https://arxiv.org/pdf/2305.06566)：闭源LLM输出文本（user profiler、content summarizer、personalized content generator），给开源LLM得到user表示，item过开源LLM得到item表示，二者内积学ctr
 
 
 ### where-LLM as feature encoder
@@ -995,7 +999,7 @@ def get_paragraph_representation(outputs, mask, pooler='cls', dim=1):
 
 消融后发现item tower a效果最好，所以用了a
 
-loss用的是pinnerformer的dense all action loss（[PinnerFormer: Sequence Modeling for User Representation at Pinterest](https://arxiv.org/pdf/2205.04507)），即从1~H里随机挑m个出来，每一个去预估H+1~H+T里的随机一个正样本
+loss用的是pinnerformer的dense all action loss（[PinnerFormer: Sequence Modeling for User Representation at Pinterest](https://arxiv.org/pdf/2205.04507)），即从```1~H```里随机挑m个出来，每一个去预估```H+1~H+T```里的随机一个正样本
 
 ![](../assets/pinnerformer-loss.png)
 
@@ -1509,7 +1513,7 @@ XXX
 
 ![](../assets/ecomgpt.png)
 
-设置一系列的task(100多个task)来finetune LLM
+设置一系列的task(100多个task)来finetune BLOOMZ(OPT+BLOOM的instruction-following模型)
 
 + 命名实体识别：输入描述，输出brand、attr、component、product等
 + 描述生成：输入query和候选doc list，选出最match的k个
@@ -1553,6 +1557,56 @@ XXX
 然后为每个aspect构建一个graph，过GCN
 
 ![](../assets/sagcn-graph.png)
+
+## GReaT（学术界）：合成表格化数据
+
+[Language Models are Realistic Tabular Data Generators](https://arxiv.org/pdf/2210.06280)
+
+ICLR2023，[https://github.com/kathrinse/be_great](https://github.com/kathrinse/be_great)
+
+通过自回归的LLM合成（synthesize）逼真的（realistic）表格化（tabular）数据
+
+![](../assets/great-finetune.png)
+
+finetune：
+
++ 把表格转化为逗号分隔的自然语言
++ 随机交换几个属性的位置得到训练语料
++ 基于交换后的语料进行自回归的finetune
+
+![](../assets/great-sample.png)
+
+sample：
+
++ 基于如下3种方式产出precondition：
+  + 只输入属性名，例如“年龄”
+  + 输入name-value pair，例如“年龄=26岁”
+  + 输入多个name-value pair：例如“年龄=59岁，教育程度是硕士”
++ 然后调用LLM输出其他属性
++ 再转化为表格格式
+
+## ONCE（学术界）
+
+[ONCE: Boosting Content-based Recommendation with Both Open- and Closed-source Large Language Models](https://arxiv.org/pdf/2305.06566)
+
+![](../assets/once.png)
+
++ GENRE(generative recommendation)：闭源LLM产出数据
+    + user profiler: 输入用户行为历史得到的user profile，例如topics有哪些，地区是哪里，过完content encoder后，把对应的topics和地区的emb pooling一下，得到用户的profile表示
+    + content summarizer: 输入item的文本content得到的总结
+    + personalized content generator：输入新用户（readlist<5）比较短的历史，合成这个用户可能比较感兴趣的内容
++ DIRE(discriminative recommendation)：对开源LLM进行改造
+    + 最后一层降维，并过一个attention得到一个表示
+    + 对32层的llama-7b，只用lora训练最上面的2层
++ ONCE：
+    + GENRE产出的文本经过DIRE得到输出，其中user profiler用上面的方法处理一下，再和历史items的content summarizer的输出、personalized content generator的输出concat并过mlp得到user vec
+    + item content的文本经过DIRE得到item vec
+    + u和i算内积，学ctr
+
+其中GENRE的3种数据如下：
+
+![](../assets/once-genre.png)
+
 
 ## CCF-LLM（学术界）
 
@@ -1665,7 +1719,12 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 |------|------|---------------------|------|
 |[Llama4rec](https://arxiv.org/pdf/2401.13870) | prompt增强+数据增强，finetune | - prompt增强：在prompt里引入推荐模型的信息；<br> - 数据增强：通过LLM给推荐模型增加样本 <br> - adaptive aggregation：llm和推荐模型各自打分并用融合公式融合| FFT |
 |[SAGCN](https://arxiv.org/pdf/2312.16275) | 分aspect打标、构图+gcn | - LLM为用户评论打标，确定aspect；<br> - 分aspect构建u-i图，并gcn| frozen|
-|[TransRec](https://arxiv.org/pdf/2310.06491) |  | - 将一个item表示成3部分：id+title+attr，设计三种对应的instruct-tuning任务；<br> - 引入一个特殊的数据结构（FM-index），并进行constrained beam search，让模型能生成候选集中的id/title/attr，<br> 再遍历全库候选，看不同facet的相似度（会考虑高热打压），加权融合出一个排序| lora|
+|[CUP](https://arxiv.org/pdf/2311.01314)| LLM总结+bert双塔| 把用户的一堆历史评论扔给chatgpt，让它总结出128个token，然后丢给双塔bert，另一个塔是item的描述，freeze bert底层，只tune上层|frozen |
+| [LLaMA-E](https://arxiv.org/pdf/2308.04913)| gpt扩展instruct| instruction formulating为写300个种子指令，让gpt作为teacher，对300个种子指令进行扩展，并由领域专家评估后，去重并保证质量，得到120k个指令作为训练集，再用lora去instruct tuning|lora|
+| [EcomGPT](https://arxiv.org/pdf/2308.06966v1)| 一系列电商任务FFT BLOOMZ | 设置一系列的task(100多个task)来finetune BLOOMZ，包括命名实体识别、描述生成、对话intent提取等|FFT|
+| [ONCE](https://arxiv.org/pdf/2305.06566)| 闭源LLM总结、开源LLM做encoder，u-i学ctr |闭源LLM输出文本（user profiler、content summarizer、personalized content generator），给开源LLM得到user表示，item过开源LLM得到item表示，二者内积学ctr| lora训开源，frozen闭源|
+|[TransRec](https://arxiv.org/pdf/2310.06491) | 受限生成 | - 将一个item表示成3部分：id+title+attr，设计三种对应的instruct-tuning任务；<br> - 引入一个特殊的数据结构（FM-index），并进行constrained beam search，让模型能生成候选集中的id/title/attr，<br> 再遍历全库候选，看不同facet的相似度（会考虑高热打压），加权融合出一个排序| lora|
+
 
 
 
