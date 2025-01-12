@@ -1409,7 +1409,7 @@ XXX
 + 广告生成
 
 ```shell
-为以下产品创建一个有吸引力的广告：
+为以下商品创建一个有吸引力的广告：
 复古美学植物草本丝质挂毯墙面装饰
 
 输出：
@@ -1420,17 +1420,17 @@ XXX
 + query增强的标题重写
 
 ```shell
-将以下产品标题自然地与查询 “定制冠军圆领衫” 结合并重写。
+将以下商品标题自然地与查询 “定制冠军圆领衫” 结合并重写。
 输入：
 定制冠军卫衣（正面和背面），冠军卫衣定制
 输出：
 定制冠军圆领卫衣（前后个性化设计）
 ```
 
-+ 产品分类
++ 商品分类
 
 ```shell
-此产品属于哪个类别？
+此商品属于哪个类别？
 输入：
 红宝石书架，高书架
 输出：
@@ -1459,11 +1459,34 @@ XXX
 
 ![](../assets/llama-e.png)
 
-图中的C是customer，S是seller，P是platform
-
-+ instruction formulating: 
-+ instruction expansion: 
-+ instruction tuning: 
++ instruction formulating: 为上述任务写300个种子指令
+    + seller $$<S>$$：商家，包括商品名、风格、品牌等
+    + customer $$<C>$$：
+        + explicit feature $$<C_0>$$：用户的历史交互商品
+        + implicit feature $$<C_1>$$：根据历史交互推断出来的潜在兴趣
+    + platform $$<P>$$：为商家和用户建立链接
+        + product correlation $$<P_0>$$：不同商品间的差异和联系
+        + platform background $$<P_1>$$：不同电商平台的背景知识
++ instruction expansion: 让gpt作为teacher，对300个种子指令进行扩展，并由领域专家评估后，去重并保证质量，得到120k个指令作为训练集
+    + 针对结果是严格预定义好的，只重写instruction
+    ```
+    [INST] Rewrite the following instruction
+     while maintaining semantic consistency:
+    [/INST] <seed instructions>
+    ```
+    + 针对鼓励生成结果有多样性的，
+        + 结果生成：用上面重写过的instruction给LLM来获取结果
+        ```
+        [INST] <expanded instructions> [/INST]
+        <seed inputs>
+        ```
+        + 结果重写：拿生成的结果给LLM生成更多样的表达
+        ```
+        [INST] Rewrite the following generated
+        response to diversify its expression:
+        [/INST] <responses>
+        ```
++ instruction tuning: 对self-attention的q、k、v、o参数进行lora
 
 
 ## EcomGPT（学术界）
