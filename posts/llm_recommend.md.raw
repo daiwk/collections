@@ -58,7 +58,7 @@ CRM(conventional recommendation models)
 + [GReaT](https://arxiv.org/pdf/2210.06280)：把表格化（tabular）数据转成自然语言，然后打乱顺序，自回归地finetune一个LLM，再拿tune完的LLM来合成（synthesize）逼真的（realistic）表格化数据
 + [ONCE](https://arxiv.org/pdf/2305.06566)：闭源LLM输出文本（user profiler、content summarizer、personalized content generator），给开源LLM得到user表示，item过开源LLM得到item表示，二者内积学ctr
 + [Agent4Rec](https://arxiv.org/pdf/2310.10108.pdf)：先训一个推荐模型，然后构建一个多智能体系统，模拟和这个推荐模型交互，产出新的样本给推荐模型做数据增强
-
++ [RecPrompt](https://arxiv.org/pdf/2312.10463)：给一个初始prompt，让LLM1得到推荐结果，拿一个monitor衡量这个结果和ground truth的mrr/ndcg，再用另一个LLM产出更好的prompt给第一个LLM用，如此迭代，得到一个best prompt
 
 ### where-LLM as feature encoder
 
@@ -1363,35 +1363,35 @@ XXX
 
 [STAR: A Simple Training-free Approach for Recommendations using Large Language Models](https://arxiv.org/pdf/2410.16458)
 
-## 腾讯的ECR
+## 腾讯的ECR Recsys24
 
 [RecSys'24最佳长论文|腾讯ECR:富有情感的对话式推荐系统](https://mp.weixin.qq.com/s/K9LUSywox6IeAb4XIhe_qA)
 
 [Towards Empathetic Conversational Recommender Systems](https://arxiv.org/pdf/2409.10527)
 
-## 微信的PRECISE
+## 微信的PRECISE Recsys24
 
 [微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
 
 [PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)
 
-## P5（学术界）
+## P5（学术界）RecSys22
 
 [Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
 
-## CUP（学术界）
+## CUP（学术界）没中
 
 [Recommendations by Concise User Profiles from Review Text](https://arxiv.org/pdf/2311.01314)
 
 把用户的一堆历史评论扔给chatgpt，让它总结出128个token，然后丢给双塔bert，另一个塔是item的描述，freeze bert底层，只tune上层
 
-## LLaMA-E（学术界）
+## LLaMA-E（学术界）没中
 
 [LLaMA-E: Empowering E-commerce Authoring with Object-Interleaved Instruction Following](https://arxiv.org/pdf/2308.04913)
 
 [https://huggingface.co/DSMI/LLaMA-E#/](https://huggingface.co/DSMI/LLaMA-E#/)
 
-### 整体流程
+整体流程
 
 ![](../assets/llama-e.png)
 
@@ -1424,7 +1424,7 @@ XXX
         ```
 + instruction tuning: 对self-attention的q、k、v、o参数进行lora
 
-### 设计的任务
+设计的任务
 
 ![](../assets/llama-e-tasks.png)
 
@@ -1490,7 +1490,7 @@ XXX
 
 
 
-## EcomGPT（学术界）
+## EcomGPT（学术界）AAAI24
 
 [EcomGPT: Instruction-tuning Large Language Model with Chain-of-Task Tasks for E-commerce](https://arxiv.org/pdf/2308.06966v1)
 
@@ -1505,7 +1505,7 @@ XXX
 + 对话intent提取：输入对话和候选intents（使用咨询、恢复订单、退款异常等），选出对应intent
 
 
-## Llama4Rec（学术界）
+## Llama4Rec（学术界）SIGIR24
 
 [Integrating Large Language Models into Recommendation via Mutual Augmentation and Adaptive Aggregation](https://arxiv.org/pdf/2401.13870) SIGIR 24
 
@@ -1526,7 +1526,7 @@ XXX
 
 通过如上prompt构建一个instruct-tuning数据集，然后finetune一个llama2
 
-## SAGCN（学术界）
+## SAGCN（学术界）ACM TOIS
 
 [Understanding Before Recommendation: Semantic Aspect-Aware Review Exploitation via Large Language Models](https://arxiv.org/pdf/2312.16275)
 
@@ -1543,7 +1543,7 @@ XXX
 
 ![](../assets/sagcn-graph.png)
 
-## GReaT（学术界）：合成表格化数据
+## GReaT（学术界）ICLR23
 
 [Language Models are Realistic Tabular Data Generators](https://arxiv.org/pdf/2210.06280)
 
@@ -1570,7 +1570,7 @@ sample：
 + 然后调用LLM输出其他属性
 + 再转化为表格格式
 
-## ONCE（学术界）
+## ONCE（学术界）WSDM24
 
 [ONCE: Boosting Content-based Recommendation with Both Open- and Closed-source Large Language Models](https://arxiv.org/pdf/2305.06566)
 
@@ -1594,7 +1594,7 @@ WSDM24
 
 ![](../assets/once-genre.png)
 
-## Agent4Rec（学术界）
+## Agent4Rec（学术界）SIGIR24
 
 [On Generative Agents in Recommendation](https://arxiv.org/pdf/2310.10108.pdf) SIGIR24
 
@@ -1634,13 +1634,64 @@ word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/mult
 
 [MACRec: a Multi-Agent Collaboration Framework for Recommendation](https://arxiv.org/pdf/2402.15235)
 
+## RecPrompt（学术界）CIKM24
 
+[RecPrompt: A Self-tuning Prompting Framework for News Recommendation Using Large Language Models](https://arxiv.org/pdf/2312.10463) CIKM24
 
-## CCF-LLM（学术界）
+[https://github.com/Ruixinhua/rec-prompt](https://github.com/Ruixinhua/rec-prompt)
 
-[CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
+![](../assets/recprompt.png)
 
-[Collaborative Cross-modal Fusion with Large Language Model for Recommendation](https://arxiv.org/pdf/2408.08564)
+如图的loop，所有LLM都是调接口的，没有tune
+
++ news recommender：一个LLM，输入prompt如下，结果包括排序的list $$\boldsymbol{R}_u$$以及解释$$TP_u$$(用户点击历史总结出来的topic list和对应的新闻list)
+
+```
+You serve as a personalized news recommendation system.
+# Input Format
+## User's History News
+${history}
+## Candidate News
+${candidate}
+# Output Format
+Rank candidate news based on the user’s history news in
+the format: "Ranked news: <START>C#, C#,..., C#<END>".
+```
+
++  prompt optimizer：另一个LLM，用于生成更好的prompt。包括：
+    + refinement instruction
+    + 推荐prompt
+    + recommender的回答：$$\boldsymbol{R}_u$$、$$T P_u$$
+    + ground truth $$y_u$$，
+    + monitor给出的最佳template
+    + observation instruction。
+
+其中，refinement instruction形如：
+
+```
+You should generate an improved
+template instruction based on the provided information.
+```
+
+observation instruction形如：
+
+```
+You should focus on how well the recommender’s response
+aligns with the user’s click behavior by examining if
+the topics from the user’s news history and candidate
+news are accurately summarized and matched to the user’s
+interests. Specifically, evaluate the clarity of topics
+in the recommender’s answer, review the task description
+for adequacy, and check the detail in the recommendation
+process to ensure it reflects an analysis and summary
+of user-interest topics.
+```
+
++ monitor：对推荐list和ground truth计算MRR、ndcg，判断当前template是否比之前的有提升
+
++ 衡量效果：看解释$$TP_u$$提取的topic的准确性和完整性：
+    + 准确性：分母是预测出来的n个topic，分子是有多少个和对应的文章topic是match的
+    + 完整性：分母是用户历史点过的topic数，分子是用户历史点过的文章数
 
 ## Transrec（学术界）
 
@@ -1716,6 +1767,11 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 [腾讯广告基于混元大模型的生成式召回落地实践](https://mp.weixin.qq.com/s/ClmjgRzpNIVjX0PrikS3qg)
 
 
+[CIKM 2024 | 大语言模型推荐中的协同过滤信号和语义信息的深度融合](https://mp.weixin.qq.com/s/Qd0ZgBqMCJAEjlZYAoy9jQ)
+
+[Collaborative Cross-modal Fusion with Large Language Model for Recommendation](https://arxiv.org/pdf/2408.08564)
+
+
 ## 小结
 
 + FFT：full finetuning
@@ -1754,6 +1810,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 | [EcomGPT](https://arxiv.org/pdf/2308.06966v1)| 一系列电商任务FFT BLOOMZ | 设置一系列的task(100多个task)来finetune BLOOMZ，包括命名实体识别、描述生成、对话intent提取等|FFT|
 | [ONCE](https://arxiv.org/pdf/2305.06566)| 闭源LLM总结、开源LLM做encoder，u-i学ctr |闭源LLM输出文本（user profiler、content summarizer、personalized content generator），给开源LLM得到user表示，item过开源LLM得到item表示，二者内积学ctr| lora训开源，frozen闭源|
 |[Agent4Rec](https://arxiv.org/pdf/2310.10108.pdf)|多智能体系统模拟交互，产出推荐样本| 先训一个推荐模型，然后构建一个多智能体系统，模拟和这个推荐模型交互，产出新的样本给推荐模型做数据增强 |仅训推荐模型，LLM frozen|
+|[RecPrompt](https://arxiv.org/pdf/2312.10463)|两个LLM迭代出最佳prompt|给一个初始prompt，让LLM1得到推荐结果，拿一个monitor衡量这个结果和ground truth的mrr/ndcg，再用另一个LLM产出更好的prompt给第一个LLM用，如此迭代，得到一个best prompt|frozen|
 |[TransRec](https://arxiv.org/pdf/2310.06491) | 受限生成 | - 将一个item表示成3部分：id+title+attr，设计三种对应的instruct-tuning任务；<br> - 引入一个特殊的数据结构（FM-index），并进行constrained beam search，让模型能生成候选集中的id/title/attr，<br> 再遍历全库候选，看不同facet的相似度（会考虑高热打压），加权融合出一个排序| lora|
 
 
