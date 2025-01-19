@@ -7419,6 +7419,7 @@ CRM(conventional recommendation models)
 + [RecPrompt](https://arxiv.org/pdf/2312.10463)：给一个初始prompt，让LLM1得到推荐结果，拿一个monitor衡量这个结果和ground truth的mrr/ndcg，再用另一个LLM产出更好的prompt给第一个LLM用，如此迭代，得到一个best prompt
 + [PO4ISR]((https://arxiv.org/pdf/2312.07552))：给初始prompt，收集error case让模型反思原因并refine出新的prompt，再augment出另一个prompt，并UCB选出最好的prompt，如此迭代
 + [BEQUE](https://arxiv.org/pdf/2311.03758)：query重写任务，SFT得到一个LLM，将其预测的若干个候选rewrites通过offline system的feedback得到排序，再通过PRO算法再tune LLM。
++ [Agent4Ranking](https://arxiv.org/pdf/2312.15450)：query重写任务，多个人群当成多个agent，每个通过多轮对话产出一个rewrite，再合在一起经过bert+mmoe计算robust损失+accuracy损失。
 
 
 ### where-LLM as feature encoder
@@ -8510,6 +8511,20 @@ s_j^i & =W^p \cdot K_j^i,
 \end{aligned}
 XXX
 
+## 百度的Agent4Ranking
+
+[Agent4Ranking: Semantic Robust Ranking via Personalized Query Rewriting Using Multi-agent LLM](https://arxiv.org/pdf/2312.15450)
+
+![](../assets/agent4ranking-arch.png)
+
+其中的rewrite模块如下，搞4个agent，模拟4个人群的人与LLM对话，最终得到符合人群特点的rewrite
+
+![](../assets/agent4ranking-rewrite.png)
+
+其中的rank模块如下，是一个bert，输入原始query和4个rewrites，加上target item，MMOE，算5个query间的js散度(robust loss)，以及综合输出和label的accuracy loss
+
+![](../assets/agent4ranking-rank.png)
+
 
 ## 微软的RecExplainer
 
@@ -9216,6 +9231,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 |[LLM-CF](https://arxiv.org/pdf/2403.17688) | 快手 | 基于CoT数据集做RAG| - 拿推荐数据对llama2做sft，再用CoT的prompt让llama2对user+item+label产出一个推理过程，并通过bge得到emb，构建一个CoT数据集。 <br>- 在线拿当前用户+item的特征从这个数据集里ann出k个cot example的emb，和其他特征一起输入一个decoder，输出给推荐模型的sharebottom，额外加了一个CoT emb的重建loss | FFT|
 |[ILM](https://arxiv.org/pdf/2406.02844)| google | 2阶段训练+q-former | - phase1：表示学习，交替训练两类表示学习（item-text表示学习，item-item表示学习）<br> - phase2：item-language model训练 | frozen|
 |[EmbSum](https://www.arxiv.org/pdf/2405.11441)| meta | LLM摘要+t5 encoder | - 行为历史丢给LLM产出摘要，对应的hidden states给decoder自回归;<br> - 历史item过t5 encoder并concat过poly；<br>- item过t5 encoder过poly；| frozen|
+|[Agent4Ranking](https://arxiv.org/pdf/2312.15450)|百度|agent rewrite+ bert ranking|query重写任务，多个人群当成多个agent，每个通过多轮对话产出一个rewrite，再合在一起经过bert+mmoe计算robust损失+accuracy损失。|frozen|
 
 纯学术界
 
