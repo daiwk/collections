@@ -59,6 +59,7 @@ CRM(conventional recommendation models)
 + [ONCE](https://arxiv.org/pdf/2305.06566)：闭源LLM输出文本（user profiler、content summarizer、personalized content generator），给开源LLM得到user表示，item过开源LLM得到item表示，二者内积学ctr
 + [Agent4Rec](https://arxiv.org/pdf/2310.10108.pdf)：先训一个推荐模型，然后构建一个多智能体系统，模拟和这个推荐模型交互，产出新的样本给推荐模型做数据增强
 + [RecPrompt](https://arxiv.org/pdf/2312.10463)：给一个初始prompt，让LLM1得到推荐结果，拿一个monitor衡量这个结果和ground truth的mrr/ndcg，再用另一个LLM产出更好的prompt给第一个LLM用，如此迭代，得到一个best prompt
++ [PO4ISR]((https://arxiv.org/pdf/2312.07552))：给初始prompt，收集error case让模型反思原因并refine出新的prompt，再augment出另一个prompt，并UCB选出最好的prompt，如此迭代
 
 ### where-LLM as feature encoder
 
@@ -1693,9 +1694,27 @@ of user-interest topics.
     + 准确性：分母是预测出来的n个topic，分子是有多少个和对应的文章topic是match的
     + 完整性：分母是用户历史点过的topic数，分子是用户历史点过的文章数
 
-## Transrec（学术界）
+## PO4ISR（学术界）没中
 
-[Bridging Items and Language: A Transition Paradigm for Large Language Model-Based Recommendation](https://arxiv.org/pdf/2310.06491)
+[Large Language Models for Intent-Driven Session Recommendations](https://arxiv.org/pdf/2312.07552)
+
+[https://github.com/llm4sr/PO4ISR](https://github.com/llm4sr/PO4ISR)
+
+![](../assets/po4isr.png)
+
++ PromptInit：初始化prompt1，输入的数据填充prompt2
++ PromptOpt：通过self-reflection来优化初始prompt：
+    + 收集error cases并用prompt3来让LLM想出可能原因
+    + LLM想出的原因+prompt4来refine出一个prompt5
+    + 基于prompt5+prompt6来改写/增强出一个prompt7
+    + 基于prompt5和prompt7通过UCB选出一个最优的prompt8
++ PromptSel：在3个domain上进行上述迭代，分别得到对应domain的最优prompt，也看了下这3个prompt在其他数据集上的表现，最终选出一个泛化性比较好的
+
+
+
+## Transrec（学术界）KDD24
+
+[Bridging Items and Language: A Transition Paradigm for Large Language Model-Based Recommendation](https://arxiv.org/pdf/2310.06491) KDD24
 
 核心思想如下：
 
@@ -1811,6 +1830,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 | [ONCE](https://arxiv.org/pdf/2305.06566)| 闭源LLM总结、开源LLM做encoder，u-i学ctr |闭源LLM输出文本（user profiler、content summarizer、personalized content generator），给开源LLM得到user表示，item过开源LLM得到item表示，二者内积学ctr| lora训开源，frozen闭源|
 |[Agent4Rec](https://arxiv.org/pdf/2310.10108.pdf)|多智能体系统模拟交互，产出推荐样本| 先训一个推荐模型，然后构建一个多智能体系统，模拟和这个推荐模型交互，产出新的样本给推荐模型做数据增强 |仅训推荐模型，LLM frozen|
 |[RecPrompt](https://arxiv.org/pdf/2312.10463)|两个LLM迭代出最佳prompt|给一个初始prompt，让LLM1得到推荐结果，拿一个monitor衡量这个结果和ground truth的mrr/ndcg，再用另一个LLM产出更好的prompt给第一个LLM用，如此迭代，得到一个best prompt|frozen|
+|[PO4ISR]((https://arxiv.org/pdf/2312.07552))|反思原因并refine/augment地迭代出最优的prompt|给初始prompt，收集error case让模型反思原因并refine出新的prompt，再augment出另一个prompt，并UCB选出最好的prompt，如此迭代|frozen|
 |[TransRec](https://arxiv.org/pdf/2310.06491) | 受限生成 | - 将一个item表示成3部分：id+title+attr，设计三种对应的instruct-tuning任务；<br> - 引入一个特殊的数据结构（FM-index），并进行constrained beam search，让模型能生成候选集中的id/title/attr，<br> 再遍历全库候选，看不同facet的相似度（会考虑高热打压），加权融合出一个排序| lora|
 
 
