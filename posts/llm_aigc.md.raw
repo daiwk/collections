@@ -7418,6 +7418,8 @@ CRM(conventional recommendation models)
 + [Agent4Rec](https://arxiv.org/pdf/2310.10108.pdf)：先训一个推荐模型，然后构建一个多智能体系统，模拟和这个推荐模型交互，产出新的样本给推荐模型做数据增强
 + [RecPrompt](https://arxiv.org/pdf/2312.10463)：给一个初始prompt，让LLM1得到推荐结果，拿一个monitor衡量这个结果和ground truth的mrr/ndcg，再用另一个LLM产出更好的prompt给第一个LLM用，如此迭代，得到一个best prompt
 + [PO4ISR]((https://arxiv.org/pdf/2312.07552))：给初始prompt，收集error case让模型反思原因并refine出新的prompt，再augment出另一个prompt，并UCB选出最好的prompt，如此迭代
++ [BEQUE](https://arxiv.org/pdf/2311.03758)：query重写任务，SFT得到一个LLM，将其预测的若干个候选rewrites通过offline system的feedback得到排序，再通过PRO算法再tune LLM。
+
 
 ### where-LLM as feature encoder
 
@@ -8352,6 +8354,43 @@ loss用的是pinnerformer的dense all action loss（[PinnerFormer: Sequence Mode
 ![](../assets/learn-adaptor.png)
 
 
+## 阿里的BEQUE（落地）
+
+[LLM落地淘宝电商搜索场景，显著提升长尾query改写效果](https://mp.weixin.qq.com/s/GmogjAHt0Hrwd8RmtOqS7A)
+
+[Large Language Model based Long-tail Query Rewriting in Taobao Search](https://arxiv.org/pdf/2311.03758) WWW24
+
+![](../assets/beque.png)
+
++ multi-instructions的sft：基于在线日志，通过拒绝采样得到multi-instrunctions的SFT数据集，任务是重写query，还混合了质量分类、query改正、CoT任务
+
+其中的3个task如下：
+
+| Task | Prompt Example |
+|---------------------|---------------------|
+| Quality Classification | Is this a good e-commerce query rewrite? <br> Query: {query} <br> Rewrite: {rewrite} <br> System: {Yes or No}  |
+| Title Prediction | Please generate product titles that match input query <br> Query: {query} <br> System: {product title}  |
+| Chain of Thought | Your task is to rewrite the input query into a query that makes it easier to search for related products, and you are required to give the thought process and then the query rewriting result. The thought process and the query rewriting result are separated by a semicolon. <br> Query: {query} <br> System: {CoT}; {Rewrite} |
+
++ offline feedback：用训好的LLM生成多个候选rewrites，构建了一个离线的淘宝系统，对这些候选rewrites进行搜索得到结果，并用结果的quality scores来对候选rewrites进行排序
++ objective alignment：基于候选的rewrites的排序，使用PRO方法（[Preference ranking optimization for human alignment](https://arxiv.org/pdf/2306.17492)）来逼近这个排序。
+
+给定顺序$$y_1>y_2$$，preference probability如下，其中$$r(\cdot)$$是reward函数：
+
+XXX
+P_{B T}=\frac{\exp \left(r\left(y_1, x\right)\right)}{\exp \left(r\left(y_1, x\right)\right)+\exp \left(r\left(y_2, x\right)\right)}
+XXX
+
+对应的PRO loss如下，$$\mathcal{T}_k^i=1 /\left(r\left(y_k\right)-r\left(y_i\right)\right)$$，$$\mathcal{T}_k^k=\min _{i>k}\left(\mathcal{T}_k^i\right)$$：
+
+XXX
+\mathcal{L}_{P R O}(\theta)=-\mathrm{E}_{(x, y) \sim \mathcal{D}_{P R O}} \sum_{k=1}^{n-1} \log \frac{\exp \left(\frac{\pi_{P R O}\left(y_k \mid x ; \theta\right)}{\mathcal{T}_k^k}\right)}{\sum_{i=k}^n \exp \left(\frac{\pi_{P R O}\left(y_i \mid x ; \theta\right)}{\mathcal{T}_k^i}\right)}
+XXX
+
+应用：离线刷库，实验的gmv、单量都有收益，长尾query效果更好
+
+
+
 ## Google拿推荐语料微调LLM
 
 [谷歌: 利用推荐知识对齐大语言模型](https://mp.weixin.qq.com/s/62SaQofe9qi2LCApjIzLFA)
@@ -8470,6 +8509,7 @@ W^p & =\operatorname{softmax}\left(\operatorname{flatten}\left(A \cdot \operator
 s_j^i & =W^p \cdot K_j^i,
 \end{aligned}
 XXX
+
 
 ## 微软的RecExplainer
 
@@ -9164,6 +9204,7 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 |[KAR](https://arxiv.org/pdf/2306.10933) | 华为 | item llm+user llm | - 让LLM总结item得到item emb；<br> - 让LLM总结user历史得到user emb <br> - 两个emb过一个mmoe做融合得到新的两个emb，给推荐模型用 | 音乐推荐 涨了播放量 | frozen|
 |[LEARN](https://arxiv.org/pdf/2405.03988) | 快手 | ItemLLM+user decoder| - item LLM固定，输入item特征得到item emb；<br> - 输入item emb过user的12层trans算dense all-action loss，<br> - 线上推荐模型里加user emb和item emb | 广告cvr+收入 | frozen|
 |[BAHE](https://arxiv.org/pdf/2403.19347) | 蚂蚁 | 预先计算原子用户行为 | - LLMs的预训练浅层提取来原子用户行为的emb，并存进离线db <br> - 从db里查出来，和item一起过LLMs的更深层可训练层  | 广告ctr+cpm | FFT上层LLM|
+|[BEQUE](https://arxiv.org/pdf/2311.03758)|阿里|SFT+离线模拟+PRO|query重写任务，SFT得到一个LLM，将其预测的若干个候选rewrites通过offline system的feedback得到排序，再通过PRO算法再tune LLM|电商搜索，gmv+单量|FFT|
 
 
 看着没落地的
@@ -9196,12 +9237,6 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 
 # LLM for 检索
-
-## BEQUE
-
-[LLM落地淘宝电商搜索场景，显著提升长尾query改写效果](https://mp.weixin.qq.com/s/GmogjAHt0Hrwd8RmtOqS7A)
-
-[Large Language Model based Long-tail Query Rewriting in Taobao Search](https://arxiv.org/pdf/2311.03758)
 
 ## ChatRetriever
 
