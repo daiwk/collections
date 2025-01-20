@@ -316,6 +316,12 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [An Empirical Analysis of Compute-Optimal Inference for Problem-Solving with Language Models](https://arxiv.org/abs/2408.00724)
 
+## 扩散模型的inference scaling
+
+[扩散模型也能推理时Scaling，谢赛宁团队重磅研究可能带来文生图新范式](https://mp.weixin.qq.com/s/wtSzBr6Gs1nF9zz4c5r7Ag)
+
+[Inference-Time Scaling for Diffusion Models beyond Scaling Denoising Steps](https://arxiv.org/pdf/2501.09732)
+
 
 ## O1的评估
 
@@ -434,8 +440,35 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 
 对应的github：[https://github.com/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb](https://github.com/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb)
 
+## 小模型的O1
+
+(toread)
+
+[让7B千问模型超越o1，微软rStar-Math惊艳登场，网友盛赞](https://mp.weixin.qq.com/s/d2aDtT9KRyZJ9Ac12v8AHA)
+
+[rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking](https://arxiv.org/pdf/2501.04519)
+
+[https://github.com/microsoft/rStar](https://github.com/microsoft/rStar)
+
+## meta-cot
+
+[迈向System 2推理，100页论文硬核讲述Meta-CoT](https://mp.weixin.qq.com/s/L_tErITBzUZ75GVGtbtdDQ)
+
+[Towards System 2 Reasoning in LLMs: Learning How to Think With Meta Chain-of-Thought](https://arxiv.org/pdf/2501.04682)
+
+## sky-T1
+
+(toread)
+
+[450美元训练一个「o1-preview」？UC伯克利开源32B推理模型Sky-T1，AI社区沸腾了](https://mp.weixin.qq.com/s/aRUHeDheE4nwncbCLakgIQ)
+
+[https://novasky-ai.github.io/posts/sky-t1/](https://novasky-ai.github.io/posts/sky-t1/)
+
+[https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview](https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview)
+
 ## 其他的一些讨论
 
+[OpenAI o1模型超全指南来了！](https://mp.weixin.qq.com/s/Wp8y-2q_05UFIMGyyY6DQQ) (使用技巧)
 
 [耗资1.3万，ASU团队揭秘o1推理王者！碾压所有LLM成本超高，关键还会PUA](https://mp.weixin.qq.com/s/pSNC6tdhXcxqB9ofQKU3JQ)
 
@@ -454,6 +487,22 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 + o1-preview约300B；o1-mini约100B
 + GPT-4o约200B；GPT-4o-mini约8B
 + Claude 3.5 Sonnet 2024-10-22版本约175B
+
+# DeepSeek R1
+
+[DeepSeek-R1 发布，性能对标 OpenAI o1 正式版](https://mp.weixin.qq.com/s/atKyfC5l-BaStje8-F3FGQ)
+
+[DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/DeepSeek_R1.pdf)
+
+[https://huggingface.co/deepseek-ai/DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1)，还有不少distill的，LM-studio已经有了。。[https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF](https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF)
+
+# Kimi K1.5
+
+[追平满血版o1的国产多模态模型终于来了！训练细节全部公开](https://mp.weixin.qq.com/s/FOAcS2jsTwNoZA2t1BJ66Q)
+
+[https://github.com/MoonshotAI/kimi-k1.5](https://github.com/MoonshotAI/kimi-k1.5)
+
+[Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://github.com/MoonshotAI/Kimi-k1.5/blob/main/Kimi_k1.5.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/Kimi_k1.5.pdf)
 
 
 # O3

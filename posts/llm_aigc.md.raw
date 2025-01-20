@@ -829,6 +829,11 @@ similarities = cos_sim(embeddings[0], embeddings[1:])
 
 [https://github.com/facebookresearch/mexma](https://github.com/facebookresearch/mexma)
 
+#### ModernBert
+
+[时隔6年，谷歌BERT终于有替代品了！更快更准更长，还不炒作GenAI](https://mp.weixin.qq.com/s/QDtl2Q_BHdL1PZw5wCUBaw)
+
+[Smarter, Better, Faster, Longer: A Modern Bidirectional Encoder for Fast, Memory Efficient, and Long Context Finetuning and Inference](https://arxiv.org/pdf/2412.13663)
 
 ## 更小的BERT
 
@@ -3044,6 +3049,21 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [https://github.com/facebookresearch/memory](https://github.com/facebookresearch/memory)
 
+## TITANS
+
+(toread)
+
+[谷歌新架构一战成名，打破Transformer记忆瓶颈，姚班校友钟沛林新作](https://mp.weixin.qq.com/s/APE_CJ4rEQYV8ngyaTAXWw)
+
+[近8年后，谷歌Transformer继任者「Titans」来了，上下文记忆瓶颈被打破](https://mp.weixin.qq.com/s/EUCZ1oSuyzR9M9X9r5SYBw)
+
+[Titans: Learning to Memorize at Test Time](https://arxiv.org/abs/2501.00663v1)
+
+## Transformer^2
+
+[Transformer^2要做「活」的AI模型，动态调整权重，像章鱼一样适应环境](https://mp.weixin.qq.com/s/_vdA_KygkFWqFE5Xm6CDRg)
+
+[TRANSFORMER2 : SELF-ADAPTIVE LLMS](https://arxiv.org/pdf/2501.06252)
 
 # 典型LLM简介
 
@@ -3610,6 +3630,8 @@ Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一�
 [https://huggingface.co/mistral-community/pixtral-12b-240910](https://huggingface.co/mistral-community/pixtral-12b-240910)
 
 [发力了，Mistral对标ChatGPT全面升级le Chat，还祭出超大杯多模态模型](https://mp.weixin.qq.com/s/sABAaxKNGM-odULaM0-_Zg)
+
+[最强代码模型刷新：Mistral新品上线即登顶，上下文窗口增至256k](https://mp.weixin.qq.com/s/BaZhEs7CV8-kQzdrkcMU2A)
 
 ### phi-3
 
@@ -4263,11 +4285,19 @@ XXX
 
 [Deepseek V3 预训练策略解读](https://mp.weixin.qq.com/s/TzaaOOwe32V1IXxiLwcKGw)
 
+[MiniMax-01 与 DeepSeek-V3 对比](https://mp.weixin.qq.com/s/x7sN0RwaJjzxHiAReslSRQ)
+
 ### FALCON 2
 
 [时隔一年Falcon回归！110亿参数5.5万亿token，性能超越Llama 3](https://mp.weixin.qq.com/s/CZNVl_GmYm_aPidMJrRHUg)
 
 ### MiniCPM
+
+#### MOEfication
+
+[大模型隐藏玩家上桌：DeepSeek 向左，面壁向右](https://mp.weixin.qq.com/s/DrtUv-7fMh8NqdaSHHJ8uQ)
+
+[MoEfication：Transformer Feed-forward layers are Mixtures of Experts](https://arxiv.org/abs/2110.01786)
 
 #### MiniCPM-Llama3-V
 
@@ -4284,6 +4314,7 @@ XXX
 [小模型杀疯了！仅4B参数性能超GPT-3.5！无限长文本性能超Kimi](https://mp.weixin.qq.com/s/qJM9OTDHS3pJB9ozFuRP1g)
 
 [MiniCPM: Unveiling the Potential of Small Language Models with Scalable Training Strategies](https://arxiv.org/pdf/2404.06395)
+
 
 ### DCFormer
 
@@ -4321,12 +4352,6 @@ XXX
 
 [https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B](https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B)
 
-## post training的一些总结
-
-[工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
-
-[长文 | 大模型Post-Training总结](https://mp.weixin.qq.com/s/mL3Zc85zoHCjNOaTX2icTA)
-
 ### baichuan
 
 [百川新模型超GPT-4o近20%，首创自约束训练方案突破瓶颈，主打「领域增强」](https://mp.weixin.qq.com/s/7oupuln3BQHPa7zpfGdMXQ)
@@ -4334,6 +4359,22 @@ XXX
 Baichuan4-Finance
 
 评测benchmark：[https://github.com/FLAME-ruc/FLAME/tree/main](https://github.com/FLAME-ruc/FLAME/tree/main)
+
+### minimax-01
+
+[MiniMax开源4M超长上下文新模型！性能比肩DeepSeek-v3、GPT-4o](https://mp.weixin.qq.com/s/pj6XZbyZu_mx2KRwIF1Q9g)
+
+[MiniMax-01: Scaling Foundation Models with Lightning Attention](https://filecdn.minimax.chat/_Arxiv_MiniMax_01_Report.pdf)
+
+m层lightning attention后再接1层softmax attention，参数456B，每次推理激活45.9B。
+
+
+## post training的一些总结
+
+[工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
+
+[长文 | 大模型Post-Training总结](https://mp.weixin.qq.com/s/mL3Zc85zoHCjNOaTX2icTA)
+
 
 ## 小模型
 
@@ -4361,6 +4402,8 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 [A Comprehensive Survey of Small Language Models in the Era of Large Language Models: Techniques, Enhancements, Applications, Collaboration with LLMs, and Trustworthiness](https://arxiv.org/abs/2411.03350)
 
 [https://github.com/FairyFali/SLMs-Survey](https://github.com/FairyFali/SLMs-Survey)
+
+
 
 ### BitNet
 
@@ -5062,6 +5105,8 @@ As an example, for the 13B parameter OPT model, the KV cache of a single token d
 ```
 
 对比sglang/trt-llm：[https://blog.vllm.ai/2024/09/05/perf-update.html](https://blog.vllm.ai/2024/09/05/perf-update.html)，看着和trt-llm差不多，sglang更菜
+
+[我与vLLM的2024：清华大佬的vLLM开发之路](https://mp.weixin.qq.com/s/9WW4894LBIq72ormhlMJmA)
 
 ## 并行推理方法
 
@@ -6152,6 +6197,8 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [AI Alignment: A Comprehensive Survey](https://alignmentsurvey.com/uploads/AI-Alignment-A-Comprehensive-Survey.pdf)
 
+[老婆饼里没有老婆，RLHF里也没有真正的RL](https://mp.weixin.qq.com/s/dVCD0crxwCThE7-XVvoemg)
+
 ## DPO
 
 [Direct preference optimization: Your language model is secretly a reward model](https://arxiv.org/pdf/2305.18290)
@@ -7224,6 +7271,15 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [快手「可灵」爆火：海外AI圈巨震，中国版Sora一号难求](https://mp.weixin.qq.com/s/iSAvV3PX1WYwGg7rU60Ong)
 
+[快手可灵凭什么频繁刷屏？揭秘背后三项重要研究](https://mp.weixin.qq.com/s/CNl224oFUMCCHxOAKgo84Q)
+
++ 数据集：Koala-36M
+  + [A Large-scale Video Dataset Improving Consistency between Fine-grained Conditions and Video Content](https://arxiv.org/abs/2410.08260)
+  + [https://github.com/KwaiVGI/Koala-36M](https://github.com/KwaiVGI/Koala-36M)
++ 视频生成领域的 Scaling Law：[Towards Precise Scaling Laws for Video Diffusion Transformers](https://arxiv.org/abs/2411.17470)
++ 通用世界模型：[Owl-1: Omni World Model for Consistent Long Video Generation](https://arxiv.org/abs/2412.09600)
+  + [https://github.com/huang-yh/Owl](https://github.com/huang-yh/Owl)
+
 
 ## V2A
 
@@ -7347,6 +7403,11 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [https://deepmind.google/technologies/veo/veo-2/](https://deepmind.google/technologies/veo/veo-2/)
 
+## 通义万相
+
+[通义万相视频生成重磅升级，成功登顶VBench，运镜、质感直达专业级](https://mp.weixin.qq.com/s/YFnftO_sKQ_d6AM5J-W8YQ)
+
+[https://tongyi.aliyun.com/wanxiang/](https://tongyi.aliyun.com/wanxiang/)
 
 ## 其他
 
@@ -9203,6 +9264,9 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 [Collaborative Cross-modal Fusion with Large Language Model for Recommendation](https://arxiv.org/pdf/2408.08564)
 
+(toread)
+
+[生成式推荐最新进展](https://mp.weixin.qq.com/s/IXXMl74ZYpZMINNzFYC8Bg) 25年1月8号写的
 
 ## 小结
 
@@ -9675,6 +9739,12 @@ Strawberry模型的目的是为了使公司的AI不仅能生成查询答案，�
 
 [An Empirical Analysis of Compute-Optimal Inference for Problem-Solving with Language Models](https://arxiv.org/abs/2408.00724)
 
+## 扩散模型的inference scaling
+
+[扩散模型也能推理时Scaling，谢赛宁团队重磅研究可能带来文生图新范式](https://mp.weixin.qq.com/s/wtSzBr6Gs1nF9zz4c5r7Ag)
+
+[Inference-Time Scaling for Diffusion Models beyond Scaling Denoising Steps](https://arxiv.org/pdf/2501.09732)
+
 
 ## O1的评估
 
@@ -9793,8 +9863,35 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 
 对应的github：[https://github.com/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb](https://github.com/daiwk/llms_new/blob/main/gemini-2/thinking.ipynb)
 
+## 小模型的O1
+
+(toread)
+
+[让7B千问模型超越o1，微软rStar-Math惊艳登场，网友盛赞](https://mp.weixin.qq.com/s/d2aDtT9KRyZJ9Ac12v8AHA)
+
+[rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking](https://arxiv.org/pdf/2501.04519)
+
+[https://github.com/microsoft/rStar](https://github.com/microsoft/rStar)
+
+## meta-cot
+
+[迈向System 2推理，100页论文硬核讲述Meta-CoT](https://mp.weixin.qq.com/s/L_tErITBzUZ75GVGtbtdDQ)
+
+[Towards System 2 Reasoning in LLMs: Learning How to Think With Meta Chain-of-Thought](https://arxiv.org/pdf/2501.04682)
+
+## sky-T1
+
+(toread)
+
+[450美元训练一个「o1-preview」？UC伯克利开源32B推理模型Sky-T1，AI社区沸腾了](https://mp.weixin.qq.com/s/aRUHeDheE4nwncbCLakgIQ)
+
+[https://novasky-ai.github.io/posts/sky-t1/](https://novasky-ai.github.io/posts/sky-t1/)
+
+[https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview](https://huggingface.co/NovaSky-AI/Sky-T1-32B-Preview)
+
 ## 其他的一些讨论
 
+[OpenAI o1模型超全指南来了！](https://mp.weixin.qq.com/s/Wp8y-2q_05UFIMGyyY6DQQ) (使用技巧)
 
 [耗资1.3万，ASU团队揭秘o1推理王者！碾压所有LLM成本超高，关键还会PUA](https://mp.weixin.qq.com/s/pSNC6tdhXcxqB9ofQKU3JQ)
 
@@ -9813,6 +9910,22 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 + o1-preview约300B；o1-mini约100B
 + GPT-4o约200B；GPT-4o-mini约8B
 + Claude 3.5 Sonnet 2024-10-22版本约175B
+
+# DeepSeek R1
+
+[DeepSeek-R1 发布，性能对标 OpenAI o1 正式版](https://mp.weixin.qq.com/s/atKyfC5l-BaStje8-F3FGQ)
+
+[DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/DeepSeek_R1.pdf)
+
+[https://huggingface.co/deepseek-ai/DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1)，还有不少distill的，LM-studio已经有了。。[https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF](https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF)
+
+# Kimi K1.5
+
+[追平满血版o1的国产多模态模型终于来了！训练细节全部公开](https://mp.weixin.qq.com/s/FOAcS2jsTwNoZA2t1BJ66Q)
+
+[https://github.com/MoonshotAI/kimi-k1.5](https://github.com/MoonshotAI/kimi-k1.5)
+
+[Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://github.com/MoonshotAI/Kimi-k1.5/blob/main/Kimi_k1.5.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/Kimi_k1.5.pdf)
 
 
 # O3
@@ -10887,7 +11000,7 @@ influxdb
 
 [清华包揽最佳论文+时间检验奖，山大获荣誉提名，SIGIR 2024奖项出炉](https://mp.weixin.qq.com/s/Z2Mj7etx6KvYrSn8LhrJwg)
 
-
+[https://zhuanlan.zhihu.com/p/654910335](https://zhuanlan.zhihu.com/p/654910335)
 
 # 一些记录
 
