@@ -1876,6 +1876,21 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [https://github.com/facebookresearch/memory](https://github.com/facebookresearch/memory)
 
+## TITANS
+
+(toread)
+
+[谷歌新架构一战成名，打破Transformer记忆瓶颈，姚班校友钟沛林新作](https://mp.weixin.qq.com/s/APE_CJ4rEQYV8ngyaTAXWw)
+
+[近8年后，谷歌Transformer继任者「Titans」来了，上下文记忆瓶颈被打破](https://mp.weixin.qq.com/s/EUCZ1oSuyzR9M9X9r5SYBw)
+
+[Titans: Learning to Memorize at Test Time](https://arxiv.org/abs/2501.00663v1)
+
+## Transformer^2
+
+[Transformer^2要做「活」的AI模型，动态调整权重，像章鱼一样适应环境](https://mp.weixin.qq.com/s/_vdA_KygkFWqFE5Xm6CDRg)
+
+[TRANSFORMER2 : SELF-ADAPTIVE LLMS](https://arxiv.org/pdf/2501.06252)
 
 # 典型LLM简介
 
@@ -2442,6 +2457,8 @@ Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一�
 [https://huggingface.co/mistral-community/pixtral-12b-240910](https://huggingface.co/mistral-community/pixtral-12b-240910)
 
 [发力了，Mistral对标ChatGPT全面升级le Chat，还祭出超大杯多模态模型](https://mp.weixin.qq.com/s/sABAaxKNGM-odULaM0-_Zg)
+
+[最强代码模型刷新：Mistral新品上线即登顶，上下文窗口增至256k](https://mp.weixin.qq.com/s/BaZhEs7CV8-kQzdrkcMU2A)
 
 ### phi-3
 
@@ -3095,11 +3112,19 @@ XXX
 
 [Deepseek V3 预训练策略解读](https://mp.weixin.qq.com/s/TzaaOOwe32V1IXxiLwcKGw)
 
+[MiniMax-01 与 DeepSeek-V3 对比](https://mp.weixin.qq.com/s/x7sN0RwaJjzxHiAReslSRQ)
+
 ### FALCON 2
 
 [时隔一年Falcon回归！110亿参数5.5万亿token，性能超越Llama 3](https://mp.weixin.qq.com/s/CZNVl_GmYm_aPidMJrRHUg)
 
 ### MiniCPM
+
+#### MOEfication
+
+[大模型隐藏玩家上桌：DeepSeek 向左，面壁向右](https://mp.weixin.qq.com/s/DrtUv-7fMh8NqdaSHHJ8uQ)
+
+[MoEfication：Transformer Feed-forward layers are Mixtures of Experts](https://arxiv.org/abs/2110.01786)
 
 #### MiniCPM-Llama3-V
 
@@ -3116,6 +3141,7 @@ XXX
 [小模型杀疯了！仅4B参数性能超GPT-3.5！无限长文本性能超Kimi](https://mp.weixin.qq.com/s/qJM9OTDHS3pJB9ozFuRP1g)
 
 [MiniCPM: Unveiling the Potential of Small Language Models with Scalable Training Strategies](https://arxiv.org/pdf/2404.06395)
+
 
 ### DCFormer
 
@@ -3153,12 +3179,6 @@ XXX
 
 [https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B](https://huggingface.co/allenai/Llama-3.1-Tulu-3-70B)
 
-## post training的一些总结
-
-[工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
-
-[长文 | 大模型Post-Training总结](https://mp.weixin.qq.com/s/mL3Zc85zoHCjNOaTX2icTA)
-
 ### baichuan
 
 [百川新模型超GPT-4o近20%，首创自约束训练方案突破瓶颈，主打「领域增强」](https://mp.weixin.qq.com/s/7oupuln3BQHPa7zpfGdMXQ)
@@ -3166,6 +3186,22 @@ XXX
 Baichuan4-Finance
 
 评测benchmark：[https://github.com/FLAME-ruc/FLAME/tree/main](https://github.com/FLAME-ruc/FLAME/tree/main)
+
+### minimax-01
+
+[MiniMax开源4M超长上下文新模型！性能比肩DeepSeek-v3、GPT-4o](https://mp.weixin.qq.com/s/pj6XZbyZu_mx2KRwIF1Q9g)
+
+[MiniMax-01: Scaling Foundation Models with Lightning Attention](https://filecdn.minimax.chat/_Arxiv_MiniMax_01_Report.pdf)
+
+m层lightning attention后再接1层softmax attention，参数456B，每次推理激活45.9B。
+
+
+## post training的一些总结
+
+[工业界主流大语言模型后训练(Post-Training)技术总结](https://mp.weixin.qq.com/s/sm2HEKJaeIUy9yXZCj0L-g)
+
+[长文 | 大模型Post-Training总结](https://mp.weixin.qq.com/s/mL3Zc85zoHCjNOaTX2icTA)
+
 
 ## 小模型
 
@@ -3193,6 +3229,8 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 [A Comprehensive Survey of Small Language Models in the Era of Large Language Models: Techniques, Enhancements, Applications, Collaboration with LLMs, and Trustworthiness](https://arxiv.org/abs/2411.03350)
 
 [https://github.com/FairyFali/SLMs-Survey](https://github.com/FairyFali/SLMs-Survey)
+
+
 
 ### BitNet
 

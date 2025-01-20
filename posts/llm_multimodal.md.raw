@@ -811,6 +811,15 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [快手「可灵」爆火：海外AI圈巨震，中国版Sora一号难求](https://mp.weixin.qq.com/s/iSAvV3PX1WYwGg7rU60Ong)
 
+[快手可灵凭什么频繁刷屏？揭秘背后三项重要研究](https://mp.weixin.qq.com/s/CNl224oFUMCCHxOAKgo84Q)
+
++ 数据集：Koala-36M
+  + [A Large-scale Video Dataset Improving Consistency between Fine-grained Conditions and Video Content](https://arxiv.org/abs/2410.08260)
+  + [https://github.com/KwaiVGI/Koala-36M](https://github.com/KwaiVGI/Koala-36M)
++ 视频生成领域的 Scaling Law：[Towards Precise Scaling Laws for Video Diffusion Transformers](https://arxiv.org/abs/2411.17470)
++ 通用世界模型：[Owl-1: Omni World Model for Consistent Long Video Generation](https://arxiv.org/abs/2412.09600)
+  + [https://github.com/huang-yh/Owl](https://github.com/huang-yh/Owl)
+
 
 ## V2A
 
@@ -934,6 +943,11 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [https://deepmind.google/technologies/veo/veo-2/](https://deepmind.google/technologies/veo/veo-2/)
 
+## 通义万相
+
+[通义万相视频生成重磅升级，成功登顶VBench，运镜、质感直达专业级](https://mp.weixin.qq.com/s/YFnftO_sKQ_d6AM5J-W8YQ)
+
+[https://tongyi.aliyun.com/wanxiang/](https://tongyi.aliyun.com/wanxiang/)
 
 ## 其他
 
