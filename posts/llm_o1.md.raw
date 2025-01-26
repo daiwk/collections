@@ -488,6 +488,7 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 + GPT-4o约200B；GPT-4o-mini约8B
 + Claude 3.5 Sonnet 2024-10-22版本约175B
 
+
 # DeepSeek R1
 
 [DeepSeek-R1 发布，性能对标 OpenAI o1 正式版](https://mp.weixin.qq.com/s/atKyfC5l-BaStje8-F3FGQ)
@@ -495,6 +496,10 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/DeepSeek_R1.pdf)
 
 [https://huggingface.co/deepseek-ai/DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1)，还有不少distill的，LM-studio已经有了。。[https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF](https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF)
+
+# open-r1
+
+[https://github.com/huggingface/open-r1/](https://github.com/huggingface/open-r1/)
 
 # Kimi K1.5
 
@@ -504,6 +509,8 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 
 [Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://github.com/MoonshotAI/Kimi-k1.5/blob/main/Kimi_k1.5.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/Kimi_k1.5.pdf)
 
+
+[张俊林：MCST树搜索会是复刻OpenAI O1/O3的有效方法吗](https://mp.weixin.qq.com/s/_Uobawe6yf1eNzScNkySHA)
 
 # O3
 
