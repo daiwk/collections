@@ -495,7 +495,33 @@ Coconut（连续思维链，Chain of Continuous Thought）不再通过语言模�
 
 [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/DeepSeek_R1.pdf)
 
+arxiv上：[https://arxiv.org/pdf/2501.12948](https://arxiv.org/pdf/2501.12948)
+
 [https://huggingface.co/deepseek-ai/DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1)，还有不少distill的，LM-studio已经有了。。[https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF](https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF)
+
+
+## 背景
+
+o1提出了可以通过增加cot reasoning process的长度来进行inference time scaling，尝试复现的方法有：
+
++ process-based reward models：
+  + [Let's Verify Step by Step](https://arxiv.org/pdf/2305.20050)
+  + [Solving math word problems with process-and outcome-based feedback](https://arxiv.org/pdf/2211.14275)
+  + [Math-Shepherd: Verify and Reinforce LLMs Step-by-step without Human Annotations](https://arxiv.org/pdf/2312.08935)
++ reinforcement learning：
+  + [Training language models to self-correct via reinforcement learning](https://arxiv.org/pdf/2409.12917)
++ MCTS/beam search的搜索方法：
+  + [Alphazero-like tree-search can guide large language model decoding and training](https://arxiv.org/pdf/2309.17179)
+  + [Solving olympiad geometry without human demonstrations](https://www.nature.com/articles/s41586-023-06747-5)
+  + [Deepseek-prover-v1.5: Harnessing proof assistant feedback for reinforcement learning and monte-carlo tree search](https://arxiv.org/pdf/2408.08152)
+
+  但这些方法都没有o1效果好，因此R1不借助监督数据，使用纯RL来完成self-evolution，从而探索LLM在reasoning上的潜能。使用DeepSeekV3作为base model，并使用[Deepseekmath: Pushing the limits of mathematical reasoning in open language models](https://arxiv.org/pdf/2402.03300)的GRPO作为RL框架。
+
+  几k个step后，deepseek-r1-zero在一些reasoning的benchmark上取得了不错的效果，但仍然有可读性差、语言混合等问题，因此搞了deepseek-r1，包括少量的冷启数据和一个多阶段的训练pipeline。
+
+  ## 贡献
+
+
 
 # open-r1
 
