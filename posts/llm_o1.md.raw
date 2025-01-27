@@ -515,9 +515,19 @@ o1提出了可以通过增加cot reasoning process的长度来进行inference ti
   + [Solving olympiad geometry without human demonstrations](https://www.nature.com/articles/s41586-023-06747-5)
   + [Deepseek-prover-v1.5: Harnessing proof assistant feedback for reinforcement learning and monte-carlo tree search](https://arxiv.org/pdf/2408.08152)
 
-  但这些方法都没有o1效果好，因此R1不借助监督数据，使用纯RL来完成self-evolution，从而探索LLM在reasoning上的潜能。使用DeepSeekV3作为base model，并使用[Deepseekmath: Pushing the limits of mathematical reasoning in open language models](https://arxiv.org/pdf/2402.03300)的GRPO作为RL框架。
+但这些方法都没有o1效果好，因此R1不借助监督数据，使用纯RL来完成self-evolution，从而探索LLM在reasoning上的潜能。使用DeepSeekV3作为base model，并使用[Deepseekmath: Pushing the limits of mathematical reasoning in open language models](https://arxiv.org/pdf/2402.03300)的GRPO作为RL框架。
 
-  几k个step后，deepseek-r1-zero在一些reasoning的benchmark上取得了不错的效果，但仍然有可读性差、语言混合等问题，因此搞了deepseek-r1，包括少量的冷启数据和一个多阶段的训练pipeline。
+几k个step后，DeepSeek-R1-Zero在一些reasoning的benchmark上取得了不错的效果，但仍然有可读性差、语言混合等问题，因此搞了DeepSeek-R1，包括少量的冷启数据和一个多阶段的训练pipeline。
+
++ 收集数千的cold-start数据来finetune DeepSeek-V3-Base模型
++ 执行类似DeepSeek-R1-Zero的面向reasoning的RL任务
++ 在RL快收敛的时候，在RL的checkpoint上通过拒绝采样构建新的SFT数据，并和DeepSeek-V3的数据集（只选一些领域，如writing、factual QA和self-cognition,自我认知）进行结合，**重训**DeepSeek-V3-Base
++ 用新数据finetune完后，再经过一个RL的过程，并考虑所有场景的prompts==>最终的模型
+
+还搞了一些蒸馏模型，例如Qwen2.5-32B作为base模型，蒸馏DeepSeek-R1的效果比对它进行RL效果要好，说明大的base model发现的reasoning patterns对提升reasoning能力很关键。此外，发现14B的蒸馏模型比QWQ-32B-preview效果好很多，32B和70B的蒸馏模型效果更好
+
+
+
 
   ## 贡献
 
