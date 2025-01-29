@@ -515,7 +515,7 @@ o1提出了可以通过增加cot reasoning process的长度来进行inference ti
   + [Solving olympiad geometry without human demonstrations](https://www.nature.com/articles/s41586-023-06747-5)
   + [Deepseek-prover-v1.5: Harnessing proof assistant feedback for reinforcement learning and monte-carlo tree search](https://arxiv.org/pdf/2408.08152)
 
-但这些方法都没有o1效果好，因此R1不借助监督数据，使用纯RL来完成self-evolution，从而探索LLM在reasoning上的潜能。使用DeepSeekV3作为base model，并使用[Deepseekmath: Pushing the limits of mathematical reasoning in open language models](https://arxiv.org/pdf/2402.03300)的GRPO作为RL框架。
+但这些方法都没有o1效果好，因此R1不借助监督数据，使用纯RL(没有SFT)来完成self-evolution，从而探索LLM在reasoning上的潜能。使用DeepSeekV3作为base model，并使用[Deepseekmath: Pushing the limits of mathematical reasoning in open language models](https://arxiv.org/pdf/2402.03300)的GRPO作为RL框架。
 
 几k个step后，DeepSeek-R1-Zero在一些reasoning的benchmark上取得了不错的效果，但仍然有可读性差、语言混合等问题，因此搞了DeepSeek-R1，包括少量的冷启数据和一个多阶段的训练pipeline。
 
@@ -526,10 +526,43 @@ o1提出了可以通过增加cot reasoning process的长度来进行inference ti
 
 还搞了一些蒸馏模型，例如Qwen2.5-32B作为base模型，蒸馏DeepSeek-R1的效果比对它进行RL效果要好，说明大的base model发现的reasoning patterns对提升reasoning能力很关键。此外，发现14B的蒸馏模型比QWQ-32B-preview效果好很多，32B和70B的蒸馏模型效果更好
 
+## DeepSeek-R1-Zero
 
+### RL算法
 
+&nbsp;
 
-  ## 贡献
+GRPO（Group Relative Policy Optimization）：放弃了Critic model，用group scores来替换。即对每个问题$$q$$，从老的策略$$\pi_{\theta_{\text {old }}}$$采样出一个group的输出$$\left\{o_1, o_2, \cdots, o_G\right\}$$，再通过最大化如下目标来优化policy model $$\pi_\theta$$：
+
+XXX
+\begin{aligned}
+\mathcal{J}_{G R P O}(\theta) & =\mathbb{E}\left[q \sim P(Q),\left\{o_i\right\}_{i=1}^G \sim \pi_{\theta_{\text {old }}}(O \mid q)\right] \\
+& \frac{1}{G} \sum_{i=1}^G\left(\min \left(\frac{\pi_\theta\left(o_i \mid q\right)}{\pi_{\theta_{o l d}}\left(o_i \mid q\right)} A_i, \operatorname{clip}\left(\frac{\pi_\theta\left(o_i \mid q\right)}{\pi_{\theta_{o l d}}\left(o_i \mid q\right)}, 1-\varepsilon, 1+\varepsilon\right) A_i\right)-\beta \mathbb{D}_{K L}\left(\pi_\theta| | \pi_{r e f}\right)\right),
+\end{aligned}
+XXX
+
+其中：
+
++ $$\mathbb{D}_{K L}\left(\pi_\theta \| \pi_{r e f}\right)=\frac{\pi_{r e f}\left(o_i \mid q\right)}{\pi_\theta\left(o_i \mid q\right)}-\log \frac{\pi_{r e f}\left(o_i \mid q\right)}{\pi_\theta\left(o_i \mid q\right)}-1$$
++ $$\varepsilon$$和$$\beta$$是超参
++ $$A_i$$是advantage，通过每个group的reward计算得来：
+
+XXX
+A_i=\frac{r_i-\operatorname{mean}\left(\left\{r_1, r_2, \cdots, r_G\right\}\right)}{\operatorname{std}\left(\left\{r_1, r_2, \cdots, r_G\right\}\right)}
+XXX
+
+### Reward modeling
+
+&nbsp;
+
+### Training template
+
+&nbsp;
+
+### 一些结论
+
+&nbsp;
+
 
 
 
