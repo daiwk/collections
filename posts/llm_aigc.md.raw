@@ -6132,36 +6132,36 @@ ref_logprobs, _, _, _ = self.batched_forward_pass(self.ref_model, queries,
 Old Logprobs是一次性一个batch的数据计算的，这是因为在一个batch中旧策略都是不变的；而New Logprobs是一个mini batch计算一次，这是因为新策略每个mini batch变一次。
 
 
-### 开源rlhf库
+# 开源rlhf库
 
 [https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)
 
 [影响PPO算法性能的10个关键技巧（附PPO算法简洁Pytorch实现）](https://zhuanlan.zhihu.com/p/512327050)
 
-#### openai的lm-human-preferences(gpt2的finetune)
-
-&nbsp;
+## openai的lm-human-preferences(gpt2的finetune)
 
 [https://github.com/openai/lm-human-preferences](https://github.com/openai/lm-human-preferences)
 
-#### huggingface的TRL
-
-&nbsp;
+## huggingface的TRL（一直在更新，stars最多）
 
 [https://github.com/huggingface/trl](https://github.com/huggingface/trl)
- 
 
-#### CarperAI的trlx
+### 数据集介绍
 
 &nbsp;
+
+[https://huggingface.co/docs/trl/dataset_formats#which-dataset-type-to-use](https://huggingface.co/docs/trl/dataset_formats#which-dataset-type-to-use)
+ 
+
+## CarperAI的trlx(不更新了)
 
 [https://github.com/CarperAI/trlx](https://github.com/CarperAI/trlx)
 
-#### allenai的RL4LMs
+## allenai的RL4LMs
 
 [https://github.com/allenai/RL4LMs](https://github.com/allenai/RL4LMs)
 
-#### RLHF workflow
+## RLHF workflow
 
 [仅靠开源数据复刻出LLaMA3指令学习效果，在线迭代RLHF全流程解决方案来了](https://mp.weixin.qq.com/s/bRxdSCCPIrgNBgtDfyzhAA)
 
@@ -6174,7 +6174,7 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 + [https://github.com/RLHFlow/RLHF-Reward-Modeling](https://github.com/RLHFlow/RLHF-Reward-Modeling)
 + [https://github.com/RLHFlow/Online-RLHF](https://github.com/RLHFlow/Online-RLHF)
 
-#### openrlhf
+## openrlhf
 
 [这个团队做了OpenAI没Open的技术，开源OpenRLHF让对齐大模型超简单](https://mp.weixin.qq.com/s/3JjnGXJTqqiLP9hC21THIg)
 
@@ -10021,17 +10021,48 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 &nbsp;
 
+指标含义：
+
++ pass@1：**首次**生成答案时的成功率
++ cons@64：majority vote (consensus) with 64 samples，模型在给出**64次生成尝试**中，是否能够**多次生成相同的正确答案**。(在[这里](https://openai.com/index/learning-to-reason-with-llms/)提到了)
+
 ![](../assets/r1-zero-performance.png)
 
-在AIME2024数据集上，pass@1上接近o1-0912，cons@64超了，codeforces上不太行。随着训练，pass@1能从十几涨到70几。
++ 数学(美国数学邀请赛)：
+  + AIME2024：pass@1上接近o1-0912，cons@64超了，均超越o1-mini
+  + MATH-500：pass@1超越o1-mini和o1-0912
++ GPQA-Diamond（phd级别的科学问题，包括化学、物理、生物）：pass@1超越o1-mini，不如o1-0912
++ 代码：
+  + LiveCode Bench：不如o1-0912和o1-mini
+  + codeforces的rating：不如o1-0912和o1-mini
+  
+另外，在AIME2024上，随着训练，pass@1能从十几涨到70几。
 
 ### Self-evolution Process
 
 &nbsp;
 
+[](../assets/r1-zero-thinking-length.png)
+
++ 随着训练的进行，生成的response长度也在变长，说明思考时间也变长了，其中的reasoning tokens从数百涨到了数千。
++ 随着测试时间的增加，**涌现出了复杂的行为**，即不由自主地(spontaneously)出现了（这些行为并非预先在代码里设计的）：
+  + 反思：重新看并且评估(revist and reevaluate)之前的steps
+  + 探索：尝试其他方法来解决问题
+
 ### Aha Moment
 
 &nbsp;
+
+### 缺陷
+
+&nbsp;
+
+
+## DeepSeek-R1
+
+
+
+## 蒸馏
 
 
 
