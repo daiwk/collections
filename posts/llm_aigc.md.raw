@@ -10053,10 +10053,9 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 &nbsp;
 
-### 缺陷
+![](../assets/r1-zero-aha.png)
 
-&nbsp;
-
+在某一个中间版本，模型突然输出上面的aha-moment，可以看到不需要显式地教模型如何解决，只要给予正确的激励（incentives），模型会自己开发出进阶的问题解决策略，这也是RL的力量和美。
 
 ## DeepSeek-R1
 
