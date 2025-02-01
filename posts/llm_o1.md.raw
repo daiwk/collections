@@ -583,17 +583,48 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 &nbsp;
 
+指标含义：
+
++ pass@1：**首次**生成答案时的成功率
++ cons@64：majority vote (consensus) with 64 samples，模型在给出**64次生成尝试**中，是否能够**多次生成相同的正确答案**。(在[这里](https://openai.com/index/learning-to-reason-with-llms/)提到了)
+
 ![](../assets/r1-zero-performance.png)
 
-在AIME2024数据集上，pass@1上接近o1-0912，cons@64超了，codeforces上不太行。随着训练，pass@1能从十几涨到70几。
++ 数学(美国数学邀请赛)：
+  + AIME2024：pass@1上接近o1-0912，cons@64超了，均超越o1-mini
+  + MATH-500：pass@1超越o1-mini和o1-0912
++ GPQA-Diamond（phd级别的科学问题，包括化学、物理、生物）：pass@1超越o1-mini，不如o1-0912
++ 代码：
+  + LiveCode Bench：不如o1-0912和o1-mini
+  + codeforces的rating：不如o1-0912和o1-mini
+  
+另外，在AIME2024上，随着训练，pass@1能从十几涨到70几。
 
 ### Self-evolution Process
 
 &nbsp;
 
+[](../assets/r1-zero-thinking-length.png)
+
++ 随着训练的进行，生成的response长度也在变长，说明思考时间也变长了，其中的reasoning tokens从数百涨到了数千。
++ 随着测试时间的增加，**涌现出了复杂的行为**，即不由自主地(spontaneously)出现了（这些行为并非预先在代码里设计的）：
+  + 反思：重新看并且评估(revist and reevaluate)之前的steps
+  + 探索：尝试其他方法来解决问题
+
 ### Aha Moment
 
 &nbsp;
+
+### 缺陷
+
+&nbsp;
+
+
+## DeepSeek-R1
+
+
+
+## 蒸馏
 
 
 
