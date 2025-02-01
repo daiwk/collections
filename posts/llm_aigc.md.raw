@@ -8617,7 +8617,7 @@ XXX
 [bos]<instruction><input notes>The compression word is:"[EMB]".<output guidance><output>[eos]
 ```
 
-其中的[EMB]是一个特殊token，
+其中的[EMB]是一个特殊token，类比bert里的[CLS]
 
 ![notellm](../assets/notellm.png)
 
@@ -9993,9 +9993,29 @@ XXX
 
 &nbsp;
 
+用的是rule-based reward，包括如下两部分
+
++ accuracy rewards：response是否正确，例如对于一个数学问题，需要判断最终答案是否为给定的格式（specified format），并且能基于规则验证结果的正确性；leetcode问题则可以用编译器来生成预先定好的测试用例的结果。
++ format rewards：设计了一个format reward model，来强制模型将其思考过程输出在```<think>```和```</think>```之间。
+
+没有设计neural reward model，因为：
+
++ 发现在大规模的RL过程中，neural reward model会受reward hacking的影响
++ 重新训练reward model需要额外的训练资源，并且会让训练pipeline过于复杂
+
 ### Training template
 
 &nbsp;
+
+```html
+A conversation between User and Assistant. The user asks a question, and the Assistant solves it.
+The assistant first thinks about the reasoning process in the mind and then provides the user
+with the answer. The reasoning process and answer are enclosed within <think> </think> and
+<answer> </answer> tags, respectively, i.e., <think> reasoning process here </think>
+<answer> answer here </answer>. User: prompt. Assistant:
+```
+
+
 
 ### 一些结论
 
