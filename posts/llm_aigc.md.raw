@@ -10015,9 +10015,21 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 <answer> answer here </answer>. User: prompt. Assistant:
 ```
 
+训练时使用如上的template，故意将约束限制在这种结构格式上，避免任何特定内容的偏见（例如强制反射推理或促进特定的解决问题的策略），以确保能够在RL过程中准确观察模型的自然进展。
 
+### 效果
 
-### 一些结论
+&nbsp;
+
+![](../assets/r1-zero-performance.png)
+
+在AIME2024数据集上，pass@1上接近o1-0912，cons@64超了，codeforces上不太行。随着训练，pass@1能从十几涨到70几。
+
+### Self-evolution Process
+
+&nbsp;
+
+### Aha Moment
 
 &nbsp;
 
