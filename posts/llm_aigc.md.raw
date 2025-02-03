@@ -6460,7 +6460,13 @@ XXX
 
 [震惊！Claude伪对齐率竟能高达78％，Anthropic 137页长论文自揭短](https://mp.weixin.qq.com/s/UpTjO8ATcYC6-PSnJkZMMg)
 
-[Alignment Faking in Large Language Models](https://assets.anthropic.com/m/983c85a201a962f/original/Alignment-Faking-in-Large-Language-Models-full-paper.pdf)# 多模态（图像）
+[Alignment Faking in Large Language Models](https://assets.anthropic.com/m/983c85a201a962f/original/Alignment-Faking-in-Large-Language-Models-full-paper.pdf)
+
+## SFT记忆，RL生成
+
+[SFT Memorizes, RL Generalizes: A Comparative Study of Foundation Model Post-training](https://arxiv.org/pdf/2501.17161)
+
+# 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
 
