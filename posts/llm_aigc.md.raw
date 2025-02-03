@@ -6466,6 +6466,8 @@ XXX
 
 [SFT Memorizes, RL Generalizes: A Comparative Study of Foundation Model Post-training](https://arxiv.org/pdf/2501.17161)
 
+[https://github.com/LeslieTrue/SFTvsRL](https://github.com/LeslieTrue/SFTvsRL)
+
 # 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
@@ -10030,7 +10032,7 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 指标含义：
 
 + pass@1：**首次**生成答案时的成功率
-+ cons@64：majority vote (consensus) with 64 samples，模型在给出**64次生成尝试**中，是否能够**多次生成相同的正确答案**。(在[这里](https://openai.com/index/learning-to-reason-with-llms/)提到了)
++ cons@64：majority vote (consensus) with 64 samples，模型在给出**64次生成尝试**中，是否能够**多次生成相同的正确答案**。(在[这里](https://openai.com/index/learning-to-reason-with-llms/)提到了，来自文章：[Self-consistency improves chain of thought reasoning in language model](https://arxiv.org/pdf/2203.11171))
 
 ![](../assets/r1-zero-performance.png)
 
@@ -10089,10 +10091,12 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 &nbsp;
 
+在冷启数据上tune完之后，和r1-zero一样，进行大规模的RL训练（在reasoning-intensive任务的数据集上训的？）。此外，为了解决CoT里语言混合的问题，加了一个**language consistency reward**（计算目标语言在CoT中的比例），直接和原来的reward相加。虽然消融实验显示这种alignment会让效果略微下降，但这更符合人类偏好，可读性更强。
 
 ### Rejection Sampling and Supervised Fine-Tuning
 
 &nbsp;
+
 
 
 ### Reinforcement Learning for all Scenarios
@@ -10129,6 +10133,12 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 [o3并非独门秘技，谷歌已发背后关键机制，方法更简单、成本更低](https://mp.weixin.qq.com/s/qdxC_QyJW17gyRfN66D59A)
 
 [Large Language Monkeys: Scaling Inference Compute with Repeated Sampling](https://arxiv.org/abs/2407.21787)
+
+## S1
+
+[s1: Simple test-time scaling](https://arxiv.org/pdf/2501.19393)
+
+[https://github.com/simplescaling/s1](https://github.com/simplescaling/s1)
 
 # 世界模型
 
