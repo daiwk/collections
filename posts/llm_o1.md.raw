@@ -626,7 +626,7 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 + 用一小部分高质量数据来做冷启能否提升推理效果，或者加速收敛？
 + 如何训练一个user-friendly的模型，既能提供准确和连贯的CoT，又有很强的通用能力？
 
-### 冷启
+### 阶段1：Cold Start
 
 &nbsp;
 
@@ -641,19 +641,29 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 + 可读性：zero的可读性不太好，例如语言混合、缺少markdown高亮。因此设计了一个可读性比较好的pattern，即```|special_token|<reasoning_process>|special_token|<summary>```，并把没有summary的结果扔掉
 + 潜力：依据人类先验精心设计的pattern产出的冷启数据，取得了比zero更好的效果，故迭代地训练对于reasoning models应该是一种更好的方式
 
-### Reasoning-oriented Reinforcement Learning
+### 阶段2：Reasoning-oriented Reinforcement Learning
 
 &nbsp;
 
 在冷启数据上tune完之后，和r1-zero一样，进行大规模的RL训练（在reasoning-intensive任务的数据集上训的？）。此外，为了解决CoT里语言混合的问题，加了一个**language consistency reward**（计算目标语言在CoT中的比例），直接和原来的reward相加。虽然消融实验显示这种alignment会让效果略微下降，但这更符合人类偏好，可读性更强。
 
-### Rejection Sampling and Supervised Fine-Tuning
+### 阶段3：Rejection Sampling and Supervised Fine-Tuning
 
 &nbsp;
 
+用阶段2的ckpt，然后在writing, role-playing, and other general-purpose这类任务上构建SFT数据集，在约80w的样本上对DeepSeek-V3-Base SFT了2个epoch。
+
++ reasoning data：在前一个RL阶段，只用那些能用rule-based rewards来衡量的数据。
+  + 这个阶段加入了更多的数据，有一些是使用**生成式的reward model**，即把ground truth和模型预测结果输入给DeepSeek-V3做judgement。
+  + 因为模型输出有时会很混乱或者无可读性，所以删掉一些满足这些条件的CoT：混合语言、长的段落、代码段
+  + 对每个prompt，采样多个response，并只保留一个正确的。最终收集了大概60w的reasoning相关的训练样本
++ non-reasoning data：
+  + 采用DeepSeek-V3的pipeline，并复用部分DeepSeek-V3的SFT数据集。
+  + 使用DeepSeek-V3时，在prompt里提到在回答答案前要生成潜在的CoT；对于简单的如hello的问题，就不用输出CoT。
+  + 最终收集了大概20w的non-reasoning训练样本
 
 
-### Reinforcement Learning for all Scenarios
+### 阶段4：Reinforcement Learning for all Scenarios
 
 &nbsp;
 
