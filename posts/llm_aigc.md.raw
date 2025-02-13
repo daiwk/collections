@@ -6184,6 +6184,23 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [图解OpenRLHF中基于Ray的分布式训练流程](https://mp.weixin.qq.com/s/BXmItS8nlOYqJbVY_8tKoQ)
 
+## deepspeed-chat
+
+[https://github.com/deepspeedai/DeepSpeedExamples/tree/master/applications/DeepSpeed-Chat](https://github.com/deepspeedai/DeepSpeedExamples/tree/master/applications/DeepSpeed-Chat)
+
+[DeepSpeed-Chat: Easy, Fast and Affordable RLHF Training of ChatGPT-like Models at All Scales](https://arxiv.org/pdf/2308.01320)
+
+## NeMo-Aligner
+
+[https://github.com/NVIDIA/NeMo-Aligner](https://github.com/NVIDIA/NeMo-Aligner)
+
+[NeMo-Aligner: Scalable Toolkit for Efficient Model Alignment](https://arxiv.org/abs/2405.01481)
+
+## VeRL
+
+[HybridFlow: A Flexible and Efficient RLHF Framework](https://arxiv.org/pdf/2409.19256)
+
+[https://github.com/volcengine/veRL](https://github.com/volcengine/veRL)
 
 # Alignment：RLHF变种
 
@@ -10116,7 +10133,7 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 ## 蒸馏
 
-
+[https://medium.com/@prabhudev.guntur/how-to-distill-deepseek-r1-a-comprehensive-guide-c8ba04e2c28c](https://medium.com/@prabhudev.guntur/how-to-distill-deepseek-r1-a-comprehensive-guide-c8ba04e2c28c)可以参考这个自己蒸馏一个
 
 
 # open-r1
