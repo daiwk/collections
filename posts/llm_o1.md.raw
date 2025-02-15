@@ -499,6 +499,8 @@ arxiv上：[https://arxiv.org/pdf/2501.12948](https://arxiv.org/pdf/2501.12948)
 
 [https://huggingface.co/deepseek-ai/DeepSeek-R1](https://huggingface.co/deepseek-ai/DeepSeek-R1)，还有不少distill的，LM-studio已经有了。。[https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF](https://hf-mirror.com/lmstudio-community/DeepSeek-R1-Distill-Qwen-32B-GGUF)
 
+[Jay Alammar：图解DeepSeek-R1](https://mp.weixin.qq.com/s/N9N7R-r_l6sBL2fsRXRGAw)
+
 
 ## 背景
 
@@ -690,12 +692,183 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 对应的流程图[文档](https://s6alnvgc88.feishu.cn/wiki/JOutwfyGwiEAflkKImvcfpwgnQd)
 
+## 使用注意
 
-# open-r1
+### deepseek-r1使用指南
 
-[https://github.com/huggingface/open-r1/](https://github.com/huggingface/open-r1/)
+[刚刚，DeepSeek官方发布R1模型推荐设置，这才是正确用法](https://mp.weixin.qq.com/s/RA1mhAyQOoXD5XOULAGgbQ)
 
-# Kimi K1.5
++ temperature设置在0.5-0.7之间，推荐0.6，以防止无休止的重复或不连贯的输出。
++ 不要system prompt，直接放到user prompt里
++ 数学问题，建议prompt里直接```Please reason step by step, and put your final answer within \boxed{}.```
++ 有些时候模型会自己跳过think的过程，如果要强制输出，可以强制模型在output前输出```<think>\n```
+
+上传文件的prompt：
+
+```shell
+file_template = \
+"""[file name]: {file_name}
+[file content begin]
+{file_content}
+[file content end]
+{question}"""
+```
+
+联网的prompt：
+
+```shell
+search_answer_zh_template = \
+'''# 以下内容是基于用户发送的消息的搜索结果:
+{search_results}
+在我给你的搜索结果中，每个结果都是[webpage X begin]...[webpage X end]格式的，X代表每篇文章的数字索引。请在适当的情况下在句子末尾引用上下文。请按照引用编号[citation:X]的格式在答案中对应部分引用上下文。如果一句话源自多个上下文，请列出所有相关的引用编号，例如[citation:3][citation:5]，切记不要将引用集中在最后返回引用编号，而是在答案对应部分列出。
+在回答时，请注意以下几点：
+- 今天是{cur_date}。
+- 并非搜索结果的所有内容都与用户的问题密切相关，你需要结合问题，对搜索结果进行甄别、筛选。
+- 对于列举类的问题（如列举所有航班信息），尽量将答案控制在10个要点以内，并告诉用户可以查看搜索来源、获得完整信息。优先提供信息完整、最相关的列举项；如非必要，不要主动告诉用户搜索结果未提供的内容。
+- 对于创作类的问题（如写论文），请务必在正文的段落中引用对应的参考编号，例如[citation:3][citation:5]，不能只在文章末尾引用。你需要解读并概括用户的题目要求，选择合适的格式，充分利用搜索结果并抽取重要信息，生成符合用户要求、极具思想深度、富有创造力与专业性的答案。你的创作篇幅需要尽可能延长，对于每一个要点的论述要推测用户的意图，给出尽可能多角度的回答要点，且务必信息量大、论述详尽。
+- 如果回答很长，请尽量结构化、分段落总结。如果需要分点作答，尽量控制在5个点以内，并合并相关的内容。
+- 对于客观类的问答，如果问题的答案非常简短，可以适当补充一到两句相关信息，以丰富内容。
+- 你需要根据用户要求和回答内容选择合适、美观的回答格式，确保可读性强。
+- 你的回答应该综合多个相关网页来回答，不能重复引用一个网页。
+- 除非用户要求，否则你回答的语言需要和用户提问的语言保持一致。
+
+# 用户消息为：
+{question}'''
+```
+
+### openai推理使用指南
+
+[刚刚，DeepSeek揭秘R1官方同款部署设置，温度=0.6！OpenAI推理指南同时上线](https://mp.weixin.qq.com/s/M7DOriZntI5RjxCliUVyug)
+
+[https://platform.openai.com/docs/guides/reasoning-best-practices](https://platform.openai.com/docs/guides/reasoning-best-practices)
+
+简单理解：
+
++ 推理模型就像一位经验丰富的高级同事——你只需告诉他们最终目标，就能相信他们自主完成所有细节工作。
++ GPT模型则更像一位新手同事——你需要提供明确详细的指示，才能让他们准确完成特定的输出任务。
+
+各自特点：
+
++ 速度和成本：选择GPT模型，因为它们处理速度更快，成本更低
++ 执行明确任务：选择GPT模型，它们在处理界定清晰的任务时表现出色
++ 准确性和可靠性：选择o系列模型，它们是可靠的决策专家
++ 复杂问题解决：选择o系列模型，它们善于处理模糊和复杂的问题
+
+推理模型的优势：
+
++ 处理模糊任务：推理模型特别擅长处理信息有限或零散的情况，只需通过简单的提示词就能理解用户意图并妥善处理指令中的信息缺口。
+值得注意的是，推理模型通常会在做出未经验证的猜测或填补信息空缺之前，主动提出澄清性问题。
++ 大海捞针：当需要处理大量非结构化信息时，推理模型特别擅长理解内容并精准提取出回答问题所需的关键信息。
++ 在大型数据集中发现关系和细微差别：
+  + 推理模型特别擅长分析包含数百页密集、非结构化信息的复杂文档，如法律合同、财务报表和保险索赔等。这些模型在识别文档之间的关联性，并基于数据中隐含的事实做出决策方面，表现尤为突出。
+  + 推理模型还特别擅长理解细微的政策和规则，并将其准确应用于具体任务中以得出合理结论。
++ 多步骤AI智能体规划：推理模型在AI智能体规划和策略制定中发挥着关键作用。将推理模型作为「计划者」时效果显著：它能为问题制定详细的多步骤解决方案，并根据具体需求（高智能或低延迟）选择和分配合适的GPT模型（执行者）来完成各个步骤。
++ 视觉推理能力：截至目前，o1是唯一一个具备视觉处理能力的推理模型。与GPT-4o相比，o1的独特优势在于它能够准确理解最具挑战性的视觉内容，包括结构不规则的图表和表格，以及质量欠佳的图片。
++ 代码审查、调试和质量改进：推理模型在审查和改进大规模代码方面表现突出。考虑到这类模型的较高延迟特性，通常将代码审查任务安排在后台运行。虽然GPT-4o和GPT-4o mini凭借较低的延迟可能更适合直接编写代码，但在那些对延迟要求相对不那么严格的代码生成场景中，o3-mini表现同样出色。
++ 评估和基准测试其他模型的响应：推理模型在对其他模型的输出进行基准测试和评估方面表现优异。数据验证对确保数据集的质量和可靠性至关重要，这一点在医疗保健等敏感领域尤其重要。
+
+prompt注意点：
+
++ 用开发者消息取代系统消息：自o1-2024-12-17版本起，推理模型开始支持开发者消息（developer message）而非系统消息（system message）。
++ 保持提示词简洁明确：推理模型最擅长理解和响应简短、清晰的指令。
++ 避免使用CoT提示：由于模型内置推理能力，因此无需特别提示它们「一步一步思考」或「解释推理过程」。
++ 善用分隔符增强清晰度：使用Markdown、XML标签和章节标题等分隔符来明确区分输入的不同部分，这有助于模型准确理解各个章节的内容。
++ 优先尝试零样本学习：推理模型通常无需少样本示例即可产出优质结果，因此建议先尝试不含示例的提示词。如果对输出结果有更复杂的要求，再考虑在提示词中添加输入和期望输出的示例。请注意确保示例与提示词指令严格匹配，因为不一致可能导致性能下降。
++ 提供明确约束条件：如果需要对模型的响应施加具体限制（例如「提供预算控制在500美元以内的解决方案」），请在提示词中明确列出这些约束条件。
++ 明确定义目标：在指令中，请详细说明判定响应成功的具体参数，并引导模型持续优化推理过程，直到达成设定的成功标准。
++ Markdown格式说明：从o1-2024-12-17版本开始，API中的推理模型默认不会生成带有Markdown格式的响应。如果确实需要在响应中包含Markdown格式，请在开发者消息的首行添加「Formatting re-enabled」字符串。
+
+
+# R1的部署
+
+[完整的671B MoE DeepSeek R1怎么塞进本地化部署？详尽教程大放送！](https://mp.weixin.qq.com/s/GnHzsgvW90DGChENqTBsRw)
+
+[https://github.com/kvcache-ai/ktransformers](https://github.com/kvcache-ai/ktransformers)
+
+# R1的讨论
+
+[华人研究团队揭秘：DeepSeek-R1-Zero或许并不存在「顿悟时刻」](https://mp.weixin.qq.com/s/_VK7fm8p3mpfhPh_zBdagA)
+
+[为什么说DeepSeek的R1-Zero比R1更值得关注？](https://mp.weixin.qq.com/s/yhZR4PainDLR5-gWKiiDjg)
+
+[LeCun痛批硅谷傲慢病！圈内爆火长文：DeepSeek R1-Zero比R1更重要，成AGI破局关键](https://mp.weixin.qq.com/s/mSAATPeW_FM9xadf1veLDA)
+
+[DeepSeek用的GRPO占用大量内存？有人给出了些破解方法](https://mp.weixin.qq.com/s/28GRpZwqv4gMnrmItMQchQ)，对应：[https://github.com/huggingface/trl/issues/2709](https://github.com/huggingface/trl/issues/2709)
+
+[刘知远硬核解读 DeepSeek：大模型强化学习技术原理与大模型技术发展研判](https://mp.weixin.qq.com/s/pAn87hbT3GkfMvbcdzEGCw)
+
+[大神卡帕西拿DeepSeek R1讲强化学习！最新大模型内部机制视频爆火，“没有技术背景也能看懂”](https://mp.weixin.qq.com/s/lBc0-8ByRxJ3JBJpMcfzkQ)
+
+对应代码：[https://github.com/EurekaLabsAI](https://github.com/EurekaLabsAI)
+
+[陈巍：DeepSeek是否有国运级的创新？2万字解读与硬核分析DeepSeek V3/R1的架构](https://mp.weixin.qq.com/s/-yAjdqEn62Sz0bnzp9NEKA)
+
+[Sebastian Raschka：关于DeepSeek R1和推理模型，我有几点看法](https://mp.weixin.qq.com/s/LT22OjbJWKDzTuQeO4yvlg)
+
+[4500美元复刻DeepSeek神话，1.5B战胜o1-preview只用RL！训练细节全公开](https://mp.weixin.qq.com/s/82i7njl4j7nOoLm-igNHtw)
+
+[从想太多到想不透？DeepSeek-R1等长推理模型也存在「思考不足」问题](https://mp.weixin.qq.com/s/LbyHxCbtyYsOelwu6bzs2w)
+
+# R1前后的一些工作
+
+## S1
+
+[s1: Simple test-time scaling](https://arxiv.org/pdf/2501.19393)
+
+[https://github.com/simplescaling/s1](https://github.com/simplescaling/s1)
+
+[训练1000样本就能超越o1，李飞飞等人画出AI扩展新曲线](https://mp.weixin.qq.com/s/ax_CCrqpgrp5j2mLOssY4w)
+
+（从xhs上抄的）有几点思维误区：
+
+- s1超过的是o1-preview，没有超过o1甚至o1-mini，有很大区别
+- s1的效果不敌deepseek-r1 800k数据蒸馏的32B模型，差了不少，不是媲美
+- s1即使使用全量59k数据的效果也没有提高很多，甚至在math上还有下降，所以核心是数据质量
+- 1k数据是从59K数据中筛选出来的，不是直接有1K数据就可以
+- s1使用1k数据是节省了训练时间，但蒸馏的难点在蒸馏数据的构造上
+
+## LIMO
+
+[817样本激发7倍推理性能：上交大「少即是多」定律挑战RL Scaling范式](https://mp.weixin.qq.com/s/c62TWyepruRYf_1xHFKw4g)
+
+[LIMO: Less is More for Reasoning](https://arxiv.org/pdf/2502.03387)
+
+[https://github.com/GAIR-NLP/LIMO](https://github.com/GAIR-NLP/LIMO)
+
+## PRIME
+
+[挑战DeepSeek-R1-Zero！PRIME：仅10%数据刷新数学推理SOTA，隐式奖励技术颠覆RL训练](https://mp.weixin.qq.com/s/JXGCZxcluvc4YkBVq2mXSA)
+
+[Process Reinforcement through Implicit Rewards](https://arxiv.org/pdf/2502.01456v1)
+
+## TPO
+
+[推理时也能做偏好优化，无需额外重训练，来自上海AI Lab港中文等](https://mp.weixin.qq.com/s/OzAHrVUK57kY9kwVQql4eg)
+
+[Test-Time Preference Optimization: On-the-Fly Alignment via Iterative Textual Feedback](https://arxiv.org/abs/2501.12895)
+
+[https://github.com/yafuly/TPO](https://github.com/yafuly/TPO)
+
+## Huginn
+
+[推理模型新路线开源！与DeepSeek截然不同，抛弃思维链不用人类语言思考](https://mp.weixin.qq.com/s/HK6fjolKDcHG6MD_cVgifg)
+
+[Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach](https://arxiv.org/abs/2502.05171)
+
+[https://github.com/seal-rg/recurrent-pretraining](https://github.com/seal-rg/recurrent-pretraining)
+
+抛弃长思维链和人类的语言，直接在连续的高维潜空间用隐藏状态推理，可自适应地花费更多计算来思考更长时间。
+
+## Goedel-Prover
+
+[哥德尔-Prover超过DeepSeek-Prover，金驰、陈丹琦团队造出当前最强形式化推理模型](https://mp.weixin.qq.com/s/IfYQdMyZ7FBEJCXNCTpZtQ)
+
+[Goedel-Prover: A Frontier Model for Open-Source Automated Theorem Proving](https://arxiv.org/abs/2502.07640v1)
+
+[https://github.com/Goedel-LM/Goedel-Prover](https://github.com/Goedel-LM/Goedel-Prover)
+
+
+## Kimi K1.5
 
 [追平满血版o1的国产多模态模型终于来了！训练细节全部公开](https://mp.weixin.qq.com/s/FOAcS2jsTwNoZA2t1BJ66Q)
 
@@ -703,8 +876,42 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 [Kimi k1.5: Scaling Reinforcement Learning with LLMs](https://github.com/MoonshotAI/Kimi-k1.5/blob/main/Kimi_k1.5.pdf)，自己转存了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/Kimi_k1.5.pdf)
 
+## O1 Embedder
+
+[O1 Embedder: Let Retrievers Think Before Action](https://arxiv.org/abs/2502.07555)
+
+生成关于输入查询的thought，然后和question一起拼接，然后分别独自生成嵌入，然后池化聚合。也就是说，这个Embedding模型比之前的模型多了个thought的输出。
+
+微调，两个并行任务，一个是thought生成，一个是对比学习。
+
+微调数据怎么来，那就是生成后进行打分评价。首先，使用LLM生成初始思想，然后使用检索评分器来根据初始思想和目标文档之间的相关性评分，最终通过多数投票选择最佳thought。
+
+## 小结
+
+[从ReFT, Kimi K1.5到DeepSeek R1，聊聊Reasoning Model的精巧实现](https://mp.weixin.qq.com/s/yaBMe-XOlINOBg6_CL0vEw)
 
 [张俊林：MCST树搜索会是复刻OpenAI O1/O3的有效方法吗](https://mp.weixin.qq.com/s/_Uobawe6yf1eNzScNkySHA)
+
+
+# R1的复现
+
+## open-r1
+
+[https://github.com/huggingface/open-r1/](https://github.com/huggingface/open-r1/)
+
+[开源22万条DeepSeek R1的高质量数据！你也能复现DeepSeek了](https://mp.weixin.qq.com/s/yIEisGrfguRkpjRnHmNYCg)
+
+[https://huggingface.co/datasets/open-r1/OpenR1-Math-220k](https://huggingface.co/datasets/open-r1/OpenR1-Math-220k)
+
+## unlock-deepseek
+
+[DeepSeek R1 Zero中文复现教程来了！](https://mp.weixin.qq.com/s/Z7P61IV3n4XYeC0Et_fvwg)
+
+## unsloth
+
+## tinyzero
+
+
 
 # O3
 
@@ -716,9 +923,4 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 [Large Language Monkeys: Scaling Inference Compute with Repeated Sampling](https://arxiv.org/abs/2407.21787)
 
-## S1
-
-[s1: Simple test-time scaling](https://arxiv.org/pdf/2501.19393)
-
-[https://github.com/simplescaling/s1](https://github.com/simplescaling/s1)
 
