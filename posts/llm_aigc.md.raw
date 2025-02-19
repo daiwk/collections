@@ -10045,9 +10045,10 @@ XXX
 
 其中：
 
-+ $$\mathbb{D}_{K L}\left(\pi_\theta \| \pi_{r e f}\right)=\frac{\pi_{r e f}\left(o_i \mid q\right)}{\pi_\theta\left(o_i \mid q\right)}-\log \frac{\pi_{r e f}\left(o_i \mid q\right)}{\pi_\theta\left(o_i \mid q\right)}-1$$
++ $$\mathbb{D}_{K L}\left(\pi_\theta \| \pi_{r e f}\right)=\frac{\pi_{r e f}\left(o_i \mid q\right)}{\pi_\theta\left(o_i \mid q\right)}-\log \frac{\pi_{r e f}\left(o_i \mid q\right)}{\pi_\theta\left(o_i \mid q\right)}-1$$用于限制新策略不要离ref model太远
++ $$\operatorname{clip}\left(\frac{\pi_\theta\left(o_i \mid q\right)}{\pi_{\theta_{o l d}}\left(o_i \mid q\right)}, 1-\varepsilon, 1+\varepsilon\right)$$用于限制新旧策略的概率比例在1附近，即二者不要偏离太远
 + $$\varepsilon$$和$$\beta$$是超参
-+ $$A_i$$是advantage，通过每个group的reward计算得来：
++ $$A_i$$是advantage，通过每个group的reward计算得来，不像ppo需要借助value model：
 
 XXX
 A_i=\frac{r_i-\operatorname{mean}\left(\left\{r_1, r_2, \cdots, r_G\right\}\right)}{\operatorname{std}\left(\left\{r_1, r_2, \cdots, r_G\right\}\right)}
