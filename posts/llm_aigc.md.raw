@@ -10054,7 +10054,11 @@ XXX
 A_i=\frac{r_i-\operatorname{mean}\left(\left\{r_1, r_2, \cdots, r_G\right\}\right)}{\operatorname{std}\left(\left\{r_1, r_2, \cdots, r_G\right\}\right)}
 XXX
 
-+ 大基座是出现reasoning涌现能力的关键（qwen 32b 72b用同样r1-zero的数据训练，没法出现aha moment）
+整句话的advantage如何分配到token上？参考deepseekmath论文：各token共享
+
+![](../assets/grpo-advantage-token.png)
+
++ 大基座是出现reasoning涌现能力的关键（qwen 32bb用同样r1-zero的数据训练，没法出现aha moment）
 + GRPO可并行，可加速
 
 对比PPO & GRPO
@@ -10211,6 +10215,14 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 + helpfulness：仅关注最终的summary，保证评估强调的是response的有用性和相关性，而尽量少地干涉潜在的reasoning过程
 + harmlessness：同时评估reasoning过程和summary，尽量缓解在生成的过程中出现的风险、偏见和有害内容
 
+### 效果
+
++ 大部分都接近或者超过新版o1（r1-zero只能和早期o1相当），很多任务都比v3要好
++ 代码和o1差不太多，比v3提升很多，其中SWE  Verified这个工程类的不太行，因为目前训练语料里这类数据还比较少，下一版会优化
++ c-simpleQA（最后一行）上效果不如V3，因为有R1有safety的限制，导致模型会拒绝回答一些问题，如果去掉这个限制，准确率能达到70%
++ 在AlpacaEval2.0（写作）和ArenaHard(开放领域问答)上效果很好，产出的summary也很长，说明可能reasoning能力能产出长cot，对这类任务也有用
++ 数学上超越o1，大幅领先v3
+
 
 ## 蒸馏
 
@@ -10218,25 +10230,16 @@ with the answer. The reasoning process and answer are enclosed within <think> </
 
 [https://medium.com/@prabhudev.guntur/how-to-distill-deepseek-r1-a-comprehensive-guide-c8ba04e2c28c](https://medium.com/@prabhudev.guntur/how-to-distill-deepseek-r1-a-comprehensive-guide-c8ba04e2c28c)可以参考这个自己蒸馏一个
 
-## 效果
+### 效果
 
-R1：
++ 仅sft蒸馏的效果：模型越大效果越好，32b和70b的已经在大部分任务上超越o1-mini了
++ 直接拿qwen-32b做RL（第二行）：和QwQ-32b-preview（第一行）差不太多，但明显不如sft蒸馏（第3行）的模型效果
 
-- 大部分都接近或者超过o1，很多任务都比v3要好，
-- 在最后一个数据集(c-simpleQA)上，说是因为有R1有safety的限制，导致模型会拒绝回答一些问题，如果去掉这个限制，准确率能达到70%
-- 在AlpacaEval2.0（写作）和ArenaHard(开放领域问答)上效果很好，产出的summary也很长，说明可能reasoning能力对这类任务也有用
-- 数学上超越o1，大幅领先v3
-- 代码和v3差不太多，SWE Verified这个工程类的不太行，未来可以优化，因为目前训练语料里这种还比较少
+最终结论：
 
-蒸馏：
++ 把大模型蒸馏到小模型可以有很好的效果，但对小模型做RL性价比不高
++ 有更强大的模型和更大规模的RL，才能更好地发挥蒸馏的作用，让小模型变得更强
 
-+ 仅sft的效果，模型越大效果越好，32b和70b的已经在大部分任务上超越o1-mini了
-+ r1-zero-qwen-32b：直接拿qwen-32b做RL，和QwQ-32b-preview差不太多，但明显不如sft蒸馏的模型效果
-
-结论：
-
-1. 把大模型蒸馏到小模型可以有很好的效果，但对小模型做RL性价比并不好
-2. 有更强大的模型和更大规模的RL，才能更好地发挥蒸馏的作用，让小模型变得更强
 
 ## 失败的尝试
 
