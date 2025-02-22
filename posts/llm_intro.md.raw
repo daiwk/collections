@@ -2878,6 +2878,8 @@ Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 
 grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发展猛如火箭](https://mp.weixin.qq.com/s/nBaY2srcMSzvEoecOyh1Cg)
 
+[目前对Grok 3分析最为透彻的一篇文章](https://mp.weixin.qq.com/s/h5cFZnU4T7K7YscMYc61pQ)
+
 ### Gecko
 
 [谷歌DeepMind发布Gecko：专攻检索，与大7倍模型相抗衡](https://mp.weixin.qq.com/s/5e_Py_Xm0RsmP1YMcikpaQ)
@@ -3123,6 +3125,20 @@ Qwen2.5-Max同DeepSeek V3一样是超大规模的MoE模型，
 [DeepSeek绕开CUDA垄断，V3论文细节再挖出！英伟达护城河不存在了？](https://mp.weixin.qq.com/s/t4VTGX7fMTFpur8F91fvjQ)
 
 直接写PTX（并行线程执行），PTX是专门为其GPU设计的中间指令集架构，位于高级GPU编程语言（如CUDA C/C++或其他语言前端）和低级机器代码（流处理汇编或SASS）之间。PTX是一种接近底层的指令集架构，将GPU呈现为数据并行计算设备，因此能够实现寄存器分配、线程/线程束级别调整等细粒度优化，这些是CUDA C/C++等语言无法实现的
+
+### NSA
+
+[刚刚！DeepSeek梁文锋亲自挂名，公开新注意力架构NSA](https://mp.weixin.qq.com/s/SlhNdGNFpGlicIkMUE21og)
+
+[Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention](https://arxiv.org/abs/2502.11089)
+
+### MOBA
+
+[撞车DeepSeek NSA，Kimi杨植麟署名的新注意力架构MoBA发布，代码也公开](https://mp.weixin.qq.com/s/okrYBqSRxUrXQiHjo-nlYA)
+
+[MoBA: Mixture of Block Attention for Long-Context LLMs](https://github.com/MoonshotAI/MoBA/blob/master/MoBA_Tech_Report.pdf)
+
+[https://github.com/MoonshotAI/MoBA](https://github.com/MoonshotAI/MoBA)
 
 ### FALCON 2
 

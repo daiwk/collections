@@ -4051,6 +4051,8 @@ Grok-1.5V: [https://x.ai/blog/grok-1.5v](https://x.ai/blog/grok-1.5v)
 
 grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发展猛如火箭](https://mp.weixin.qq.com/s/nBaY2srcMSzvEoecOyh1Cg)
 
+[目前对Grok 3分析最为透彻的一篇文章](https://mp.weixin.qq.com/s/h5cFZnU4T7K7YscMYc61pQ)
+
 ### Gecko
 
 [谷歌DeepMind发布Gecko：专攻检索，与大7倍模型相抗衡](https://mp.weixin.qq.com/s/5e_Py_Xm0RsmP1YMcikpaQ)
@@ -4296,6 +4298,20 @@ Qwen2.5-Max同DeepSeek V3一样是超大规模的MoE模型，
 [DeepSeek绕开CUDA垄断，V3论文细节再挖出！英伟达护城河不存在了？](https://mp.weixin.qq.com/s/t4VTGX7fMTFpur8F91fvjQ)
 
 直接写PTX（并行线程执行），PTX是专门为其GPU设计的中间指令集架构，位于高级GPU编程语言（如CUDA C/C++或其他语言前端）和低级机器代码（流处理汇编或SASS）之间。PTX是一种接近底层的指令集架构，将GPU呈现为数据并行计算设备，因此能够实现寄存器分配、线程/线程束级别调整等细粒度优化，这些是CUDA C/C++等语言无法实现的
+
+### NSA
+
+[刚刚！DeepSeek梁文锋亲自挂名，公开新注意力架构NSA](https://mp.weixin.qq.com/s/SlhNdGNFpGlicIkMUE21og)
+
+[Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention](https://arxiv.org/abs/2502.11089)
+
+### MOBA
+
+[撞车DeepSeek NSA，Kimi杨植麟署名的新注意力架构MoBA发布，代码也公开](https://mp.weixin.qq.com/s/okrYBqSRxUrXQiHjo-nlYA)
+
+[MoBA: Mixture of Block Attention for Long-Context LLMs](https://github.com/MoonshotAI/MoBA/blob/master/MoBA_Tech_Report.pdf)
+
+[https://github.com/MoonshotAI/MoBA](https://github.com/MoonshotAI/MoBA)
 
 ### FALCON 2
 
@@ -7462,6 +7478,16 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [https://github.com/bytedance/VideoWorld](https://github.com/bytedance/VideoWorld)
 
+## Sky-Reels
+
+[中国首个AI短剧模型开源，4090秒生好莱坞级大片！人人拍短剧时代来临](https://mp.weixin.qq.com/s/iBIITjzltWjEeLIoADbFKw)
+
+[SkyReels-A1: Expressive Portrait Animation in Video Diffusion Transformers](https://skyworkai.github.io/skyreels-a1.github.io/report.pdf)
+
+[https://github.com/SkyworkAI/SkyReels-V1](https://github.com/SkyworkAI/SkyReels-V1)
+
+[https://github.com/SkyworkAI/SkyReels-A1](https://github.com/SkyworkAI/SkyReels-A1)
+
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)
@@ -10501,6 +10527,20 @@ prompt注意点：
 
 微调数据怎么来，那就是生成后进行打分评价。首先，使用LLM生成初始思想，然后使用检索评分器来根据初始思想和目标文档之间的相关性评分，最终通过多数投票选择最佳thought。
 
+## bridge
+
+[From Few to Many: Self-Improving Many-Shot Reasoners Through Iterative Optimization and Generation](https://arxiv.org/pdf/2502.00330)
+
+问题背景：传统的LLM在处理长文本时效率低下，尤其是在需要进行多步推理的任务中。近年来，随着长上下文LLM的发展，出现了多示例学习（many-shot ICL）的范式，即通过更多的示例来提升模型性能。然而，这种范式的效果和影响因素仍需进一步研究。
+
+研究动机：为了提升多示例学习的效率，分析了影响多示例学习效果的关键因素，并发现**仅少数关键示例**就能显著提升性能。基于这一发现，团队提出了一种新的算法，通过**优化选择关键示例**和**生成新的示例**来进一步提升模型的推理能力。
+
+bridge算法结合了优化和生成两个步骤：
+
++ 在优化步骤中，使用贝叶斯优化（Bayesian optimization）来发现关键示例；
++ 在生成步骤中，利用这些关键示例作为示范，重新生成更多的示例，从而在多示例学习中提高模型性能。
+
+
 ## 小结
 
 [从ReFT, Kimi K1.5到DeepSeek R1，聊聊Reasoning Model的精巧实现](https://mp.weixin.qq.com/s/yaBMe-XOlINOBg6_CL0vEw)
@@ -10508,7 +10548,7 @@ prompt注意点：
 [张俊林：MCST树搜索会是复刻OpenAI O1/O3的有效方法吗](https://mp.weixin.qq.com/s/_Uobawe6yf1eNzScNkySHA)
 
 
-# R1的复现
+# R1的复现与部署
 
 ## open-r1
 
@@ -10525,6 +10565,60 @@ prompt注意点：
 ## unsloth
 
 [https://unsloth.ai/blog/deepseekr1-dynamic](https://unsloth.ai/blog/deepseekr1-dynamic)
+
+
+## Logic-RL与reinforce-lite
+
+[10美元成功复现DeepSeek顿悟时刻，3B模型爆发超强推理！微软论文反驳涌现](https://mp.weixin.qq.com/s/xH86_m71lZnSVMM7q_jzXw)
+
+### reinforce-lite
+
+[https://medium.com/@rjusnba/overnight-end-to-end-rl-training-a-3b-model-on-a-grade-school-math-dataset-leads-to-reasoning-df61410c04c6](https://medium.com/@rjusnba/overnight-end-to-end-rl-training-a-3b-model-on-a-grade-school-math-dataset-leads-to-reasoning-df61410c04c6)
+
+### Logic-RL
+
+[Logic-RL: Unleashing LLM Reasoning with Rule-Based Reinforcement Learning](https://arxiv.org/pdf/2502.14768)
+
+
+# R1的微调
+
+## ColossalAI
+
+[DeepSeek V3+R1满血微调工具上线！一键启动，硬件要求降10倍](https://mp.weixin.qq.com/s/ywJAbcjXPef1RazHj1HIjg)
+
+[https://github.com/hpcaitech/ColossalAI](https://github.com/hpcaitech/ColossalAI)
+
+### lora sft满血deepseek V3/R1
+
++ 数据：[https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/lora_sft_data.jsonl](https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/lora_sft_data.jsonl)
++ fp8权重转bf16：[https://github.com/deepseek-ai/DeepSeek-V3/blob/main/inference/fp8_cast_bf16.py](https://github.com/deepseek-ai/DeepSeek-V3/blob/main/inference/fp8_cast_bf16.py)
++ 脚本：[https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/lora_finetune.py](https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/lora_finetune.py)
+
+通过使用 LoRA 等优化，示例命令已将 SFT DeepSeek V3/R1 671B 最低硬件要求降低近 10 倍，可使用 32 个 Ascend 910B NPU 64GB（使用 ep=8,pp=4）或 24 个 H100/H800 GPU（使用 ep=8,pp=3）。如果你通过 --zero_cpu_offload 启用 CPU offload，硬件要求可以进一步降低，但会损失一定的训练速度。
+
+```shell
+colossalai run --hostfile path-to-host-file --nprocpernode 8 \
+  lorafinetune.py --pretrained path-to-DeepSeek-R1-bf16 \
+  --dataset path-to-dataset.jsonl --plugin moe \
+  --lr 2e-5 --maxlength 256 -g --ep 8 --pp 3 \
+  --batchsize 24 --lorarank 8 --loraalpha 16 \
+  --numepochs 2 --warmupsteps 8 \
+  --tensorboarddir logs --save_dir DeepSeek-R1-bf16-lora
+```
+
+也可以使用上述脚本，将并行度高效扩展至数百及数千卡，快速完成 DeepSeek V3/R1 671B 全参微调或并行加速。
+
+### 用强化学习微调蒸馏版DeepSeek
+
+奖励设计：
+
+1. 奖励 = 0，如果格式是错误的；
+2. 奖励 = 1， 如果格式是正确的但是结果是错误的；
+3. 奖励 = 10，如果格式与结果都是正确的。
+
++ 模板和设定：[https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/conversation_template/Qwen_Qwen2.5-3B.json](https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/conversation_template/Qwen_Qwen2.5-3B.json)
++ 启动脚本：[https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/train_grpo.sh](https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/train_grpo.sh)
+
 
 # OpenAI的工作
 
