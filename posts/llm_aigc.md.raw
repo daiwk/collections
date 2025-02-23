@@ -4303,6 +4303,8 @@ Qwen2.5-Max同DeepSeek V3一样是超大规模的MoE模型，
 
 [刚刚！DeepSeek梁文锋亲自挂名，公开新注意力架构NSA](https://mp.weixin.qq.com/s/SlhNdGNFpGlicIkMUE21og)
 
+[【手撕NSA】DeepSeek新作-原生稀疏注意力-超长文(附代码)](https://mp.weixin.qq.com/s/-sbxKky1qWBVYzuyNMg5jw)
+
 [Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention](https://arxiv.org/abs/2502.11089)
 
 ### MOBA
@@ -4460,6 +4462,11 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
 
+# 优化器
+
+## Muon
+
+[月之暗面开源改进版Muon优化器，算力需求比AdamW锐减48%，DeepSeek也适用](https://mp.weixin.qq.com/s/E65ULmjlK7Lv81dqvAubcQ)
 # 训练框架
 
 mfu(Model Flops Utilization)模型算力利用率是分布式训练效率的优化目标。
@@ -7573,11 +7580,11 @@ CRM(conventional recommendation models)
 &nbsp;
 
 
+
+
 #### 统一的跨域推荐
 
 &nbsp;
-
-
 
 
 ### where-LLM 用于打分函数
@@ -10574,6 +10581,13 @@ bridge算法结合了优化和生成两个步骤：
 
 [DeepSeek R1 Zero中文复现教程来了！](https://mp.weixin.qq.com/s/Z7P61IV3n4XYeC0Et_fvwg)
 
+## open-reasoner-zero
+
+[1/30训练步骤复刻DeepSeek-R1-Zero，沈向洋姜大昕张祥雨等开源推理模型RL训练方法](https://mp.weixin.qq.com/s/vkEr6oa1JQ_ntzEYJ115yg)
+
+[https://github.com/Open-Reasoner-Zero/Open-Reasoner-Zero/](https://github.com/Open-Reasoner-Zero/Open-Reasoner-Zero/)
+
+
 ## unsloth
 
 [https://unsloth.ai/blog/deepseekr1-dynamic](https://unsloth.ai/blog/deepseekr1-dynamic)
@@ -10743,6 +10757,12 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 
 # LLM常见难题
+
+## LLM as a judge
+
+[A Survey on LLM-as-a-Judge](https://arxiv.org/pdf/2411.15594)
+
+[Learning to Plan & Reason for Evaluation with Thinking-LLM-as-a-Judge](https://arxiv.org/pdf/2501.18099)，meta的2025年1月的
 
 ## 重复生成
 
