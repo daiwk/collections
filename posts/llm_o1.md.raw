@@ -1120,7 +1120,7 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 + 启动脚本：[https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/train_grpo.sh](https://github.com/hpcaitech/ColossalAI/blob/main/applications/ColossalChat/examples/training_scripts/train_grpo.sh)
 
 
-# OpenAI的工作
+# OpenAI
 
 [OpenAI：强化学习确实可显著提高LLM性能，DeepSeek R1、Kimi k1.5发现o1的秘密](https://mp.weixin.qq.com/s/jh5L5MV6jU8W6coFH7jsAg)
 
@@ -1129,4 +1129,29 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 [刚刚，OpenAI放出最后大惊喜o3，高计算模式每任务花费数千美元](https://mp.weixin.qq.com/s/KmxARRFsjXiLTF8HScsmOQ)
 
 
+# Qwen
+
+## QwQ-max-preview
+
+[阿里旗舰推理模型硬刚DeepSeek！官宣独立APP，发布公告AI亲自写](https://mp.weixin.qq.com/s/UjwuAKaRhKpQ-9eA2pSh8g)
+
+[https://chat.qwen.ai](https://chat.qwen.ai)
+
+# Claude
+
+## Claude 3.7 Sonnet
+
+[全球首个混合推理模型：Claude 3.7 Sonnet来袭，真实编码力压一切对手](https://mp.weixin.qq.com/s/RzdrxKbHKKqtN-FvbOQsZw)
+
++ 既是普通的 LLM，又是推理模型。你可以选择何时希望模型正常回答，何时希望它在回答之前思考更长时间。在标准模式下，Claude 3.7 Sonnet 是前代 Claude 3.5 Sonnet 的升级版。在扩展思维模式下，它会在回答之前进行自我反思，从而提高其在数学、物理、指令遵循、编码和许多其他任务上的表现。Anthropic 发现，两种模式下，模型的提示词工作方式类似。
++ 当通过 API 使用 Claude 3.7 Sonnet 时，用户还可以控制思考预算。你可以告诉 Claude 思考不超过 N 个 token。对于任何 N 值，其输出限制为 128K 个 token。这允许用户在速度（和成本）和答案质量之间进行权衡。
++ 第三，在开发自家的推理模型时，Anthropic 对数学和计算机科学竞赛问题的优化较少，而是将重点转向更能反映企业实际使用 LLM 方式的现实任务。
+
+# 推理模型总结
+
+[从o1-mini到DeepSeek-R1，万字长文带你读懂推理模型的历史与技术](https://mp.weixin.qq.com/s/t19D5_2nsbIVI_eemLtx-Q)
+
+[https://cameronrwolfe.substack.com/p/demystifying-reasoning-models](https://cameronrwolfe.substack.com/p/demystifying-reasoning-models)
+
+[Claude 3.7 Sonnet System Card](https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf)
 
