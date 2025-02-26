@@ -984,7 +984,8 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
   --size 1280*720 \
   --ckpt_dir ./Wan2.1-T2V-14B \
   --dit_fsdp --t5_fsdp --ulysses_size 8 \
-  --prompt "一只猫在大街上跑"
+  --prompt "一只猫在大街上跑" \
+  --save_file "demo.mp4"
 ```
 
 ## Tarsier2
