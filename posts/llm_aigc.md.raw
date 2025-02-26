@@ -5358,7 +5358,15 @@ prompt-lookup decoding：[https://github.com/apoorvumang/prompt-lookup-decoding]
 
 [DeepSeek开源第二弹，为MoE和EP量身定制的通信库！暂和英伟达显卡绑定](https://mp.weixin.qq.com/s/2ecxmq9zbwFlzOalprok0Q)
 
-[https://github.com/deepseek-ai/DeepEP](https://github.com/deepseek-ai/DeepEP)# 微调
+[https://github.com/deepseek-ai/DeepEP](https://github.com/deepseek-ai/DeepEP)
+
+## DeepGEMM
+
+[DeepSeek-R2曝5月前上线！第三弹DeepGEMM 300行代码暴击专家优化内核](https://mp.weixin.qq.com/s/4aKxWIpb2-9DZKrSSAYoWg)
+
+[https://github.com/deepseek-ai/DeepGEMM](https://github.com/deepseek-ai/DeepGEMM)
+
+# 微调
 
 + 指令微调（instruct tuning）：增强/解锁LLM的能力，
 + 对齐微调（alignment tuning）：将LLM的行为与为类的价值观或偏好对齐。
@@ -7483,6 +7491,42 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 [通义万相视频生成重磅升级，成功登顶VBench，运镜、质感直达专业级](https://mp.weixin.qq.com/s/YFnftO_sKQ_d6AM5J-W8YQ)
 
 [https://tongyi.aliyun.com/wanxiang/](https://tongyi.aliyun.com/wanxiang/)
+
+[开源的风吹到视频生成：阿里开源登顶VBench的万相大模型，一手实测来了！](https://mp.weixin.qq.com/s/SRj06E-VCSpCiQZqE0gpHA)
+
+[万相，开源！](https://mp.weixin.qq.com/s/l9EhkiwgsIL2aYfE0JcR4A)
+
+[https://github.com/Wan-Video](https://github.com/Wan-Video)
+
+[https://huggingface.co/Wan-AI](https://huggingface.co/Wan-AI)
+
+完整示例代码
+
+```shell
+export https_proxy="xxx"
+
+git clone https://github.com/Wan-Video/Wan2.1.git
+cd Wan2.1
+
+pip3 install -r requirements.txt
+
+#pip3 install "huggingface_hub[cli]"
+#huggingface-cli download Wan-AI/Wan2.1-T2V-14B --local-dir ./Wan2.1-T2V-14B
+
+hdfs dfs -get /xx/xxx/Wan2.1-T2V-14B . # 如果已经下完了
+
+sudo apt update
+sudo apt install libgl1
+
+pip3 install --upgrade flash-attn
+
+pip3 install "xfuser>=0.4.1"
+torchrun --nproc_per_node=8 generate.py --task t2v-14B \
+  --size 1280*720 \
+  --ckpt_dir ./Wan2.1-T2V-14B \
+  --dit_fsdp --t5_fsdp --ulysses_size 8 \
+  --prompt "一只猫在大街上跑"
+```
 
 ## Tarsier2
 
