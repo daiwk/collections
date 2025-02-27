@@ -1079,6 +1079,20 @@ bridge算法结合了优化和生成两个步骤：
 
 [https://unsloth.ai/blog/r1-reasoning](https://unsloth.ai/blog/r1-reasoning)
 
+### vllm跑1.58bit
+
+[https://github.com/vllm-project/vllm/pull/13167](https://github.com/vllm-project/vllm/pull/13167)
+
+从源码安装参考[https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html#build-wheel-from-source](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html#build-wheel-from-source)
+
+
+```shell
+pip3 install setuptools_scm ## 不知道是不是需要的
+git clone https://github.com/vllm-project/vllm.git
+cd vllm
+VLLM_USE_PRECOMPILED=1 pip3 install --editable .
+```
+
 
 ## Logic-RL与reinforce-lite
 
