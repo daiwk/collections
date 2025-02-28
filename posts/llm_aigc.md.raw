@@ -3639,6 +3639,10 @@ Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一�
 
 [Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone](https://arxiv.org/pdf/2404.14219)
 
+### phi-4
+
+[微软首个多模态Phi-4问世，56亿参数秒杀GPT-4o！LoRA华人大佬带队](https://mp.weixin.qq.com/s/UQK5b2-ZobnQJwr73p5U8Q)
+
 ## PaLM系列
 
 ### PaLM
@@ -5385,6 +5389,15 @@ prompt-lookup decoding：[https://github.com/apoorvumang/prompt-lookup-decoding]
 ## profile-data
 
 [https://github.com/deepseek-ai/profile-data](https://github.com/deepseek-ai/profile-data)
+
+## 3fs
+
+[DeepSeek开源周最后一天：让数据处理「从自行车升级到高铁](https://mp.weixin.qq.com/s/p8KGnYIqmCkXPF4jjRiKjQ)
+
+[https://github.com/deepseek-ai/3FS](https://github.com/deepseek-ai/3FS)
+
+[https://github.com/deepseek-ai/smallpond](https://github.com/deepseek-ai/smallpond)
+
 # 微调
 
 + 指令微调（instruct tuning）：增强/解锁LLM的能力，
@@ -10694,6 +10707,63 @@ pip3 install setuptools_scm ## 不知道是不是需要的
 git clone https://github.com/vllm-project/vllm.git
 cd vllm
 VLLM_USE_PRECOMPILED=1 pip3 install --editable .
+
+cp -r /usr/local/lib/python3.10/dist-packages/vllm /usr/local/lib/python3.10/dist-packages/vllm.bk
+rm -rf /usr/local/lib/python3.10/dist-packages/vllm
+cp -r ./vllm /usr/local/lib/python3.10/dist-packages
+
+```
+
++ 去[https://huggingface.co/deepseek-ai/DeepSeek-R1/tree/main](https://huggingface.co/deepseek-ai/DeepSeek-R1/tree/main)把各个json文件下载下来，还有configuration_deepseek.py和modeling_deepseek.py也要下载，把json里的torch_dtype里的bfloat16改成float16
++ 去[https://huggingface.co/unsloth/DeepSeek-R1-GGUF/tree/main](https://huggingface.co/unsloth/DeepSeek-R1-GGUF/tree/main)把config.json下载下来
+
+上面的那些文件都放到/xxx/目录下，注意，目前只能用Q2 Q4那种量化，1.58bit那种动态量化不支持
+
+```shell
+cd /xxx/
+# merge成一个gguf
+llama.cpp/llama-gguf-split --merge ./DeepSeek-R1-xx/DeepSeek-R1-xx-00001-of-00003.gguf ./merge.gguf
+```
+
+代码：
+
+```python
+from vllm import LLM, SamplingParams
+llm = LLM(model="/xxx/merge.gguf",
+          tokenizer="/xxx",
+          hf_config_path="/xxx",
+          enforce_eager=True, tensor_parallel_size=8, trust_remote_code=True,
+          distributed_executor_backend="mp",
+          max_model_len=10000)
+sampling_params = SamplingParams(temperature=0.5, max_tokens=2000)
+
+
+def print_outputs(outputs):
+    for output in outputs:
+        prompt = output.prompt
+        generated_text = output.outputs[0].text
+        print(f"Prompt: {prompt!r}, Generated text\n: {generated_text}")
+    print("-" * 80)
+conversation = [
+    {
+        "role": "system",
+        "content": "You are a helpful assistant"
+    },
+    {
+        "role": "user",
+        "content": "Why did the Roman Empire fall?",
+    },
+]
+outputs = llm.chat(conversation,
+                   sampling_params=sampling_params,
+                   use_tqdm=False)
+print_outputs(outputs)
+```
+
+运行：
+
+```shell
+VLLM_WORKER_MULTIPROC_METHOD=spawn python3 vllm_deepseek.py 
 ```
 
 
