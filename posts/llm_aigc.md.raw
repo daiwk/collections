@@ -211,15 +211,15 @@ GPU的显存分成两部分：
 
 假设$$b=1,s=4096,d=d_k=2048$$，以计算Q和K的相似度为例，对比一下训练和预测时的**计算耗时**和**访存耗时**
 
-+ **训练时**：$$M=4096,N=2048,K=4096$$==>**计算是瓶颈**
++ **训练时**：$$M=4096,K=2048,N=4096$$==>**计算是瓶颈**
     + FLOPS：$$2\times b\times s^2\times d_k=2\times 1\times 4096^2\times 2048=68719476736$$
     + 计算耗时：$$FLOPS/max\_FLOPS=68719476736/(312\times 10^{12})=0.00022s=220\times 10^{-6}s=220us$$
-    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (4096\times 2048+4096\times 4096+4096\times 2048)/(2\times 10^{12})=3.35544\times 10^{-5}s=33.544\times 10^{-6}=33.5544us$$
+    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (4096\times 4096+4096\times 2048+2048\times 4096)/(2\times 10^{12})=3.35544\times 10^{-5}s=33.544\times 10^{-6}=33.5544us$$
 
-+ **预测时**：$$M=1,N=2048,K=4096$$==>**访存是瓶颈**
++ **预测时**：$$M=1,K=2048,N=4096$$==>**访存是瓶颈**
     + FLOPS：$$2\times b\times 1\times d_k\times s=2\times 1\times 2048\times 4096=16777216$$ 
     + 计算耗时：$$FLOPS/max\_FLOPS=16777216/(312\times 10^{12})=5.38\times 10^{-8}s=0.0538\times 10^{-6}s=0.0538us$$
-    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (1\times 2048+1\times 4096+4096\times 2048)/(2\times 10^{12})=8.3948\times 10^{-6}s=8.3948us$$
+    + 访存耗时：$$(MN+MK+KN)/memory\_bandwidth=2\times (1\times 4096+1\times 2048+2048\times 4096)/(2\times 10^{12})=8.3948\times 10^{-6}s=8.3948us$$
 
 一些常见的名词：
 
@@ -3642,6 +3642,8 @@ Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一�
 ### phi-4
 
 [微软首个多模态Phi-4问世，56亿参数秒杀GPT-4o！LoRA华人大佬带队](https://mp.weixin.qq.com/s/UQK5b2-ZobnQJwr73p5U8Q)
+
+[https://huggingface.co/microsoft/Phi-4-multimodal-instruct](https://huggingface.co/microsoft/Phi-4-multimodal-instruct)
 
 ## PaLM系列
 
@@ -10694,77 +10696,6 @@ bridge算法结合了优化和生成两个步骤：
 ### 让小模型有reasoning能力
 
 [https://unsloth.ai/blog/r1-reasoning](https://unsloth.ai/blog/r1-reasoning)
-
-### vllm跑1.58bit
-
-[https://github.com/vllm-project/vllm/pull/13167](https://github.com/vllm-project/vllm/pull/13167)
-
-从源码安装参考[https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html#build-wheel-from-source](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html#build-wheel-from-source)
-
-
-```shell
-pip3 install setuptools_scm ## 不知道是不是需要的
-git clone https://github.com/vllm-project/vllm.git
-cd vllm
-VLLM_USE_PRECOMPILED=1 pip3 install --editable .
-
-cp -r /usr/local/lib/python3.10/dist-packages/vllm /usr/local/lib/python3.10/dist-packages/vllm.bk
-rm -rf /usr/local/lib/python3.10/dist-packages/vllm
-cp -r ./vllm /usr/local/lib/python3.10/dist-packages
-
-```
-
-+ 去[https://huggingface.co/deepseek-ai/DeepSeek-R1/tree/main](https://huggingface.co/deepseek-ai/DeepSeek-R1/tree/main)把各个json文件下载下来，还有configuration_deepseek.py和modeling_deepseek.py也要下载，把json里的torch_dtype里的bfloat16改成float16
-+ 去[https://huggingface.co/unsloth/DeepSeek-R1-GGUF/tree/main](https://huggingface.co/unsloth/DeepSeek-R1-GGUF/tree/main)把config.json下载下来
-
-上面的那些文件都放到/xxx/目录下，注意，目前只能用Q2 Q4那种量化，1.58bit那种动态量化不支持
-
-```shell
-cd /xxx/
-# merge成一个gguf
-llama.cpp/llama-gguf-split --merge ./DeepSeek-R1-xx/DeepSeek-R1-xx-00001-of-00003.gguf ./merge.gguf
-```
-
-代码：
-
-```python
-from vllm import LLM, SamplingParams
-llm = LLM(model="/xxx/merge.gguf",
-          tokenizer="/xxx",
-          hf_config_path="/xxx",
-          enforce_eager=True, tensor_parallel_size=8, trust_remote_code=True,
-          distributed_executor_backend="mp",
-          max_model_len=10000)
-sampling_params = SamplingParams(temperature=0.5, max_tokens=2000)
-
-
-def print_outputs(outputs):
-    for output in outputs:
-        prompt = output.prompt
-        generated_text = output.outputs[0].text
-        print(f"Prompt: {prompt!r}, Generated text\n: {generated_text}")
-    print("-" * 80)
-conversation = [
-    {
-        "role": "system",
-        "content": "You are a helpful assistant"
-    },
-    {
-        "role": "user",
-        "content": "Why did the Roman Empire fall?",
-    },
-]
-outputs = llm.chat(conversation,
-                   sampling_params=sampling_params,
-                   use_tqdm=False)
-print_outputs(outputs)
-```
-
-运行：
-
-```shell
-VLLM_WORKER_MULTIPROC_METHOD=spawn python3 vllm_deepseek.py 
-```
 
 
 ## Logic-RL与reinforce-lite
