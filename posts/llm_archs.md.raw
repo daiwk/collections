@@ -918,5 +918,102 @@ prompt-lookup decoding：[https://github.com/apoorvumang/prompt-lookup-decoding]
 
 [https://github.com/deepseek-ai/3FS](https://github.com/deepseek-ai/3FS)
 
-[https://github.com/deepseek-ai/smallpond](https://github.com/deepseek-ai/smallpond)
+在3fs上的数据处理框架：[https://github.com/deepseek-ai/smallpond](https://github.com/deepseek-ai/smallpond)
 
+## 推理系统
+
+[https://zhuanlan.zhihu.com/p/27181462601](https://zhuanlan.zhihu.com/p/27181462601)
+
+中文版：[https://github.com/deepseek-ai/open-infra-index](https://github.com/deepseek-ai/open-infra-index)
+
+对应英文版：[https://github.com/deepseek-ai/open-infra-index/blob/main/202502OpenSourceWeek/day_6_one_more_thing_deepseekV3R1_inference_system_overview.md](https://github.com/deepseek-ai/open-infra-index/blob/main/202502OpenSourceWeek/day_6_one_more_thing_deepseekV3R1_inference_system_overview.md)
+
+
+优化目标：更大的**吞吐**，更低的**延迟**。
+方案：大规模跨节点专家并行(Expert Parallelism, EP)
+
+EP好处：
+
++ 增加batchsize，提高gpu矩阵乘法效率，**提升吞吐**
++ 专家分散在不同GPU，每个GPU只计算少量专家，访存更少，**降低延迟**
+
+EP的复杂性：
+
++ 引入了跨节点传输，需要设计合理计算流程使**计算**和**传输**可以**同步进行**
++ 因为多节点，需要**DP**（数据并行），不同DP间要**负载均衡**
+
+### 大规模跨节点专家并行
+
+V3/R1的结构：从第4层开始是MOE，每层有**1个共享**专家和**256个路由**专家，每次激活8个路由专家，即**8 in 256**，稀疏度很高，因此需要用**更大的overall batchsize**，才能给每个专家提供足够的专家batchsize
+
++ Prefill：
+    + 路由专家EP32
+    + MLA和共享专家DP32
+    + 一个部署单元是4节点（32卡），每张卡包括：
+        + 9个路由专家（共9*32=288个专家），其中：
+            + 1个冗余专家，共1*32=32个
+            + 8个路由专家，共8*32=256个
+        + 1个共享专家，共1*32=32个
++ Decode：
+    + 路由专家EP144
+    + MLA和共享专家DP144，
+    + 一个部署单元是18节点(18*8=144卡)，每张卡包括：
+        + 2个路由专家，共2*144=288
+            + 总共32个冗余专家
+            + 总共288-32=256个正常的路由专家 
+        + 1个共享专家，共1*144=144个
+
+### 计算通信重叠
+
+多机多卡的EP会引入较大的通信开销，可以用双batch重叠来掩盖通信开小，提升整体吞吐：
+
++ **prefill阶段**：2个batch的计算和通信交错进行，一个batch计算时可以掩盖另一个batch的通信开销。即attn->dispatch->mlp->shared/combine这4步（这里是shared和combine并行）
+
+![](../assets/overlap-prefill.png)
+
++ **decode阶段**：不同阶段的执行时间有差别， attention部分拆成了两个stage（图中的attn-0（attn前的一些proj操作等）和attn-1（核心的attn计算等）），共5个stage的流水线（attn0->attn1->dispatch/shared->mlp->combine）来实现计算和通信的重叠（这里是shared和dispatch并行）。
+
+![](../assets/overlap-decode.png)
+
+细节可以参考[https://github.com/deepseek-ai/profile-data](https://github.com/deepseek-ai/profile-data)
+
+### 尽可能地负载均衡
+
+尽可能为每个GPU分配均衡的计算负载+通信负载
+
++ prefill load balancer：
+    + 问题：不同DP实例上的请求数、长度不同，导致core-attention的计算量、dispatch发送量不同
+    + 目标：
+        + 各GPU的**计算量**尽量相同==>core-attention计算负载均衡
+        + **输入的token数量**尽量相同==>dispatch发送量负载均衡，避免部分GPU处理时间过长
++ decode load balancer：
+    + 问题：不同DP实例上的请求数量、长度不同，导致core-attention计算量（与 KVCache 占用量相关）、dispatch发送量不同
+    + 目标：
+        + 各GPU的**KVCache占用量**尽量相同==>core-attention计算负载均衡
+        + **请求数量**尽量相同==>dispatch发送量负载均衡
++ expert-parallel load balancer：
+    + 问题：对于给定MoE模型，存在一些**天然的高负载专家**，导致不同GPU的专家计算负载不均衡
+    + 目标：每个GPU上的**专家计算量均衡**==>最小化所有GPU的dispatch接收量(即MOE的输入)的最大值
+
+### 架构图
+
+![](../assets/deepseek-infer.jpg)
+
+prefill和decode拆了2个service，并且每个前面有负载均衡，内部有EP的负载均衡
+
+### 线上效果
+
+H800，精度和训练一致：
+
++ 矩阵计算和dispatch传输用fp8
++ core-attn计算和combine用bf16
+
+白天用所有节点部署服务，晚上减少节点，峰值278节点（每个节点8卡H800，共278*8=2224卡，前面提到了prefill要32卡，decode要144卡，其实就是32x+14y=2224），平均占用226.75个节点，每张卡2美金1小时，那就是2 * 226.75 * 8 * 24 = 87072美金/天
+
++ 输入总token数608B，有342B命中kvcache缓存，命中率56.3%
++ 输出总token数168B，平均输出速度20~22tps(tokens per second)，这里指的应该是**单请求**的生成速度，平均每输出一个token的KVCache长度是4989。
++ 平均每台H800(8卡)的吞吐量：
+    + prefill任务：输入吞吐约 73.7k tokens/s（含缓存命中）。
+        + 推测：每秒每8卡输入的token数是608000000000 / 226.75/86400=31k，好像对不太上这个73.7k，可能猜测：缓存那部分非常快，非缓存很慢，而这31k是假设全天流量不变的平均值
+    + decode任务：输出吞吐约 14.8k tokens/s。
+        + 推测：每秒每8卡输出的token数是168000000000 / 226.75 /86400=8575，前面提到了每个请求每秒的输出token数是20~22，那就相当于每8卡机器每秒能处理有8575/21=408个请求，所以总的返回qps大概是408 * 226.75=9.25k
