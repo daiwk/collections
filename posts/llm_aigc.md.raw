@@ -5160,6 +5160,9 @@ As an example, for the 13B parameter OPT model, the KV cache of a single token d
 
 [我与vLLM的2024：清华大佬的vLLM开发之路](https://mp.weixin.qq.com/s/9WW4894LBIq72ormhlMJmA)
 
+
+分布式infer：[YaRN: Efficient Context Window Extension of Large Language Models](https://arxiv.org/pdf/2309.00071)，Qwen用到了：[https://qwen.readthedocs.io/en/latest/deployment/vllm.html#multi-gpu-distributed-serving](https://qwen.readthedocs.io/en/latest/deployment/vllm.html#multi-gpu-distributed-serving)
+
 ## 并行推理方法
 
 [Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
@@ -10869,6 +10872,20 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 [阿里旗舰推理模型硬刚DeepSeek！官宣独立APP，发布公告AI亲自写](https://mp.weixin.qq.com/s/UjwuAKaRhKpQ-9eA2pSh8g)
 
 [https://chat.qwen.ai](https://chat.qwen.ai)
+
+## QWQ-32B
+
+[https://qwenlm.github.io/blog/qwq-32b/](https://qwenlm.github.io/blog/qwq-32b/)
+
+[https://huggingface.co/Qwen/QwQ-32B](https://huggingface.co/Qwen/QwQ-32B)
+
+目前只有博客，写得挺简单的，看介绍是用了两阶段RL：
+
++ 1阶段RL：在冷启ckpt上，只拿代码和数学语料，基于outcome-base reward，随着训练的进行，发现这两方面的能力都有持续提升
+  + 数学：有一个accuracy verifier，检查最终解决方案是否正确
+  + 代码：有一个代码执行server，检查代码是否通过预定义好的测试用例
++ 2阶段RL：没说用什么语料，但用的是general reward model加上rule-based verifiers产生的reward，发现只要少量的step就能提升模型的通用能力，如指令遵循、人类偏好对齐、agent性能，而且代码和数学能力下降不明显
+
 
 # Claude
 
