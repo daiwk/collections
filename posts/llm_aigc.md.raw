@@ -10792,6 +10792,8 @@ bridge算法结合了优化和生成两个步骤：
 [https://github.com/Open-Reasoner-Zero/Open-Reasoner-Zero/](https://github.com/Open-Reasoner-Zero/Open-Reasoner-Zero/)
 
 
+## vllm跑
+
 ## unsloth
 
 ### 跑满血版1.58bit infer
@@ -10905,6 +10907,12 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 [从o1-mini到DeepSeek-R1，万字长文带你读懂推理模型的历史与技术](https://mp.weixin.qq.com/s/t19D5_2nsbIVI_eemLtx-Q)
 
 [https://cameronrwolfe.substack.com/p/demystifying-reasoning-models](https://cameronrwolfe.substack.com/p/demystifying-reasoning-models)
+
+
+[https://openai.com/index/learning-to-reason-with-llms/](https://openai.com/index/learning-to-reason-with-llms/)这里的图：说明openai发现了在训练时用大规模的强化学习（train-time compute）以及在测试时花更多的时间思考（test-time computing）都能提升数学任务上的效果
+
+![](../assets/compute-power-law.png)
+
 # 世界模型
 
 [怒斥Sora之后，LeCun放出「视觉世界模型」论文，揭示AI学习物理世界的关键​](https://mp.weixin.qq.com/s/KY-bTD-bxdB3Q-q97Gv7fg)
