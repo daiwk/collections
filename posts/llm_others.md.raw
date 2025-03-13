@@ -1429,3 +1429,21 @@ FLASH_ATTENTION_FORCE_BUILD=TRUE pip install flash-attn
     + fp32：19.5
     + bf16：312
     + fp16：77.97
+
+
+# 一些问题和经验
+
+坍缩（稳定召回那k个item），attention score太集中了，低秩特征（泛化特征）容易导致这个问题
+
+看attention score的分布，如果第一层偏向target item，但第二层可能就很平均了，这种可能就释放不出收益，应该是没学好
+
+auc离线有收益，在线没收益：
+
++ reload正确性，warmup有没有报错
++ nn的分发效率，20min降到x min，压缩、解压耗时
++ 学习充分性：发现ab开得更久的时候，就看到收益了。。
+  + 累积梯度太小的 不充分
+  + 历史样本变多
+  + 多epoch(参考快手 阿里的一些做法，例如reset emb等)
+  + 加一些辅助loss，例如生成式、蒸馏
++ 出nan：bf16转化等问题，加一些grad clip，norm等
