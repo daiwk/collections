@@ -677,6 +677,25 @@ As an example, for the 13B parameter OPT model, the KV cache of a single token d
 
 分布式infer：[YaRN: Efficient Context Window Extension of Large Language Models](https://arxiv.org/pdf/2309.00071)，Qwen用到了：[https://qwen.readthedocs.io/en/latest/deployment/vllm.html#multi-gpu-distributed-serving](https://qwen.readthedocs.io/en/latest/deployment/vllm.html#multi-gpu-distributed-serving)
 
+使用技巧：
+
+参考[https://docs.vllm.ai/en/latest/features/compatibility_matrix.html](https://docs.vllm.ai/en/latest/features/compatibility_matrix.html)看所有特性的兼容性
+
++ cudagraph一般来讲会比eager快，所以不要加```--enforce-eager```
++ ```--enable-prefix-caching```这个开起来
++ ```--enable-chunked-prefill```这个也开起来，配合```--max-num-batched-tokens```一起搞
++ ```--max-model-len```限制prompt+response的总长度，利于加速，说实话这个是最有效的参数
++ ```--max-num-seqs```可以设置一下，最好和实际的请求落到这个server实例的qps近似，需要实测
++ ```--swap-space```其实没啥用，只有一个prompt生成多个response的时候有用，即```best_of > 1```（参考github issue：[https://github.com/vllm-project/vllm/issues/2853](https://github.com/vllm-project/vllm/issues/2853)），也就是说根本不会用到cpu的kvcache
++ 投机采样说实话比较鸡肋，特别是对于qwen系列模型来讲，因为不同大小的qwen的词表是不一样大的，所以其实用不了，而如果用最简单的ngram，速度又非常慢
++ 请求里的```presence_penalty```设置一下，不然qwen容易出现死循环输出从而打爆tokens
+
+示例：
+
+```python
+
+```
+
 ## 并行推理方法
 
 [Efficiently scaling transformer inference](https://arxiv.org/pdf/2211.05102.pdf)
