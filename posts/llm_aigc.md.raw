@@ -4742,6 +4742,8 @@ megatron对transformer进行了如下优化：
 
 [ZeRO: Memory Optimization Towards Training A Trillion Parameter Models](https://arxiv.org/pdf/1910.02054v2.pdf)
 
+zero的思想：减少显存，搜广推大部分还是数据并行，所以模型参数是复制多份的，所以zero比较有用
+
 fp16那一节中，optimizer state的显存占用，在**前向**和**反向**的时候都**不用**，只有最后**optimizer step**的时候才用。
 
 ===>zero的思想：把optimizer state**分shard存在不同的卡上**，只在**最后gather时才用**。
