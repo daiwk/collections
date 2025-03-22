@@ -112,6 +112,12 @@
 
 [https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw](https://mp.weixin.qq.com/s/cSwWapqFhxu9zafzPUeVEw)
 
+[Interpreting the Repeated Token Phenomenon in Large Language Models](https://arxiv.org/pdf/2503.08908)
+
+deepmind的文章，发现和attention sink（初始token会有很高的attn score）有关，初始注意力层负责标记序列中的第一个单词，而后期的一些特定神经元则会放大这些标记单词的隐藏状态值。当处理重复单词时，这一机制会失效，导致模型行为异常。
+
+[https://github.com/yossigandelsman/attn_sinkhole](https://github.com/yossigandelsman/attn_sinkhole)
+
 ## 幻觉
 
 ### 综述

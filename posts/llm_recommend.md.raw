@@ -1,6 +1,7 @@
 # LLM+推荐：概述
 
-## 综述
+
+## 一些论文list
 
 [https://github.com/nancheng58/Awesome-LLM4RS-Papers](https://github.com/nancheng58/Awesome-LLM4RS-Papers)
 
@@ -23,6 +24,12 @@
 [大语言模型在推荐系统中的探索与应用](https://mp.weixin.qq.com/s/nEhynptVyx8aV8onCwozAA)
 
 [一文梳理业界落地LLM4Rec的若干范式-数万字超长文(建议收藏)](https://mp.weixin.qq.com/s/jqFQH6ZYhZRrzilLAo9BiA)
+
+[推荐算法月报(2025.2)：大模型的春风吹醒推荐算法，重磅大厂突破](https://mp.weixin.qq.com/s/NO2XgUBiRkjsKNo7dswa0w)
+
+[推荐算法(2025.3.4)：速看！阿里Meta的最新研究成果](https://mp.weixin.qq.com/s/1kZCKYbuvd6qiE6-5hJquw)
+
+## 综述
 
 ### 概况
 
@@ -516,15 +523,34 @@ class RQBottleneck(nn.Module):
 [Autoregressive Search Engines: Generating Substrings as Document Identifiers](https://arxiv.org/pdf/2204.10628)：例如一个item可以写成```<IDS> 1023 <IDE> Urban Decay Eyeshadow Palette Naked Heat <AS> Makeup <AE> <AS> Eyes <AE>```，并通过wavelet tree存储，给定开始token（如```<IDS>```或者```<AS>```），可以在$$O(Vlog(V))$$里找出所有可能的后续tokens。代码：[https://github.com/facebookresearch/SEAL](https://github.com/facebookresearch/SEAL)
 
 
+## 百度的COBRA
+
+[Sparse Meets Dense: Unified Generative Recommendations with Cascaded Sparse-Dense Representations]()
+
+![](../assets/cobra-vs-tiger.png)
+
+和tiger很像，主要区别是除了原来rq的code，还加了个dense emb进去
+
+![](../assets/cobra.png)
+rq部分freeze，dense是拿item的明文特征过一个bert得到的cls emb，bert是训练的
+
+decode出来有两个东西，rq的code和dense
+
+![](../assets/cobra-search.png)
+
++ 先beam search出m个rq的code出来
++ 然后每一个code和原来的seq一起输入decoder，得到的pred就是dense，再拿这个dense去ann找n个item
++ 最后对这m*n个item拿两个相似度融合出一个得分，取topk出来
+
 # LLM+推荐：输入ID
 
-## 快手的recgpt
+## 快手的RecGPT
 
 [RecGPT: Generative Personalized Prompts for Sequential Recommendation via ChatGPT Training Paradigm](https://arxiv.org/pdf/2404.08675)
 
 [https://zhuanlan.zhihu.com/p/699985083](https://zhuanlan.zhihu.com/p/699985083)
 
-## Meta的HSTU
+## Meta的HSTU（落地）
 
 [如何评价Meta最新推荐论文: 生成式推荐打败深度分层架构推荐？](https://mp.weixin.qq.com/s/MeH2drBIBML5OSfCujIJ0Q)
 
@@ -840,6 +866,30 @@ XXX
 发现了scaling-law：
 
 ![hstu-scaling-law](../assets/hstu-scaling-law.png)
+
+## 快手的OneRec（听说比较扯淡）
+
+[OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment](https://arxiv.org/pdf/2502.18965)
+
+召回排序合为一体的生成式推荐——根据历史session序列，预测下一个session。
+
+## 阿里的HeteroRec（落地）
+
+[Hierarchical Causal Transformer with Heterogeneous Information for Expandable Sequential Recommendation](https://arxiv.org/pdf/2503.01469)
+
++ 异构信息分解（HTFL）：把物品的各种信息（比如文字描述、图片、价格）拆分成多个小块（称为“token”），就像把一句话拆成单词一样。然后把这些小块按用户行为的时间顺序排列，形成一个更丰富、更灵活的序列。这样可以让模型更细致地理解物品之间的关系，还能通过增加模型层数来提升效果。
++ 层级因果Transformer（HCT）：用一个特别设计的Transformer模型，先分析这些小块之间的细微联系，再综合成用户的整体兴趣。这种分层处理方式能捕捉到更深层次的模式，比如“用户为什么喜欢某个东西”。
+
+![](../assets/HeteroRec.png)
+
+## Meta的DTI（没落地）
+
+[Towards An Efficient LLM Training Paradigm for CTR Prediction](https://arxiv.org/pdf/2503.01001)
+
+![](../assets/dti.png)
+
++ 流式提示构建：摒弃传统 “滑动窗口” 范式为每个目标交互构建独特训练提示的做法，采用流式提示构建策略，将k个连续目标交互附加到初始n个上下文交互后形成一个提示，减少训练提示数量，降低计算冗余。
++ 窗口因果注意力机制：为避免因提示长度增加带来的推理困境，引入窗口因果注意力机制，限制每个目标交互仅关注前序n个交互，使训练和推理过程一致，降低计算复杂度。
 
 # LLM+推荐：输入文本
 
@@ -1911,8 +1961,23 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 |[TransRec](https://arxiv.org/pdf/2310.06491) | 受限生成 | - 将一个item表示成3部分：id+title+attr，设计三种对应的instruct-tuning任务；<br> - 引入一个特殊的数据结构（FM-index），并进行constrained beam search，让模型能生成候选集中的id/title/attr，<br> 再遍历全库候选，看不同facet的相似度（会考虑高热打压），加权融合出一个排序| lora|
 
 
+# LLM+推荐：其他套路
 
+## 蒸馏
 
+[GPT4规模大模型落地，Meta提ExFM框架：万亿参数基础大模型的工业级落地成为可能](https://mp.weixin.qq.com/s/Y9rlMxg4EMl_bzi9N_s7GA)
+
+[External Large Foundation Model: How to Efficiently Serve Trillions of Parameters for Online Ads Recommendation](https://arxiv.org/abs/2502.17494)
+
+## SLMRec
+
+[ICLR2025 | SLMRec: 重新思考大语言模型在推荐系统中的价值](https://mp.weixin.qq.com/s/E6SGGKy6-D1h3zGro7KW0w)
+
+[SLMRec: Distilling Large Language Models into Small for Sequential Recommendation](https://openreview.net/pdf?id=G4wARwjF8M)
+
+探究了大模型架构在序列推荐中参数量与效果的关系，并提出了一种知识蒸馏的方法，使得小语言模型仅用13%的模型参数，取得了比现有大模型推荐方法略好的效果，并取得了在训练/推理阶段6.6x/8.0x的加速。
+
+[https://github.com/WujiangXu/SLMRec](https://github.com/WujiangXu/SLMRec)
 
 # LLM for 检索
 
@@ -2018,4 +2083,8 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 [小红书搜索：生成式检索的探索与实践](https://mp.weixin.qq.com/s/yApGxCGxjWnZQu8PoO9Qeg)
 
 [Generative Dense Retrieval: Memory Can Be a Burden](https://arxiv.org/abs/2401.10487)
+
+## 阿里搜索广告
+
+[阿里妈妈搜索广告2024大模型思考与实践](https://mp.weixin.qq.com/s/hgs_BzFZdjrDSbf9d74ilA)
 
