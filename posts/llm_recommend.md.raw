@@ -1963,11 +1963,83 @@ meta发的[LLM-Rec: Personalized Recommendation via Prompting Large Language Mod
 
 # LLM+推荐：其他套路
 
-## 蒸馏
+## ExFM
 
 [GPT4规模大模型落地，Meta提ExFM框架：万亿参数基础大模型的工业级落地成为可能](https://mp.weixin.qq.com/s/Y9rlMxg4EMl_bzi9N_s7GA)
 
 [External Large Foundation Model: How to Efficiently Serve Trillions of Parameters for Online Ads Recommendation](https://arxiv.org/abs/2502.17494)
+
+![](../assets/exfm.png)
+
+图中的$$\Theta^F(t)$$是FM(teacher，foudation model)在$$t$$时刻的参数，$$D^F(t)$$是FM在$$t$$时刻的数据集，V是VM（student, vertical model）的对应参数/数据集
+
++ co-distillation vs external distillation：
+    + co-distillation：联合训练teacher和student，只拿student去serving。
+        + 缺点：训练成本很高，而且线上链路有多阶段的ranking，为每个ranking模型保留一个大的teacher是低效的
+    + external distillation：单独训练teacher模型，是1-to-N的模式，一个teacher可以像foudation model一样指导多个student
++ 流式训练：t时刻的数据训出对应的模型，t+1加载t时刻的数据训练出t+1时刻的模型
++ ExFM：
+    + t-1的各VM数据聚合成t-1的FM数据，训练得到t-2的FM模型
+    + t的各VM数据聚合成的t的FM数据，训练得到t-1的FM模型
+    + DAS, data augmentation service：FM对每个VM数据进行预估，再加上对应的VM数据
+    + Auxiliary Head和Student Adapter：t-1的VM模型和t的VM模型
+
+![](../assets/das.png)
+
++ 数据集生产：
+    + 将所有VM的特征和真实label聚合成一个shared dataset，
+    + 有很长的时间窗口等待feadback(例如ctr有5-90min，cvr有一天)，在这个窗口中，FM可以使用VM的特征给出预估结果
+    + 然后从这个shared dataset中取出各VM对应的子数据集用于训练
++ FM ckpt的维护和更新：
+    + FM有新的ckpt时，会通过SPD（一个db）发布
+    + updater从SPD读到最新的ckpt版本，再写到zeus（一个基于zookeeper的分布式metadata存储）里去
+    + DAS任务从zeus读取最新模型
+
+![](../assets/auxiliary-head.png)
+
+真实label是$$y$$，FM预估出来的label(pseudo-label)是$$\hat{y}^F$$，student包括两部分，backbone $$\mathbf{x}$$和serving head $$\hat{y}^S=\phi(\mathbf{x})$$，其中$$\phi$$是MLP，loss是交叉熵：
+
+XXX
+h(\hat{y}, y)=y \cdot \log (\sigma(\hat{y}))+(1-y) \cdot \log (1-\sigma(\hat{y}))
+XXX
+
+VM的loss是：
+
+XXX
+\mathcal{L}_{\mathrm{kd}}\left(\hat{y}^S, \hat{y}^F, y\right)=h\left(\hat{y}^S, y\right)+h\left(\hat{y}^S, \hat{y}^F\right)
+XXX
+
+但用一个head来预估2个label会引入bias，所以引入AH(Auxiliary Head)来预估pseudo-label，即$$\hat{y}^D=\psi(\mathbf{x})$$，其中$$\psi$$是另一个MLP，这样就可以拆成2部分：
+
++ 真实label的loss：$$\mathcal{L}_{\mathrm{s}}\left(\hat{y}^S, y\right)=h\left(\hat{y}^S, y\right)$$
++ pseudo-label的loss：$$\mathcal{L}_{\mathrm{d}}\left(\hat{y}^D, \hat{y}^F\right)=h\left(\hat{y}^D, \hat{y}^F\right)$$
+
+引入以下3个方法强化FM的蒸馏效果：
+
++ gradient scaling(gs)：AH对backbone的梯度乘一个$$\beta$$
++ label scaling(ls)：下式中的$$\alpha$$，同时要保证scale完的label不越界，即$$\alpha \cdot \hat{y}^{F M}$$不超过1
++ loss weighting(lw)：下式中的$$w$$
+
+XXX
+\mathcal{L}_{\mathrm{ah}}=\mathcal{L}_{\mathrm{s}}\left(\hat{y}^S, y\right)+w * \mathcal{L}_{\mathrm{d}}\left(\hat{y}^D, \alpha \cdot \hat{y}^F\right)
+XXX
+
+进一步地，在$$\hat{y}^F$$的基础上再过个MLP，得到SA（student adapter）$$\hat{y}^{S A}=\operatorname{MLP}\left(\hat{y}^F\right)$$，相应地，加上一个SA与真实label的loss：$$\mathcal{L}_{\text {sta }}\left(\hat{y}^{S A}, y\right)=h\left(\hat{y}^{S A}, y\right)$$
+
+然后，为了不让VM的梯度回传给SA，需要加一个stop-gradient，即$$\mathcal{L}_{\mathrm{sa}}\left(\hat{y}^D, \mathrm{SG}\left(\hat{y}^{S A}\right)\right)=h\left(\hat{y}^D, \mathrm{SG}\left(\hat{y}^{S A}\right)\right)$$
+
+整体过程：
+
++ 优化SA的参数$$\Theta^{S A}$$：用$$$$\mathcal{L}_{\text {sta }}\left(\hat{y}^{S A}, y\right)$$
++ 计算$$\operatorname{SG}\left(\hat{y}^{S A}\right)$$
++ 优化VM的参数$$\Theta^{V}$$：用$$\mathcal{L}_{\mathrm{ah}}+\mathcal{L}_{\mathrm{sa}}$$
+
+按自己的理解重新画了下：
+
+![](../assets/sa-my-pic.png)
+
+新的Transfer Scaling Law：当不断迭代和提升基础大模型的模型规模时，其高效的知识转化率使得线上的广告排序模型的性能呈现出连续数年的持续提升，且增速在不断扩大。
+
 
 ## SLMRec
 
