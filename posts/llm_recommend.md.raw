@@ -877,8 +877,11 @@ XXX
 
 [Hierarchical Causal Transformer with Heterogeneous Information for Expandable Sequential Recommendation](https://arxiv.org/pdf/2503.01469)
 
-+ 异构信息分解（HTFL）：把物品的各种信息（比如文字描述、图片、价格）拆分成多个小块（称为“token”），就像把一句话拆成单词一样。然后把这些小块按用户行为的时间顺序排列，形成一个更丰富、更灵活的序列。这样可以让模型更细致地理解物品之间的关系，还能通过增加模型层数来提升效果。
-+ 层级因果Transformer（HCT）：用一个特别设计的Transformer模型，先分析这些小块之间的细微联系，再综合成用户的整体兴趣。这种分层处理方式能捕捉到更深层次的模式，比如“用户为什么喜欢某个东西”。
+item有各种特征，如title、img、id等
+
++ 左边：异构信息分解（HTFL）把1-T个item的各种特征（每个特征当成一个token）flatten成一个长序列，然后过一个causal transformer得到token粒度的输出list，再过一个item粒度的causal transformer得到item粒度的输出list
++ 右边：2~T+1个item，每一种特征把2~T+1拼到一起过各自的tower，每个tower得到的感觉还是2~T+1个输出，这个输出和左边的token粒度的输出List算个LMP，然后过一个item cross tower，我猜输出的是2~T+1个item表示，和左边的item粒度输出List再算一个LMP
++ LMP：左边是1~T，右边是2~T+1，t1过个mlp预测t3，t1过另一个MLP预测t2，即multi-step预估
 
 ![](../assets/HeteroRec.png)
 
