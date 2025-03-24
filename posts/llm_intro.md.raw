@@ -683,6 +683,12 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 + 移除bias：PaLM和Galactica中将bias删了，能够增加训练稳定性。
 
 
+### 优化器
+
+&nbsp;
+
+[月之暗面开源改进版Muon优化器，算力需求比AdamW锐减48%，DeepSeek也适用](https://mp.weixin.qq.com/s/E65ULmjlK7Lv81dqvAubcQ)
+
 ### 小结
 
 #### 归一化位置
@@ -801,1119 +807,6 @@ multi-token prediction，一次预估未来的k个词
 
 ![multi-token-prediction](../assets/multi-token-prediction.png)
 
-
-# 新的模型结构
-
-## 长上下文的问题
-
-[长序列（Long Context）大模型笔记](https://mp.weixin.qq.com/s/nUX3MbKbyxw6b6mhgoL-Mw?poc_token=HK37E2ejmhfX-g6qnVG3pIxFJXZEVk-vPpwriYAj)
-
-[LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
-
-以中文为例，大部分模型每个token对应的中文字数都>1.5个字，所以200k的token就对应30w字的上下文
-
-对长文本的几个要求：
-
-+ 在文本比较长的时候，还能保证通顺，**ppl要足够低**
-+ 能attention到前面提过的细节，**不能自我矛盾**
-
-注意：如果训练时是2k长度的语料，而推理设定8k窗口，那么PPL会急剧上升，因为
-
-+ RoPE不能很好地处理没有训练过的**位置编码**
-+ 推理时**注意力机制**所处理的token数量远超训练时的数量，导致注意力机制的崩坏
-
-### 两阶段训练方式
-
-+ 直接输入连续长文本（如书籍）
-+ 多个中等文本拼接，再通过attention mask来限制各段文本之间注意力，让它们可以在各自的位置上各训各的，互不干扰。甚至实际上即使不做attention mask，效果也挺好。
-
-如果简单地增加长度，例如从4k变到32k，长度增加8倍，为了加速计算需要缓存中间结果（如QK的结果是$$s^2$$的空间复杂度），所以显存会扩大$$8^2=64$$倍。一般的做法是2阶段：
-
-+ 第一阶段：用2k或者4k训练一个基础模型，让模型学好**文本内容**和**短位置关系**
-+ 第二阶段：用**比第一阶段小的数据量优化**模型在**长上下文的效果**，具体做法见下节
-
-### 针对位置编码的插值类方法
-
-#### 线性插值
-
-&nbsp;
-
-[Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/pdf/2306.15595.pdf)
-
-#### NTK-Aware Interpolation
-
-&nbsp;
-
-#### NTK-by-parts
-
-&nbsp;
-
-#### Dynamically NTK Scaled RoPE
-
-&nbsp;
-
-### 针对attention score的缩放方法
-
-#### YaRN
-
-&nbsp;
-
-#### logn
-
-&nbsp;
-
-### lossless long context
-
-[专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
-
-## 外推问题
-
-[语言模型窗口外推技术综述](https://mp.weixin.qq.com/s/5CqrlUZHrciMAFmeV2oYdw)
-
-### longRoPE
-
-[LongRoPE：超越极限，将大模型上下文窗口扩展超过200万tokens](https://mp.weixin.qq.com/s/4ryyv59ofNOD--RCSdqktQ)
-
-### CoPE
-
-[解决Transformer根本缺陷，CoPE论文爆火：所有大模型都能获得巨大改进](https://mp.weixin.qq.com/s/JxB6JU6MxO3709mkg7penw)
-
-[Contextual Position Encoding: Learning to Count What’s Important](https://arxiv.org/pdf/2405.18719)
-
-### DAPE
-
-[NeurIPS 2024 | Transformer长度外推，全新位置编码DAPE大幅提升模型性能](https://mp.weixin.qq.com/s/-7YsAMYYO92nItRJbqSrpw)
-
-[DAPE: Data-Adaptive Positional Encoding for Length Extrapolation](https://arxiv.org/abs/2405.14722)
-
-[https://github.com/chuanyang-Zheng/DAPE](https://github.com/chuanyang-Zheng/DAPE)
-
-
-## retrieval head
-
-[Retrieval Head Mechanistically Explains Long-Context Factuality](https://arxiv.org/pdf/2404.15574)
-
-
-## SSM
-
-[挑战Transformer的Mamba是什么来头？作者博士论文理清SSM进化路径](https://mp.weixin.qq.com/s/oXSwnL0sD96nnnqJyko7UA)
-
-[Pretraining Without Attention](https://arxiv.org/pdf/2212.10544.pdf) 
-
-[预训练无需注意力，扩展到4096个token不成问题，与BERT相当](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650864837&idx=2&sn=c57f0b8a7daf7d45093448c8ff5df3fc&chksm=84e538bbb392b1ad857f3ad2c2d6d6dbc9562ff492a7cda336dc07abe4d3912c19fa4c30d365&scene=21#wechat_redirect)
-
-[Diffusion Models Without Attention](https://arxiv.org/pdf/2311.18257.pdf)
-
-[丢掉注意力的扩散模型：Mamba带火的SSM被苹果、康奈尔盯上了](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650900014&idx=4&sn=315ca75ba700a93598b5c581ad2fb735&chksm=84e44250b393cb4619e7c24b9f6affe88e4c71ebb97d0c43b5301edd0a11154af6322f68cfd4&scene=21#wechat_redirect)
-
-[一文看懂Mamba，Transformer最强竞争者](https://mp.weixin.qq.com/s/gwE_OVWigV71Qiup7F_9Cg)
-
-[Long Range Language Modeling via Gated State Spaces](https://arxiv.org/abs/2206.13947) 认为 Transformer 和 SSM 完全可以互补。
-
-选择性状态空间模型(selective state space model)是Mamba论文作者Albert Gu此前主导研发的S4架构(Structured State Spaces for Sequence Modeling)的一个简单泛化。
-
-[https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf](https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf)
-
-序列模型在训练和推理时的侧重点：
-
-+ 训练时：在整个list上计算loss，需要优化forward的耗时
-+ 推理时：一次输入一个时间步，需要高效地顺序处理
-
-### SSM原理
-
-输入$$u(t) \in \mathbb{R}$$，输出是$$y(t) \in \mathbb{R}$$，引入**状态**$$x(t) \in \mathbb{R}^N$$，目标是学习映射$$u(t) \mapsto y(t)$$，
-
-XXX
-\begin{aligned}
-x^{\prime}(t) & =\boldsymbol{A} x(t)+\boldsymbol{B} u(t) \\
-y(t) & =\boldsymbol{C} x(t)+\boldsymbol{D} u(t)
-\end{aligned}
-XXX
-
-结合[维基百科](https://en.wikipedia.org/wiki/State-space_representation)的图，方便理解
-
-![ssm](../assets/ssm.png)
-
-各变量含义如下（看起来和RNN很像）：
-
-+ $$\boldsymbol{A}\in \mathbb{R}^{N\times N}$$：状态矩阵
-+ $$\boldsymbol{B}\in \mathbb{R}^{N\times N}$$：输入矩阵
-+ $$\boldsymbol{C}\in \mathbb{R}^{N\times N}$$：输出矩阵
-+ $$\boldsymbol{D}\in \mathbb{R}^{N\times N}$$：feedforward矩阵或者feedthrough矩阵
-+ $$x^{\prime}(t):=\frac{d}{d t} \mathbf{x}(t)$$是$$x(t)$$关于$$t$$的导数，所以图里有一个**积分**$$\int$$操作把它变回$$x(t)$$
-
-假设序列长度为$$L$$，那么
-
-+ 时间复杂度：
-    + SSM：$$O(N^2L)$$，因为$$\boldsymbol{A} x(t)$$是$$N\times N$$和$$N\times 1$$的矩阵乘法，复杂度是$$N^2$$
-    + RNN：$$O(N^2L)$$，和SSM类似
-    + CNN：$$O(kLM^2)$$，假设$$k$$个卷积核，每个卷积核$$M\times M$$，一般$$M \ll N$$
-+ 空间复杂度：
-    + SSM：$$O(N^2+NL)$$，因为中间状态$$x(t) \in \mathbb{R}^N$$是需要**额外存储**的
-    + RNN：$$O(N^2)$$，所有时间步共享权重，不需要像SSM专门为每个时间步存一个状态$$x(t)$$
-    + CNN：$$kM^2$$
-
-所以传统SSM的时空复杂度都很高，作者提出了S4(structured state space model)
-
-====>hippo的假设会让模型更关注宽波，对于很窄的毛刺信号效果不好，所以对大海捞针任务效果并不好
-
-## Mamba
-
-[Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)
-
-[https://huggingface.co/state-spaces](https://huggingface.co/state-spaces)
-
-[https://github.com/havenhq/mamba-chat](https://github.com/havenhq/mamba-chat)
-
-[MODELING SEQUENCES WITH STRUCTURED STATE SPACES](https://stacks.stanford.edu/file/druid:mb976vf9362)
-
-## Mamba2
-
-[再战Transformer！原作者带队的Mamba 2来了，新架构训练效率大幅提升](https://mp.weixin.qq.com/s/31t6pJqcXrZDjT6XiJZC_g)
-
-[Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality](https://arxiv.org/pdf/2405.21060)
-
-[https://github.com/state-spaces/mamba](https://github.com/state-spaces/mamba)
-
-## Mamba+Transformer
-
-[Mamba真比Transformer更优吗？Mamba原作者：两个都要！混合架构才是最优解](https://mp.weixin.qq.com/s/omImpaiddmSJ968bCZ8qmw)
-
-[An Empirical Study of Mamba-based Language Models](https://arxiv.org/pdf/2406.07887)
-
-## Block-State Transformer
-
-[Block-State Transformer](https://arxiv.org/pdf/2306.09539.pdf)
-
-## Jamba
-
-[Mamba做大做强！混合Transformer，打败Transformer](https://mp.weixin.qq.com/s/Lde0G_zysfrGcRUX5nOf8g)
-
-[https://huggingface.co/ai21labs/Jamba-v0.1](https://huggingface.co/ai21labs/Jamba-v0.1)
-
-让mamba做短程头，让transformer做长程头
-
-## Hawk & Griffin
-
-[RNN效率媲美Transformer，谷歌新架构两连发：同等规模强于Mamba](https://mp.weixin.qq.com/s/RtAZiEzjRWgqQw3yu3lvcg)
-
-[Griffin: Mixing Gated Linear Recurrences with Local Attention for Efficient Language Models](https://arxiv.org/pdf/2402.19427)
-
-### 简介
-
-global attention在infer阶段的效率和序列长度成二次关系，而且序列长度与KV cache呈线性增长关系。[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)提出的multi-query attention(MQA)可以通过一个**constant factor**来**减小cache size**，部分缓解这个问题，但cache还是与序列长度线性相关。
-
-循环模型能够将整个序列压缩到一个**fixed-size的hidden state**，并通过迭代进行更新。但要想取代transformer，rnn不仅需要在效果上可比，还要相似的硬件效率，相关工作如下：
-
-+ [Efficiently modeling long sequences with structured state spaces](https://arxiv.org/pdf/2111.00396)
-+ [Long range language modeling via gated state spaces](https://arxiv.org/pdf/2206.13947)提出了GSS block
-+ [Simplified state space layers for sequence modeling](https://arxiv.org/pdf/2208.04933)
-+ [Resurrecting Recurrent Neural Networks for Long Sequences](https://arxiv.org/pdf/2303.06349)
-+ [Hungry hungry hippos: Towards language modeling with state space models](https://arxiv.org/pdf/2212.14052)
-+ [Hyena hierarchy: Towards larger convolutional language models](https://arxiv.org/pdf/2302.10866)
-+ [Mamba: Linear-time sequence modeling with selective state spaces](https://arxiv.org/pdf/2312.00752)
-
-本文提出了新的**RG-LRU层**，一种新的gated linear recurrent layer，并基于此提出了将MLP和RG-LRU结合的Hawk，还有将MLP和RG-LRU与local attention混合的Griffin。
-
-![griffin-hawk](../assets/griffin-hawk.png)
-
-+ 对于最多超过7B的模型，Hawk和Griffin发现了**held-out loss**和**训练FLOPS**间的**power law scaling**（上图左边）
-+ Hawk-3B比Mamba-3B在下游任务上要好，而训练的token数只有mamba的一半；Griffin-7B和14B与Llama-2效果相当，而训练数据只有其1/7
-+ 训练在TPU-v3上完成，用JAX中的Pallas实现了RG-LRU(Real-Gated Linear Recurrent Unit)层的内核([https://jax.readthedocs.io/en/latest/pallas/index.html](https://jax.readthedocs.io/en/latest/pallas/index.html))，减小内存transfer
-+ infer阶段比MQA的**吞吐高很多**（上图右边），而且对长序列有**更低的latency**
-+ 训练时在长序列上比transformer更好，而且能够高效地学习**复制和检索**的任务。但如果没有finetune，直接对比pretrain的效果，transformer会更好
-
-### 网络结构
-
-包括三大类组件：
-
-+ residual block: 
-+ MLP block：
-+ temporal-mixing block
-
-
-![griffin-arch](../assets/griffin-arch.png)
-
-#### Residual Block
-
-&nbsp;
-
-受pre-norm transformer的启发，用的RMSNorm
-
-#### MLP block
-
-&nbsp;
-
-参考[Language modeling with gated convolutional networks](https://arxiv.org/pdf/1612.08083)（类似star两个W直接element-wise product），采用了gated MLP，即如下两个linear的结果（输入维度$$D$$，输出维度都是$$MD,M=3$$）进行element-wise product(类似GeGLU（[Glu variants improve transformer]((https://arxiv.org/pdf/2002.05202.pdf))）)，再过一个linear
-
-+ 直接过一个linear，但没有激活
-+ linear后加一个GeLU激活（实际用的```nn.functional.gelu(input, approximate="tanh")```）
-
-看recurrentGemma-2b的[config](https://huggingface.co/google/recurrentgemma-2b-it/blob/main/config.json)，发现总共有26个block，一个block依次包括：
-
-+ rg-lru或者MQA，每个block里的选择方式是(rg,rg,att,rg,rg,att,rg,rg,att,...)
-+ 再过一个gated MLP
-
-```python
-  "_block_types": [
-    "recurrent",
-    "recurrent",
-    "attention"
-  ],
-  "num_hidden_layers": 26,
-  "attention_window_size": 2048,
-
-```
-
-#### Temporal-mixing block
-
-&nbsp;
-
-##### global Multi-Query Attention(MQA)
-
-&nbsp;
-
-[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)中为了加速推理，采用了MQA的方法，本文固定了head的维度为$$D_{head}=128$$，head的个数$$H$$也固定，且$$HD_{head}=D$$，所以model的维度$$D$$需要是128的倍数。没用绝对位置编码，用了RoPE。
-
-##### local(sliding-window) MQA
-
-&nbsp;
-
-[Longformer: The long-document transformer](https://arxiv.org/pdf/2004.05150)提出了可以用local attention，即滑动窗口attention。让每个位置只和前面的固定个tokens去算attentioin，可以
-
-+ 降低计算的FLOPS
-+ 让KV cache的size的上界变成了**window的size**，从而不是序列长度的二次关系
-
-##### RG-LRU
-
-&nbsp;
-
-类似GSS block，也类似Mamba，输入$$D$$，分别过一个linear得到两个分支，均是$$D_{RNN}$$：
-
-+ 分支1：过GeLU激活，同上，实际用的```nn.functional.gelu(input, approximate="tanh")```
-+ 分支2：
-  + 参考[Hungry hungry hippos: Towards language modeling with state space models](https://arxiv.org/pdf/2212.14052)的H3模型里的Shift-SSM，过一个Conv1D，其temporal filter dim是4
-  + Conv1D的参数只有$$4D_{RNN}$$，因此再过一个RG—LRU模块
-
-两个分支的输出element-wise product一下，再过一个linear得到$$d$$。
-
-conv1d参考torch官方[doc](https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html)
-
-+ 输入：$$\left(N, C_{i n}, L_{i n}\right)$$
-+ 输出：$$\left(N, C_{\text {out }}, L_{\text {out }}\right)$$
-
-其中，
-
-XXX
-L_{\text {out }}=\left\lfloor\frac{L_{\text {in }}+2 \times \text { padding }- \text { dilation } \times(\text { kernel\_size }-1)-1}{\text { stride }}+1\right\rfloor
-XXX
-
-当```groups==in_channels and out_channels=K*in_channels```，也叫depthwise convolution，K是depthwise乘子。即**每个输入通道都有自己的卷积核，并且只作用于该通道**。
-
-```python
-        ## conv1d_width = 4, 
-        ## 对图像卷积来讲，padding就是让输出的shape不小于输入shape
-        ## 输入是hidden_size=2560，而lru_width也是2560
-        self.conv_1d = nn.Conv1d(
-                    config.lru_width, # in_channels
-                    config.lru_width, # out_channels
-                    kernel_size=config.conv1d_width,
-                    groups=config.lru_width,
-                    padding=config.conv1d_width - 1,
-                )
-        
-        ## 输入[bs, seq_len, hidden_size]
-        x_branch = self.linear_x(input_states)
-        ## 变成[bs, hidden_size, seq_len]
-        x_branch = x_branch.transpose(1, 2)
-        if use_cache:
-            if cache_position.shape[0] != 1:  # prefill
-                self.conv1d_state = nn.functional.pad(x_branch, 
-                    (self.conv1d_width - x_branch.shape[-1] - 1, 0))
-                x_branch = self.conv_1d(x_branch)[..., :seq_len]
-            else:  # decoding
-                conv_state = torch.cat((self.conv1d_state, x_branch), -1)
-                x_branch = torch.sum(conv_state * self.conv_1d.weight[:, 0, :], dim=-1) 
-                    + self.conv_1d.bias
-                x_branch = x_branch.unsqueeze(-1)
-                self.conv1d_state = conv_state[:, :, 1:]
-        else:
-            # 前面维度不变，最后一维截断到seq_len
-            x_branch = self.conv_1d(x_branch)[..., :seq_len]
-```
-
-
-参考[Resurrecting Recurrent Neural Networks for Long Sequences](https://arxiv.org/pdf/2303.06349)提出的LRU(Linear Recurrent Unit)，并参考传统LSTM和GRU引入了gate：
-
-XXX
-\begin{aligned}
-r_t & =\sigma\left(W_a x_t+b_a\right), \quad \text { recurrence gate } \\
-i_t & =\sigma\left(W_x x_t+b_x\right), \quad \text { input gate } \\
-a_t & =a^{c r_t}, \\
-h_t & =a_t \odot h_{t-1}+\sqrt{1-a_t^2} \odot\left(i_t \odot x_t\right) .
-\end{aligned}
-XXX
-
-其中，recurrent weight $$a=\sigma(\Lambda)$$是一个对角矩阵，$$\Lambda$$是一个可学习的参数。$$c$$是一个常数8，为了**计算稳定**，在log-space计算$$a^{c r_t}$$，即先算出$$\log a_t$$，再取exp。
-
-XXX
-\log a_t=\log a^{c r_t}=\log \sigma(\Lambda)^{c r_t}=-\operatorname{csoftplus}(\Lambda) \odot r_t 
-XXX
-
-(这个公式可能有点问题，感觉应该是$$-\operatorname{csoftplus}(-\Lambda) \odot r_t$$，不过$$\Lambda$$是一个可学习的nn.Parameter，其实这个错误无所谓吧)
-
-```python
-    def __init__(self, config):
-        super().__init__()
-        self.num_attention_heads = config.num_attention_heads
-        self.block_width = config.lru_width // self.num_attention_heads
-
-        self.recurrent_param = nn.Parameter(torch.empty([config.lru_width]))
-        self.input_gate_weight = nn.Parameter(
-            torch.empty([self.num_attention_heads, self.block_width, self.block_width])
-        )
-        self.input_gate_bias = nn.Parameter(torch.empty([self.num_attention_heads, self.block_width]))
-
-        self.recurrent_gate_weight = nn.Parameter(
-            torch.empty([self.num_attention_heads, self.block_width, self.block_width])
-        )
-        self.recurrent_gate_bias = nn.Parameter(torch.empty([self.num_attention_heads, self.block_width]))
-        self.recurrent_states = None
-
-    def forward(xxx):
-        ## reshape成适合多头的情况
-        reshape_act = activations.reshape(batch_size * seq_len, self.num_attention_heads, self.block_width)
-        ## (num_attention_heads, batch_size * seq_len, block_width)
-        reshape_act = reshape_act.permute(1, 0, 2)
-
-        ## 批量矩阵乘法（baddbmm），在reshape_act和self.input_gate_weight之间进行，
-        ## 并加上偏置self.input_gate_bias。这一步计算输入门的原始值。
-        res = torch.baddbmm(self.input_gate_bias[:, None, :], reshape_act, self.input_gate_weight)
-        input_gate = torch.sigmoid(res.transpose(0, 1).reshape(batch_size, seq_len, lru_width))
-
-        ## 类似input_gate
-        res = torch.baddbmm(self.recurrent_gate_bias[:, None, :], reshape_act, self.recurrent_gate_weight)
-        recurrent_gate = torch.sigmoid(res.transpose(0, 1).reshape(batch_size, seq_len, lru_width))
-
-        # Compute the parameter `A` of the recurrence.
-        # 上面的公式
-        log_recurrent_gate = -8.0 * recurrent_gate * nn.functional.softplus(self.recurrent_param)
-        recurrent_gate = torch.exp(log_recurrent_gate)
-```
-
-还有如下几个特点：
-
-+ $$W_a$$和$$W_x$$用LeCun init初始化
-+ 初始化$$\Lambda$$，使得在训练开始时，$$a^c$$均匀分布在0.9和0.999之间，类似[Resurrecting Recurrent Neural Networks for Long Sequences](https://arxiv.org/pdf/2303.06349)
-+ 不像大部分SSM（例如[Hippo: Recurrent memory with optimal polynomial projections](https://arxiv.org/pdf/2008.07669)）基于orthogonal polynomials（正交多项式）理论进行初始化。
-+ 也不像[Efficiently modeling long sequences with structured state spaces](https://arxiv.org/pdf/2111.00396.pdf)在底层的连续系统上进行离散化定义
-+ 不像原始的LRU用了复数，虽然[ On the universality of linear recurrences followed by nonlinear projections](https://arxiv.org/pdf/2307.11888v1)说复数的表达能力更强，但在实践中对语言模型并没有什么用（[Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)）
-
-##### gate特点
-
-&nbsp;
-
-先复习一下LSTM：
-
-![lstm-peephole-lstm](../assets/lstm-peephole-lstm.png)
-
-GRU：
-
-+ 重置门（reset gate）：如果重置门关闭，会**忽略掉历史信息**，即历史不相干的信息不会影响未来的输出。
-+ 更新门（update gate）：将LSTM的**输入门和遗忘门合并**，用于控制**历史信息对当前时刻隐层输出的影响**。如果更新门接近1，会把历史信息传递下去。
-
-![gru](../assets/gru.png)
-
-+ 两个gate只和$$x_t$$有关，**和$$h_{t-1}$$无关**。
-+ input gate $$i_t$$和LSTM类似，直接对输入$$x_t$$进行filter或者scale down。
-+ recurrent gate $$r_t$$和之前的gate机制不同：
-    + mamba里的selection机制和GRU的**update gate**类似，在**之前的状态**和**当前输入$$x_t$$**之间进行插值（interpolate），功能类似LSTM的**forget gate**，能够**reset状态，并遗忘之前的信息**
-    + 本文的recurrent gate则类似于在LRU的更新和之前的隐藏状态之间进行插值，能够**有效地丢弃输入**，并且**保持之前历史里的所有信息**。使得模型在处理不相关或重复输入（**uniformative inputs**）时，更能达到**超指数的记忆能力**，以更有效地保留有用信息(因为这个gate**和$$h_{t-1}$$无关**)。
-
-## SAMBA
-
-[长文本模型近期研究工作梳理](https://mp.weixin.qq.com/s/5u2w08twsJ6CgHZ2FpN8JA)
-
-[SAMBA: Simple Hybrid State Space Models for Efficient Unlimited Context Language Modeling](https://arxiv.org/pdf/2406.07522)
-
-## Mamba in llama
-
-[Mamba作者新作：将Llama3蒸馏成混合线性 RNN](https://mp.weixin.qq.com/s/jZGcBxhVUfb-Qv1UkqYK4A)
-
-[The Mamba in the Llama: Distilling and Accelerating Hybrid Models](https://arxiv.org/pdf/2408.15237)
-
-## feedback attention memory
-
-[TransformerFAM: Feedback attention is working memory](https://arxiv.org/pdf/2404.09173.pdf)
-
-## infini-attention
-
-[Leave No Context Behind: Efficient Infinite Context Transformers with Infini-attention](https://arxiv.org/pdf/2404.07143.pdf)
-
-[【重磅】谷歌重塑Transformer：无限记忆力，无限长输入，LLM基础研究重大突破](https://mp.weixin.qq.com/s/bV2b9uJ4GFQPhhggHT3VIA)
-
-将**压缩记忆**整合进标准的点积注意力机制，并在单个Transformer块内同时实现了**掩码局部注意力**和**长期线性注意力机制**
-
-![infini-attention](../assets/infini-attention.png)
-
-与transformer-xl对比：
-
-![infini-attention-vs-transformer-xl](../assets/infini-attention-vs-transformer-xl.png)
-
-[https://github.com/mustafaaljadery/gemma-2B-10M](https://github.com/mustafaaljadery/gemma-2B-10M)
-
-[https://github.com/dingo-actual/infini-transformer](https://github.com/dingo-actual/infini-transformer)
-
-## MEGA
-
-[Mega: Moving average equipped gated attention](https://arxiv.org/pdf/2209.10655.pdf)
-
-[https://github.com/facebookresearch/mega](https://github.com/facebookresearch/mega)
-
-### 标准的self-attention公式
-
-&nbsp;
-
-对于序列长度=$$n$$的输入$$\boldsymbol{X}=\left\{\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n\right\} \in \mathbb{R}^{n \times d}$$，输出$$\boldsymbol{Y}=\left\{\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_n\right\} \in \mathbb{R}^{n \times d}$$
-
-XXX
-\boldsymbol{Y}=\operatorname{Attn}(\boldsymbol{X})=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \boldsymbol{V}
-XXX
-
-XXX
-\boldsymbol{Q}=\boldsymbol{X} W_q+b_q,\boldsymbol{K}=\boldsymbol{X} W_k+b_k,\boldsymbol{V}=\boldsymbol{X} W_v+b_v
-XXX
-
-其中，$$\text { Attn : } \mathbb{R}^{n \times d} \rightarrow \mathbb{R}^{n \times d}$$，$$W_q, W_k, W_v \in \mathbb{R}^{d \times d}$$，$$b_q, b_k, b_v \in \mathbb{R}^d$$，而且有两种定义方式：
-
-+ $$f(\cdot)=f_{\text {softmax }}(\cdot)$$，同时$$\tau(\boldsymbol{X})=\sqrt{d}$$，这是经典操作[Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/pdf/1409.0473.pdf)
-+ $$f(\cdot)=f_{\mathrm{relu}^2}(\cdot)$$即$$relu(x)^2$$，同时$$\tau(\boldsymbol{X})=n$$，这是[Primer: Searching for efficient transformers for language modeling](https://arxiv.org/pdf/2109.08668.pdf)和[Transformer Quality in Linear Time](https://arxiv.org/pdf/2202.10447.pdf)提出的
-
-![gau](../assets/gau.png)
-
-对于$$h$$个attention heads，计算$$\boldsymbol{A}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \in \mathbb{R}^{n \times n}$$需要的时间和空间复杂度都是$$O(hn^2)$$
-
-### EMA
-
-&nbsp;
-
-对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)如下
-
-XXX
-\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha}) \odot \mathbf{y}_{t-1}
-XXX
-
-其中，$$\boldsymbol{\alpha} \in(0,1)^d$$表示权重衰减，$$\odot$$是element-wise product
-
-$$\boldsymbol{\alpha}$$越大，$$1-\boldsymbol{\alpha}$$越小，对历史的衰减也越快：
-
-![ema](../assets/ema.png)
-
-EMA的计算看成$$n$$个**独立的卷积**，可以通过**FFT(快速傅立叶变换)**来加速计算。具体。。。再看看
-
-**Damped EMA**：由于输入的x是d维向量，可以引入一个因子$$\boldsymbol{\delta} \in(0,1)^d$$让EMA更鲁棒：
-
-XXX
-\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha} \odot \boldsymbol{\delta}) \odot \mathbf{y}_{t-1}
-XXX
-
-### MEGA
-
-&nbsp;
-
-EMA可以看成是一种**与位置相关的归纳偏置（inductive bias）**，即假设当前位置与之前位置满足滑动平均的关系，而attention矩阵的计算其实并没有考虑位置信息，所以可以把二者结合一下。
-
-![mega](../assets/mega.png)
-
-其中的multi-dimensional damped EMA大致流程如下：
-
-+ **先变成h维**：先把$$\boldsymbol{X} \in \mathbb{R}^{n \times d}$$通过矩阵$$\beta$$映射成$$\boldsymbol{U}\in \mathbb{R}^{n \times h}$$
-+ **计算EMA**：然后通过EMA得到$$\boldsymbol{h}\in \mathbb{R}^{n \times h}$$（具体$$\mathbf{h}_t^{(j)}=\boldsymbol{\alpha}_j \odot \mathbf{u}_t^{(j)}+\left(1-\boldsymbol{\alpha}_j \odot \boldsymbol{\delta}_j\right) \odot \mathbf{h}_{t-1}^{(j)}$$）
-+ **再变回d维**：再通过一个矩阵$$\eta$$变回$$\boldsymbol{Y}\in \mathbb{R}^{n \times h}$$
-
-然后看整个流程：
-
-+ 先计算EMA
-
-XXX
-\begin{aligned}
-\boldsymbol{X}^{\prime} & =\operatorname{EMA}(\boldsymbol{X}) & & \in \mathbb{R}^{n \times d} \\
-\boldsymbol{Z} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_z+b_z\right) & & \in \mathbb{R}^{n \times z}
-\end{aligned}
-XXX
-
-+ 再基于EMA的结果计算QK，基于原始的X计算V：
-
-XXX
-\begin{array}{ll}
-\boldsymbol{Q}=\boldsymbol{\kappa}_q \odot \boldsymbol{Z}+\boldsymbol{\mu}_q & \in \mathbb{R}^{n \times z} \\
-\boldsymbol{K}=\boldsymbol{\kappa}_k \odot \boldsymbol{Z}+\boldsymbol{\mu}_k & \in \mathbb{R}^{n \times z} \\
-\boldsymbol{V}=\phi_{\text {silu }}\left(\boldsymbol{X} W_v+b_v\right) & \in \mathbb{R}^{n \times v}
-\end{array}
-XXX
-
-+ 计算带位置bias的attention：
-
-XXX
-\boldsymbol{O}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}+\boldsymbol{b}_{\mathrm{rel}}\right) \boldsymbol{V} \quad \in \mathbb{R}^{n \times v}
-XXX
-
-+ 通过reset gate $$\boldsymbol{\gamma}$$和update gate $$\boldsymbol{\varphi}$$计算输出
-
-XXX
-\begin{aligned}
-\boldsymbol{\gamma} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_\gamma+b_\gamma\right) & & \in \mathbb{R}^{n \times v} \\
-\boldsymbol{\varphi} & =\phi_{\text {sigmoid }}\left(\boldsymbol{X}^{\prime} W_{\varphi}+b_{\varphi}\right) & & \in \mathbb{R}^{n \times d} \\
-\hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d} \\
-\boldsymbol{Y}&=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
-\end{aligned}
-XXX
-
-
-这里把attention里的softmax改成了如下的laplace函数：
-
-XXX
-f_{\text {laplace }}(x ; \mu, \sigma)=0.5 \times\left[1+\operatorname{erf}\left(\frac{x-\mu}{\sigma \sqrt{2}}\right)\right]
-XXX
-
-其中，$$\operatorname{erf}(x)=\frac{1}{\sqrt{\pi}} \int_{-x}^x e^{-t^2} \mathrm{~d} t=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} \mathrm{~d} t$$是[误差函数](https://zh.wikipedia.org/wiki/%E8%AF%AF%E5%B7%AE%E5%87%BD%E6%95%B0)，
-
-为了让laplace逼近$$f_{\text {relu }^2}$$，对于$$x=\sqrt{2}$$这个点，求解如下方程
-
-XXX
-\begin{aligned}
-& f_{\text {relu2 }}(\sqrt{2})=f_{\text {laplace }}(\sqrt{2}) \\
-& f_{\text {relu2 }}^{\prime}(\sqrt{2})=f_{\text {laplace }}^{\prime}(\sqrt{2})
-\end{aligned}
-XXX
-
-可以得到$$\mu=\sqrt{1 / 2}$$，$$\sigma=\sqrt{1 / 4 \pi}$$，对应的曲线和准确率如下：
-
-![laplace-vs-relu2](../assets/laplace-vs-relu2.png)
-
-### mega-chunk
-
-![mega-chunk](../assets/mega-chunk.png)
-
-将序列切分成长度固定为$$c$$的$$k=n/c$$个chunk，对**每个chunk独立计算**上面的attention，这样复杂度就变成了$$O(kc^2)=O(nc)$$，由于有EMA，所以这样做还是能够保持一定程度的长距离依赖。
-
-## MEGALODON
-
-[Meta无限长文本大模型来了：参数仅7B，已开源](https://mp.weixin.qq.com/s/VML5hExo5iPsyEavxzIZSA)
-
-[革命新架构掀翻Transformer！无限上下文处理，2万亿token碾压Llama 2](https://mp.weixin.qq.com/s/xgP9P51gjqJ93FYSWfPeaA)
-
-[MEGALODON: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
-
-[https://github.com/XuezheMax/megalodon](https://github.com/XuezheMax/megalodon)
-
-[Megalodon: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
-
-基于MEGA进行改进，能够同时实现
-
-+ 高效训练（减少通信和计算量）
-+ 高效推理（保持恒定的KV缓存）
-
-
-## MOD
-
-[Mixture-of-Depths: Dynamically allocating compute in transformer-based language models](https://arxiv.org/pdf/2404.02258.pdf)
-
-
-## multi-head moe
-
-[微软让MoE长出多个头，大幅提升专家激活率](https://mp.weixin.qq.com/s/ZCRyb63M2DL4hOQh7uxxaw)
-
-[Multi-Head Mixture-of-Experts](https://arxiv.org/pdf/2404.15045)
-
-[https://github.com/yushuiwx/MH-MoE](https://github.com/yushuiwx/MH-MoE)
-
-## Lory
-
-[150B token从头训练，普林斯顿Meta发布完全可微MoE架构Lory](https://mp.weixin.qq.com/s/UKIXGJTFzSeSZvoTe_c9CQ)
-
-[Lory: Fully Differentiable Mixture-of-Experts for Autoregressive Language Model Pre-training](https://arxiv.org/pdf/2405.03133)
-
-## Perciever
-
-[Perceiver: General Perception with Iterative Attention](https://arxiv.org/pdf/2103.03206.pdf)
-
-## Aaren
-
-[Bengio等人新作：注意力可被视为RNN，新模型媲美Transformer，但超级省内存](https://mp.weixin.qq.com/s/mRt2A1n1CmO7uqzuLQHxkw)
-
-[Attention as an RNN](https://arxiv.org/pdf/2405.13956)
-
-### many-to-one RNN
-
-对query向量$$q$$的attention可以看成是一个函数，对输入的$$N$$个token $$x_{1: N}$$通过他们的key和value $$\left\{\left(k_i, v_i\right)\right\}_{i=1}^N$$ 变换成输出 $$\text { Attention }\left(q, k_{1: N}, v_{1: N}\right)$$，假设$$\bar{s}_i=\operatorname{dot}\left(q, k_i\right)$$，那么输出就是
-
-XXX
-o_N=\sum_{i=1}^N \operatorname{softmax}(s)_i v_i=\frac{\sum_{i=1}^N \exp \left(s_i\right) v_i}{\sum_{i=1}^N \exp \left(s_i\right)}=\frac{\hat{a}_N}{\hat{c}_N}
-XXX
-
-可以发现，分子和分母其实都可以写成递推形式$$\hat{a}_k=\hat{a}_{k-1}+\exp \left(s_k\right) v_k$$和$$\hat{c}_k=\hat{c}_{k-1}+\exp \left(s_k\right)$$，由于直接这么做可能会产生很大或者很小的值（例如算exp），所以可以通过如下方式进行缓解：计录到第k步的最大值$$m_k=\max _{i \in\{1, \ldots, k\}} s_i$$，然后减掉它，即$$a_k=\sum_{i=1}^k \exp \left(s_i-m_k\right) v_i$$和$$c_k=\sum_{i=1}^k \exp \left(s_i-m_k\right)$$，这样就可以改写为如下形式：
-
-XXX
-\begin{aligned}
-a_k & =a_{k-1} \exp \left(m_{k-1}-m_k\right)+v_k \exp \left(s_k-m_k\right) \\
-c_k & =c_{k-1} \exp \left(m_{k-1}-m_k\right)+\exp \left(s_k-m_k\right) \\
-m_k & =\max \left(m_{k-1}, s_k\right)
-\end{aligned}
-XXX
-
-其中第一行其实就是$$s_i-m_k=s_i-m_k+m_{k-1}-m_k$$，然后exp一下，$$exp(s_i-m_k)=exp(s_i-m_k)exp(m_{k-1}-m_k)$$，总结成如下图：
-
-![attention-rnn-cell](../assets/attention-rnn-cell.png)
-
-所以Attention的RNN cell就是输入$$\left(a_{k-1}, c_{k-1}, m_{k-1}, q\right)$$，输出$$\left(a_k, c_k, m_k, q\right)$$，初始的状态是$$\left(a_0, c_0, m_0, q\right)=(0,0,0,q)$$
-
-然后就可以将之前的attention看成如下几类many-to-one的RNN了：
-
-+ 传统attention只计算最后的一个输出
-+ self-attention使用**输入token**作为初始状态
-+ Perceiver的cross-attention使用**依赖input的隐变量**作为初始状态
-
-![many-to-one-rnn](../assets/many-to-one-rnn.png)
-
-对于新来的token而言：
-
-+ 传统的RNN一般是流式地输入数据，因此只需要O(1)的内存和计算就行了
-+ Transformer需要把这个新token当成一个初始状态加进来，所以需要把之前时间步的再重新算一次，需要O(N)的计算
-+ Perceiver中的隐变量是依赖输入的，而且这个新token会改变value，因此初始状态也会变，所以需要从头算一遍，需要O(NL)的计算，L是隐变量个数（可以参考代码[perceiver_torch](https://github.com/lucidrains/perceiver-pytorch/blob/main/perceiver_pytorch/perceiver_pytorch.py)和如下gpt4o的回答）
-
-![perceiver](../assets/perceiver.png)
-
-### many-to-many RNN
-
-要计算$$\left\{o_i=\operatorname{Attention}\left(q, x_{1: i}\right)\right\}_{i=1}^N$$，通过如下的并行前缀扫描算法，对于$$N$$个序列数据的$$N$$个前缀，通过关联运算符$$\oplus$$并行计算，能够高效地通过$$\left\{x_k\right\}_{k=1}^N$$计算$$\left\{\bigoplus_{i=1}^k x_i\right\}_{k=1}^N$$
-
-![parallel-prefix-scan](../assets/parallel-prefix-scan.png)
-
-由于$$\operatorname{Attention}\left(\mathrm{q}, \mathrm{x}_{1: \mathrm{k}}\right)=o_k=\frac{a_k}{c_k}$$，为了计算$$\left\{\text { Attention }\left(\mathrm{q}, \mathrm{x}_{1: \mathrm{k}}\right)\right\}_{k=1}^N$$，只需要先按这个并行扫描算法计算$$\left\{a_k\right\}_{k=1}^N$$、$$\left\{c_k\right\}_{k=1}^N$$和$$\left\{m_k\right\}_{k=1}^N$$，再把$$a_k$$和$$c_k$$结合起来就行。
-
-接来来定义三元组$$\left(\mathrm{m}_A, \mathrm{u}_A, \mathrm{w}_A\right)$$，其中
-
-+ $$A$$：一些下标的集合
-+ $$\mathrm{m}_A=\max _{i \in A} s_i$$
-+ $$\mathrm{u}_A=\sum_{i \in A} \exp \left(s_i-\mathrm{m}_A\right)$$
-+ $$\mathrm{w}_A=\sum_{i \in A} \exp \left(s_i-\mathrm{m}_A\right) v_i$$
-
-所以并行扫描算法的输入是$$\left\{\left(\mathrm{m}_{\{i\}}, \mathrm{u}_{\{i\}}, \mathrm{W}_{\{i\}}\right)\right\}_{i=1}^N=\left\{\left(s_i, 1, v_i\right)\right\}_{i=1}^N$$，再来定义操作$$\oplus$$：
-
-XXX
-\left(\mathrm{m}_A, \mathrm{u}_A, \mathrm{w}_A\right) \oplus\left(\mathrm{m}_B, \mathrm{u}_B, \mathrm{w}_B\right)=\left(\mathrm{m}_{A \cup B}, \mathrm{u}_{A \cup B}, \mathrm{w}_{A \cup B}\right)
-XXX
-
-其中，
-
-+ $$\mathrm{m}_{A \cup B}=\max \left(\mathrm{m}_A, \mathrm{~m}_B\right)$$
-+ $$\mathrm{u}_{A \cup B}=\mathrm{u}_A \exp \left(\mathrm{m}_A-\mathrm{m}_{A \cup B}\right)+\mathrm{u}_B \exp \left(\mathrm{m}_B-\mathrm{m}_{A \cup B}\right)$$
-+ $$\mathrm{w} _{A \cup B}=\mathrm{w}_A \exp \left(\mathrm{m}_A-\mathrm{m}_{A \cup B}\right)+\mathrm{w}_B \exp \left(\mathrm{m}_B-\mathrm{m}_{A \cup B}\right)$$
-
-这个并行扫描算法最终输出下式，即$$\left\{\left(m_k, c_k, a_k\right)\right\}_{k=1}^N$$：
-
-XXX
-\left\{\left(\mathrm{m}_{\{1, \ldots, k\}}, \mathrm{u}_{\{1, \ldots, k\}}, \mathrm{w}_{\{1, \ldots, k\}}\right)\right\}_{k=1}^N=\left\{\left(m_k, \sum_{i=1}^k \exp \left(s_i-m_k\right), \sum_{i=1}^k \exp \left(s_i-m_k\right) v_i\right)\right\}_{k=1}^N
-XXX
-
-
-![many-to-many-rnn](../assets/many-to-many-rnn.png)
-
-### Aaren
-
-Aaren(attention as a recurrent newral network)的结构如下：
-
-XXX
-\begin{aligned}
-h_1^{(0)}, \ldots, h_N^{(0)} & \leftarrow x_1, \ldots, x_N \\
-{\left[h_1^{(j+1)}, \ldots, h_N^{(j+1)}\right] } & \leftarrow \operatorname{Aaren}\left(q^{(j)},\left[h_1^{(j)}, \ldots, h_N^{(j)}\right]\right)
-\end{aligned}
-XXX
-
-transformer的query是输入的token，而Aaren的query token $$q$$是在训练的过程中通过bp学习的。迭代地计算$$y_k$$只需要常数级的计算，因为它依赖$$h_{k-1}$$和$$x_k$$。
-
-transformer：
-
-+ 使用kv cache时需要线性的内存
-+ 需要保存所有之前的tokens，包括在中间层的那些
-
-aaren：
-
-+ 只需要常数级的内存
-+ 不需要保存之前的所有tokens
-
-![stacking-aaren](../assets/stacking-aaren.png)
-
-## Matmul-free
-
-[从LLM中完全消除矩阵乘法，效果出奇得好，10亿参数跑在FPGA上接近大脑功耗](https://mp.weixin.qq.com/s/HUvGGug48nGBx067nCbkag)
-
-## H2O attention
-
-[H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models](https://arxiv.org/pdf/2306.14048)
-
-+ sparsity for small cache size：kv cache很稀疏，只要5%效果就可以了
-+ Heavy-Hitters for low miss rate：一小部分的token贡献了大部分attention score
-+ 贪心法选择需要干掉的token：假设总共需要保留k个token，对于第i个token，加进来后，遍历集合里的所有token，看干掉哪一个对attention score影响最小，就把它干掉
-
-## TransNAR
-
-[拯救Transformer推理能力！DeepMind新研究TransNAR：给模型嵌入「算法推理大脑」](https://mp.weixin.qq.com/s/YPICpkYHAC7zTLC_0M_XkQ)
-
-[Transformers meet Neural Algorithmic Reasoners](https://arxiv.org/pdf/2406.09308)
-
-基于：[Neural Algorithmic Reasoning](https://arxiv.org/pdf/2105.02761)
-
-## softmax数学原理
-
-[通向概率分布之路：盘点Softmax及其替代品](https://mp.weixin.qq.com/s/tA9kJqD279dHnivzPkvbjg)
-
-把softmax的分母记为$$Z(x)$$，其对数是max的一个光滑近似：
-
-XXX
-\begin{array}{r}
-\log Z(\boldsymbol{x})=\log \sum_{j=1}^n e^{x_j}=\operatorname{logsumexp}(\boldsymbol{x}) \\
-\lim _{\tau \rightarrow 0^{+}} \tau \operatorname{logsumexp}(\boldsymbol{x} / \tau)=\max (\boldsymbol{x})
-\end{array}
-XXX
-
-当$$\tau$$取1时，可以得到$$\operatorname{logsumexp}(\boldsymbol{x}) \approx \max (\boldsymbol{x})$$
-
-## StreamingLLM
-
-[Efficient Streaming Language Models with Attention Sinks](https://arxiv.org/pdf/2309.17453)
-
-[深度解析streamingLLM之无限长文本生成能力](https://mp.weixin.qq.com/s?__biz=Mzg2ODk4MzE2MQ==&mid=2247484158&idx=1&sn=666bd5fed13815b5765124646206bac5&chksm=cea54ae8f9d2c3fea1f3d5dfc94fc3d48abbd02a1278584bfd76ff8fe52ce59ce8966ced9cd5&token=562866785&lang=zh_CN#rd)
-
-attention sink：输入给LLM推理开头的几个intial tokens是非常特殊的，就像水龙头一样，出水那一瞬间吸引了人们大量的attention。而且intial tokens与生成token的绝对距离距离和语义信息都不重要，重要的是这第一个或者前面几个token。
-
-softmax需要所有位置的值的总和为1，因此必须给某些位置权重，即使这个位置对输出没有任何贡献，可能导致在backward的过程中产生错误的权重更新，而这个错误在后续的过程中很难被纠正。因此，模型倾向于将不必要的注意力值转嫁给特定的token。其实在[https://www.evanmiller.org/attention-is-off-by-one.html](https://www.evanmiller.org/attention-is-off-by-one.html)就提出了，要给softmax的分母+1：$$(\operatorname{softmax_1}(\mathrm{x}))_i=\frac{\exp \left(x_i\right)}{\sum_j \exp \left(x_j\right)+1}$$
-
-当每个token都趋向负无穷时，softmax的极限是1/k（k是token数），也就是会让每个token的概率都是1/k
-
-XXX
-\lim _{x 1 \rightarrow-\infty} \ldots \lim _{x_k \rightarrow-\infty}(\operatorname{softmax}(x))_i=\frac{1}{k}>0
-XXX
-
-而$$$$softmax_1$$$$因为分母有个1（即$$exp(0)=1$$），相当于在最前面引入了一个或者多个的无意义的global_token。同样当每个token都趋向负无穷时，因为分母已经有一个1了，所以可以让其他正常token都趋于0
-
-XXX
-\lim _{x 1 \rightarrow-\infty} \ldots \lim _{x_k \rightarrow-\infty}\left(\operatorname{softmax}_1(x)\right)_i=0
-XXX
-
-
-[https://github.com/mit-han-lab/streaming-llm](https://github.com/mit-han-lab/streaming-llm)
-
-集成到trt-llm里了：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm)
-
-+ trtllm-build时，加上```--streamingllm enable```
-+ infer时，加上```--sink_token_length```设置sink的token数，加上```--max_attention_window_size```设置sliding_window
-
-## 是否还要RAG?
-
-[谷歌重磅：告别RAG，长上下文的大语言模型无需检索增强](https://mp.weixin.qq.com/s/lOORnoyrA8lqOEXWKxhAQg)
-
-## memory^3
-
-[鄂维南院士领衔新作：大模型不止有RAG、参数存储，还有第3种记忆](https://mp.weixin.qq.com/s/_7mpswMvpg5sRrIKsF-Vvw)
-
-[Memory3 : Language Modeling with Explicit Memory](https://arxiv.org/pdf/2407.01178)
-
-## TSLLM
-
-[没想到！AlphaZero式树搜索也能用来增强大语言模型推理与训练](https://mp.weixin.qq.com/s/k3HuSPGJFJ223thy316eCg)
-
-[AlphaZero-Like Tree-Search can Guide Large Language Model Decoding and Training](https://arxiv.org/pdf/2309.17179)
-
-[https://github.com/waterhorse1/LLM_Tree_Search](https://github.com/waterhorse1/LLM_Tree_Search)
-
-## PEER
-
-[单一作者论文，谷歌提出百万专家Mixture，超越密集前馈、稀疏MoE](https://mp.weixin.qq.com/s/-oocmPNRT5ddvNwIvYxiQA)
-
-[MoE也有Scaling Law，「百万专家」利用率近100%！DeepMind华人挑战MoE极限](https://mp.weixin.qq.com/s/tBe9DZvzB6NB8HhLYP31CQ)
-
-[Mixture of A Million Experts](https://arxiv.org/pdf/2407.04153)
-
-## TTT
-
-[彻底改变语言模型：全新架构TTT超越Transformer，ML模型代替RNN隐藏状态](https://mp.weixin.qq.com/s/QSw9PKB_HhSxeO7agnzBgQ)
-
-[Learning to (Learn at Test Time): RNNs with Expressive Hidden States](https://arxiv.org/pdf/2407.04620)
-
-[https://github.com/test-time-training/ttt-lm-jax](https://github.com/test-time-training/ttt-lm-jax)
-
-[https://github.com/test-time-training/ttt-lm-pytorch](https://github.com/test-time-training/ttt-lm-pytorch)
-
-![ttt](../assets/ttt.png)
-
-[连OpenAI都推不动Scaling Law了？MIT把「测试时训练」系统研究了一遍，发现还有路](https://mp.weixin.qq.com/s/tfrG21mfteVAkjqYx5mDsQ)
-
-[The Surprising Effectiveness of Test-Time Training for Abstract Reasoning](https://ekinakyurek.github.io/papers/ttt.pdf)
-
-## Axiomatic Training
-
-[6700万参数比肩万亿巨兽GPT-4！微软MIT等联手破解Transformer推理密码](https://mp.weixin.qq.com/s/ySRE3MaEH539vqrWDi6KBQ)
-
-[公理训练让LLM学会因果推理：6700万参数模型比肩万亿参数级GPT-4](https://mp.weixin.qq.com/s/Yera281WG8RNAOrRUYjH6g)
-
-[Teaching Transformers Causal Reasoning through Axiomatic Training](https://arxiv.org/pdf/2407.07612v1)
-
-训练大模型新范式——**公理框架（Axiomatic Framework）**，作者从头开始训练了6700万参数的模型，仅使用了简单的因果链作为训练数据。在推断复杂图表中的因果关系时，**67M模型的表现超越了十亿级参数LLM**，甚至可以与GPT-4相媲美。
-
-## PNN
-
-[AI大模型有望再扩1000倍！剑桥耶鲁康奈尔：PNN是变革关键](https://mp.weixin.qq.com/s/XjU-r2rKGWaatObzdh5TGw)
-
-[Training of Physical Neural Networks](https://arxiv.org/pdf/2406.03372)
-
-## JRT
-
-[小技巧大功效，「仅阅读两次提示」让循环语言模型超越Transformer++](https://mp.weixin.qq.com/s/zdPlK4IHeEiW0ikmQMPJUA)，注：这里的transformer++指的就是llama2的架构
-
-[Just read twice: closing the recall gap for recurrent language models](https://arxiv.org/pdf/2407.05483)
-
-[https://github.com/HazyResearch/prefix-linear-attention](https://github.com/HazyResearch/prefix-linear-attention)
-
-![jrt](../assets/jrt.png)
-
-### order的重要性
-
-&nbsp;
-
-线性attention的recurrent state很小，存储空间有限，往往很难选择要存储哪些state。
-
-如果集合A和集合B有交集，且A元素比B多，先出现集合A的时候，需要存储整个A，而先出现集合B的时候，则只需要存储集合B
-
-### JRT-Prompt
-
-&nbsp;
-
-上下文学习任务以$$(\mathcal{C}, \mathcal{Q}, \mathcal{Y})$$作为输入，$$\mathcal{C}$$为一些上下文来源（如文档或代码存储库），$$\mathcal{Q}$$为给定上下文时对模型的一些问题或请求，$$\mathcal{Y}$$为答案。
-
-+ 使用自回归的标准上下文学习模型$$\mathcal{A}$$，输入$$\mathcal{C}$$和$$\mathcal{Q}$$，并根据正确的完成情况$$Y$$来评估生成的输出$$\hat{\mathcal{Y}}=\mathcal{A}(\mathcal{C}, \mathcal{Q})$$。
-+ JRT-PROMPT：在提示模型输出答案之前会在上下文中重复提示中的信息（如问题和文档），例如$$\hat{\mathcal{Y}}=\mathcal{A}(\mathcal{C}, \mathcal{Q}, \mathcal{C}, \mathcal{Q})$$。在上下文第二次出现时，模型根据完整的上下文来决定存储哪些信息。
-
-示例：
-
-```shell
-# 原来的prompt
-## input: 
-百度是一个xxx公司，1999年，xxxxx，2001年，xxx，2002年，xxxx。百度成立于
-## output: 
-2001年
-
-# JRT的prompt
-## input：
-百度成立于哪一年？百度是一个xxx公司，1999年，xxxxx，2001年，xxx，2002年，xxxx。
-百度是一个xxx公司，1999年，xxxxx，2001年，xxx，2002年，xxxx。百度成立于
-## output: 
-2001年
-```
-
-### base的linear transformer
-
-&nbsp;
-
-通过$$\phi: \mathbb{R}^d \rightarrow \mathbb{R}^{\tilde{d}}$$，使得$$\phi\left(\boldsymbol{q}_i\right)^{\top} \phi\left(\boldsymbol{k}_j\right) \approx \exp \left(\boldsymbol{q}_i^{\top} \boldsymbol{k}_j / \sqrt{d}\right) .$$
-
-XXX
-\boldsymbol{y}_i=\frac{\phi\left(\boldsymbol{q}_i\right) \sum_{j=1}^i\left(\phi\left(\boldsymbol{k}_j\right)^{\top} \boldsymbol{v}_j\right)}{\phi\left(\boldsymbol{q}_i\right) \sum_{j=1}^i \phi\left(\boldsymbol{k}_j\right)}
-XXX
-
-先计算k和v的乘法，时间和空间复杂度是$$\mathcal{O}(N d \tilde{d})$$，而softmax attention是$$O\left(N^2 d\right)$$
-
-infer阶段包括两个phases：
-
-+ prefill：并行处理prompt，得到两个state：
-    + KV-state：$$\boldsymbol{s}_l=\sum_{j=1}^l \phi\left(\boldsymbol{k}_j\right)^{\top} \boldsymbol{v}_j$$
-    + K-state：$$\boldsymbol{z}_l=\sum_{j=1}^l \phi\left(\boldsymbol{k}_j\right)^{\top}$$
-+ decoding：计算如下3步，其中$$\boldsymbol{s}_i \in \mathbb{R}^{d \times \tilde{d}}$$，$$\boldsymbol{z}_i \in \mathbb{R}^{\tilde{d}}$$，一个decode step有$$O(1)$$的时间和空间复杂度，而softmax attention加上kv-caching有$$O(N)$$
-    + $$\boldsymbol{s}_i=\boldsymbol{s}_{i-1}+\phi\left(\boldsymbol{k}_i\right)^{\top} \boldsymbol{v}_i$$
-    + $$\boldsymbol{z}_i=\boldsymbol{z}_{i-1}+\phi\left(\boldsymbol{k}_i\right)^{\top}$$
-    + $$\boldsymbol{y}_i=\frac{\phi\left(\boldsymbol{q}_i\right) \boldsymbol{s}_i}{\phi\left(\boldsymbol{q}_i\right) \boldsymbol{z}_i}$$
-
-### JRT-RNN架构
-
-&nbsp;
-
-PLA（Prefix Linear Attention）受Prefix-LM启发，主要有2个特点：
-
-+ prefix-LM在encoder和decoder的projection是共享的，而JRT-RNN的encoder用$$\boldsymbol{k}_e, \boldsymbol{v}_e$$，decoder用$$\boldsymbol{k}_d, \boldsymbol{v}_d$$
-+ 编码器使用了non-causal的线性注意力，而解码器使用标准causal线性注意力。
-
-prefill阶段，并行地对长度为$$l$$的prompt进行如下计算，如果长度$$l< M$$，进行left-pad到$$M$$长度
-
-XXX
-\boldsymbol{y}_i=\frac{\phi\left(\boldsymbol{q}_i\right)\left(\sum_{j=1}^i \phi\left(\boldsymbol{k}_{d_j}\right)^{\top} \boldsymbol{v}_{d_j}+\sum_{j=1}^M \phi\left(\boldsymbol{k}_{e_j}\right)^{\top} \boldsymbol{v}_{e_j}\right)}{\phi\left(\boldsymbol{v} q_i\right)\left(\sum_{j=1}^i \phi\left(\boldsymbol{k}_{d_j}\right)^{\top}+\sum_{j=1}^M \phi\left(\boldsymbol{k}_{e_j}\right)^{\top}\right)}
-XXX
-
-初始化如下：
-
-XXX
-\boldsymbol{s}_M=\sum_{j=1}^M\left(\phi\left(\boldsymbol{k}_{e_j}\right)^{\top} \boldsymbol{v}_{e_j}+\phi\left(\boldsymbol{k}_{d_j}\right)^{\top} \boldsymbol{v}_{d_j}\right),\ \boldsymbol{z}_M=\sum_{j=1}^M\left(\phi\left(\boldsymbol{k}_{e_j}\right)^{\top}+\phi\left(\boldsymbol{k}_{d_j}\right)^{\top}\right)
-XXX
-
-对于decoding阶段，输出$$y_i, i>M$$，和base的linear transformer一样，不需要修改
-
-训练loss是ntp和mlm的混合，假设序列长度是$$N$$，前$$M$$个token算MLM，后面的$$N-M$$个token算NTP：
-
-XXX
-\mathcal{L}=\frac{w_1 \mathcal{L}_{\mathrm{NTP}}+w_2 \mathcal{L}_{\mathrm{MLM}}}{w_1+w_2}
-XXX
-
-### 效率提升
-
-虽然Linear attention比softmax attention要快，但其实不如精心优化的softmax attention（如flash attention），[Simple linear attention language models balance the recall-throughput tradeof](https://arxiv.org/pdf/2402.18668)实现了一个io-aware的kernel（[https://github.com/HazyResearch/based/](https://github.com/HazyResearch/based/)），在prefill阶段精细地partitioning & storing暛的matrix-valued recurrent state across warp-registers，PLA参考这个实现了自己的加速版。
-
-## Falcon Mamba
-
-[非Transformer架构站起来了！首个纯无注意力大模型，超越开源巨头Llama 3.1](https://mp.weixin.qq.com/s/ET9gghK4asEr5ObuW2padw)
-
-[Welcome FalconMamba: The first strong attention-free 7B model](https://huggingface.co/blog/falconmamba)
-
-[https://huggingface.co/tiiuae/falcon-mamba-7b](https://huggingface.co/tiiuae/falcon-mamba-7b)
-
-[https://github.com/huggingface/transformers/blob/main/src/transformers/models/falcon_mamba/modeling_falcon_mamba.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/falcon_mamba/modeling_falcon_mamba.py)
-
-核心是```FalconMambaMixer```这个类
-
-无需增加内存存储，就可以处理任意长度的序列，并且能够在单个 24GB A10 GPU 上运行。
-
-训练数据有5500GT ，主要由RefinedWeb数据集组成，并添加了来自公共源的高质量技术数据、代码数据和数学数据。
-
-采用**多阶段训练策略**进行训练，上下文长度从2048增加到了8192。此外，受到**课程学习**概念的启发，整个训练阶段精心选择了混合数据，充分考虑了数据的**多样性和复杂性**。在最后的训练阶段，使用了一小部分高质量精选数据（即来自 Fineweb-edu 的样本），以进一步提升性能。
-
-大部分训练是在**256个H100 80GB GPU**上完成的，采用了 3D 并行（TP=1、PP=1、DP=256）与 ZeRO 相结合的策略。
-
-用adamW+WSD（预热 - 稳定 - 衰减）学习率schedule，在前50 GT的训练过程中，batch大小从b_min=128增加到了b_max=2048
-
-## LM-steer
-
-ACL 2024
-
-[LM-Steer: Word Embeddings Are Steers for Language Models](https://arxiv.org/pdf/2305.12798)
-
-[https://github.com/Glaciohound/LM-Steer](https://github.com/Glaciohound/LM-Steer)
-
-发现词向量空间上的线性变换空间等价于对语言模型生成样式的调节，并以此设计了名为 LM-Steers 的语言模型调控方法。我们发现词向量的这种调节作用普遍存在于各种尺寸的语言模型中。它只需要学习原始模型 0.2% 的参数就可以引导各种风格。在语言模型去毒化和生成情感控制等任务上，LM-Steers 可以实现与最先进的受控生成方法相当或更好的性能，同时保持更好的生成质量平衡。学习到的 LM-Steer 还可以充当文本风格的解读器：它可以解释各种文本样式与词向量哪些维度相关，并且可以用于寻找最具代表性的文本片段。 LM-Steer 可通过显式计算来在不同语言模型之间转移，而不需要额外训练。我们还可以简单地通过缩放 LM-Steer 来实现风格的连续控制，或者实现多种生成控制的组合。
-
-## razerattention
-
-减少kv-cache的大小
-
-[RazorAttention: Efficient KV Cache Compression Through Retrieval Heads](https://www.arxiv.org/pdf/2407.15891)
-
-受anthropic的induction head([In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html))启发:
-
-+ short head：对长文没有任何响应
-+ long head(induction head)：对长文能直接找到对应位置，并且对那附近的词有很强的信号
-
-## MLP-Mixer
-
-[MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/pdf/2105.01601)
-
-## sigmoid attention
-
-[Sigmoid注意力一样强，苹果开始重新审视注意力机制](https://mp.weixin.qq.com/s/4DvgsqkyNcj6HBrAHTygCA)
-
-[Theory, Analysis, and Best Practices for Sigmoid Self-Attention](https://arxiv.org/pdf/2409.04431)
-
-[https://github.com/apple/ml-sigmoid-attention](https://github.com/apple/ml-sigmoid-attention)
-
-证明了从理论上讲，与 softmax 注意力相比，具有sigmoid注意力的Transformer是**通用函数逼近器**，并且受益于**改进的正则化**。
-
-## lstm+transformer
-
-[LSTM+Transformer王炸创新，荣登Nature](https://mp.weixin.qq.com/s/OTwbZEy-v93-fzvh1Z4m2Q)
-
-## AnyGraph
-
-[港大黄超团队推出AnyGraph, 首次揭秘图大模型的Scaling Law](https://mp.weixin.qq.com/s/iqQi4ZP7FdpHnMxZByOyoQ)
-
-[AnyGraph: Graph Foundation Model in the Wild](https://arxiv.org/pdf/2408.10700)
-
-[https://github.com/HKUDS/AnyGraph](https://github.com/HKUDS/AnyGraph)
-
-
-## 液态神经网络
-
-[给机器人装上「虫脑」？非Transformer液态神经网络终于来了！MIT CSAIL负责人创业成果](https://mp.weixin.qq.com/s/oowid3yCpFNTALCvgdSwXg)
-
-Liquid Foundation Models（LFM），1B、3B和40B LFM在各个规模上均能实现SOTA性能，同时保持更小的内存占用和更高效的推理。2020年就有了[Liquid Time-constant Networks](https://arxiv.org/abs/2006.04439)
-
-## 差分transformer
-
-[这篇论文非常火！差分Transformer竟能消除注意力噪声，犹如降噪耳机](https://mp.weixin.qq.com/s/hG_S85HkyAkTFAI2iQjl6g)
-
-[Differential Transformer](https://arxiv.org/pdf/2410.05258)
-
-Transformer往往会过度关注不相关的上下文，即注意力噪声（attention noise），而差分Transformer则能放大对答案范围的注意力并消除噪音，从而增强上下文建模的能力。
-
-## SparseLLM
-
-[NeurIPS 2024｜SparseLLM：突破性全局剪枝技术，大语言模型稀疏化革命](https://mp.weixin.qq.com/s/mfdkUFXCsB50iqKgxv7hQQ)
-
-[SparseLLM: Towards Global Pruning of Pre-trained Language Models](https://arxiv.org/abs/2402.17946)
-
-[https://github.com/BaiTheBest/SparseLLM](https://github.com/BaiTheBest/SparseLLM)
-
-## minLSTM+minGRU
-
-[图灵奖得主Yoshua Bengio新作：Were RNNs All We Needed?](https://mp.weixin.qq.com/s/ueid-TAw-9OjtKFKA5lqSw)
-
-[Were RNNs All We Needed?](https://arxiv.org/pdf/2410.01201v1)
-
-## MixCon
-
-[北大林宙辰团队全新混合序列建模架构MixCon：性能远超Mamba](https://mp.weixin.qq.com/s/FfCYq1Bx6d7NARKvDPwz2Q)
-
-[MixCon: A Hybrid Architecture for Efficient and Adaptive Sequence Modeling](https://zhouchenlin.github.io/Publications/2024-ECAI-MixCon.pdf)
-
-## self-lengthen
-
-[阿里千问提出Self-Lengthen，大模型实现自迭代扩展输出长度](https://mp.weixin.qq.com/s/1m1hUkhs3altxjYP6IxUVw)
-
-[Language Models Can Self-Lengthen to Generate Long Texts](https://arxiv.org/abs/2410.23933)
-
-[https://github.com/QwenLM/Self-Lengthen](https://github.com/QwenLM/Self-Lengthen)
-
-## BLT
-
-[Tokenization不存在了？Meta最新研究，无需Tokenizer的架构来了](https://mp.weixin.qq.com/s/7ju-PjPZVPrBLQ1qFnFoKw)
-
-[Byte Latent Transformer: Patches Scale Better Than Tokens](https://arxiv.org/pdf/2412.09871)
-
-## R2L tokenizer
-
-[从2019年到现在，是时候重新审视Tokenization了](https://mp.weixin.qq.com/s/zmeFYfxWD1nZq_MocgGeeQ)
-
-[https://huggingface.co/spaces/huggingface/number-tokenization-blog](https://huggingface.co/spaces/huggingface/number-tokenization-blog)
-
-## memory layers at scale
-
-[Meta探索大模型记忆层，扩展至1280亿个参数，优于MoE](https://mp.weixin.qq.com/s/R5JOMkLVbbI7yPJmdcT2pQ)
-
-[Memory Layers at Scale](https://arxiv.org/pdf/2412.09764)
-
-[https://github.com/facebookresearch/memory](https://github.com/facebookresearch/memory)
-
-## TITANS
-
-(toread)
-
-[谷歌新架构一战成名，打破Transformer记忆瓶颈，姚班校友钟沛林新作](https://mp.weixin.qq.com/s/APE_CJ4rEQYV8ngyaTAXWw)
-
-[近8年后，谷歌Transformer继任者「Titans」来了，上下文记忆瓶颈被打破](https://mp.weixin.qq.com/s/EUCZ1oSuyzR9M9X9r5SYBw)
-
-[Titans: Learning to Memorize at Test Time](https://arxiv.org/abs/2501.00663v1)
-
-## Transformer^2
-
-[Transformer^2要做「活」的AI模型，动态调整权重，像章鱼一样适应环境](https://mp.weixin.qq.com/s/_vdA_KygkFWqFE5Xm6CDRg)
-
-[TRANSFORMER2 : SELF-ADAPTIVE LLMS](https://arxiv.org/pdf/2501.06252)
 
 # 典型LLM简介
 
@@ -3352,8 +2245,1140 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
 
-# 优化器
 
-## Muon
 
-[月之暗面开源改进版Muon优化器，算力需求比AdamW锐减48%，DeepSeek也适用](https://mp.weixin.qq.com/s/E65ULmjlK7Lv81dqvAubcQ)
+# 新的模型结构
+
+## 长上下文的问题
+
+[长序列（Long Context）大模型笔记](https://mp.weixin.qq.com/s/nUX3MbKbyxw6b6mhgoL-Mw?poc_token=HK37E2ejmhfX-g6qnVG3pIxFJXZEVk-vPpwriYAj)
+
+[LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
+
+以中文为例，大部分模型每个token对应的中文字数都>1.5个字，所以200k的token就对应30w字的上下文
+
+对长文本的几个要求：
+
++ 在文本比较长的时候，还能保证通顺，**ppl要足够低**
++ 能attention到前面提过的细节，**不能自我矛盾**
+
+注意：如果训练时是2k长度的语料，而推理设定8k窗口，那么PPL会急剧上升，因为
+
++ RoPE不能很好地处理没有训练过的**位置编码**
++ 推理时**注意力机制**所处理的token数量远超训练时的数量，导致注意力机制的崩坏
+
+### 两阶段训练方式
+
++ 直接输入连续长文本（如书籍）
++ 多个中等文本拼接，再通过attention mask来限制各段文本之间注意力，让它们可以在各自的位置上各训各的，互不干扰。甚至实际上即使不做attention mask，效果也挺好。
+
+如果简单地增加长度，例如从4k变到32k，长度增加8倍，为了加速计算需要缓存中间结果（如QK的结果是$$s^2$$的空间复杂度），所以显存会扩大$$8^2=64$$倍。一般的做法是2阶段：
+
++ 第一阶段：用2k或者4k训练一个基础模型，让模型学好**文本内容**和**短位置关系**
++ 第二阶段：用**比第一阶段小的数据量优化**模型在**长上下文的效果**，具体做法见下节
+
+### 针对位置编码的插值类方法
+
+#### 线性插值
+
+&nbsp;
+
+[Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/pdf/2306.15595.pdf)
+
+#### NTK-Aware Interpolation
+
+&nbsp;
+
+#### NTK-by-parts
+
+&nbsp;
+
+#### Dynamically NTK Scaled RoPE
+
+&nbsp;
+
+### 针对attention score的缩放方法
+
+#### YaRN
+
+&nbsp;
+
+#### logn
+
+&nbsp;
+
+### lossless long context
+
+[专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
+
+## 外推问题
+
+[语言模型窗口外推技术综述](https://mp.weixin.qq.com/s/5CqrlUZHrciMAFmeV2oYdw)
+
+### longRoPE
+
+[LongRoPE：超越极限，将大模型上下文窗口扩展超过200万tokens](https://mp.weixin.qq.com/s/4ryyv59ofNOD--RCSdqktQ)
+
+### CoPE
+
+[解决Transformer根本缺陷，CoPE论文爆火：所有大模型都能获得巨大改进](https://mp.weixin.qq.com/s/JxB6JU6MxO3709mkg7penw)
+
+[Contextual Position Encoding: Learning to Count What’s Important](https://arxiv.org/pdf/2405.18719)
+
+### DAPE
+
+[NeurIPS 2024 | Transformer长度外推，全新位置编码DAPE大幅提升模型性能](https://mp.weixin.qq.com/s/-7YsAMYYO92nItRJbqSrpw)
+
+[DAPE: Data-Adaptive Positional Encoding for Length Extrapolation](https://arxiv.org/abs/2405.14722)
+
+[https://github.com/chuanyang-Zheng/DAPE](https://github.com/chuanyang-Zheng/DAPE)
+
+
+## retrieval head
+
+[Retrieval Head Mechanistically Explains Long-Context Factuality](https://arxiv.org/pdf/2404.15574)
+
+
+## Hawk & Griffin
+
+[RNN效率媲美Transformer，谷歌新架构两连发：同等规模强于Mamba](https://mp.weixin.qq.com/s/RtAZiEzjRWgqQw3yu3lvcg)
+
+[Griffin: Mixing Gated Linear Recurrences with Local Attention for Efficient Language Models](https://arxiv.org/pdf/2402.19427)
+
+### 简介
+
+global attention在infer阶段的效率和序列长度成二次关系，而且序列长度与KV cache呈线性增长关系。[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)提出的multi-query attention(MQA)可以通过一个**constant factor**来**减小cache size**，部分缓解这个问题，但cache还是与序列长度线性相关。
+
+循环模型能够将整个序列压缩到一个**fixed-size的hidden state**，并通过迭代进行更新。但要想取代transformer，rnn不仅需要在效果上可比，还要相似的硬件效率，相关工作如下：
+
++ [Efficiently modeling long sequences with structured state spaces](https://arxiv.org/pdf/2111.00396)
++ [Long range language modeling via gated state spaces](https://arxiv.org/pdf/2206.13947)提出了GSS block
++ [Simplified state space layers for sequence modeling](https://arxiv.org/pdf/2208.04933)
++ [Resurrecting Recurrent Neural Networks for Long Sequences](https://arxiv.org/pdf/2303.06349)
++ [Hungry hungry hippos: Towards language modeling with state space models](https://arxiv.org/pdf/2212.14052)
++ [Hyena hierarchy: Towards larger convolutional language models](https://arxiv.org/pdf/2302.10866)
++ [Mamba: Linear-time sequence modeling with selective state spaces](https://arxiv.org/pdf/2312.00752)
+
+本文提出了新的**RG-LRU层**，一种新的gated linear recurrent layer，并基于此提出了将MLP和RG-LRU结合的Hawk，还有将MLP和RG-LRU与local attention混合的Griffin。
+
+![griffin-hawk](../assets/griffin-hawk.png)
+
++ 对于最多超过7B的模型，Hawk和Griffin发现了**held-out loss**和**训练FLOPS**间的**power law scaling**（上图左边）
++ Hawk-3B比Mamba-3B在下游任务上要好，而训练的token数只有mamba的一半；Griffin-7B和14B与Llama-2效果相当，而训练数据只有其1/7
++ 训练在TPU-v3上完成，用JAX中的Pallas实现了RG-LRU(Real-Gated Linear Recurrent Unit)层的内核([https://jax.readthedocs.io/en/latest/pallas/index.html](https://jax.readthedocs.io/en/latest/pallas/index.html))，减小内存transfer
++ infer阶段比MQA的**吞吐高很多**（上图右边），而且对长序列有**更低的latency**
++ 训练时在长序列上比transformer更好，而且能够高效地学习**复制和检索**的任务。但如果没有finetune，直接对比pretrain的效果，transformer会更好
+
+### 网络结构
+
+包括三大类组件：
+
++ residual block: 
++ MLP block：
++ temporal-mixing block
+
+
+![griffin-arch](../assets/griffin-arch.png)
+
+#### Residual Block
+
+&nbsp;
+
+受pre-norm transformer的启发，用的RMSNorm
+
+#### MLP block
+
+&nbsp;
+
+参考[Language modeling with gated convolutional networks](https://arxiv.org/pdf/1612.08083)（类似star两个W直接element-wise product），采用了gated MLP，即如下两个linear的结果（输入维度$$D$$，输出维度都是$$MD,M=3$$）进行element-wise product(类似GeGLU（[Glu variants improve transformer]((https://arxiv.org/pdf/2002.05202.pdf))）)，再过一个linear
+
++ 直接过一个linear，但没有激活
++ linear后加一个GeLU激活（实际用的```nn.functional.gelu(input, approximate="tanh")```）
+
+看recurrentGemma-2b的[config](https://huggingface.co/google/recurrentgemma-2b-it/blob/main/config.json)，发现总共有26个block，一个block依次包括：
+
++ rg-lru或者MQA，每个block里的选择方式是(rg,rg,att,rg,rg,att,rg,rg,att,...)
++ 再过一个gated MLP
+
+```python
+  "_block_types": [
+    "recurrent",
+    "recurrent",
+    "attention"
+  ],
+  "num_hidden_layers": 26,
+  "attention_window_size": 2048,
+
+```
+
+#### Temporal-mixing block
+
+&nbsp;
+
+##### global Multi-Query Attention(MQA)
+
+&nbsp;
+
+[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)中为了加速推理，采用了MQA的方法，本文固定了head的维度为$$D_{head}=128$$，head的个数$$H$$也固定，且$$HD_{head}=D$$，所以model的维度$$D$$需要是128的倍数。没用绝对位置编码，用了RoPE。
+
+##### local(sliding-window) MQA
+
+&nbsp;
+
+[Longformer: The long-document transformer](https://arxiv.org/pdf/2004.05150)提出了可以用local attention，即滑动窗口attention。让每个位置只和前面的固定个tokens去算attentioin，可以
+
++ 降低计算的FLOPS
++ 让KV cache的size的上界变成了**window的size**，从而不是序列长度的二次关系
+
+##### RG-LRU
+
+&nbsp;
+
+类似GSS block，也类似Mamba，输入$$D$$，分别过一个linear得到两个分支，均是$$D_{RNN}$$：
+
++ 分支1：过GeLU激活，同上，实际用的```nn.functional.gelu(input, approximate="tanh")```
++ 分支2：
+  + 参考[Hungry hungry hippos: Towards language modeling with state space models](https://arxiv.org/pdf/2212.14052)的H3模型里的Shift-SSM，过一个Conv1D，其temporal filter dim是4
+  + Conv1D的参数只有$$4D_{RNN}$$，因此再过一个RG—LRU模块
+
+两个分支的输出element-wise product一下，再过一个linear得到$$d$$。
+
+conv1d参考torch官方[doc](https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html)
+
++ 输入：$$\left(N, C_{i n}, L_{i n}\right)$$
++ 输出：$$\left(N, C_{\text {out }}, L_{\text {out }}\right)$$
+
+其中，
+
+XXX
+L_{\text {out }}=\left\lfloor\frac{L_{\text {in }}+2 \times \text { padding }- \text { dilation } \times(\text { kernel\_size }-1)-1}{\text { stride }}+1\right\rfloor
+XXX
+
+当```groups==in_channels and out_channels=K*in_channels```，也叫depthwise convolution，K是depthwise乘子。即**每个输入通道都有自己的卷积核，并且只作用于该通道**。
+
+```python
+        ## conv1d_width = 4, 
+        ## 对图像卷积来讲，padding就是让输出的shape不小于输入shape
+        ## 输入是hidden_size=2560，而lru_width也是2560
+        self.conv_1d = nn.Conv1d(
+                    config.lru_width, # in_channels
+                    config.lru_width, # out_channels
+                    kernel_size=config.conv1d_width,
+                    groups=config.lru_width,
+                    padding=config.conv1d_width - 1,
+                )
+        
+        ## 输入[bs, seq_len, hidden_size]
+        x_branch = self.linear_x(input_states)
+        ## 变成[bs, hidden_size, seq_len]
+        x_branch = x_branch.transpose(1, 2)
+        if use_cache:
+            if cache_position.shape[0] != 1:  # prefill
+                self.conv1d_state = nn.functional.pad(x_branch, 
+                    (self.conv1d_width - x_branch.shape[-1] - 1, 0))
+                x_branch = self.conv_1d(x_branch)[..., :seq_len]
+            else:  # decoding
+                conv_state = torch.cat((self.conv1d_state, x_branch), -1)
+                x_branch = torch.sum(conv_state * self.conv_1d.weight[:, 0, :], dim=-1) 
+                    + self.conv_1d.bias
+                x_branch = x_branch.unsqueeze(-1)
+                self.conv1d_state = conv_state[:, :, 1:]
+        else:
+            # 前面维度不变，最后一维截断到seq_len
+            x_branch = self.conv_1d(x_branch)[..., :seq_len]
+```
+
+
+参考[Resurrecting Recurrent Neural Networks for Long Sequences](https://arxiv.org/pdf/2303.06349)提出的LRU(Linear Recurrent Unit)，并参考传统LSTM和GRU引入了gate：
+
+XXX
+\begin{aligned}
+r_t & =\sigma\left(W_a x_t+b_a\right), \quad \text { recurrence gate } \\
+i_t & =\sigma\left(W_x x_t+b_x\right), \quad \text { input gate } \\
+a_t & =a^{c r_t}, \\
+h_t & =a_t \odot h_{t-1}+\sqrt{1-a_t^2} \odot\left(i_t \odot x_t\right) .
+\end{aligned}
+XXX
+
+其中，recurrent weight $$a=\sigma(\Lambda)$$是一个对角矩阵，$$\Lambda$$是一个可学习的参数。$$c$$是一个常数8，为了**计算稳定**，在log-space计算$$a^{c r_t}$$，即先算出$$\log a_t$$，再取exp。
+
+XXX
+\log a_t=\log a^{c r_t}=\log \sigma(\Lambda)^{c r_t}=-\operatorname{csoftplus}(\Lambda) \odot r_t 
+XXX
+
+(这个公式可能有点问题，感觉应该是$$-\operatorname{csoftplus}(-\Lambda) \odot r_t$$，不过$$\Lambda$$是一个可学习的nn.Parameter，其实这个错误无所谓吧)
+
+```python
+    def __init__(self, config):
+        super().__init__()
+        self.num_attention_heads = config.num_attention_heads
+        self.block_width = config.lru_width // self.num_attention_heads
+
+        self.recurrent_param = nn.Parameter(torch.empty([config.lru_width]))
+        self.input_gate_weight = nn.Parameter(
+            torch.empty([self.num_attention_heads, self.block_width, self.block_width])
+        )
+        self.input_gate_bias = nn.Parameter(torch.empty([self.num_attention_heads, self.block_width]))
+
+        self.recurrent_gate_weight = nn.Parameter(
+            torch.empty([self.num_attention_heads, self.block_width, self.block_width])
+        )
+        self.recurrent_gate_bias = nn.Parameter(torch.empty([self.num_attention_heads, self.block_width]))
+        self.recurrent_states = None
+
+    def forward(xxx):
+        ## reshape成适合多头的情况
+        reshape_act = activations.reshape(batch_size * seq_len, self.num_attention_heads, self.block_width)
+        ## (num_attention_heads, batch_size * seq_len, block_width)
+        reshape_act = reshape_act.permute(1, 0, 2)
+
+        ## 批量矩阵乘法（baddbmm），在reshape_act和self.input_gate_weight之间进行，
+        ## 并加上偏置self.input_gate_bias。这一步计算输入门的原始值。
+        res = torch.baddbmm(self.input_gate_bias[:, None, :], reshape_act, self.input_gate_weight)
+        input_gate = torch.sigmoid(res.transpose(0, 1).reshape(batch_size, seq_len, lru_width))
+
+        ## 类似input_gate
+        res = torch.baddbmm(self.recurrent_gate_bias[:, None, :], reshape_act, self.recurrent_gate_weight)
+        recurrent_gate = torch.sigmoid(res.transpose(0, 1).reshape(batch_size, seq_len, lru_width))
+
+        # Compute the parameter `A` of the recurrence.
+        # 上面的公式
+        log_recurrent_gate = -8.0 * recurrent_gate * nn.functional.softplus(self.recurrent_param)
+        recurrent_gate = torch.exp(log_recurrent_gate)
+```
+
+还有如下几个特点：
+
++ $$W_a$$和$$W_x$$用LeCun init初始化
++ 初始化$$\Lambda$$，使得在训练开始时，$$a^c$$均匀分布在0.9和0.999之间，类似[Resurrecting Recurrent Neural Networks for Long Sequences](https://arxiv.org/pdf/2303.06349)
++ 不像大部分SSM（例如[Hippo: Recurrent memory with optimal polynomial projections](https://arxiv.org/pdf/2008.07669)）基于orthogonal polynomials（正交多项式）理论进行初始化。
++ 也不像[Efficiently modeling long sequences with structured state spaces](https://arxiv.org/pdf/2111.00396.pdf)在底层的连续系统上进行离散化定义
++ 不像原始的LRU用了复数，虽然[ On the universality of linear recurrences followed by nonlinear projections](https://arxiv.org/pdf/2307.11888v1)说复数的表达能力更强，但在实践中对语言模型并没有什么用（[Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)）
+
+##### gate特点
+
+&nbsp;
+
+先复习一下LSTM：
+
+![lstm-peephole-lstm](../assets/lstm-peephole-lstm.png)
+
+GRU：
+
++ 重置门（reset gate）：如果重置门关闭，会**忽略掉历史信息**，即历史不相干的信息不会影响未来的输出。
++ 更新门（update gate）：将LSTM的**输入门和遗忘门合并**，用于控制**历史信息对当前时刻隐层输出的影响**。如果更新门接近1，会把历史信息传递下去。
+
+![gru](../assets/gru.png)
+
++ 两个gate只和$$x_t$$有关，**和$$h_{t-1}$$无关**。
++ input gate $$i_t$$和LSTM类似，直接对输入$$x_t$$进行filter或者scale down。
++ recurrent gate $$r_t$$和之前的gate机制不同：
+    + mamba里的selection机制和GRU的**update gate**类似，在**之前的状态**和**当前输入$$x_t$$**之间进行插值（interpolate），功能类似LSTM的**forget gate**，能够**reset状态，并遗忘之前的信息**
+    + 本文的recurrent gate则类似于在LRU的更新和之前的隐藏状态之间进行插值，能够**有效地丢弃输入**，并且**保持之前历史里的所有信息**。使得模型在处理不相关或重复输入（**uniformative inputs**）时，更能达到**超指数的记忆能力**，以更有效地保留有用信息(因为这个gate**和$$h_{t-1}$$无关**)。
+
+
+## feedback attention memory
+
+[TransformerFAM: Feedback attention is working memory](https://arxiv.org/pdf/2404.09173.pdf)
+
+## infini-attention
+
+[Leave No Context Behind: Efficient Infinite Context Transformers with Infini-attention](https://arxiv.org/pdf/2404.07143.pdf)
+
+[【重磅】谷歌重塑Transformer：无限记忆力，无限长输入，LLM基础研究重大突破](https://mp.weixin.qq.com/s/bV2b9uJ4GFQPhhggHT3VIA)
+
+将**压缩记忆**整合进标准的点积注意力机制，并在单个Transformer块内同时实现了**掩码局部注意力**和**长期线性注意力机制**
+
+![infini-attention](../assets/infini-attention.png)
+
+与transformer-xl对比：
+
+![infini-attention-vs-transformer-xl](../assets/infini-attention-vs-transformer-xl.png)
+
+[https://github.com/mustafaaljadery/gemma-2B-10M](https://github.com/mustafaaljadery/gemma-2B-10M)
+
+[https://github.com/dingo-actual/infini-transformer](https://github.com/dingo-actual/infini-transformer)
+
+## MEGA
+
+[Mega: Moving average equipped gated attention](https://arxiv.org/pdf/2209.10655.pdf)
+
+[https://github.com/facebookresearch/mega](https://github.com/facebookresearch/mega)
+
+### 标准的self-attention公式
+
+&nbsp;
+
+对于序列长度=$$n$$的输入$$\boldsymbol{X}=\left\{\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n\right\} \in \mathbb{R}^{n \times d}$$，输出$$\boldsymbol{Y}=\left\{\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_n\right\} \in \mathbb{R}^{n \times d}$$
+
+XXX
+\boldsymbol{Y}=\operatorname{Attn}(\boldsymbol{X})=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \boldsymbol{V}
+XXX
+
+XXX
+\boldsymbol{Q}=\boldsymbol{X} W_q+b_q,\boldsymbol{K}=\boldsymbol{X} W_k+b_k,\boldsymbol{V}=\boldsymbol{X} W_v+b_v
+XXX
+
+其中，$$\text { Attn : } \mathbb{R}^{n \times d} \rightarrow \mathbb{R}^{n \times d}$$，$$W_q, W_k, W_v \in \mathbb{R}^{d \times d}$$，$$b_q, b_k, b_v \in \mathbb{R}^d$$，而且有两种定义方式：
+
++ $$f(\cdot)=f_{\text {softmax }}(\cdot)$$，同时$$\tau(\boldsymbol{X})=\sqrt{d}$$，这是经典操作[Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/pdf/1409.0473.pdf)
++ $$f(\cdot)=f_{\mathrm{relu}^2}(\cdot)$$即$$relu(x)^2$$，同时$$\tau(\boldsymbol{X})=n$$，这是[Primer: Searching for efficient transformers for language modeling](https://arxiv.org/pdf/2109.08668.pdf)和[Transformer Quality in Linear Time](https://arxiv.org/pdf/2202.10447.pdf)提出的
+
+![gau](../assets/gau.png)
+
+对于$$h$$个attention heads，计算$$\boldsymbol{A}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}\right) \in \mathbb{R}^{n \times n}$$需要的时间和空间复杂度都是$$O(hn^2)$$
+
+### EMA
+
+&nbsp;
+
+对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)如下
+
+XXX
+\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha}) \odot \mathbf{y}_{t-1}
+XXX
+
+其中，$$\boldsymbol{\alpha} \in(0,1)^d$$表示权重衰减，$$\odot$$是element-wise product
+
+$$\boldsymbol{\alpha}$$越大，$$1-\boldsymbol{\alpha}$$越小，对历史的衰减也越快：
+
+![ema](../assets/ema.png)
+
+EMA的计算看成$$n$$个**独立的卷积**，可以通过**FFT(快速傅立叶变换)**来加速计算。具体。。。再看看
+
+**Damped EMA**：由于输入的x是d维向量，可以引入一个因子$$\boldsymbol{\delta} \in(0,1)^d$$让EMA更鲁棒：
+
+XXX
+\mathbf{y}_t=\boldsymbol{\alpha} \odot \mathbf{x}_t+(1-\boldsymbol{\alpha} \odot \boldsymbol{\delta}) \odot \mathbf{y}_{t-1}
+XXX
+
+### MEGA
+
+&nbsp;
+
+EMA可以看成是一种**与位置相关的归纳偏置（inductive bias）**，即假设当前位置与之前位置满足滑动平均的关系，而attention矩阵的计算其实并没有考虑位置信息，所以可以把二者结合一下。
+
+![mega](../assets/mega.png)
+
+其中的multi-dimensional damped EMA大致流程如下：
+
++ **先变成h维**：先把$$\boldsymbol{X} \in \mathbb{R}^{n \times d}$$通过矩阵$$\beta$$映射成$$\boldsymbol{U}\in \mathbb{R}^{n \times h}$$
++ **计算EMA**：然后通过EMA得到$$\boldsymbol{h}\in \mathbb{R}^{n \times h}$$（具体$$\mathbf{h}_t^{(j)}=\boldsymbol{\alpha}_j \odot \mathbf{u}_t^{(j)}+\left(1-\boldsymbol{\alpha}_j \odot \boldsymbol{\delta}_j\right) \odot \mathbf{h}_{t-1}^{(j)}$$）
++ **再变回d维**：再通过一个矩阵$$\eta$$变回$$\boldsymbol{Y}\in \mathbb{R}^{n \times h}$$
+
+然后看整个流程：
+
++ 先计算EMA
+
+XXX
+\begin{aligned}
+\boldsymbol{X}^{\prime} & =\operatorname{EMA}(\boldsymbol{X}) & & \in \mathbb{R}^{n \times d} \\
+\boldsymbol{Z} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_z+b_z\right) & & \in \mathbb{R}^{n \times z}
+\end{aligned}
+XXX
+
++ 再基于EMA的结果计算QK，基于原始的X计算V：
+
+XXX
+\begin{array}{ll}
+\boldsymbol{Q}=\boldsymbol{\kappa}_q \odot \boldsymbol{Z}+\boldsymbol{\mu}_q & \in \mathbb{R}^{n \times z} \\
+\boldsymbol{K}=\boldsymbol{\kappa}_k \odot \boldsymbol{Z}+\boldsymbol{\mu}_k & \in \mathbb{R}^{n \times z} \\
+\boldsymbol{V}=\phi_{\text {silu }}\left(\boldsymbol{X} W_v+b_v\right) & \in \mathbb{R}^{n \times v}
+\end{array}
+XXX
+
++ 计算带位置bias的attention：
+
+XXX
+\boldsymbol{O}=f\left(\frac{\boldsymbol{Q} \boldsymbol{K}^T}{\tau(\boldsymbol{X})}+\boldsymbol{b}_{\mathrm{rel}}\right) \boldsymbol{V} \quad \in \mathbb{R}^{n \times v}
+XXX
+
++ 通过reset gate $$\boldsymbol{\gamma}$$和update gate $$\boldsymbol{\varphi}$$计算输出
+
+XXX
+\begin{aligned}
+\boldsymbol{\gamma} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_\gamma+b_\gamma\right) & & \in \mathbb{R}^{n \times v} \\
+\boldsymbol{\varphi} & =\phi_{\text {sigmoid }}\left(\boldsymbol{X}^{\prime} W_{\varphi}+b_{\varphi}\right) & & \in \mathbb{R}^{n \times d} \\
+\hat{\boldsymbol{H}} & =\phi_{\text {silu }}\left(\boldsymbol{X}^{\prime} W_h+(\boldsymbol{\gamma} \boldsymbol{O}) U_h+b_h\right) & & \in \mathbb{R}^{n \times d} \\
+\boldsymbol{Y}&=\boldsymbol{\varphi} \odot \hat{\boldsymbol{H}}+(1-\boldsymbol{\varphi}) \odot \boldsymbol{X} \quad & & \in \mathbb{R}^{n \times d}
+\end{aligned}
+XXX
+
+
+这里把attention里的softmax改成了如下的laplace函数：
+
+XXX
+f_{\text {laplace }}(x ; \mu, \sigma)=0.5 \times\left[1+\operatorname{erf}\left(\frac{x-\mu}{\sigma \sqrt{2}}\right)\right]
+XXX
+
+其中，$$\operatorname{erf}(x)=\frac{1}{\sqrt{\pi}} \int_{-x}^x e^{-t^2} \mathrm{~d} t=\frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} \mathrm{~d} t$$是[误差函数](https://zh.wikipedia.org/wiki/%E8%AF%AF%E5%B7%AE%E5%87%BD%E6%95%B0)，
+
+为了让laplace逼近$$f_{\text {relu }^2}$$，对于$$x=\sqrt{2}$$这个点，求解如下方程
+
+XXX
+\begin{aligned}
+& f_{\text {relu2 }}(\sqrt{2})=f_{\text {laplace }}(\sqrt{2}) \\
+& f_{\text {relu2 }}^{\prime}(\sqrt{2})=f_{\text {laplace }}^{\prime}(\sqrt{2})
+\end{aligned}
+XXX
+
+可以得到$$\mu=\sqrt{1 / 2}$$，$$\sigma=\sqrt{1 / 4 \pi}$$，对应的曲线和准确率如下：
+
+![laplace-vs-relu2](../assets/laplace-vs-relu2.png)
+
+### mega-chunk
+
+![mega-chunk](../assets/mega-chunk.png)
+
+将序列切分成长度固定为$$c$$的$$k=n/c$$个chunk，对**每个chunk独立计算**上面的attention，这样复杂度就变成了$$O(kc^2)=O(nc)$$，由于有EMA，所以这样做还是能够保持一定程度的长距离依赖。
+
+## MEGALODON
+
+[Meta无限长文本大模型来了：参数仅7B，已开源](https://mp.weixin.qq.com/s/VML5hExo5iPsyEavxzIZSA)
+
+[革命新架构掀翻Transformer！无限上下文处理，2万亿token碾压Llama 2](https://mp.weixin.qq.com/s/xgP9P51gjqJ93FYSWfPeaA)
+
+[MEGALODON: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
+
+[https://github.com/XuezheMax/megalodon](https://github.com/XuezheMax/megalodon)
+
+[Megalodon: Efficient LLM Pretraining and Inference with Unlimited Context Length](https://arxiv.org/pdf/2404.08801.pdf)
+
+基于MEGA进行改进，能够同时实现
+
++ 高效训练（减少通信和计算量）
++ 高效推理（保持恒定的KV缓存）
+
+
+## MOD
+
+[Mixture-of-Depths: Dynamically allocating compute in transformer-based language models](https://arxiv.org/pdf/2404.02258.pdf)
+
+
+## multi-head moe
+
+[微软让MoE长出多个头，大幅提升专家激活率](https://mp.weixin.qq.com/s/ZCRyb63M2DL4hOQh7uxxaw)
+
+[Multi-Head Mixture-of-Experts](https://arxiv.org/pdf/2404.15045)
+
+[https://github.com/yushuiwx/MH-MoE](https://github.com/yushuiwx/MH-MoE)
+
+## Lory
+
+[150B token从头训练，普林斯顿Meta发布完全可微MoE架构Lory](https://mp.weixin.qq.com/s/UKIXGJTFzSeSZvoTe_c9CQ)
+
+[Lory: Fully Differentiable Mixture-of-Experts for Autoregressive Language Model Pre-training](https://arxiv.org/pdf/2405.03133)
+
+## Perciever
+
+[Perceiver: General Perception with Iterative Attention](https://arxiv.org/pdf/2103.03206.pdf)
+
+## Aaren
+
+[Bengio等人新作：注意力可被视为RNN，新模型媲美Transformer，但超级省内存](https://mp.weixin.qq.com/s/mRt2A1n1CmO7uqzuLQHxkw)
+
+[Attention as an RNN](https://arxiv.org/pdf/2405.13956)
+
+### many-to-one RNN
+
+对query向量$$q$$的attention可以看成是一个函数，对输入的$$N$$个token $$x_{1: N}$$通过他们的key和value $$\left\{\left(k_i, v_i\right)\right\}_{i=1}^N$$ 变换成输出 $$\text { Attention }\left(q, k_{1: N}, v_{1: N}\right)$$，假设$$\bar{s}_i=\operatorname{dot}\left(q, k_i\right)$$，那么输出就是
+
+XXX
+o_N=\sum_{i=1}^N \operatorname{softmax}(s)_i v_i=\frac{\sum_{i=1}^N \exp \left(s_i\right) v_i}{\sum_{i=1}^N \exp \left(s_i\right)}=\frac{\hat{a}_N}{\hat{c}_N}
+XXX
+
+可以发现，分子和分母其实都可以写成递推形式$$\hat{a}_k=\hat{a}_{k-1}+\exp \left(s_k\right) v_k$$和$$\hat{c}_k=\hat{c}_{k-1}+\exp \left(s_k\right)$$，由于直接这么做可能会产生很大或者很小的值（例如算exp），所以可以通过如下方式进行缓解：计录到第k步的最大值$$m_k=\max _{i \in\{1, \ldots, k\}} s_i$$，然后减掉它，即$$a_k=\sum_{i=1}^k \exp \left(s_i-m_k\right) v_i$$和$$c_k=\sum_{i=1}^k \exp \left(s_i-m_k\right)$$，这样就可以改写为如下形式：
+
+XXX
+\begin{aligned}
+a_k & =a_{k-1} \exp \left(m_{k-1}-m_k\right)+v_k \exp \left(s_k-m_k\right) \\
+c_k & =c_{k-1} \exp \left(m_{k-1}-m_k\right)+\exp \left(s_k-m_k\right) \\
+m_k & =\max \left(m_{k-1}, s_k\right)
+\end{aligned}
+XXX
+
+其中第一行其实就是$$s_i-m_k=s_i-m_k+m_{k-1}-m_k$$，然后exp一下，$$exp(s_i-m_k)=exp(s_i-m_k)exp(m_{k-1}-m_k)$$，总结成如下图：
+
+![attention-rnn-cell](../assets/attention-rnn-cell.png)
+
+所以Attention的RNN cell就是输入$$\left(a_{k-1}, c_{k-1}, m_{k-1}, q\right)$$，输出$$\left(a_k, c_k, m_k, q\right)$$，初始的状态是$$\left(a_0, c_0, m_0, q\right)=(0,0,0,q)$$
+
+然后就可以将之前的attention看成如下几类many-to-one的RNN了：
+
++ 传统attention只计算最后的一个输出
++ self-attention使用**输入token**作为初始状态
++ Perceiver的cross-attention使用**依赖input的隐变量**作为初始状态
+
+![many-to-one-rnn](../assets/many-to-one-rnn.png)
+
+对于新来的token而言：
+
++ 传统的RNN一般是流式地输入数据，因此只需要O(1)的内存和计算就行了
++ Transformer需要把这个新token当成一个初始状态加进来，所以需要把之前时间步的再重新算一次，需要O(N)的计算
++ Perceiver中的隐变量是依赖输入的，而且这个新token会改变value，因此初始状态也会变，所以需要从头算一遍，需要O(NL)的计算，L是隐变量个数（可以参考代码[perceiver_torch](https://github.com/lucidrains/perceiver-pytorch/blob/main/perceiver_pytorch/perceiver_pytorch.py)和如下gpt4o的回答）
+
+![perceiver](../assets/perceiver.png)
+
+### many-to-many RNN
+
+要计算$$\left\{o_i=\operatorname{Attention}\left(q, x_{1: i}\right)\right\}_{i=1}^N$$，通过如下的并行前缀扫描算法，对于$$N$$个序列数据的$$N$$个前缀，通过关联运算符$$\oplus$$并行计算，能够高效地通过$$\left\{x_k\right\}_{k=1}^N$$计算$$\left\{\bigoplus_{i=1}^k x_i\right\}_{k=1}^N$$
+
+![parallel-prefix-scan](../assets/parallel-prefix-scan.png)
+
+由于$$\operatorname{Attention}\left(\mathrm{q}, \mathrm{x}_{1: \mathrm{k}}\right)=o_k=\frac{a_k}{c_k}$$，为了计算$$\left\{\text { Attention }\left(\mathrm{q}, \mathrm{x}_{1: \mathrm{k}}\right)\right\}_{k=1}^N$$，只需要先按这个并行扫描算法计算$$\left\{a_k\right\}_{k=1}^N$$、$$\left\{c_k\right\}_{k=1}^N$$和$$\left\{m_k\right\}_{k=1}^N$$，再把$$a_k$$和$$c_k$$结合起来就行。
+
+接来来定义三元组$$\left(\mathrm{m}_A, \mathrm{u}_A, \mathrm{w}_A\right)$$，其中
+
++ $$A$$：一些下标的集合
++ $$\mathrm{m}_A=\max _{i \in A} s_i$$
++ $$\mathrm{u}_A=\sum_{i \in A} \exp \left(s_i-\mathrm{m}_A\right)$$
++ $$\mathrm{w}_A=\sum_{i \in A} \exp \left(s_i-\mathrm{m}_A\right) v_i$$
+
+所以并行扫描算法的输入是$$\left\{\left(\mathrm{m}_{\{i\}}, \mathrm{u}_{\{i\}}, \mathrm{W}_{\{i\}}\right)\right\}_{i=1}^N=\left\{\left(s_i, 1, v_i\right)\right\}_{i=1}^N$$，再来定义操作$$\oplus$$：
+
+XXX
+\left(\mathrm{m}_A, \mathrm{u}_A, \mathrm{w}_A\right) \oplus\left(\mathrm{m}_B, \mathrm{u}_B, \mathrm{w}_B\right)=\left(\mathrm{m}_{A \cup B}, \mathrm{u}_{A \cup B}, \mathrm{w}_{A \cup B}\right)
+XXX
+
+其中，
+
++ $$\mathrm{m}_{A \cup B}=\max \left(\mathrm{m}_A, \mathrm{~m}_B\right)$$
++ $$\mathrm{u}_{A \cup B}=\mathrm{u}_A \exp \left(\mathrm{m}_A-\mathrm{m}_{A \cup B}\right)+\mathrm{u}_B \exp \left(\mathrm{m}_B-\mathrm{m}_{A \cup B}\right)$$
++ $$\mathrm{w} _{A \cup B}=\mathrm{w}_A \exp \left(\mathrm{m}_A-\mathrm{m}_{A \cup B}\right)+\mathrm{w}_B \exp \left(\mathrm{m}_B-\mathrm{m}_{A \cup B}\right)$$
+
+这个并行扫描算法最终输出下式，即$$\left\{\left(m_k, c_k, a_k\right)\right\}_{k=1}^N$$：
+
+XXX
+\left\{\left(\mathrm{m}_{\{1, \ldots, k\}}, \mathrm{u}_{\{1, \ldots, k\}}, \mathrm{w}_{\{1, \ldots, k\}}\right)\right\}_{k=1}^N=\left\{\left(m_k, \sum_{i=1}^k \exp \left(s_i-m_k\right), \sum_{i=1}^k \exp \left(s_i-m_k\right) v_i\right)\right\}_{k=1}^N
+XXX
+
+
+![many-to-many-rnn](../assets/many-to-many-rnn.png)
+
+### Aaren
+
+Aaren(attention as a recurrent newral network)的结构如下：
+
+XXX
+\begin{aligned}
+h_1^{(0)}, \ldots, h_N^{(0)} & \leftarrow x_1, \ldots, x_N \\
+{\left[h_1^{(j+1)}, \ldots, h_N^{(j+1)}\right] } & \leftarrow \operatorname{Aaren}\left(q^{(j)},\left[h_1^{(j)}, \ldots, h_N^{(j)}\right]\right)
+\end{aligned}
+XXX
+
+transformer的query是输入的token，而Aaren的query token $$q$$是在训练的过程中通过bp学习的。迭代地计算$$y_k$$只需要常数级的计算，因为它依赖$$h_{k-1}$$和$$x_k$$。
+
+transformer：
+
++ 使用kv cache时需要线性的内存
++ 需要保存所有之前的tokens，包括在中间层的那些
+
+aaren：
+
++ 只需要常数级的内存
++ 不需要保存之前的所有tokens
+
+![stacking-aaren](../assets/stacking-aaren.png)
+
+## Matmul-free
+
+[从LLM中完全消除矩阵乘法，效果出奇得好，10亿参数跑在FPGA上接近大脑功耗](https://mp.weixin.qq.com/s/HUvGGug48nGBx067nCbkag)
+
+## H2O attention
+
+[H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models](https://arxiv.org/pdf/2306.14048)
+
++ sparsity for small cache size：kv cache很稀疏，只要5%效果就可以了
++ Heavy-Hitters for low miss rate：一小部分的token贡献了大部分attention score
++ 贪心法选择需要干掉的token：假设总共需要保留k个token，对于第i个token，加进来后，遍历集合里的所有token，看干掉哪一个对attention score影响最小，就把它干掉
+
+## TransNAR
+
+[拯救Transformer推理能力！DeepMind新研究TransNAR：给模型嵌入「算法推理大脑」](https://mp.weixin.qq.com/s/YPICpkYHAC7zTLC_0M_XkQ)
+
+[Transformers meet Neural Algorithmic Reasoners](https://arxiv.org/pdf/2406.09308)
+
+基于：[Neural Algorithmic Reasoning](https://arxiv.org/pdf/2105.02761)
+
+## softmax数学原理
+
+[通向概率分布之路：盘点Softmax及其替代品](https://mp.weixin.qq.com/s/tA9kJqD279dHnivzPkvbjg)
+
+把softmax的分母记为$$Z(x)$$，其对数是max的一个光滑近似：
+
+XXX
+\begin{array}{r}
+\log Z(\boldsymbol{x})=\log \sum_{j=1}^n e^{x_j}=\operatorname{logsumexp}(\boldsymbol{x}) \\
+\lim _{\tau \rightarrow 0^{+}} \tau \operatorname{logsumexp}(\boldsymbol{x} / \tau)=\max (\boldsymbol{x})
+\end{array}
+XXX
+
+当$$\tau$$取1时，可以得到$$\operatorname{logsumexp}(\boldsymbol{x}) \approx \max (\boldsymbol{x})$$
+
+## StreamingLLM
+
+[Efficient Streaming Language Models with Attention Sinks](https://arxiv.org/pdf/2309.17453)
+
+[深度解析streamingLLM之无限长文本生成能力](https://mp.weixin.qq.com/s?__biz=Mzg2ODk4MzE2MQ==&mid=2247484158&idx=1&sn=666bd5fed13815b5765124646206bac5&chksm=cea54ae8f9d2c3fea1f3d5dfc94fc3d48abbd02a1278584bfd76ff8fe52ce59ce8966ced9cd5&token=562866785&lang=zh_CN#rd)
+
+attention sink：输入给LLM推理开头的几个intial tokens是非常特殊的，就像水龙头一样，出水那一瞬间吸引了人们大量的attention。而且intial tokens与生成token的绝对距离距离和语义信息都不重要，重要的是这第一个或者前面几个token。
+
+softmax需要所有位置的值的总和为1，因此必须给某些位置权重，即使这个位置对输出没有任何贡献，可能导致在backward的过程中产生错误的权重更新，而这个错误在后续的过程中很难被纠正。因此，模型倾向于将不必要的注意力值转嫁给特定的token。其实在[https://www.evanmiller.org/attention-is-off-by-one.html](https://www.evanmiller.org/attention-is-off-by-one.html)就提出了，要给softmax的分母+1：$$(\operatorname{softmax_1}(\mathrm{x}))_i=\frac{\exp \left(x_i\right)}{\sum_j \exp \left(x_j\right)+1}$$
+
+当每个token都趋向负无穷时，softmax的极限是1/k（k是token数），也就是会让每个token的概率都是1/k
+
+XXX
+\lim _{x 1 \rightarrow-\infty} \ldots \lim _{x_k \rightarrow-\infty}(\operatorname{softmax}(x))_i=\frac{1}{k}>0
+XXX
+
+而$$$$softmax_1$$$$因为分母有个1（即$$exp(0)=1$$），相当于在最前面引入了一个或者多个的无意义的global_token。同样当每个token都趋向负无穷时，因为分母已经有一个1了，所以可以让其他正常token都趋于0
+
+XXX
+\lim _{x 1 \rightarrow-\infty} \ldots \lim _{x_k \rightarrow-\infty}\left(\operatorname{softmax}_1(x)\right)_i=0
+XXX
+
+
+[https://github.com/mit-han-lab/streaming-llm](https://github.com/mit-han-lab/streaming-llm)
+
+集成到trt-llm里了：[https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm](https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/llama#run-llama-with-streamingllm)
+
++ trtllm-build时，加上```--streamingllm enable```
++ infer时，加上```--sink_token_length```设置sink的token数，加上```--max_attention_window_size```设置sliding_window
+
+## 是否还要RAG?
+
+[谷歌重磅：告别RAG，长上下文的大语言模型无需检索增强](https://mp.weixin.qq.com/s/lOORnoyrA8lqOEXWKxhAQg)
+
+## memory^3
+
+[鄂维南院士领衔新作：大模型不止有RAG、参数存储，还有第3种记忆](https://mp.weixin.qq.com/s/_7mpswMvpg5sRrIKsF-Vvw)
+
+[Memory3 : Language Modeling with Explicit Memory](https://arxiv.org/pdf/2407.01178)
+
+## TSLLM
+
+[没想到！AlphaZero式树搜索也能用来增强大语言模型推理与训练](https://mp.weixin.qq.com/s/k3HuSPGJFJ223thy316eCg)
+
+[AlphaZero-Like Tree-Search can Guide Large Language Model Decoding and Training](https://arxiv.org/pdf/2309.17179)
+
+[https://github.com/waterhorse1/LLM_Tree_Search](https://github.com/waterhorse1/LLM_Tree_Search)
+
+## PEER
+
+[单一作者论文，谷歌提出百万专家Mixture，超越密集前馈、稀疏MoE](https://mp.weixin.qq.com/s/-oocmPNRT5ddvNwIvYxiQA)
+
+[MoE也有Scaling Law，「百万专家」利用率近100%！DeepMind华人挑战MoE极限](https://mp.weixin.qq.com/s/tBe9DZvzB6NB8HhLYP31CQ)
+
+[Mixture of A Million Experts](https://arxiv.org/pdf/2407.04153)
+
+## TTT
+
+[彻底改变语言模型：全新架构TTT超越Transformer，ML模型代替RNN隐藏状态](https://mp.weixin.qq.com/s/QSw9PKB_HhSxeO7agnzBgQ)
+
+[Learning to (Learn at Test Time): RNNs with Expressive Hidden States](https://arxiv.org/pdf/2407.04620)
+
+[https://github.com/test-time-training/ttt-lm-jax](https://github.com/test-time-training/ttt-lm-jax)
+
+[https://github.com/test-time-training/ttt-lm-pytorch](https://github.com/test-time-training/ttt-lm-pytorch)
+
+![ttt](../assets/ttt.png)
+
+[连OpenAI都推不动Scaling Law了？MIT把「测试时训练」系统研究了一遍，发现还有路](https://mp.weixin.qq.com/s/tfrG21mfteVAkjqYx5mDsQ)
+
+[The Surprising Effectiveness of Test-Time Training for Abstract Reasoning](https://ekinakyurek.github.io/papers/ttt.pdf)
+
+## Axiomatic Training
+
+[6700万参数比肩万亿巨兽GPT-4！微软MIT等联手破解Transformer推理密码](https://mp.weixin.qq.com/s/ySRE3MaEH539vqrWDi6KBQ)
+
+[公理训练让LLM学会因果推理：6700万参数模型比肩万亿参数级GPT-4](https://mp.weixin.qq.com/s/Yera281WG8RNAOrRUYjH6g)
+
+[Teaching Transformers Causal Reasoning through Axiomatic Training](https://arxiv.org/pdf/2407.07612v1)
+
+训练大模型新范式——**公理框架（Axiomatic Framework）**，作者从头开始训练了6700万参数的模型，仅使用了简单的因果链作为训练数据。在推断复杂图表中的因果关系时，**67M模型的表现超越了十亿级参数LLM**，甚至可以与GPT-4相媲美。
+
+## PNN
+
+[AI大模型有望再扩1000倍！剑桥耶鲁康奈尔：PNN是变革关键](https://mp.weixin.qq.com/s/XjU-r2rKGWaatObzdh5TGw)
+
+[Training of Physical Neural Networks](https://arxiv.org/pdf/2406.03372)
+
+## JRT
+
+[小技巧大功效，「仅阅读两次提示」让循环语言模型超越Transformer++](https://mp.weixin.qq.com/s/zdPlK4IHeEiW0ikmQMPJUA)，注：这里的transformer++指的就是llama2的架构
+
+[Just read twice: closing the recall gap for recurrent language models](https://arxiv.org/pdf/2407.05483)
+
+[https://github.com/HazyResearch/prefix-linear-attention](https://github.com/HazyResearch/prefix-linear-attention)
+
+![jrt](../assets/jrt.png)
+
+### order的重要性
+
+&nbsp;
+
+线性attention的recurrent state很小，存储空间有限，往往很难选择要存储哪些state。
+
+如果集合A和集合B有交集，且A元素比B多，先出现集合A的时候，需要存储整个A，而先出现集合B的时候，则只需要存储集合B
+
+### JRT-Prompt
+
+&nbsp;
+
+上下文学习任务以$$(\mathcal{C}, \mathcal{Q}, \mathcal{Y})$$作为输入，$$\mathcal{C}$$为一些上下文来源（如文档或代码存储库），$$\mathcal{Q}$$为给定上下文时对模型的一些问题或请求，$$\mathcal{Y}$$为答案。
+
++ 使用自回归的标准上下文学习模型$$\mathcal{A}$$，输入$$\mathcal{C}$$和$$\mathcal{Q}$$，并根据正确的完成情况$$Y$$来评估生成的输出$$\hat{\mathcal{Y}}=\mathcal{A}(\mathcal{C}, \mathcal{Q})$$。
++ JRT-PROMPT：在提示模型输出答案之前会在上下文中重复提示中的信息（如问题和文档），例如$$\hat{\mathcal{Y}}=\mathcal{A}(\mathcal{C}, \mathcal{Q}, \mathcal{C}, \mathcal{Q})$$。在上下文第二次出现时，模型根据完整的上下文来决定存储哪些信息。
+
+示例：
+
+```shell
+# 原来的prompt
+## input: 
+百度是一个xxx公司，1999年，xxxxx，2001年，xxx，2002年，xxxx。百度成立于
+## output: 
+2001年
+
+# JRT的prompt
+## input：
+百度成立于哪一年？百度是一个xxx公司，1999年，xxxxx，2001年，xxx，2002年，xxxx。
+百度是一个xxx公司，1999年，xxxxx，2001年，xxx，2002年，xxxx。百度成立于
+## output: 
+2001年
+```
+
+### base的linear transformer
+
+&nbsp;
+
+通过$$\phi: \mathbb{R}^d \rightarrow \mathbb{R}^{\tilde{d}}$$，使得$$\phi\left(\boldsymbol{q}_i\right)^{\top} \phi\left(\boldsymbol{k}_j\right) \approx \exp \left(\boldsymbol{q}_i^{\top} \boldsymbol{k}_j / \sqrt{d}\right) .$$
+
+XXX
+\boldsymbol{y}_i=\frac{\phi\left(\boldsymbol{q}_i\right) \sum_{j=1}^i\left(\phi\left(\boldsymbol{k}_j\right)^{\top} \boldsymbol{v}_j\right)}{\phi\left(\boldsymbol{q}_i\right) \sum_{j=1}^i \phi\left(\boldsymbol{k}_j\right)}
+XXX
+
+先计算k和v的乘法，时间和空间复杂度是$$\mathcal{O}(N d \tilde{d})$$，而softmax attention是$$O\left(N^2 d\right)$$
+
+infer阶段包括两个phases：
+
++ prefill：并行处理prompt，得到两个state：
+    + KV-state：$$\boldsymbol{s}_l=\sum_{j=1}^l \phi\left(\boldsymbol{k}_j\right)^{\top} \boldsymbol{v}_j$$
+    + K-state：$$\boldsymbol{z}_l=\sum_{j=1}^l \phi\left(\boldsymbol{k}_j\right)^{\top}$$
++ decoding：计算如下3步，其中$$\boldsymbol{s}_i \in \mathbb{R}^{d \times \tilde{d}}$$，$$\boldsymbol{z}_i \in \mathbb{R}^{\tilde{d}}$$，一个decode step有$$O(1)$$的时间和空间复杂度，而softmax attention加上kv-caching有$$O(N)$$
+    + $$\boldsymbol{s}_i=\boldsymbol{s}_{i-1}+\phi\left(\boldsymbol{k}_i\right)^{\top} \boldsymbol{v}_i$$
+    + $$\boldsymbol{z}_i=\boldsymbol{z}_{i-1}+\phi\left(\boldsymbol{k}_i\right)^{\top}$$
+    + $$\boldsymbol{y}_i=\frac{\phi\left(\boldsymbol{q}_i\right) \boldsymbol{s}_i}{\phi\left(\boldsymbol{q}_i\right) \boldsymbol{z}_i}$$
+
+### JRT-RNN架构
+
+&nbsp;
+
+PLA（Prefix Linear Attention）受Prefix-LM启发，主要有2个特点：
+
++ prefix-LM在encoder和decoder的projection是共享的，而JRT-RNN的encoder用$$\boldsymbol{k}_e, \boldsymbol{v}_e$$，decoder用$$\boldsymbol{k}_d, \boldsymbol{v}_d$$
++ 编码器使用了non-causal的线性注意力，而解码器使用标准causal线性注意力。
+
+prefill阶段，并行地对长度为$$l$$的prompt进行如下计算，如果长度$$l< M$$，进行left-pad到$$M$$长度
+
+XXX
+\boldsymbol{y}_i=\frac{\phi\left(\boldsymbol{q}_i\right)\left(\sum_{j=1}^i \phi\left(\boldsymbol{k}_{d_j}\right)^{\top} \boldsymbol{v}_{d_j}+\sum_{j=1}^M \phi\left(\boldsymbol{k}_{e_j}\right)^{\top} \boldsymbol{v}_{e_j}\right)}{\phi\left(\boldsymbol{v} q_i\right)\left(\sum_{j=1}^i \phi\left(\boldsymbol{k}_{d_j}\right)^{\top}+\sum_{j=1}^M \phi\left(\boldsymbol{k}_{e_j}\right)^{\top}\right)}
+XXX
+
+初始化如下：
+
+XXX
+\boldsymbol{s}_M=\sum_{j=1}^M\left(\phi\left(\boldsymbol{k}_{e_j}\right)^{\top} \boldsymbol{v}_{e_j}+\phi\left(\boldsymbol{k}_{d_j}\right)^{\top} \boldsymbol{v}_{d_j}\right),\ \boldsymbol{z}_M=\sum_{j=1}^M\left(\phi\left(\boldsymbol{k}_{e_j}\right)^{\top}+\phi\left(\boldsymbol{k}_{d_j}\right)^{\top}\right)
+XXX
+
+对于decoding阶段，输出$$y_i, i>M$$，和base的linear transformer一样，不需要修改
+
+训练loss是ntp和mlm的混合，假设序列长度是$$N$$，前$$M$$个token算MLM，后面的$$N-M$$个token算NTP：
+
+XXX
+\mathcal{L}=\frac{w_1 \mathcal{L}_{\mathrm{NTP}}+w_2 \mathcal{L}_{\mathrm{MLM}}}{w_1+w_2}
+XXX
+
+### 效率提升
+
+虽然Linear attention比softmax attention要快，但其实不如精心优化的softmax attention（如flash attention），[Simple linear attention language models balance the recall-throughput tradeof](https://arxiv.org/pdf/2402.18668)实现了一个io-aware的kernel（[https://github.com/HazyResearch/based/](https://github.com/HazyResearch/based/)），在prefill阶段精细地partitioning & storing暛的matrix-valued recurrent state across warp-registers，PLA参考这个实现了自己的加速版。
+
+
+## LM-steer
+
+ACL 2024
+
+[LM-Steer: Word Embeddings Are Steers for Language Models](https://arxiv.org/pdf/2305.12798)
+
+[https://github.com/Glaciohound/LM-Steer](https://github.com/Glaciohound/LM-Steer)
+
+发现词向量空间上的线性变换空间等价于对语言模型生成样式的调节，并以此设计了名为 LM-Steers 的语言模型调控方法。我们发现词向量的这种调节作用普遍存在于各种尺寸的语言模型中。它只需要学习原始模型 0.2% 的参数就可以引导各种风格。在语言模型去毒化和生成情感控制等任务上，LM-Steers 可以实现与最先进的受控生成方法相当或更好的性能，同时保持更好的生成质量平衡。学习到的 LM-Steer 还可以充当文本风格的解读器：它可以解释各种文本样式与词向量哪些维度相关，并且可以用于寻找最具代表性的文本片段。 LM-Steer 可通过显式计算来在不同语言模型之间转移，而不需要额外训练。我们还可以简单地通过缩放 LM-Steer 来实现风格的连续控制，或者实现多种生成控制的组合。
+
+## razerattention
+
+减少kv-cache的大小
+
+[RazorAttention: Efficient KV Cache Compression Through Retrieval Heads](https://www.arxiv.org/pdf/2407.15891)
+
+受anthropic的induction head([In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html))启发:
+
++ short head：对长文没有任何响应
++ long head(induction head)：对长文能直接找到对应位置，并且对那附近的词有很强的信号
+
+## MLP-Mixer
+
+[MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/pdf/2105.01601)
+
+## sigmoid attention
+
+[Sigmoid注意力一样强，苹果开始重新审视注意力机制](https://mp.weixin.qq.com/s/4DvgsqkyNcj6HBrAHTygCA)
+
+[Theory, Analysis, and Best Practices for Sigmoid Self-Attention](https://arxiv.org/pdf/2409.04431)
+
+[https://github.com/apple/ml-sigmoid-attention](https://github.com/apple/ml-sigmoid-attention)
+
+证明了从理论上讲，与 softmax 注意力相比，具有sigmoid注意力的Transformer是**通用函数逼近器**，并且受益于**改进的正则化**。
+
+## lstm+transformer
+
+[LSTM+Transformer王炸创新，荣登Nature](https://mp.weixin.qq.com/s/OTwbZEy-v93-fzvh1Z4m2Q)
+
+## AnyGraph
+
+[港大黄超团队推出AnyGraph, 首次揭秘图大模型的Scaling Law](https://mp.weixin.qq.com/s/iqQi4ZP7FdpHnMxZByOyoQ)
+
+[AnyGraph: Graph Foundation Model in the Wild](https://arxiv.org/pdf/2408.10700)
+
+[https://github.com/HKUDS/AnyGraph](https://github.com/HKUDS/AnyGraph)
+
+
+## 液态神经网络
+
+[给机器人装上「虫脑」？非Transformer液态神经网络终于来了！MIT CSAIL负责人创业成果](https://mp.weixin.qq.com/s/oowid3yCpFNTALCvgdSwXg)
+
+Liquid Foundation Models（LFM），1B、3B和40B LFM在各个规模上均能实现SOTA性能，同时保持更小的内存占用和更高效的推理。2020年就有了[Liquid Time-constant Networks](https://arxiv.org/abs/2006.04439)
+
+## 差分transformer
+
+[这篇论文非常火！差分Transformer竟能消除注意力噪声，犹如降噪耳机](https://mp.weixin.qq.com/s/hG_S85HkyAkTFAI2iQjl6g)
+
+[Differential Transformer](https://arxiv.org/pdf/2410.05258)
+
+Transformer往往会过度关注不相关的上下文，即注意力噪声（attention noise），而差分Transformer则能放大对答案范围的注意力并消除噪音，从而增强上下文建模的能力。
+
+## SparseLLM
+
+[NeurIPS 2024｜SparseLLM：突破性全局剪枝技术，大语言模型稀疏化革命](https://mp.weixin.qq.com/s/mfdkUFXCsB50iqKgxv7hQQ)
+
+[SparseLLM: Towards Global Pruning of Pre-trained Language Models](https://arxiv.org/abs/2402.17946)
+
+[https://github.com/BaiTheBest/SparseLLM](https://github.com/BaiTheBest/SparseLLM)
+
+## minLSTM+minGRU
+
+[图灵奖得主Yoshua Bengio新作：Were RNNs All We Needed?](https://mp.weixin.qq.com/s/ueid-TAw-9OjtKFKA5lqSw)
+
+[Were RNNs All We Needed?](https://arxiv.org/pdf/2410.01201v1)
+
+## MixCon
+
+[北大林宙辰团队全新混合序列建模架构MixCon：性能远超Mamba](https://mp.weixin.qq.com/s/FfCYq1Bx6d7NARKvDPwz2Q)
+
+[MixCon: A Hybrid Architecture for Efficient and Adaptive Sequence Modeling](https://zhouchenlin.github.io/Publications/2024-ECAI-MixCon.pdf)
+
+## self-lengthen
+
+[阿里千问提出Self-Lengthen，大模型实现自迭代扩展输出长度](https://mp.weixin.qq.com/s/1m1hUkhs3altxjYP6IxUVw)
+
+[Language Models Can Self-Lengthen to Generate Long Texts](https://arxiv.org/abs/2410.23933)
+
+[https://github.com/QwenLM/Self-Lengthen](https://github.com/QwenLM/Self-Lengthen)
+
+## BLT
+
+[Tokenization不存在了？Meta最新研究，无需Tokenizer的架构来了](https://mp.weixin.qq.com/s/7ju-PjPZVPrBLQ1qFnFoKw)
+
+[Byte Latent Transformer: Patches Scale Better Than Tokens](https://arxiv.org/pdf/2412.09871)
+
+## R2L tokenizer
+
+[从2019年到现在，是时候重新审视Tokenization了](https://mp.weixin.qq.com/s/zmeFYfxWD1nZq_MocgGeeQ)
+
+[https://huggingface.co/spaces/huggingface/number-tokenization-blog](https://huggingface.co/spaces/huggingface/number-tokenization-blog)
+
+## memory layers at scale
+
+[Meta探索大模型记忆层，扩展至1280亿个参数，优于MoE](https://mp.weixin.qq.com/s/R5JOMkLVbbI7yPJmdcT2pQ)
+
+[Memory Layers at Scale](https://arxiv.org/pdf/2412.09764)
+
+[https://github.com/facebookresearch/memory](https://github.com/facebookresearch/memory)
+
+## TITANS
+
+(toread)
+
+[谷歌新架构一战成名，打破Transformer记忆瓶颈，姚班校友钟沛林新作](https://mp.weixin.qq.com/s/APE_CJ4rEQYV8ngyaTAXWw)
+
+[近8年后，谷歌Transformer继任者「Titans」来了，上下文记忆瓶颈被打破](https://mp.weixin.qq.com/s/EUCZ1oSuyzR9M9X9r5SYBw)
+
+[Titans: Learning to Memorize at Test Time](https://arxiv.org/abs/2501.00663v1)
+
+## Transformer^2
+
+[Transformer^2要做「活」的AI模型，动态调整权重，像章鱼一样适应环境](https://mp.weixin.qq.com/s/_vdA_KygkFWqFE5Xm6CDRg)
+
+[TRANSFORMER2 : SELF-ADAPTIVE LLMS](https://arxiv.org/pdf/2501.06252)
+
+
+
+
+# mamba-transformer混合
+
+
+## SSM
+
+[挑战Transformer的Mamba是什么来头？作者博士论文理清SSM进化路径](https://mp.weixin.qq.com/s/oXSwnL0sD96nnnqJyko7UA)
+
+[Pretraining Without Attention](https://arxiv.org/pdf/2212.10544.pdf) 
+
+[预训练无需注意力，扩展到4096个token不成问题，与BERT相当](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650864837&idx=2&sn=c57f0b8a7daf7d45093448c8ff5df3fc&chksm=84e538bbb392b1ad857f3ad2c2d6d6dbc9562ff492a7cda336dc07abe4d3912c19fa4c30d365&scene=21#wechat_redirect)
+
+[Diffusion Models Without Attention](https://arxiv.org/pdf/2311.18257.pdf)
+
+[丢掉注意力的扩散模型：Mamba带火的SSM被苹果、康奈尔盯上了](http://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650900014&idx=4&sn=315ca75ba700a93598b5c581ad2fb735&chksm=84e44250b393cb4619e7c24b9f6affe88e4c71ebb97d0c43b5301edd0a11154af6322f68cfd4&scene=21#wechat_redirect)
+
+[一文看懂Mamba，Transformer最强竞争者](https://mp.weixin.qq.com/s/gwE_OVWigV71Qiup7F_9Cg)
+
+[Long Range Language Modeling via Gated State Spaces](https://arxiv.org/abs/2206.13947) 认为 Transformer 和 SSM 完全可以互补。
+
+选择性状态空间模型(selective state space model)是Mamba论文作者Albert Gu此前主导研发的S4架构(Structured State Spaces for Sequence Modeling)的一个简单泛化。
+
+[https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf](https://stacks.stanford.edu/file/druid:mb976vf9362/gu_dissertation-augmented.pdf)
+
+序列模型在训练和推理时的侧重点：
+
++ 训练时：在整个list上计算loss，需要优化forward的耗时
++ 推理时：一次输入一个时间步，需要高效地顺序处理
+
+### SSM原理
+
+输入$$u(t) \in \mathbb{R}$$，输出是$$y(t) \in \mathbb{R}$$，引入**状态**$$x(t) \in \mathbb{R}^N$$，目标是学习映射$$u(t) \mapsto y(t)$$，
+
+XXX
+\begin{aligned}
+x^{\prime}(t) & =\boldsymbol{A} x(t)+\boldsymbol{B} u(t) \\
+y(t) & =\boldsymbol{C} x(t)+\boldsymbol{D} u(t)
+\end{aligned}
+XXX
+
+结合[维基百科](https://en.wikipedia.org/wiki/State-space_representation)的图，方便理解
+
+![ssm](../assets/ssm.png)
+
+各变量含义如下（看起来和RNN很像）：
+
++ $$\boldsymbol{A}\in \mathbb{R}^{N\times N}$$：状态矩阵
++ $$\boldsymbol{B}\in \mathbb{R}^{N\times N}$$：输入矩阵
++ $$\boldsymbol{C}\in \mathbb{R}^{N\times N}$$：输出矩阵
++ $$\boldsymbol{D}\in \mathbb{R}^{N\times N}$$：feedforward矩阵或者feedthrough矩阵
++ $$x^{\prime}(t):=\frac{d}{d t} \mathbf{x}(t)$$是$$x(t)$$关于$$t$$的导数，所以图里有一个**积分**$$\int$$操作把它变回$$x(t)$$
+
+假设序列长度为$$L$$，那么
+
++ 时间复杂度：
+    + SSM：$$O(N^2L)$$，因为$$\boldsymbol{A} x(t)$$是$$N\times N$$和$$N\times 1$$的矩阵乘法，复杂度是$$N^2$$
+    + RNN：$$O(N^2L)$$，和SSM类似
+    + CNN：$$O(kLM^2)$$，假设$$k$$个卷积核，每个卷积核$$M\times M$$，一般$$M \ll N$$
++ 空间复杂度：
+    + SSM：$$O(N^2+NL)$$，因为中间状态$$x(t) \in \mathbb{R}^N$$是需要**额外存储**的
+    + RNN：$$O(N^2)$$，所有时间步共享权重，不需要像SSM专门为每个时间步存一个状态$$x(t)$$
+    + CNN：$$kM^2$$
+
+所以传统SSM的时空复杂度都很高，作者提出了S4(structured state space model)
+
+====>hippo的假设会让模型更关注宽波，对于很窄的毛刺信号效果不好，所以对大海捞针任务效果并不好
+
+## Mamba
+
+[Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/ftp/arxiv/papers/2312/2312.00752.pdf)
+
+[https://huggingface.co/state-spaces](https://huggingface.co/state-spaces)
+
+[https://github.com/havenhq/mamba-chat](https://github.com/havenhq/mamba-chat)
+
+[MODELING SEQUENCES WITH STRUCTURED STATE SPACES](https://stacks.stanford.edu/file/druid:mb976vf9362)
+
+## Mamba2
+
+[再战Transformer！原作者带队的Mamba 2来了，新架构训练效率大幅提升](https://mp.weixin.qq.com/s/31t6pJqcXrZDjT6XiJZC_g)
+
+[Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality](https://arxiv.org/pdf/2405.21060)
+
+[https://github.com/state-spaces/mamba](https://github.com/state-spaces/mamba)
+
+## SAMBA
+
+[长文本模型近期研究工作梳理](https://mp.weixin.qq.com/s/5u2w08twsJ6CgHZ2FpN8JA)
+
+[SAMBA: Simple Hybrid State Space Models for Efficient Unlimited Context Language Modeling](https://arxiv.org/pdf/2406.07522)
+
+## Mamba in llama
+
+[Mamba作者新作：将Llama3蒸馏成混合线性 RNN](https://mp.weixin.qq.com/s/jZGcBxhVUfb-Qv1UkqYK4A)
+
+[The Mamba in the Llama: Distilling and Accelerating Hybrid Models](https://arxiv.org/pdf/2408.15237)
+
+
+## Mamba+Transformer
+
+[Mamba真比Transformer更优吗？Mamba原作者：两个都要！混合架构才是最优解](https://mp.weixin.qq.com/s/omImpaiddmSJ968bCZ8qmw)
+
+[An Empirical Study of Mamba-based Language Models](https://arxiv.org/pdf/2406.07887)
+
+## Block-State Transformer
+
+[Block-State Transformer](https://arxiv.org/pdf/2306.09539.pdf)
+
+## Jamba
+
+[Mamba做大做强！混合Transformer，打败Transformer](https://mp.weixin.qq.com/s/Lde0G_zysfrGcRUX5nOf8g)
+
+[https://huggingface.co/ai21labs/Jamba-v0.1](https://huggingface.co/ai21labs/Jamba-v0.1)
+
+让mamba做短程头，让transformer做长程头
+
+## Falcon Mamba
+
+[非Transformer架构站起来了！首个纯无注意力大模型，超越开源巨头Llama 3.1](https://mp.weixin.qq.com/s/ET9gghK4asEr5ObuW2padw)
+
+[Welcome FalconMamba: The first strong attention-free 7B model](https://huggingface.co/blog/falconmamba)
+
+[https://huggingface.co/tiiuae/falcon-mamba-7b](https://huggingface.co/tiiuae/falcon-mamba-7b)
+
+[https://github.com/huggingface/transformers/blob/main/src/transformers/models/falcon_mamba/modeling_falcon_mamba.py](https://github.com/huggingface/transformers/blob/main/src/transformers/models/falcon_mamba/modeling_falcon_mamba.py)
+
+核心是```FalconMambaMixer```这个类
+
+无需增加内存存储，就可以处理任意长度的序列，并且能够在单个 24GB A10 GPU 上运行。
+
+训练数据有5500GT ，主要由RefinedWeb数据集组成，并添加了来自公共源的高质量技术数据、代码数据和数学数据。
+
+采用**多阶段训练策略**进行训练，上下文长度从2048增加到了8192。此外，受到**课程学习**概念的启发，整个训练阶段精心选择了混合数据，充分考虑了数据的**多样性和复杂性**。在最后的训练阶段，使用了一小部分高质量精选数据（即来自 Fineweb-edu 的样本），以进一步提升性能。
+
+大部分训练是在**256个H100 80GB GPU**上完成的，采用了 3D 并行（TP=1、PP=1、DP=256）与 ZeRO 相结合的策略。
+
+用adamW+WSD（预热 - 稳定 - 衰减）学习率schedule，在前50 GT的训练过程中，batch大小从b_min=128增加到了b_max=2048
+
+
+## Nemotron-H
+
+[https://research.nvidia.com/labs/adlr/nemotronh/](https://research.nvidia.com/labs/adlr/nemotronh/)
+
+## STORM
+
+[Token-Efficient Long Video Understanding for Multimodal LLMs](https://arxiv.org/pdf/2503.04130)
+
+## VAMBA
+
+[VAMBA: Understanding Hour-Long Videos with Hybrid Mamba-Transformers](https://arxiv.org/pdf/2503.11579)
+
