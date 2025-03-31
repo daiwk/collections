@@ -10024,13 +10024,20 @@ XXX
 
 [ICLR2025 | SLMRec: 重新思考大语言模型在推荐系统中的价值](https://mp.weixin.qq.com/s/E6SGGKy6-D1h3zGro7KW0w)
 
-基线是
-
 [SLMRec: Distilling Large Language Models into Small for Sequential Recommendation](https://openreview.net/pdf?id=G4wARwjF8M)
 
 提出了一种知识蒸馏的方法，使得小语言模型仅用13%的模型参数，取得了比现有大模型推荐方法略好的效果，并取得了在训练/推理阶段6.6x/8.0x的加速。
 
 [https://github.com/WujiangXu/SLMRec](https://github.com/WujiangXu/SLMRec)
+
+![](../assets/slmrec.png)
+
++ teacher每m层分成一个block，共分为B个block；student每n层分为一个block，也是B个block
++ 每个block里，算3个loss：
+  + teacher和student间算2个loss：衡量方向的cos相似度，衡量模长的L2距离
+  + student和真实label（target item）算loss
++ teacher frozen，只通过lora来训练student
+
 
 # LLM for 检索
 
