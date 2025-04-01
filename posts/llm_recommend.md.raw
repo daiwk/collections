@@ -1883,7 +1883,7 @@ if args.target == "attribute":
 + FM-index：参考[Autoregressive Search Engines: Generating Substrings as Document Identifiers](https://arxiv.org/pdf/2204.10628)：例如一个item可以写成```<IDS> 1023 <IDE> Urban Decay Eyeshadow Palette Naked Heat <AS> Makeup <AE> <AS> Eyes <AE>```，并通过wavelet tree存储，给定开始token（如```<IDS>```或者```<AS>```），可以在$$O(Vlog(V))$$里找出所有可能的后续tokens。代码：[https://github.com/facebookresearch/SEAL](https://github.com/facebookresearch/SEAL)
 + constrained beam search：参考[Autoregressive entity retrieval](https://arxiv.org/pdf/2010.00904)：代码：[https://github.com/facebookresearch/GENRE](https://github.com/facebookresearch/GENRE)，另外，可以发现title是没有bos和eos的，这样在检索/生成title的时候，是可以检索/生成子串的，也就是论文提到的position-free，同样的方法也可以用在instruct tuning阶段。
 
-## E4SRec（学术界）WWW24
+## E4SRec（学术界）没中
 
 [E4SRec: An Elegant Effective Efficient Extensible Solution of Large Language Models for Sequential Recommendation](https://arxiv.org/pdf/2312.02443)
 
