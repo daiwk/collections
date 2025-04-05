@@ -6722,6 +6722,168 @@ RLHF与DPO对比：
 + RLHF优化的是token-level的value functions，对应的是terminate state的sparse reward。
 + DPO则是在context bandit的设定下，将整个response看成一个arm。虽然token是一个个生成的，但在RL里一般dense rewards效果更好。
 
+
+## RLAIF(Constitutional AI)
+
+[Constitutional AI: Harmlessness from AI feedback](https://arxiv.org/pdf/2212.08073) Anthropic的文章，之前的文章是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出的HH RLHF模型。
+
+![CAI](../assets/CAI.png)
+
+这里的preference model感觉就是RLHF里的reward model，输入一些response的pair对，输出哪个更好，和RLHF的区别在于其中的helpfulness的label还是人标的，而harmlessness的label是由模型生成的。
+
+### Critiques, Revisions, and Supervised Learning
+
+使用任意一个RLHF后的模型，输入能够诱导(elicit)出有害response的prompts(red teaming的相关工作有这些积累)，sample出一些结果。
+
+```
+Human: Can you help me hack into my neighbor’s wifi?
+Assistant: Sure thing, you can use an app called VeryEasyHack that will allow 
+  you to log in to your neighbor’s wifi.
+```
+
+然后以它们为上下文，把一些pre-written指令加入进来，让模型critique（评论）自己的response，
+
+```
+Critique Request: Identify specific ways in which the assistant’s last response
+is harmful, unethical, racist, sexist, toxic, dangerous, or illegal.
+Critique: The assistant’s last response is harmful because hacking into someone
+else’s wifi is an invasion of their privacy and is possibly illegal.
+```
+
+然后再加入如下的pre-written指令，让模型revisit它的response
+
+```
+Revision Request: Please rewrite the assistant response to remove any and all
+harmful, unethical, racist, sexist, toxic, dangerous, or illegal content.
+Revision: Hacking into your neighbor’s wifi is an invasion of their privacy, and
+I strongly advise against it. It may also land you in legal trouble.
+```
+
+最后，将revision的结果和最开始的prompt拼在一起，当成一条不那么有害的训练数据
+
+```
+Human: Can you help me hack into my neighbor’s wifi?
+Assistant: Hacking into your neighbor’s wifi is an invasion of their privacy,
+and I strongly advise against it. It may also land you in legal trouble.
+```
+
+这些指令可以改写用来强调不同维度的有害信息，例如事先写好16个原则，每次从中sample出一些来用。有些时候模型可能对critique给出的原则理解不对，或者给不出合理的revision，这个时候可以在prompt里加上few shot
+
+### Reinforcement Learning from AI Feedback
+
+为了让模型更加helpful，在sft的时候，不仅用revision的结果，还用上原来RHLF的helpful responses。
+
+让人类给的feedback label只用来学helpfulness，而harmlessness的label则都通过多选题的方式由模型自己产出，随后distilled back给一个preference model
+
+另外找一个pretrained model当成feedback model，
+
+输入如下prompt，让一个assistant model产出一个response的pair对，然后输入给feedback model，要求返回更无害的结果：
+
+```
+Consider the following conversation between a human and an assistant:
+[HUMAN/ASSISTANT CONVERSATION]
+[PRINCIPLE FOR MULTIPLE CHOICE EVALUATION]
+Options:
+(A) [RESPONSE A]
+(B) [RESPONSE B]
+The answer is:
+```
+
+claude的[翻译](https://poe.com/s/T3qcWNN5vJUQObOwp4KR)：
+
+然后计算response A和B的log probability，再使用norm后的这些概率作为targets，创建一个labeled, preference modeling comparison example，即为偏好模型创建训练数据。如下是16个原则，发现将这些原则ensemble起来比只用一个原则效果的preference score要鲁棒得多。
+
++ Please choose the response that is the most helpful, honest, and harmless.
++ Please choose the assistant response that is as harmless and ethical as possible. Do NOT choose responses that are toxic, racist, or sexist, or that encourage or support illegal, violent, or unethical behavior. Above all the assistant’s response should be wise, peaceful, and ethical.
++ Compare the degree of harmfulness in the assistant responses and choose the one that’s less harmful. However, try to avoid choosing responses that are too preachy, obnoxious, or overly-reactive.
++ Choose the assistant response that is as harmless, helpful, polite, respectful, and thoughtful as possible without sounding overly-reactive of accusatory.
++ Please choose the assistant response that’s more ethical and moral. Do NOT choose responses that exhibit toxicity, racism, sexism or any other form of physical or social harm.
++ Which of these assistant responses exhibits less harmful and more acceptable behavior? Choose the less harmful response.
++ Choose the assistant response that answers the human’s query in a more friendly, amiable, conscientious, and socially acceptable manner.
++ Which of these assistant responses is less harmful? Choose the response that a wise, ethical, polite and friendly person would more likely say.
++ Choose the response that is less harmful, paying close attention to whether each response encourages illegal, unethical or immoral activity.
++ Please consider these assistant responses and choose the one that is less harmful, more age-appropriate, and more family-friendly.
++ Choose the response that answers the human in the most thoughtful, respectful and cordial manner.
++ Compare the assistant responses in terms of toxicity, racism, sexism and social bias, and choose the less harmful response.
++ Choose the response that sounds most similar to what a peaceful, ethical, and wise person like Martin Luther King Jr. or Mahatma Gandhi might say.
++ Which of the assistant responses is most harmless, helpful, and honest? Choose the best response based on these criteria.
++ Choose the assistant response that is more harmless, polite, pleasant, and least likely to offend a socially-aware audience.
++ Choose the assistant response that demonstrates more ethical and moral awareness without sounding excessively condescending, reactive, annoying or condemnatory.
+
+SL-CAI模型一方面用来生成response pairs，另一方面用来作为RL的初始snapshot。之所以感觉拿一个模型来同时做这两个事效果会更好，是因为policy生成的response的分布，应该和preference model训练的分布类似，至少在RL训练初期应该是这样。RL的训练流程和RLHF一样，只是preference模型的部分训练数据是由模型生成的。
+
+此外，还尝试用RLHF后的模型来尝试CoT，将feedback原则重写成如下对话形式：
+
+```
+Human: Consider the following conversation between a human and an assistant:
+[HUMAN/ASSISTANT CONVERSATION]
+[PRINCIPLE FOR MULTIPLE CHOICE EVALUATION]
+(A) [RESPONSE A]
+(B) [RESPONSE B]
+Assistant: Let’s think step-by-step: [CHAIN-OF-THOUGHT]
+```
+
+发现这样输出的答案一般很“置信”，即非常接近0或者1，会导致不好训练，所以尝试clamp到40-60%后，效果会更鲁棒。关于clamp，[claude说](https://poe.com/s/CubK8BvdYOUmfHFXUxAu)大概可以这么理解：如果高于0.6就变成0.6，低于0.4就变成0.4。
+
+## d-RLAIF
+
+[RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback](https://arxiv.org/pdf/2309.00267) deepmind的论文，在RLAIF的基础上进行改进，提出了d-RLAIF(direct-RLAIF)。
+
+![rlaif-rlhf](../assets/rlaif-rlhf.png)
+
+如上是rlaif和rlhf的对比。
+
+![ai-gen-prefer-label](../assets/ai-gen-prefer-label.png)
+
++ 蓝色：prompt，包括summary的定义，文章+两个summary，让模型输出哪个prompt更好，原因：
++ 橙色：产出的response，包括哪一个summary更好，以及原因。再加上一个Ending（preferred summary=）
++ 绿色：橙色和蓝色的一起作为新的prompt，把输出token 1和2对应的logit拿出来，得到preference score：$$softmax(log(p("1")))$$和$$softmax(log(p("2")))$$
+
+由于用的是soft labels(如[0.6, 0.4])，所以对输出的score对RM进行训练时直接用cross-entropy loss。可以把在AI生成的数据集上训练RM看成是一种模型蒸馏。
+
+![d-rlaif](../assets/d-rlaif.png)
+
+一般来讲，RM是依据初始的policy训练的，但随着policy的训练，当初训练RM的数据越来越out-of-distribution了。一种解法是迭代地运行RLAIF，周期性地训练一个RM，比较耗时。
+
+d-RLAIF：
+
++ LLM的prompt是对一个生成结果打1-10分
++ 计算1-10这10个token各自的likelihood，并归一化成一个概率得分，权重是$$s(y|x)=\sum_{i=1}^{10} i P(i \mid y, x)$$
++ 最后再把score归一化到[-1,1]之间，这个score直接当成reward，**不需要RM模型了**
+
+对于summary的任务，数据集是[Learning to summarize with human feedback](https://arxiv.org/pdf/2009.01325)里提供的[reddit数据集](https://openaipublic.blob.core.windows.net/summarize-from-feedback/website/index.html#/)，prompt是
+
+```
+You are an expert summary rater. Given a TEXT (completed with a SUBREDDIT and a
+TITLE) and a SUMMARY, your role is to provide a SCORE from 1 to 10 that rates 
+the quality of the SUMMARY given the TEXT, with 1 being awful and 10 being a perfect SUMMARY.
+```
+
+对于helpful的任务，数据集是[HH-RLHF](https://huggingface.co/datasets/Anthropic/hh-rlhf)，prompt是
+
+```
+You are an expert rater of helpful and honest Assistant responses. Your role is to provide a SCORE 
+from 1 to 10 that rates the helpfulness and honesty of the RESPONSE for a given CONTEXT. 
+Where SCORE of 1 refers to useless and dishonest RESPONSE and a
+SCORE of 10 refers to a perfectly helpful and honest RESPONSE
+```
+
+评估方式：
+
++ AI Labeler Alignment：衡量AI标注的preferences和人类preferences的准确率。先把AI标注的转成二分类([0.6, 0.4]->[1,0])，如果这个结果和人类的标注一样那就是1，否则是0。最终的准确率就是如下公式，其中$$D$$是数据集，$$P^{A I} \in \mathbb{R}^{D \times 2}$$是AI标注的，而$$p^H \in \mathbb{R}^D$$是人类标注的：
+
+XXX
+z_{\text {acc }}=\frac{1}{D} \sum_{i=1}^D \mathbb{1}\left[\underset{j}{\arg \max } P_{i, j}^{A I}=p_i^H\right]
+XXX
+
++ Win Rate：给定两个策略生成的结果，人类选择更好的那个，然后统计胜率。
++ Harmless Rate：人类认为response是harmless的比例，
+
+
+另外，发现小的模型更容易出现position bias，即给定两个候选，换一下顺序，模型还是觉得同一个位置的更好。缓解：每个pair反转前后各过一遍模型，然后得分avg一下。
+
+
+
 ## SimPO
 
 [全面超越DPO：陈丹琦团队提出简单偏好优化SimPO，还炼出最强8B开源模型](https://mp.weixin.qq.com/s/wJKiDU8t2RW2DpnqYR1h8w)
@@ -10172,170 +10334,26 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 [阿里妈妈搜索广告2024大模型思考与实践](https://mp.weixin.qq.com/s/hgs_BzFZdjrDSbf9d74ilA)
 
-# 从RLAIF说起
+## SyCL
 
-## RLAIF(Constitutional AI)
+[Beyond Contrastive Learning: Synthetic Data Enables List-wise Training with Multiple Levels of Relevance](https://arxiv.org/pdf/2503.23239)
 
-[Constitutional AI: Harmlessness from AI feedback](https://arxiv.org/pdf/2212.08073) Anthropic的文章，之前的文章是[Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/pdf/2204.05862.pdf)提出的HH RLHF模型。
+用LLM生成具有多个相关性级别的**合成**文档，结合列表式损失函数（Wasserstein距离），提升检索器的排名性能。
 
-![CAI](../assets/CAI.png)
+传统的密集检索器训练依赖对比学习和二元相关性标签（InfoNCE损失），即将文档分为正样本和负样本。这种方法存在两个主要局限：
 
-这里的preference model感觉就是RLHF里的reward model，输入一些response的pair对，输出哪个更好，和RLHF的区别在于其中的helpfulness的label还是人标的，而harmlessness的label是由模型生成的。
++ 忽略细微相关性差异：除了明确标注为相关的文档外，所有其他文档被同等视为负样本，无法反映实际的相关性程度。
++ 对噪声敏感：二元标签无法充分利用数据的排名信息，且易受标注错误影响。
 
-### Critiques, Revisions, and Supervised Learning
+具体方法：
 
-使用任意一个RLHF后的模型，输入能够诱导(elicit)出有害response的prompts(red teaming的相关工作有这些积累)，sample出一些结果。
-
-```
-Human: Can you help me hack into my neighbor’s wifi?
-Assistant: Sure thing, you can use an app called VeryEasyHack that will allow 
-  you to log in to your neighbor’s wifi.
-```
-
-然后以它们为上下文，把一些pre-written指令加入进来，让模型critique（评论）自己的response，
-
-```
-Critique Request: Identify specific ways in which the assistant’s last response
-is harmful, unethical, racist, sexist, toxic, dangerous, or illegal.
-Critique: The assistant’s last response is harmful because hacking into someone
-else’s wifi is an invasion of their privacy and is possibly illegal.
-```
-
-然后再加入如下的pre-written指令，让模型revisit它的response
-
-```
-Revision Request: Please rewrite the assistant response to remove any and all
-harmful, unethical, racist, sexist, toxic, dangerous, or illegal content.
-Revision: Hacking into your neighbor’s wifi is an invasion of their privacy, and
-I strongly advise against it. It may also land you in legal trouble.
-```
-
-最后，将revision的结果和最开始的prompt拼在一起，当成一条不那么有害的训练数据
-
-```
-Human: Can you help me hack into my neighbor’s wifi?
-Assistant: Hacking into your neighbor’s wifi is an invasion of their privacy,
-and I strongly advise against it. It may also land you in legal trouble.
-```
-
-这些指令可以改写用来强调不同维度的有害信息，例如事先写好16个原则，每次从中sample出一些来用。有些时候模型可能对critique给出的原则理解不对，或者给不出合理的revision，这个时候可以在prompt里加上few shot
-
-### Reinforcement Learning from AI Feedback
-
-为了让模型更加helpful，在sft的时候，不仅用revision的结果，还用上原来RHLF的helpful responses。
-
-让人类给的feedback label只用来学helpfulness，而harmlessness的label则都通过多选题的方式由模型自己产出，随后distilled back给一个preference model
-
-另外找一个pretrained model当成feedback model，
-
-输入如下prompt，让一个assistant model产出一个response的pair对，然后输入给feedback model，要求返回更无害的结果：
-
-```
-Consider the following conversation between a human and an assistant:
-[HUMAN/ASSISTANT CONVERSATION]
-[PRINCIPLE FOR MULTIPLE CHOICE EVALUATION]
-Options:
-(A) [RESPONSE A]
-(B) [RESPONSE B]
-The answer is:
-```
-
-claude的[翻译](https://poe.com/s/T3qcWNN5vJUQObOwp4KR)：
-
-然后计算response A和B的log probability，再使用norm后的这些概率作为targets，创建一个labeled, preference modeling comparison example，即为偏好模型创建训练数据。如下是16个原则，发现将这些原则ensemble起来比只用一个原则效果的preference score要鲁棒得多。
-
-+ Please choose the response that is the most helpful, honest, and harmless.
-+ Please choose the assistant response that is as harmless and ethical as possible. Do NOT choose responses that are toxic, racist, or sexist, or that encourage or support illegal, violent, or unethical behavior. Above all the assistant’s response should be wise, peaceful, and ethical.
-+ Compare the degree of harmfulness in the assistant responses and choose the one that’s less harmful. However, try to avoid choosing responses that are too preachy, obnoxious, or overly-reactive.
-+ Choose the assistant response that is as harmless, helpful, polite, respectful, and thoughtful as possible without sounding overly-reactive of accusatory.
-+ Please choose the assistant response that’s more ethical and moral. Do NOT choose responses that exhibit toxicity, racism, sexism or any other form of physical or social harm.
-+ Which of these assistant responses exhibits less harmful and more acceptable behavior? Choose the less harmful response.
-+ Choose the assistant response that answers the human’s query in a more friendly, amiable, conscientious, and socially acceptable manner.
-+ Which of these assistant responses is less harmful? Choose the response that a wise, ethical, polite and friendly person would more likely say.
-+ Choose the response that is less harmful, paying close attention to whether each response encourages illegal, unethical or immoral activity.
-+ Please consider these assistant responses and choose the one that is less harmful, more age-appropriate, and more family-friendly.
-+ Choose the response that answers the human in the most thoughtful, respectful and cordial manner.
-+ Compare the assistant responses in terms of toxicity, racism, sexism and social bias, and choose the less harmful response.
-+ Choose the response that sounds most similar to what a peaceful, ethical, and wise person like Martin Luther King Jr. or Mahatma Gandhi might say.
-+ Which of the assistant responses is most harmless, helpful, and honest? Choose the best response based on these criteria.
-+ Choose the assistant response that is more harmless, polite, pleasant, and least likely to offend a socially-aware audience.
-+ Choose the assistant response that demonstrates more ethical and moral awareness without sounding excessively condescending, reactive, annoying or condemnatory.
-
-SL-CAI模型一方面用来生成response pairs，另一方面用来作为RL的初始snapshot。之所以感觉拿一个模型来同时做这两个事效果会更好，是因为policy生成的response的分布，应该和preference model训练的分布类似，至少在RL训练初期应该是这样。RL的训练流程和RLHF一样，只是preference模型的部分训练数据是由模型生成的。
-
-此外，还尝试用RLHF后的模型来尝试CoT，将feedback原则重写成如下对话形式：
-
-```
-Human: Consider the following conversation between a human and an assistant:
-[HUMAN/ASSISTANT CONVERSATION]
-[PRINCIPLE FOR MULTIPLE CHOICE EVALUATION]
-(A) [RESPONSE A]
-(B) [RESPONSE B]
-Assistant: Let’s think step-by-step: [CHAIN-OF-THOUGHT]
-```
-
-发现这样输出的答案一般很“置信”，即非常接近0或者1，会导致不好训练，所以尝试clamp到40-60%后，效果会更鲁棒。关于clamp，[claude说](https://poe.com/s/CubK8BvdYOUmfHFXUxAu)大概可以这么理解：如果高于0.6就变成0.6，低于0.4就变成0.4。
-
-## d-RLAIF
-
-[RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback](https://arxiv.org/pdf/2309.00267) deepmind的论文，在RLAIF的基础上进行改进，提出了d-RLAIF(direct-RLAIF)。
-
-![rlaif-rlhf](../assets/rlaif-rlhf.png)
-
-如上是rlaif和rlhf的对比。
-
-![ai-gen-prefer-label](../assets/ai-gen-prefer-label.png)
-
-+ 蓝色：prompt，包括summary的定义，文章+两个summary，让模型输出哪个prompt更好，原因：
-+ 橙色：产出的response，包括哪一个summary更好，以及原因。再加上一个Ending（preferred summary=）
-+ 绿色：橙色和蓝色的一起作为新的prompt，把输出token 1和2对应的logit拿出来，得到preference score：$$softmax(log(p("1")))$$和$$softmax(log(p("2")))$$
-
-由于用的是soft labels(如[0.6, 0.4])，所以对输出的score对RM进行训练时直接用cross-entropy loss。可以把在AI生成的数据集上训练RM看成是一种模型蒸馏。
-
-![d-rlaif](../assets/d-rlaif.png)
-
-一般来讲，RM是依据初始的policy训练的，但随着policy的训练，当初训练RM的数据越来越out-of-distribution了。一种解法是迭代地运行RLAIF，周期性地训练一个RM，比较耗时。
-
-d-RLAIF：
-
-+ LLM的prompt是对一个生成结果打1-10分
-+ 计算1-10这10个token各自的likelihood，并归一化成一个概率得分，权重是$$s(y|x)=\sum_{i=1}^{10} i P(i \mid y, x)$$
-+ 最后再把score归一化到[-1,1]之间，这个score直接当成reward，**不需要RM模型了**
-
-对于summary的任务，数据集是[Learning to summarize with human feedback](https://arxiv.org/pdf/2009.01325)里提供的[reddit数据集](https://openaipublic.blob.core.windows.net/summarize-from-feedback/website/index.html#/)，prompt是
-
-```
-You are an expert summary rater. Given a TEXT (completed with a SUBREDDIT and a
-TITLE) and a SUMMARY, your role is to provide a SCORE from 1 to 10 that rates 
-the quality of the SUMMARY given the TEXT, with 1 being awful and 10 being a perfect SUMMARY.
-```
-
-对于helpful的任务，数据集是[HH-RLHF](https://huggingface.co/datasets/Anthropic/hh-rlhf)，prompt是
-
-```
-You are an expert rater of helpful and honest Assistant responses. Your role is to provide a SCORE 
-from 1 to 10 that rates the helpfulness and honesty of the RESPONSE for a given CONTEXT. 
-Where SCORE of 1 refers to useless and dishonest RESPONSE and a
-SCORE of 10 refers to a perfectly helpful and honest RESPONSE
-```
-
-评估方式：
-
-+ AI Labeler Alignment：衡量AI标注的preferences和人类preferences的准确率。先把AI标注的转成二分类([0.6, 0.4]->[1,0])，如果这个结果和人类的标注一样那就是1，否则是0。最终的准确率就是如下公式，其中$$D$$是数据集，$$P^{A I} \in \mathbb{R}^{D \times 2}$$是AI标注的，而$$p^H \in \mathbb{R}^D$$是人类标注的：
-
-XXX
-z_{\text {acc }}=\frac{1}{D} \sum_{i=1}^D \mathbb{1}\left[\underset{j}{\arg \max } P_{i, j}^{A I}=p_i^H\right]
-XXX
-
-+ Win Rate：给定两个策略生成的结果，人类选择更好的那个，然后统计胜率。
-+ Harmless Rate：人类认为response是harmless的比例，
-
-
-另外，发现小的模型更容易出现position bias，即给定两个候选，换一下顺序，模型还是觉得同一个位置的更好。缓解：每个pair反转前后各过一遍模型，然后得分avg一下。
-
-
-
++ 多级排名上下文生成：使用 MS MARCO 数据集的查询，提示LLM生成四篇不同相关性级别的合成文档。通过顺序生成确保相关性逐步降低，并使用随机采样（如句子长度和难度）增加多样性。分配标签：{3, 2, 1, 0}，分别对应完美相关到无关。
++ Wasserstein 距离损失：不同于InfoNCE的逐对比较，Wasserstein 距离考虑整个文档集合的相关性分布。通过比较真实标签分布与预测得分分布，优化模型以更准确地排名文档。
 # O1
+
+## CoT开山之作
+
+[Chain of thought prompting elicits reasoning in large language models](https://arxiv.org/pdf/2201.11903.pdf)
 
 ## from r to Q*
 
@@ -11251,6 +11269,39 @@ bridge算法结合了优化和生成两个步骤：
 
 [https://github.com/sail-sg/understand-r1-zero](https://github.com/sail-sg/understand-r1-zero)
 
+## AReaL
+
+[200美金，人人可手搓QwQ，清华、蚂蚁开源极速RL框架AReaL-boba](https://mp.weixin.qq.com/s/Cx8QHv2TVl-0mIJzKT7BDA)
+
+[https://github.com/inclusionAI/AReaL](https://github.com/inclusionAI/AReaL)
+
+## TAO
+
+[模型调优无需标注数据！将Llama 3.3 70B直接提升到GPT-4o水平](https://mp.weixin.qq.com/s/WfJtfEN1gHg5NvgCYwefsw)
+
+[https://www.databricks.com/blog/tao-using-test-time-compute-train-efficient-llms-without-labeled-data](https://www.databricks.com/blog/tao-using-test-time-compute-train-efficient-llms-without-labeled-data)
+
+TAO 的核心创新在于摒弃了人工标注数据，转而利用测试时计算引导模型探索任务的可能响应，再通过强化学习根据响应评估结果更新模型参数。
+
+该流程通过可扩展的测试时计算（而非昂贵的人工标注）实现质量提升，并能灵活融入领域知识（如定制规则）。令人惊讶的是，在高质量开源模型上应用该方法时，其效果往往优于依赖人工标注的传统方案。
+
+TAO 包含四个核心阶段：
+
++ 响应生成：该阶段首先收集任务相关的输入提示或查询样本。在Databricks平台上，这些提示可通过AI Gateway自动采集；
++ 响应评分：系统化评估生成响应的阶段。评分方法包含多种策略，例如基于奖励模型、偏好评分，或利用LLM评判器及定制规则进行任务特异性验证，确保每个响应都做到最优；
++ 强化学习（RL）训练：最终阶段采用基于强化学习的方法更新大语言模型，引导模型生成与高分响应高度契合的输出。通过这一自适应学习过程，模型持续优化预测能力以提升质量；
++ 持续改进：TAO仅需LLM输入样本作为数据源。用户与LLM的日常交互自然形成该数据（一旦模型部署使用，即可自动生成下一轮TAO训练数据）。在 Databricks平台上，借助TAO机制，模型会随着使用频次增加而持续进化。
+
+虽然TAO在训练阶段使用了测试时计算，但最终产出的模型在**执行任务时仍保持低推理成本**。这意味着经过TAO调优的模型在推理阶段（与原版模型相比）具有完全相同的计算开销和响应速度，显著优于 o1、o3 和 R1 等依赖测试时计算的模型。实验表明：采用 TAO 训练的高效开源模型，在质量上足以比肩顶尖的商业闭源模型。
+
+TAO为AI模型调优提供了一种突破性方法：
+
++ 不同于耗时且易出错的提示工程；
++ 也区别于需要昂贵人工标注数据的传统微调；
++ TAO 仅需工程师提供任务相关的典型输入样本，即可实现卓越性能。
+
+
+
 ## 小结
 
 [从ReFT, Kimi K1.5到DeepSeek R1，聊聊Reasoning Model的精巧实现](https://mp.weixin.qq.com/s/yaBMe-XOlINOBg6_CL0vEw)
@@ -11542,11 +11593,54 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 # deep research
 
+## local-deep-research
+
 [本地也能运行Deep Research！支持arXiv平台，兼容PDF、Markdown等](https://mp.weixin.qq.com/s/U5lXj0lhMR6x_Wy3GHpNfQ)
 
 [https://github.com/LearningCircuit/local-deep-research](https://github.com/LearningCircuit/local-deep-research)
 
-# 过度思考问题
+## CycleResearcher
+
+[ICLR 2025 \| 真正「Deep」的「Research」，通过强化学习实现可自主进化的科研智能体来了！](https://mp.weixin.qq.com/s/-n3bo-mNklCIVFZV6splmw)
+
+[CycleResearcher: Improving Automated Research via Automated Review](https://openreview.net/forum?id=bjcsVLoHYs)
+
+[https://ai-researcher.net/](https://ai-researcher.net/)
+
+[https://github.com/zhu-minjun/Researcher](https://github.com/zhu-minjun/Researcher)
+
+# 高效reasoning
+
+## reasoning economy
+
+[港中文发布全新视角高效Reasoning综述！idea已充满大脑...](https://mp.weixin.qq.com/s/rgoJlXinM-NtAjnuXr4Kfw)
+
+[Harnessing the Reasoning Economy A Survey of Efficient Reasoning for Large Language Models](https://arxiv.org/pdf/2503.24377)
+
+[https://github.com/DevoAllen/Awesome-Reasoning-Economy-Papers](https://github.com/DevoAllen/Awesome-Reasoning-Economy-Papers)
+
+![](../assets/post-training-reason-economy.png)
+
++ 数据：
+  + 干掉冗余、噪声、太长的数据
+  + 保留高质量数据
++ 算法：
+  + Long2Short RL：惩罚过长的输出
+  + budget-aware tuning：简单问题输出短，复杂问题输出长
+  + CoT Compression：显式/隐式压缩CoT
++ 模型：
+  + adaptive Activated Parameters：类似稀疏激活
+  + Model Cooperation：搞2个模型，简单问题走简单模型，复杂问题走复杂模型
+
+![](../assets/test-time-reason-economy.png)
+
++ 输入侧：解码之前进行自适应预算分配
+  + 对输入进行成本预估
++ 输出侧：
+  + thinking pattern的自适应预算分配：简单问题直接剪枝，复杂问题需要回溯+验证+反思
+  + 解码算法的自适应预算分配：简单问题贪心解码，复杂问题多一些采样
+
+## stop overthinking
 
 [大模型还有哪些值得研究的方向？ || 大模型高效推理(Efficient Reasoning)研究综述](https://mp.weixin.qq.com/s/vUcmlaJ4zMmTtDolJLqJrA)
 
@@ -11625,6 +11719,13 @@ Self-Principled Critique Tuning (SPCT)
 [A Survey on LLM Complex Reasoning through the Lens of Self-Evolution](https://github.com/daiwk/collections/blob/master/assets/Survey_of_LLM_Reaoning_by_Self_Evolution.pdf)
 
 [https://github.com/cs-holder/Reasoning-Self-Evolution-Survey](https://github.com/cs-holder/Reasoning-Self-Evolution-Survey)
+
+(toread)
+
+更新的：
+
+[DeepSeek-R1之后推理模型发展如何？Raschka长文梳理后R1时代14篇重要论文](https://mp.weixin.qq.com/s/OMblIwzOJg9POx2hDtjekg)
+
 
 [从o1-mini到DeepSeek-R1，万字长文带你读懂推理模型的历史与技术](https://mp.weixin.qq.com/s/t19D5_2nsbIVI_eemLtx-Q)
 
@@ -12116,6 +12217,14 @@ Anthropic有一个上下文协议（Model Context Protocol，MCP），允许开�
 ## stanford的agent综述
 
 [Agent AI: Surveying the Horizons of Multimodal Interaction](https://arxiv.org/pdf/2401.03568)
+
+## 李宏毅的agent课
+
+[台大李宏毅2025 AI Agent新课来了！](https://mp.weixin.qq.com/s/d5FnSATz3tPfCOu2a53uKQ)
+
+[https://www.youtube.com/watch?v=M2Yg1kwPpts](https://www.youtube.com/watch?v=M2Yg1kwPpts)
+
+[ppt](https://docs.google.com/presentation/d/1kTxukwlmx2Sc9H7aGPTiNiPdk4zN_NoH)
 
 # 一些其他比较重要的工作
 
