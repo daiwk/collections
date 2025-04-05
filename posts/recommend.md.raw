@@ -813,6 +813,27 @@ XXX
 
 [VIRT: Improving Representation-based Text Matching via Virtual Interaction](https://aclanthology.org/2022.emnlp-main.59.pdf)
 
+## HCCP
+
+[WWW'25「京东」粗排一致性建模｜A Hybrid Cross-Stage Coordination Pre-rank](https://mp.weixin.qq.com/s/RFlWwaR6luoWEjabpwQ8JQ)
+
+[A Hybrid Cross-Stage Coordination Pre-ranking Model for Online Recommendation Systems](https://arxiv.org/pdf/2502.10284)
+
+构造5类样本：
+
++ N1：曝光空间中的点击/未点击作为正负样本；
++ N2：未曝光空间中的排序列表，非均匀采样；
++ N3：后链路排序后的粗排序列，非均匀采样；
++ N4：batch内的负采样，均匀采样；
++ N5：整个候选池负采样，均匀采样。
+
+除了N1，其他样本都是额外构造的。非均匀采样是针对排序列表的，排在前面的采样率高。列表经过后链路的排序，可以增加与后链路的一致性。减少长尾item的采样可以防止长尾偏差。
+
+然后对采样率进行分桶，对桶内进行重新排序，目的是减少后链路排序的偏差。新排序公式的思想是：和原始排序正相关，加上一定程度的和曝光/点击负相关。
+
+多目标训练主要包括下游一致性和长尾优化。
+
+
 
 # 精排
 
