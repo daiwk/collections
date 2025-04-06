@@ -2464,6 +2464,41 @@ Llama 3.3能用70B实现405B的效果，主要是“运用了后训练技术的�
 [https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/MODEL_CARD.md](https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/MODEL_CARD.md)
 
 
+### Llama-4
+
+[Meta深夜开源Llama 4！首次采用MoE，惊人千万token上下文，竞技场超越DeepSeek](https://mp.weixin.qq.com/s/Kqk36zfBrZvu6IpCp2lBbw)
+
+[https://ai.meta.com/blog/llama-4-multimodal-intelligence/](https://ai.meta.com/blog/llama-4-multimodal-intelligence/)
+
+
+| 模型 | 结构 | 参数量 | 特点 |
+|------|-----|------|---------|
+| Llama 4 Behemoth | 多模态MoE，288B激活，16专家 | 2T | 还没训完，暂未开源|
+| Llama 4 Maverick | 多模态MoE，17B激活，128专家 | 400B |推理+编程与deepseek v3相当 |
+| Llama 4 Scout | 多模态MoE，17B激活，16专家 | 109B|10M上下文窗口 |
+
++ 架构：
+    + iRoPE架构：使用无位置嵌入的交错注意力层（interleaved attention layers），并通过推理时的温度缩放([Scalable-Softmax Is Superior for Attention](https://arxiv.org/pdf/2501.19399))来增强长上下文泛化能力。
+    + 原生多模态设计：通过早期融合将文本和视觉token无缝整合到统一的模型骨干中，能够使用大量未标记的文本、图像和视频数据对模型进行联合预训练。此外，还改进了Llama 4中的视觉编码器，基于MetaCLIP，以更好地使编码器适应LLM。
++ 训练：
+    + MetaP：能够可靠地设置模型超参数，例如每层的学习率和初始化规模。选定的超参数在不同批量大小、模型宽度、深度和训练 token 值之间具有良好的迁移性。
+    + 数据：200种语言的数据，比llama3多了10倍的多语言token；训练所用的数据混合总量超过30万亿（30T）token，是Llama 3预训练数据混合量的两倍多，涵盖了多样化的文本、图像和视频数据集。
+    + fp8训练：兼具质量并确保高FLOPs利用率，使用FP8和32K GPU预训练Llama 4 Behemoth模型时，实现了每GPU有390 TFLOPs。
++ mid-training：
+    + 利用专门的数据集扩展长上下文，使得Llama 4 Scout具备业界领先的1000万(10M)输入上下文长度。
++ post-training：
+    + 轻量级监督微调（SFT）> 在线强化学习（RL）> 轻量级直接偏好优化（DPO）。发现SFT和DPO可能会过度约束模型，限制在线RL阶段的探索能力:
+        + 轻量级监督微调（SFT）：Meta 使用Llama模型作为评判，移除了超过50%的标记为简单的数据，并在剩余较难的数据集上进行SFT。剪枝比例：2T的模型95%，较小模型50%
+        + RL：
+            + 通过policy model进行pass@k分析，采样难度较高的prompt，并构建难度逐渐增加的训练课程
+            + 训练过程中动态过滤掉零advantage的prompt，并构建包含多种能力的混合prompt训练batch
+            + 从多种系统指令中采样，确保模型在推理和编码任务中保持指令遵循能力(这个可能讲的是dpo？)
+        + 轻量级直接偏好优化（DPO）：处理与模型响应质量相关的边缘情况，有效实现了模型智能与对话能力的良好平衡。
++ 新的框架：
+    + 现有的分布式训练框架为了将所有模型加载到内存中而牺牲了计算内存，Meta的新基础设施能够灵活地将不同模型分配到不同的GPU上，并根据计算速度在多个模型之间平衡资源。
+    + 对MoE并行化的设计进行了优化
+    + 完全异步的在线强化学习训练框架
+
 ### Alpaca
 
 [Alpaca: A Strong, Replicable Instruction-Following Model](https://crfm.stanford.edu/2023/03/13/alpaca.html?trk=cndc-detail)
@@ -10349,6 +10384,13 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 + 多级排名上下文生成：使用 MS MARCO 数据集的查询，提示LLM生成四篇不同相关性级别的合成文档。通过顺序生成确保相关性逐步降低，并使用随机采样（如句子长度和难度）增加多样性。分配标签：{3, 2, 1, 0}，分别对应完美相关到无关。
 + Wasserstein 距离损失：不同于InfoNCE的逐对比较，Wasserstein 距离考虑整个文档集合的相关性分布。通过比较真实标签分布与预测得分分布，优化模型以更准确地排名文档。
+
+## RARE
+
+[腾讯搜索广告生成式检索](https://mp.weixin.qq.com/s/zRGuttbqKkTFasg9AY4fGA)
+
+[Real-time Ad retrieval via LLM-generative Commercial Intention for Sponsored Search Advertising](https://arxiv.org/pdf/2504.01304)
+
 # O1
 
 ## CoT开山之作

@@ -2232,3 +2232,10 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 + 多级排名上下文生成：使用 MS MARCO 数据集的查询，提示LLM生成四篇不同相关性级别的合成文档。通过顺序生成确保相关性逐步降低，并使用随机采样（如句子长度和难度）增加多样性。分配标签：{3, 2, 1, 0}，分别对应完美相关到无关。
 + Wasserstein 距离损失：不同于InfoNCE的逐对比较，Wasserstein 距离考虑整个文档集合的相关性分布。通过比较真实标签分布与预测得分分布，优化模型以更准确地排名文档。
+
+## RARE
+
+[腾讯搜索广告生成式检索](https://mp.weixin.qq.com/s/zRGuttbqKkTFasg9AY4fGA)
+
+[Real-time Ad retrieval via LLM-generative Commercial Intention for Sponsored Search Advertising](https://arxiv.org/pdf/2504.01304)
+
