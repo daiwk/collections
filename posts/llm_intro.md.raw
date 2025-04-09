@@ -3247,7 +3247,9 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [TRANSFORMER2 : SELF-ADAPTIVE LLMS](https://arxiv.org/pdf/2501.06252)
 
+## MTA
 
+[Multi-Token Attention](https://arxiv.org/pdf/2504.00927)
 
 
 # mamba-transformer混合
