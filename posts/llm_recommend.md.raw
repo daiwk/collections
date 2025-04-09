@@ -1156,6 +1156,38 @@ XXX
 [小红书 NoteLLM-2：用于推荐的多模态表征](https://mp.weixin.qq.com/s/kVLHdFdHXGVsDbLQJrDTXQ)
 
 
+## Google的2个LLM
+
+### novelty LLM
+
+[Llms for user interest exploration in large-scale recommendation systems](https://arxiv.org/abs/2405.16363)
+
+对llm进行sft，输入用户喜欢的K个cluster，预测下一个cluster。
+
+![](../assets/novelty-llm.png)
+
+cluster包括了一系列短语，如(猫，狗，动物，宠物，小动物)可能是一个cluster，(船，轮船，皮划艇，独木舟)可能又是另一个cluster。使用的2级cluster，共761个取值。
+
+基于gemini进行sft，拿7000多个样本（每个$$C_1$$,$$C_2$$组合，找到最高频共现的10个$$C_L$$出来），bs=16，训了3000个step
+
+线上生效：然后K=2，即只需要batch跑$$761\times 761=579121$$个组合的infer就行了。来一个用户，拿出他的2个cluster的组合，去存储里找到对应的预估的下一个cluster
+
+
+### 2个LLM
+
+[User Feedback Alignment for LLM-powered Exploration in Large-scale Recommendation Systems](https://arxiv.org/pdf/2504.05522)
+
+![](../assets/novelty-llm-alignment-llm.png)
+
+先拿novelty-llm开实验(也可以直接拿线上这路召回的结果)，收集用户对推荐出来的这些类目的正负反馈，然后组织成pointwise或pairwise的语料，训练一个类似reward model的alignment-llm。
+
+![](../assets/alignment-llm.png)
+
+纯离线infer：用novelty llm采用比较高的temperature预测多次，然后用alignment llm打分选挑出topk的cluster，存起来给线上用。
+
+实验对比线上基线的novelty-llm，pointwise和pairwise在多样性、正反馈动作率、完成率均有提升，鈤pointise训练得更快，所以最终推全pointwise
+
+
 ## 蚂蚁的SLIM（没落地）
 
 [蚂蚁集团在大模型推荐上的算法和应用](https://mp.weixin.qq.com/s/z4Q3Imuqoxw52TteaPbveQ?from=groupmessage&isappinstalled=0&scene=1&clicktime=1720679311&enterid=1720679311)
