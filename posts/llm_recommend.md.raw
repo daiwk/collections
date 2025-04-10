@@ -1888,7 +1888,7 @@ if args.target == "attribute":
 
 finetune部分代码的大概逻辑如下：
 
-+ 输入：把预训练好的item id emb当成一个nn.Embedding搞到模型里去，然后样本里的item id（每个id都是1-n的数）去查出对应的emb，和instruct的emb、response的emb(“### Response：\n”这种文字对应的emb)这3个emb一起concat起来作为模型输入
++ 输入：把预训练好的item id emb当成一个nn.Embedding搞到模型里去，然后样本里的item id（每个id都是1-n的数）去查出对应的emb，和instruct的emb、response的emb(```### Response：\n```这种文字对应的emb)这3个emb一起concat起来作为模型输入
 + label：假设有n个item，因为最后过了个softmax映射到n，所以label就是一个1-n之间的数
 
 infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿softmax后的1-n的结果
