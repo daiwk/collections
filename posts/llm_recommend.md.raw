@@ -1187,6 +1187,60 @@ cluster包括了一系列短语，如(猫，狗，动物，宠物，小动物)�
 
 实验对比线上基线的novelty-llm，pointwise和pairwise在多样性、正反馈动作率、完成率均有提升，鈤pointise训练得更快，所以最终推全pointwise
 
+## 快手的LARM（落地）
+
+[LLM-Alignment Live-Streaming Recommendation](https://arxiv.org/pdf/2504.05217)
+
+![](../assets/larm.jpeg)
+
+结合直播的特点：同一个直播间在不同时间段的内容不同，不同用户由于进房时间不同，看到同一个直播间的内容也不同。
+
+整体思路还是比较简单的
+
++ 输入直播间和主播的基础信息，拿100B的llm标出来一些数据（生成如下的问答pair对、以及对直播内容的总结与理解），去finetune一个7B的llm
++ 用这个7B LLM产出emb（pooling）结合主播侧特征通过gating融合得到直播间emb，和user去双塔inbatch softmax
++ 【这一步的时效性比较高，每30秒更新一次】拿上面融合过的emb，通过rq-vae进行聚类，把对应的code扔给线上推荐模型
+
+qa类prompt：
+
+```shell
+Live-streaming information: #time, #images, #speeches, #comments, #author_information;
+You need to pay attention to the fact that the person in the
+live-streaming may not be the author himself, but someone else.
+Please generate ten instruction questions as diverse as possible
+based on the provided live-streaming information. These
+questions are about facts or an understanding and evaluation
+of relevant content. Do not ask any questions that cannot be
+answered confidently.
+Finally, you need to return the result in the following form:
+1. {"Question":..., "Answer":...}
+2. {"Question":..., "Answer":...}
+```
+
+总结类prompt：
+
+```shell
+Live-streaming information: #time, #images, #speeches, #comments, #author_information;
+You need to pay attention to the fact that the person in the
+live-streaming may not be the author himself, but someone else.
+Complete the following tasks:
+1. Describe the current events and content in the live broadcast
+room in detail in one paragraph, including but not limited to:
+Content: including detailed visual information, such as whether
+there is text, the look and feel of the picture, the tone, etc.
+#other_tasks,
+Finally, you need to return the result in the form of json:
+{ "Event and content": {
+"Content": ...,
+"Character": ...,
+"Scene": ...,
+"Event": ...,
+"Atmosphere": ...,
+"Highlights": ...,
+"Target user group": ... },}
+```
+
+实验部分列了两个主场景的收益，但没有说实验流量
 
 ## 蚂蚁的SLIM（没落地）
 
