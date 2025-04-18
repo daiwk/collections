@@ -142,7 +142,7 @@ XXX
 
 已经有3个序列长度为$$s-1$$的QKV的cache，要算第$$s$$个词和这$$s-1$$个词的attention
 
-+ 计算第$$s$$个词的3个Q、K、V：要算三次$1\times d$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times 1\times d\times d_v$$
++ 计算第$$s$$个词的3个Q、K、V：要算三次$$1\times d$$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times 1\times d\times d_v$$
     + 输入：$$[b, 1, d]$$和3个$$[b, d, d_v]$$
     + 输出：$$[b, 1, d_v]$$
 + 计算Q和K的相似度：要算一次$$1\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times 1\times d_k\times s$$【这里的K是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去掉当前词，这里先忽略这个】
