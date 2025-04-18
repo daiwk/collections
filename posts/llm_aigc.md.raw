@@ -147,7 +147,7 @@ XXX
 
 已经有3个序列长度为$$s-1$$的QKV的cache，要算第$$s$$个词和这$$s-1$$个词的attention
 
-+ 计算第$$s$$个词的3个Q、K、V：要算三次$1\times d$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times 1\times d\times d_v$$
++ 计算第$$s$$个词的3个Q、K、V：要算三次$$1\times d$$和$$d\times d_v$$的矩阵乘法，所以是：$$3\times 2\times b\times 1\times d\times d_v$$
     + 输入：$$[b, 1, d]$$和3个$$[b, d, d_v]$$
     + 输出：$$[b, 1, d_v]$$
 + 计算Q和K的相似度：要算一次$$1\times d_v$$和$$d_v\times s$$的矩阵乘法，$$2\times b\times 1\times d_k\times s$$【这里的K是历史$$s-1$$长度的序列拼上当前词，当然对DIN来讲要去掉当前词，这里先忽略这个】
@@ -9840,10 +9840,6 @@ WSDM24
 word版的笔记：[https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx](https://github.com/daiwk/collections/blob/master/assets/multi-agents.docx)
 
 
-类似的另一个：
-
-[MACRec: a Multi-Agent Collaboration Framework for Recommendation](https://arxiv.org/pdf/2402.15235)
-
 ## RecPrompt（学术界）CIKM24
 
 [RecPrompt: A Self-tuning Prompting Framework for News Recommendation Using Large Language Models](https://arxiv.org/pdf/2312.10463) CIKM24
@@ -10019,6 +10015,12 @@ infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿
 [微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
 
 [PRECISE: Pre-training Sequential Recommenders with Collaborative and Semantic Information](https://arxiv.org/pdf/2412.06308)
+
+## MACRec（学术界）SIGIR24
+
+把推荐系统拆成多个agent
+
+[MACRec: a Multi-Agent Collaboration Framework for Recommendation](https://arxiv.org/pdf/2402.15235)
 
 ## 其他
 
