@@ -528,6 +528,25 @@ EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.
 
 [https://github.com/dfan/webssl](https://github.com/dfan/webssl)
 
+## UNO
+
+[字节开源新生图模型：一个模型统一所有生图任务，多主体融合效果SOTA​](https://mp.weixin.qq.com/s/h4fkShoOG_Fi66fksXaJGw)
+
+[Less-to-More Generalization: Unlocking More Controllability by In-Context Generation](https://arxiv.org/abs/2504.02160)
+
+[https://github.com/bytedance/UNO](https://github.com/bytedance/UNO)
+
+[https://bytedance.github.io/UNO/](https://bytedance.github.io/UNO/)
+
+
+## Seedream
+
+[Mogao=Seedream 3.0？霸榜数天，神秘文生图模型曝光（附技术报告）](https://mp.weixin.qq.com/s/GcmIQL78fIl-dobAsqbfeg)
+
+[Seedream 3.0 Technical Report](https://arxiv.org/abs/2504.11346)
+
+
+
 ## 其他
 
 (toread)
@@ -1038,6 +1057,10 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
 [https://github.com/SkyworkAI/SkyReels-V1](https://github.com/SkyworkAI/SkyReels-V1)
 
 [https://github.com/SkyworkAI/SkyReels-A1](https://github.com/SkyworkAI/SkyReels-A1)
+
+## Seaweed-7B
+
+[Seaweed-7B: Cost-Effective Training of Video Generation Foundation Model](https://arxiv.org/pdf/2504.08685)
 
 ## 其他
 

@@ -1169,6 +1169,17 @@ BART是一个适用于seq2seq模型的去噪自编码器。预训练包括两个
 
 PLM（pretrained language models），即bert等
 
+# 一些思考
+
+[The Second Half](https://ysymyth.github.io/The-Second-Half/)
+
+[OpenAI姚顺雨：欢迎来到AI下半场！](https://zhuanlan.zhihu.com/p/1896310535865233616)
+
+[Welcome to the Era of Experience](https://storage.googleapis.com/deepmind-media/Era-of-Experience%20/The%20Era%20of%20Experience%20Paper.pdf)
+
+[强化学习之父当头一棒：RL版「苦涩的教训」来了！通往ASI，绝非靠人类数据](https://mp.weixin.qq.com/s/MGrSWh-wcBrLKPboUmg05w)
+
+
 ## LLM简史
 
 + 2017年的[Learning to generate reviews and discovering sentiment](https://arxiv.org/pdf/1704.01444.pdf)尝试用rnn来实现智能系统
@@ -1246,7 +1257,6 @@ PLM（pretrained language models），即bert等
 可以直接把对应的md丢给gpt，叫它导出一个excel，然后就可以自定义排序或者画散点图看了
 
 
-
 ## LLM开源库
 
 + transformers：huggingface的库
@@ -1292,6 +1302,8 @@ PLM（pretrained language models），即bert等
 [大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
 
 [大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
+
+[Jeff Dean演讲回顾LLM发展史，Transformer、蒸馏、MoE、思维链等技术都来自谷歌](https://mp.weixin.qq.com/s/5EUQlD5isnEEzXBw1AJEig)
 
 ## 课程
 
@@ -2045,6 +2057,7 @@ sft+rm+rl，在最小性能降低的情况下，提升了生成结果的真实�
 
 2023.3推出了GPT-4，多模态LLM，能输入图像和文本
 
+o3/o4-mini：[Agent 要被吃进大模型了](https://mp.weixin.qq.com/s/89QkOqY3vWzQvPPbGkBodQ)
 
 ## LLaMA系列
 
@@ -3240,9 +3253,13 @@ Baichuan4-Finance
 
 [MiniMax开源4M超长上下文新模型！性能比肩DeepSeek-v3、GPT-4o](https://mp.weixin.qq.com/s/pj6XZbyZu_mx2KRwIF1Q9g)
 
+[MiniMax押注线性注意力，让百万级长文本只用1/2700算力｜对话MiniMax-01架构负责人钟怡然](https://mp.weixin.qq.com/s/NigAnui9fXbfresW8KIX-Q)
+
 [MiniMax-01: Scaling Foundation Models with Lightning Attention](https://filecdn.minimax.chat/_Arxiv_MiniMax_01_Report.pdf)
 
 m层lightning attention后再接1层softmax attention，参数456B，每次推理激活45.9B。
+
+
 
 
 ## post training的一些总结
@@ -5469,13 +5486,21 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 [https://github.com/flexflow/flexflow-train](https://github.com/flexflow/flexflow-train)
 
 
-## EAGLE & EAGLE-2
+## EAGLE系列
+
+[大模型推理效率无损提升3倍，滑铁卢大学、北京大学等机构发布EAGLE](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650900466&idx=5&sn=3d893e95cef725a7acbdab5763870c36&scene=21#wechat_redirect)
 
 [EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty](https://arxiv.org/pdf/2401.15077)
+
+[无损加速最高5x，EAGLE-2让RTX 3060的生成速度超过A100](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650926594&idx=5&sn=fe8b52b499e3d3a3ef73a543e77385f1&scene=21#wechat_redirect)
 
 [EAGLE-2: Faster Inference of Language Models with Dynamic Draft Trees](https://arxiv.org/pdf/2406.16858)
 
 [https://github.com/SafeAILab/EAGLE](https://github.com/SafeAILab/EAGLE)
+
+[大模型推理无损加速6.5倍！EAGLE-3碾压一切、延续Scaling Law能力](https://mp.weixin.qq.com/s/4cq9f-_eB4znXRPEpKYAkA)
+
+[EAGLE-3: Scaling up Inference Acceleration of Large Language Models via Training-Time Test](https://arxiv.org/abs/2503.01840)
 
 ## prompt-lookup decoding & REST
 
@@ -7518,6 +7543,25 @@ EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.
 
 [https://github.com/dfan/webssl](https://github.com/dfan/webssl)
 
+## UNO
+
+[字节开源新生图模型：一个模型统一所有生图任务，多主体融合效果SOTA​](https://mp.weixin.qq.com/s/h4fkShoOG_Fi66fksXaJGw)
+
+[Less-to-More Generalization: Unlocking More Controllability by In-Context Generation](https://arxiv.org/abs/2504.02160)
+
+[https://github.com/bytedance/UNO](https://github.com/bytedance/UNO)
+
+[https://bytedance.github.io/UNO/](https://bytedance.github.io/UNO/)
+
+
+## Seedream
+
+[Mogao=Seedream 3.0？霸榜数天，神秘文生图模型曝光（附技术报告）](https://mp.weixin.qq.com/s/GcmIQL78fIl-dobAsqbfeg)
+
+[Seedream 3.0 Technical Report](https://arxiv.org/abs/2504.11346)
+
+
+
 ## 其他
 
 (toread)
@@ -8029,6 +8073,10 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
 
 [https://github.com/SkyworkAI/SkyReels-A1](https://github.com/SkyworkAI/SkyReels-A1)
 
+## Seaweed-7B
+
+[Seaweed-7B: Cost-Effective Training of Video Generation Foundation Model](https://arxiv.org/pdf/2504.08685)
+
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)
@@ -8067,6 +8115,8 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
 [推荐算法月报(2025.2)：大模型的春风吹醒推荐算法，重磅大厂突破](https://mp.weixin.qq.com/s/NO2XgUBiRkjsKNo7dswa0w)
 
 [推荐算法(2025.3.4)：速看！阿里Meta的最新研究成果](https://mp.weixin.qq.com/s/1kZCKYbuvd6qiE6-5hJquw)
+
+[一文梳理业界落地LLM4Rec的若干范式-数万字超长文(建议收藏)](https://mp.weixin.qq.com/s/jqFQH6ZYhZRrzilLAo9BiA)
 
 ## 综述
 
@@ -8552,6 +8602,16 @@ class RQBottleneck(nn.Module):
 ## Tiger应用在排序
 
 [Better Generalization with Semantic IDs: A Case Study in Ranking for Recommendations](https://arxiv.org/pdf/2306.08121)
+
+[RecSys'24 | 谷歌:使用语义ID提升推荐系统ID Embed泛化性](https://mp.weixin.qq.com/s/PR8NuRWkK_4vuCrE9xD6Jg)
+
+## meta提升id emb稳定性
+
+[Meta广告:提出使用语义ID提升推荐系统ID Embed稳定性](https://mp.weixin.qq.com/s/DIF8ClTyN1y4ah98VR6asw)
+
+[Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID](https://arxiv.org/pdf/2504.02137)
+
+
 
 ## 受限beam search相关
 
@@ -9197,6 +9257,8 @@ XXX
 
 ## Google的2个LLM
 
+[谷歌短视频推荐:用户反馈对齐的LLM用于新颖推荐](https://mp.weixin.qq.com/s/ff34lzbbTVREQG6FSpdgeg)
+
 ### novelty LLM
 
 [Llms for user interest exploration in large-scale recommendation systems](https://arxiv.org/abs/2405.16363)
@@ -9588,6 +9650,16 @@ XXX
 其中的rank模块如下，是一个bert，输入原始query和4个rewrites，加上target item，MMOE，算5个query间的js散度(robust loss)，以及综合输出和label的accuracy loss
 
 ![](../assets/agent4ranking-rank.png)
+
+
+## 丰田的SimUSER(没落地)
+
+[SimUSER: Simulating User Behavior with Large Language Models for Recommender System Evaluation](https://arxiv.org/pdf/2504.12722)
+
+两阶段方法：
+
++ 自一致的用户画像匹配，利用LLM从历史数据中抽取个性特征；
++ 推荐系统评估，模拟具有个性、记忆、感知和决策模块的用户与推荐系统进行互动。
 
 ## CUP（学术界）没中
 
@@ -9981,6 +10053,10 @@ finetune部分代码的大概逻辑如下：
 + label：假设有n个item，因为最后过了个softmax映射到n，所以label就是一个1-n之间的数
 
 infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿softmax后的1-n的结果
+
+## guided embedding
+
+[Improving LLM Interpretability and Performance via Guided Embedding Refinement for Sequential Recommendation](https://arxiv.org/pdf/2504.11658)
 
 
 ## 下面这些还没看。。
@@ -11280,7 +11356,29 @@ prompt注意点：
 + SFT with CoT数据的训练结果在原文中并未给出，但从最近一些复现工作和R1 distiled Qwen结果来看，SFT的作用可能比RL还大。
 + 好的Base模型本身就有Aha Moment，但是是Superfacial（表面）的reflection，不具有提升Accuracy的能力，RL可以增强该能力。
 
-其他：
+r1的解读（很长，142页）
+
+[DeepSeek-R1 Thoughtology: Let’s <think> about LLM reasoning](https://arxiv.org/pdf/2504.07128)
+
+模型思考过程分四步走：
+
++ 问题定义：先把问题说清楚
++ 开花期：拆解问题，给出初步方案
++ 重构期：反复验证和修正想法
++ 最终决策：确认并输出答案
+	
+有趣的发现：
+
++ 思考链长度有"最佳区间"，太长反而会答错
++ 模型会"死磕"用户给的信息，即使信息是错的也坚持跟着走
++ 中英文环境下性格迥异：中文更重视集体，英文更个人主义
++ 还会画ASCII艺术，虽然不太完美~
+	
+缺陷：
+
++ 上下文太长容易"走神"
++ 有时会生成有害内容
++ 在某些视觉任务上还不够连贯
 
 
 # R1前后的一些工作
@@ -11397,15 +11495,6 @@ bridge算法结合了优化和生成两个步骤：
 
 [Cognitive Behaviors that Enable Self-Improving Reasoners, or, Four Habits of Highly Effective STaRs](https://arxiv.org/abs/2503.01307)
 
-## DAPO
-
-[超越DeepSeek GRPO的关键RL算法，字节、清华AIR开源DAPO](https://mp.weixin.qq.com/s/_w_HtjNQiG-yP5LEN85o0Q)
-
-[DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://dapo-sia.github.io/static/pdf/dapo_paper.pdf)
-
-[https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo](https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo)
-
-数据：[https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k)
 
 ## DR, GRPO
 
@@ -11446,7 +11535,35 @@ TAO为AI模型调优提供了一种突破性方法：
 + 也区别于需要昂贵人工标注数据的传统微调；
 + TAO 仅需工程师提供任务相关的典型输入样本，即可实现卓越性能。
 
+## deepcoder
 
+DeepCoder-14B-Preview
+
+[UC伯克利华人开源14B「o3-mini」，代码版R1突袭OpenAI王座！](https://mp.weixin.qq.com/s/VxGofHl_KeuQa9MBD4AaTg)
+
+## Think twice
+
+[Think Twice: Enhancing LLM Reasoning by Scaling Multi-round Test-time Thinking](https://arxiv.org/pdf/2503.19855)
+
+多轮思考（Multi-round Thinking）：通过迭代地利用之前的答案作为提示，对模型的推理过程进行逐步优化。允许模型在多个推理轮次中重新考虑之前的答案，每次迭代只保留上一轮的最终答案，摒弃中间推理步骤。这一过程类似于人类的认知模式，有助于模型纠正常见的推理错误。
+
+[https://github.com/a-m-team/a-m-models](https://github.com/a-m-team/a-m-models)
+
+## glm-z1
+
+[智谱深夜开源新一代GLM模型，推理速度快DeepSeek-R1八倍，还启用了全新域名Z.ai](https://mp.weixin.qq.com/s/kPAIeYwIAqyIPf1585jR-w)
+
+[https://github.com/THUDM/GLM-4/blob/main/README_zh.md](https://github.com/THUDM/GLM-4/blob/main/README_zh.md)
+
+[https://huggingface.co/collections/THUDM/glm-4-0414-67f3cbcb34dd9d252707cb2e](https://huggingface.co/collections/THUDM/glm-4-0414-67f3cbcb34dd9d252707cb2e)
+
+## d1
+
+[扩散LLM推理用上类GRPO强化学习！优于单独SFT，UCLA、Meta新框架d1开源](https://mp.weixin.qq.com/s/57onGdSBuiQfvEJpOdU_eg)
+
+[d1: Scaling Reasoning in Diffusion Large Language Models via Reinforcement Learning](https://arxiv.org/pdf/2504.12216)
+
+[https://github.com/dllm-reasoning/d1](https://github.com/dllm-reasoning/d1)
 
 ## 小结
 
@@ -11661,6 +11778,35 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [Claude 3.7 Sonnet System Card](https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf)
 
+# 基于llama的推理模型
+
+## Llama Nemotron
+
+[英伟达253B开源新王登场，Llama 4三天变陪衬！直逼DeepSeek-R1成推理天花板](https://mp.weixin.qq.com/s/QbUTBKG9vrIVTA-6qII2gg)
+
+[https://huggingface.co/nvidia/Llama-3_1-Nemotron-Ultra-253B-v1](https://huggingface.co/nvidia/Llama-3_1-Nemotron-Ultra-253B-v1)
+
+# seed-thinking
+
+[200B参数击败满血DeepSeek-R1，字节豆包推理模型Seed-Thinking-v1.5要来了](https://mp.weixin.qq.com/s/wUzb58pUnZ1s7fO9aYs1vQ)
+
+[Seed-Thinking-v1.5: Advancing Superb Reasoning Models with Reinforcement Learning](https://github.com/ByteDance-Seed/Seed-Thinking-v1.5/blob/main/seed-thinking-v1.5.pdf)
+
+## DAPO
+
+[超越DeepSeek GRPO的关键RL算法，字节、清华AIR开源DAPO](https://mp.weixin.qq.com/s/_w_HtjNQiG-yP5LEN85o0Q)
+
+[DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://dapo-sia.github.io/static/pdf/dapo_paper.pdf)
+
+[https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo](https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo)
+
+数据：[https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k)
+
+## VAPO
+
+[字节新作 VAPO：使用基于价值的强化学习框架进行长思维链推理](https://mp.weixin.qq.com/s/oFyW439e8B1rkogu5rjH_g)
+
+[VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks](https://arxiv.org/abs/2504.05118)
 
 # 多模态推理
 
@@ -11710,7 +11856,7 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [https://github.com/liuff19/Video-T1](https://github.com/liuff19/Video-T1)
 
-## mureka o1
+## mureka o1(音乐)
 
 [音乐界迎来自己的DeepSeek！全球首个音乐推理大模型Mureka O1上线，超越Suno](https://mp.weixin.qq.com/s/XF9HQr-qlXfWGaQlesCaHQ)
 
@@ -11718,15 +11864,29 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [https://musicot.github.io/](https://musicot.github.io/)
 
+## Kimi-VL
+
+[月之暗面开源轻量级MoE多模态模型，支持推理，效果超过GPT-4o！](https://mp.weixin.qq.com/s/1mvFrL022d-VWPY2k8hcfA)
+
+[Kimi-VL technical report](https://github.com/MoonshotAI/Kimi-VL/blob/main/Kimi-VL.pdf)
+
+[https://huggingface.co/collections/moonshotai/kimi-vl-a3b-67f67b6ac91d3b03d382dd85](https://huggingface.co/collections/moonshotai/kimi-vl-a3b-67f67b6ac91d3b03d382dd85)
+
+[Kimi 16B胜GPT-4o！开源视觉推理模型：MoE架构，推理时仅激活2.8B](https://mp.weixin.qq.com/s/EsjsqnInCOJpU9SpJgyoOA)
+
+
 # 统一的多模态模型
 
 ## gemini 2.5
 
 [DeepSeek逼出谷歌新推理模型：40分优势超GPT4.5登顶竞技场，支持原生多模态，但依然败给了“竹竿问题”](https://mp.weixin.qq.com/s/U75bF7gQ6wlQlaflQvrIQQ)
 
+[谷歌终于登顶一次了！最强推理模型Gemini 2.5 Pro实测体验，真的有点东西](https://mp.weixin.qq.com/s/unlZoM5oCH3HCw2kxy6X_w)
+
+[谷歌首款混合推理Gemini 2.5登场，成本暴降600%！思考模式一开，直追o4-mini](https://mp.weixin.qq.com/s/Tx6dbqKwPTx9dqAW1xzT3w)
+
 Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可以理解庞大数据集并处理来自不同信息源的复杂问题，包括文本、音频、图像、视频，甚至是整个代码库。2.5 pro擅长创造视觉上引人注目的Web应用程序和智能体代码。
 
-[谷歌终于登顶一次了！最强推理模型Gemini 2.5 Pro实测体验，真的有点东西](https://mp.weixin.qq.com/s/unlZoM5oCH3HCw2kxy6X_w)
 
 ## gemma-3
 
@@ -11734,6 +11894,8 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 + 架构设计：Gemma 3基于decoder-only架构，与前两代Gemma模型类似。但在细节上有所创新，例如采用GQA和RMSNorm，还引入了**QK-norm**替代Gemma 2中的软封顶机制，以提升性能和稳定性。
 + 训练策略：Gemma 3的训练过程包括预训练和指令微调两个阶段。在预训练阶段，模型使用知识蒸馏技术，从大规模数据中学习语言和视觉表示。训练数据涵盖了文本、图像以及多语言等多种类型，且经过严格的筛选和清洗，以减少有害内容和低质量数据的影响。在指令微调阶段，Gemma 3 采用了新颖的训练方法，重点关注数学、聊天、指令遵循和多语言等能力的提升。
+
+[一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
 ## Qwen2.5-Omni
 
@@ -11744,6 +11906,7 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 [https://github.com/QwenLM/Qwen2.5-Omni/tree/main](https://github.com/QwenLM/Qwen2.5-Omni/tree/main)
 
 [https://github.com/QwenLM/Qwen2.5-Omni](https://github.com/QwenLM/Qwen2.5-Omni)
+
 
 # deep research
 
@@ -12295,7 +12458,7 @@ ICLR2024
 
 [Navigating the AI Frontier: A Primer on the Evolution and Impact of AI Agents](https://reports.weforum.org/docs/WEF_Navigating_the_AI_Frontier_2024.pdf)
 
-## Claude: building effective agents
+## Claude: building effective agents(MCP)
 
 [Claude 官方发布《Agent 构建指南》，附 PDF 下载](https://mp.weixin.qq.com/s/hqNcLv3pKgZdqpGxAPlt2A)
 
@@ -12379,6 +12542,24 @@ Anthropic有一个上下文协议（Model Context Protocol，MCP），允许开�
 [https://www.youtube.com/watch?v=M2Yg1kwPpts](https://www.youtube.com/watch?v=M2Yg1kwPpts)
 
 [ppt](https://docs.google.com/presentation/d/1kTxukwlmx2Sc9H7aGPTiNiPdk4zN_NoH)
+
+## google的A2A
+
+[最新：Google 牵头搞了个 A2A，以后不同家的 AI 都能“加好友”了](https://mp.weixin.qq.com/s/fha3Yf-yK5D3JZ0bIX1tyw)
+
+[5000字长文带你看懂，Agent世界里的A2A、MCP协议到底是个啥。](https://mp.weixin.qq.com/s/hr7wvpz-KRllwQkiKYf0Tg)
+
+A2A协议是对 Anthropic 公司模型上下文协议 (MCP) 的补充，后者为智能体提供了有用的工具和上下文。A2A则更侧重于智能体之间的交互与协作
+
+A2A促进了客户端 (client)智能体和远程 (remote)智能体之间的通信。客户端智能体负责制定和传达任务，远程智能体则负责执行这些任务以提供信息或采取行动。
+
+这个交互过程包含几个关键能力：
+
++ 能力发现 (Capability discovery): 智能体可以通过JSON格式的Agent Card来宣告自身能力。这使得客户端智能体能找到最适合执行某项任务的远程智能体，并发起A2A通信。
++ 任务管理 (Task management): 通信围绕任务完成进行。协议定义了具有生命周期的任务 (task)对象。任务可以是即时完成的，也可以是长时运行的。任务的输出被称为工件 (artifact)
++ 协作 (Collaboration): 智能体之间可以发送消息，以沟通上下文、回复、工件或用户指令
++ 用户体验协商 (User experience negotiation): 每条消息包含parts，即完整的内容片段（如生成的图像）。每个部分都有指定的内容类型，允许客户端和远程智能体协商所需格式，并明确协商用户的UI能力（例如是否支持iframe、视频、Web表单等）。
+
 
 # 一些其他比较重要的工作
 
@@ -12653,6 +12834,10 @@ XXX
 
 [https://github.com/MadcowD/ell](https://github.com/MadcowD/ell)
 
+## 一些实践
+
+[gpt-4.1官方](https://www.xiaohongshu.com/explore/67fe98c1000000001d01477b?app_platform=ios&app_version=8.79&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBD6_QqRzI70CObFc2ZlGE4OyHkXfEAyuQpTgGllA2rLs=&author_share=1&xhsshare=WeixinSession&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1744847767&share_id=c452a695f467408c903e213ccf9f8d41)
+
 # 可解释AI
 
 [XAI有什么用？探索LLM时代利用可解释性的10种策略](https://mp.weixin.qq.com/s/V35k4UJZPtJkAHqYlZiO1A)
@@ -12822,6 +13007,7 @@ Neel Nanda（deepmind）的项目
 [登上Nature的AI芯片设计屡遭质疑，谷歌发文反击，Jeff Dean：质疑者连预训练都没做](https://mp.weixin.qq.com/s/u1NNmulcykGkgZjJb_A-UA)
 
 [That Chip Has Sailed: A Critique of Unfounded Skepticism Around AI for Chip Design](https://arxiv.org/pdf/2411.10053)
+
 
 # 其他
 
