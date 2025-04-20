@@ -29,6 +29,8 @@
 
 [推荐算法(2025.3.4)：速看！阿里Meta的最新研究成果](https://mp.weixin.qq.com/s/1kZCKYbuvd6qiE6-5hJquw)
 
+[一文梳理业界落地LLM4Rec的若干范式-数万字超长文(建议收藏)](https://mp.weixin.qq.com/s/jqFQH6ZYhZRrzilLAo9BiA)
+
 ## 综述
 
 ### 概况
@@ -513,6 +515,16 @@ class RQBottleneck(nn.Module):
 ## Tiger应用在排序
 
 [Better Generalization with Semantic IDs: A Case Study in Ranking for Recommendations](https://arxiv.org/pdf/2306.08121)
+
+[RecSys'24 | 谷歌:使用语义ID提升推荐系统ID Embed泛化性](https://mp.weixin.qq.com/s/PR8NuRWkK_4vuCrE9xD6Jg)
+
+## meta提升id emb稳定性
+
+[Meta广告:提出使用语义ID提升推荐系统ID Embed稳定性](https://mp.weixin.qq.com/s/DIF8ClTyN1y4ah98VR6asw)
+
+[Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID](https://arxiv.org/pdf/2504.02137)
+
+
 
 ## 受限beam search相关
 
@@ -1158,6 +1170,8 @@ XXX
 
 ## Google的2个LLM
 
+[谷歌短视频推荐:用户反馈对齐的LLM用于新颖推荐](https://mp.weixin.qq.com/s/ff34lzbbTVREQG6FSpdgeg)
+
 ### novelty LLM
 
 [Llms for user interest exploration in large-scale recommendation systems](https://arxiv.org/abs/2405.16363)
@@ -1549,6 +1563,16 @@ XXX
 其中的rank模块如下，是一个bert，输入原始query和4个rewrites，加上target item，MMOE，算5个query间的js散度(robust loss)，以及综合输出和label的accuracy loss
 
 ![](../assets/agent4ranking-rank.png)
+
+
+## 丰田的SimUSER(没落地)
+
+[SimUSER: Simulating User Behavior with Large Language Models for Recommender System Evaluation](https://arxiv.org/pdf/2504.12722)
+
+两阶段方法：
+
++ 自一致的用户画像匹配，利用LLM从历史数据中抽取个性特征；
++ 推荐系统评估，模拟具有个性、记忆、感知和决策模块的用户与推荐系统进行互动。
 
 ## CUP（学术界）没中
 
@@ -1942,6 +1966,10 @@ finetune部分代码的大概逻辑如下：
 + label：假设有n个item，因为最后过了个softmax映射到n，所以label就是一个1-n之间的数
 
 infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿softmax后的1-n的结果
+
+## guided embedding
+
+[Improving LLM Interpretability and Performance via Guided Embedding Refinement for Sequential Recommendation](https://arxiv.org/pdf/2504.11658)
 
 
 ## 下面这些还没看。。

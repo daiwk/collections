@@ -783,7 +783,29 @@ prompt注意点：
 + SFT with CoT数据的训练结果在原文中并未给出，但从最近一些复现工作和R1 distiled Qwen结果来看，SFT的作用可能比RL还大。
 + 好的Base模型本身就有Aha Moment，但是是Superfacial（表面）的reflection，不具有提升Accuracy的能力，RL可以增强该能力。
 
-其他：
+r1的解读（很长，142页）
+
+[DeepSeek-R1 Thoughtology: Let’s <think> about LLM reasoning](https://arxiv.org/pdf/2504.07128)
+
+模型思考过程分四步走：
+
++ 问题定义：先把问题说清楚
++ 开花期：拆解问题，给出初步方案
++ 重构期：反复验证和修正想法
++ 最终决策：确认并输出答案
+	
+有趣的发现：
+
++ 思考链长度有"最佳区间"，太长反而会答错
++ 模型会"死磕"用户给的信息，即使信息是错的也坚持跟着走
++ 中英文环境下性格迥异：中文更重视集体，英文更个人主义
++ 还会画ASCII艺术，虽然不太完美~
+	
+缺陷：
+
++ 上下文太长容易"走神"
++ 有时会生成有害内容
++ 在某些视觉任务上还不够连贯
 
 
 # R1前后的一些工作
@@ -900,15 +922,6 @@ bridge算法结合了优化和生成两个步骤：
 
 [Cognitive Behaviors that Enable Self-Improving Reasoners, or, Four Habits of Highly Effective STaRs](https://arxiv.org/abs/2503.01307)
 
-## DAPO
-
-[超越DeepSeek GRPO的关键RL算法，字节、清华AIR开源DAPO](https://mp.weixin.qq.com/s/_w_HtjNQiG-yP5LEN85o0Q)
-
-[DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://dapo-sia.github.io/static/pdf/dapo_paper.pdf)
-
-[https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo](https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo)
-
-数据：[https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k)
 
 ## DR, GRPO
 
@@ -949,7 +962,35 @@ TAO为AI模型调优提供了一种突破性方法：
 + 也区别于需要昂贵人工标注数据的传统微调；
 + TAO 仅需工程师提供任务相关的典型输入样本，即可实现卓越性能。
 
+## deepcoder
 
+DeepCoder-14B-Preview
+
+[UC伯克利华人开源14B「o3-mini」，代码版R1突袭OpenAI王座！](https://mp.weixin.qq.com/s/VxGofHl_KeuQa9MBD4AaTg)
+
+## Think twice
+
+[Think Twice: Enhancing LLM Reasoning by Scaling Multi-round Test-time Thinking](https://arxiv.org/pdf/2503.19855)
+
+多轮思考（Multi-round Thinking）：通过迭代地利用之前的答案作为提示，对模型的推理过程进行逐步优化。允许模型在多个推理轮次中重新考虑之前的答案，每次迭代只保留上一轮的最终答案，摒弃中间推理步骤。这一过程类似于人类的认知模式，有助于模型纠正常见的推理错误。
+
+[https://github.com/a-m-team/a-m-models](https://github.com/a-m-team/a-m-models)
+
+## glm-z1
+
+[智谱深夜开源新一代GLM模型，推理速度快DeepSeek-R1八倍，还启用了全新域名Z.ai](https://mp.weixin.qq.com/s/kPAIeYwIAqyIPf1585jR-w)
+
+[https://github.com/THUDM/GLM-4/blob/main/README_zh.md](https://github.com/THUDM/GLM-4/blob/main/README_zh.md)
+
+[https://huggingface.co/collections/THUDM/glm-4-0414-67f3cbcb34dd9d252707cb2e](https://huggingface.co/collections/THUDM/glm-4-0414-67f3cbcb34dd9d252707cb2e)
+
+## d1
+
+[扩散LLM推理用上类GRPO强化学习！优于单独SFT，UCLA、Meta新框架d1开源](https://mp.weixin.qq.com/s/57onGdSBuiQfvEJpOdU_eg)
+
+[d1: Scaling Reasoning in Diffusion Large Language Models via Reinforcement Learning](https://arxiv.org/pdf/2504.12216)
+
+[https://github.com/dllm-reasoning/d1](https://github.com/dllm-reasoning/d1)
 
 ## 小结
 
@@ -1164,6 +1205,35 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [Claude 3.7 Sonnet System Card](https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf)
 
+# 基于llama的推理模型
+
+## Llama Nemotron
+
+[英伟达253B开源新王登场，Llama 4三天变陪衬！直逼DeepSeek-R1成推理天花板](https://mp.weixin.qq.com/s/QbUTBKG9vrIVTA-6qII2gg)
+
+[https://huggingface.co/nvidia/Llama-3_1-Nemotron-Ultra-253B-v1](https://huggingface.co/nvidia/Llama-3_1-Nemotron-Ultra-253B-v1)
+
+# seed-thinking
+
+[200B参数击败满血DeepSeek-R1，字节豆包推理模型Seed-Thinking-v1.5要来了](https://mp.weixin.qq.com/s/wUzb58pUnZ1s7fO9aYs1vQ)
+
+[Seed-Thinking-v1.5: Advancing Superb Reasoning Models with Reinforcement Learning](https://github.com/ByteDance-Seed/Seed-Thinking-v1.5/blob/main/seed-thinking-v1.5.pdf)
+
+## DAPO
+
+[超越DeepSeek GRPO的关键RL算法，字节、清华AIR开源DAPO](https://mp.weixin.qq.com/s/_w_HtjNQiG-yP5LEN85o0Q)
+
+[DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://dapo-sia.github.io/static/pdf/dapo_paper.pdf)
+
+[https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo](https://github.com/volcengine/verl/tree/gm-tyx/puffin/main/recipe/dapo)
+
+数据：[https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k](https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k)
+
+## VAPO
+
+[字节新作 VAPO：使用基于价值的强化学习框架进行长思维链推理](https://mp.weixin.qq.com/s/oFyW439e8B1rkogu5rjH_g)
+
+[VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks](https://arxiv.org/abs/2504.05118)
 
 # 多模态推理
 
@@ -1213,7 +1283,7 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [https://github.com/liuff19/Video-T1](https://github.com/liuff19/Video-T1)
 
-## mureka o1
+## mureka o1(音乐)
 
 [音乐界迎来自己的DeepSeek！全球首个音乐推理大模型Mureka O1上线，超越Suno](https://mp.weixin.qq.com/s/XF9HQr-qlXfWGaQlesCaHQ)
 
@@ -1221,15 +1291,29 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [https://musicot.github.io/](https://musicot.github.io/)
 
+## Kimi-VL
+
+[月之暗面开源轻量级MoE多模态模型，支持推理，效果超过GPT-4o！](https://mp.weixin.qq.com/s/1mvFrL022d-VWPY2k8hcfA)
+
+[Kimi-VL technical report](https://github.com/MoonshotAI/Kimi-VL/blob/main/Kimi-VL.pdf)
+
+[https://huggingface.co/collections/moonshotai/kimi-vl-a3b-67f67b6ac91d3b03d382dd85](https://huggingface.co/collections/moonshotai/kimi-vl-a3b-67f67b6ac91d3b03d382dd85)
+
+[Kimi 16B胜GPT-4o！开源视觉推理模型：MoE架构，推理时仅激活2.8B](https://mp.weixin.qq.com/s/EsjsqnInCOJpU9SpJgyoOA)
+
+
 # 统一的多模态模型
 
 ## gemini 2.5
 
 [DeepSeek逼出谷歌新推理模型：40分优势超GPT4.5登顶竞技场，支持原生多模态，但依然败给了“竹竿问题”](https://mp.weixin.qq.com/s/U75bF7gQ6wlQlaflQvrIQQ)
 
+[谷歌终于登顶一次了！最强推理模型Gemini 2.5 Pro实测体验，真的有点东西](https://mp.weixin.qq.com/s/unlZoM5oCH3HCw2kxy6X_w)
+
+[谷歌首款混合推理Gemini 2.5登场，成本暴降600%！思考模式一开，直追o4-mini](https://mp.weixin.qq.com/s/Tx6dbqKwPTx9dqAW1xzT3w)
+
 Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可以理解庞大数据集并处理来自不同信息源的复杂问题，包括文本、音频、图像、视频，甚至是整个代码库。2.5 pro擅长创造视觉上引人注目的Web应用程序和智能体代码。
 
-[谷歌终于登顶一次了！最强推理模型Gemini 2.5 Pro实测体验，真的有点东西](https://mp.weixin.qq.com/s/unlZoM5oCH3HCw2kxy6X_w)
 
 ## gemma-3
 
@@ -1237,6 +1321,8 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 + 架构设计：Gemma 3基于decoder-only架构，与前两代Gemma模型类似。但在细节上有所创新，例如采用GQA和RMSNorm，还引入了**QK-norm**替代Gemma 2中的软封顶机制，以提升性能和稳定性。
 + 训练策略：Gemma 3的训练过程包括预训练和指令微调两个阶段。在预训练阶段，模型使用知识蒸馏技术，从大规模数据中学习语言和视觉表示。训练数据涵盖了文本、图像以及多语言等多种类型，且经过严格的筛选和清洗，以减少有害内容和低质量数据的影响。在指令微调阶段，Gemma 3 采用了新颖的训练方法，重点关注数学、聊天、指令遵循和多语言等能力的提升。
+
+[一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
 ## Qwen2.5-Omni
 
@@ -1247,6 +1333,7 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 [https://github.com/QwenLM/Qwen2.5-Omni/tree/main](https://github.com/QwenLM/Qwen2.5-Omni/tree/main)
 
 [https://github.com/QwenLM/Qwen2.5-Omni](https://github.com/QwenLM/Qwen2.5-Omni)
+
 
 # deep research
 

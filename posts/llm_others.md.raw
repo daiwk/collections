@@ -403,7 +403,7 @@ ICLR2024
 
 [Navigating the AI Frontier: A Primer on the Evolution and Impact of AI Agents](https://reports.weforum.org/docs/WEF_Navigating_the_AI_Frontier_2024.pdf)
 
-## Claude: building effective agents
+## Claude: building effective agents(MCP)
 
 [Claude 官方发布《Agent 构建指南》，附 PDF 下载](https://mp.weixin.qq.com/s/hqNcLv3pKgZdqpGxAPlt2A)
 
@@ -487,6 +487,24 @@ Anthropic有一个上下文协议（Model Context Protocol，MCP），允许开�
 [https://www.youtube.com/watch?v=M2Yg1kwPpts](https://www.youtube.com/watch?v=M2Yg1kwPpts)
 
 [ppt](https://docs.google.com/presentation/d/1kTxukwlmx2Sc9H7aGPTiNiPdk4zN_NoH)
+
+## google的A2A
+
+[最新：Google 牵头搞了个 A2A，以后不同家的 AI 都能“加好友”了](https://mp.weixin.qq.com/s/fha3Yf-yK5D3JZ0bIX1tyw)
+
+[5000字长文带你看懂，Agent世界里的A2A、MCP协议到底是个啥。](https://mp.weixin.qq.com/s/hr7wvpz-KRllwQkiKYf0Tg)
+
+A2A协议是对 Anthropic 公司模型上下文协议 (MCP) 的补充，后者为智能体提供了有用的工具和上下文。A2A则更侧重于智能体之间的交互与协作
+
+A2A促进了客户端 (client)智能体和远程 (remote)智能体之间的通信。客户端智能体负责制定和传达任务，远程智能体则负责执行这些任务以提供信息或采取行动。
+
+这个交互过程包含几个关键能力：
+
++ 能力发现 (Capability discovery): 智能体可以通过JSON格式的Agent Card来宣告自身能力。这使得客户端智能体能找到最适合执行某项任务的远程智能体，并发起A2A通信。
++ 任务管理 (Task management): 通信围绕任务完成进行。协议定义了具有生命周期的任务 (task)对象。任务可以是即时完成的，也可以是长时运行的。任务的输出被称为工件 (artifact)
++ 协作 (Collaboration): 智能体之间可以发送消息，以沟通上下文、回复、工件或用户指令
++ 用户体验协商 (User experience negotiation): 每条消息包含parts，即完整的内容片段（如生成的图像）。每个部分都有指定的内容类型，允许客户端和远程智能体协商所需格式，并明确协商用户的UI能力（例如是否支持iframe、视频、Web表单等）。
+
 
 # 一些其他比较重要的工作
 
@@ -761,6 +779,10 @@ XXX
 
 [https://github.com/MadcowD/ell](https://github.com/MadcowD/ell)
 
+## 一些实践
+
+[gpt-4.1官方](https://www.xiaohongshu.com/explore/67fe98c1000000001d01477b?app_platform=ios&app_version=8.79&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBD6_QqRzI70CObFc2ZlGE4OyHkXfEAyuQpTgGllA2rLs=&author_share=1&xhsshare=WeixinSession&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1744847767&share_id=c452a695f467408c903e213ccf9f8d41)
+
 # 可解释AI
 
 [XAI有什么用？探索LLM时代利用可解释性的10种策略](https://mp.weixin.qq.com/s/V35k4UJZPtJkAHqYlZiO1A)
@@ -930,6 +952,7 @@ Neel Nanda（deepmind）的项目
 [登上Nature的AI芯片设计屡遭质疑，谷歌发文反击，Jeff Dean：质疑者连预训练都没做](https://mp.weixin.qq.com/s/u1NNmulcykGkgZjJb_A-UA)
 
 [That Chip Has Sailed: A Critique of Unfounded Skepticism Around AI for Chip Design](https://arxiv.org/pdf/2411.10053)
+
 
 # 其他
 
