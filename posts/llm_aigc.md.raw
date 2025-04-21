@@ -1165,20 +1165,24 @@ BART是一个适用于seq2seq模型的去噪自编码器。预训练包括两个
 + 用seq2seq模型来**重建原始文本**
 
 
-# LLM概述
-
-PLM（pretrained language models），即bert等
-
 # 一些思考
 
 [The Second Half](https://ysymyth.github.io/The-Second-Half/)
 
 [OpenAI姚顺雨：欢迎来到AI下半场！](https://zhuanlan.zhihu.com/p/1896310535865233616)
 
+数十年来，人工智能主要致力于开发新的训练方法和模型。
+
+我们不再仅仅问：“我们能否训练一个模型来解决X问题？”而是问：“我们应该训练人工智能去做什么，以及我们如何衡量真正的进步？”要在下半场取得成功，我们需要及时转变思维方式和技能组合，这些可能更接近产品经理的思维方式。
+
 [Welcome to the Era of Experience](https://storage.googleapis.com/deepmind-media/Era-of-Experience%20/The%20Era%20of%20Experience%20Paper.pdf)
 
 [强化学习之父当头一棒：RL版「苦涩的教训」来了！通往ASI，绝非靠人类数据](https://mp.weixin.qq.com/s/MGrSWh-wcBrLKPboUmg05w)
 
+
+# LLM概述
+
+PLM（pretrained language models），即bert等
 
 ## LLM简史
 
