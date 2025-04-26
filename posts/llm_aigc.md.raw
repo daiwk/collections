@@ -1243,6 +1243,18 @@ BART是一个适用于seq2seq模型的去噪自编码器。预训练包括两个
 
 [被《经验时代》刷屏之后，剑桥博士长文讲述RL破局之路](https://mp.weixin.qq.com/s/dLfbu56f02BtQR4bCjzNfw)
 
+
+[生成式AI进入第二幕：交大携手创智学院提出「认知工程」，AI新纪元开始了](https://mp.weixin.qq.com/s/G3WTW2RiYNA6epyQoZZ9Ng)
+
+[Generative AI Act II: Test Time Scaling Drives Cognition Engineering](https://arxiv.org/pdf/2504.13828)
+
+[https://github.com/GAIR-NLP/cognition-engineering](https://github.com/GAIR-NLP/cognition-engineering)
+
+[中文版](https://github.com/GAIR-NLP/cognition-engineering/blob/main/assets/Cognition_Engineering_zh.pdf)，自己转存了[一份](https://github.com/daiwk/collections/blob/master/assets/Cognition_Engineering_zh.pdf)
+
+
+
+
 # LLM概述
 
 PLM（pretrained language models），即bert等
@@ -8144,6 +8156,14 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
 
 [Seaweed-7B: Cost-Effective Training of Video Generation Foundation Model](https://arxiv.org/pdf/2504.08685)
 
+## DAM
+
+[英伟达开源「描述一切」模型，拿下7个基准SOTA](https://mp.weixin.qq.com/s/FhARyS4bkqY3A6Z7ihmZcA)
+
+[Describe Anything: Detailed Localized Image and Video Captioning](https://arxiv.org/pdf/2504.16072)
+
+DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视频中特定区域的详细描述。用户可以使用点、框、涂鸦或蒙版来指定区域，DAM将提供这些区域丰富的上下文描述。
+
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)
@@ -9036,6 +9056,8 @@ XXX
 ## 快手的OneRec（听说比较扯淡）
 
 [OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment](https://arxiv.org/pdf/2502.18965)
+
+[「快手」全链路统一建模｜OneRec: Unifying Retrieve and Rank with Generative](https://mp.weixin.qq.com/s/wTEWnSe8aFaPiLsnoIeOSA)
 
 召回排序合为一体的生成式推荐——根据历史session序列，预测下一个session。
 
@@ -11631,6 +11653,25 @@ DeepCoder-14B-Preview
 [d1: Scaling Reasoning in Diffusion Large Language Models via Reinforcement Learning](https://arxiv.org/pdf/2504.12216)
 
 [https://github.com/dllm-reasoning/d1](https://github.com/dllm-reasoning/d1)
+
+## regtool
+
+[ReTool: Reinforcement Learning for Strategic Tool Use in LLMs](https://arxiv.org/abs/2504.11536)
+
+![](../assets/regtool.png)
+
+两阶段训练，先冷启注入pattern，再RL进一步泛化
+
++ 阶段1：收集纯文本数学推理数据->人工专家和Deepseek-R1双重验证过滤无效数据->直接prompt模型将手动计算步骤替换为代码片段，生成代码增强的推理数据->格式/答案验证->得到的数据集用来SFT冷启模型
++ 阶段2：RL rollout时候当检测到```\code```时停止生成，代码片段在sandbox中执行，并将解释器反馈拼接到原来生成序列中，使用是否做对（+1/-1）作为奖励信号进行PPO训练
+
+## RLVR的局限
+
+[RL真让大模型更会推理？清华新研究：其能力边界或仍被基座「锁死」](https://mp.weixin.qq.com/s/2-GDxs8j1QYh1VnW9iBnXw)
+
+[Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?](https://arxiv.org/abs/2504.13837)
+
+RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而其输出的正确答案，早已藏在基座模型的「基因」里。  
 
 ## 小结
 
