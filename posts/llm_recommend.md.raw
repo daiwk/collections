@@ -883,6 +883,8 @@ XXX
 
 [OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment](https://arxiv.org/pdf/2502.18965)
 
+[「快手」全链路统一建模｜OneRec: Unifying Retrieve and Rank with Generative](https://mp.weixin.qq.com/s/wTEWnSe8aFaPiLsnoIeOSA)
+
 召回排序合为一体的生成式推荐——根据历史session序列，预测下一个session。
 
 ## 阿里的HeteroRec（落地）
