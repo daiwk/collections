@@ -9432,6 +9432,33 @@ Finally, you need to return the result in the form of json:
 
 实验部分列了两个主场景的收益，但没有说实验流量
 
+## 阿里的URM（落地？）
+
+[当购物用上大模型！阿里妈妈首发世界知识大模型，破解两大推荐难题](https://mp.weixin.qq.com/s/eJewql0mZk199HyzkjkiuA)
+
+[Large Language Models Are Universal Recommendation Learners](https://arxiv.org/pdf/2502.03041)
+
+![](../assets/urm.jpeg)
+
+2个特殊token：
+
++ ```[UM]```对应的输出通过用户建模头$$h_{UM}$$映射到用户表示空间，用于候选商品的生成。如图，每个item对应一个```[UM]```；
++ ```[LM]```及其后续符号对应的输出通过语言模型头$$h_{LM}$$映射到文本空间，用于文本token的生成。
+
+![](../assets/urm-item-emb.png)
+
+item emb的获取：
+
++ 融合id emb，文本emb和图像emb
++ 底层的文本encoder和图像encoder freeze，上层的mlp可训练
++ sft训练（应该就是下面那个模型）
+
+Sequence-In-Set-Out：其实就是把```[UM]```的输出拆成H个，每个去和item向量算相似度，再merge到u和i的相似度
+
+最终sft的时候计算UM的loss和LM的loss，即图中的item和文本的loss
+
+![](../assets/urm-prompt.png)
+
 ## 蚂蚁的SLIM（没落地）
 
 [蚂蚁集团在大模型推荐上的算法和应用](https://mp.weixin.qq.com/s/z4Q3Imuqoxw52TteaPbveQ?from=groupmessage&isappinstalled=0&scene=1&clicktime=1720679311&enterid=1720679311)
