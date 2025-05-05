@@ -3161,6 +3161,8 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 ## MTA
 
+[Multi-Token突破注意力机制瓶颈，Meta发明了一种很新的Transformer](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650963426&idx=2&sn=4cb5432a3b547f12136a50fdebbb19f8)
+
 [Multi-Token Attention](https://arxiv.org/pdf/2504.00927)
 
 
