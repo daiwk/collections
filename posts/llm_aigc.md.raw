@@ -4390,6 +4390,8 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 ## MTA
 
+[Multi-Token突破注意力机制瓶颈，Meta发明了一种很新的Transformer](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650963426&idx=2&sn=4cb5432a3b547f12136a50fdebbb19f8)
+
 [Multi-Token Attention](https://arxiv.org/pdf/2504.00927)
 
 
@@ -5211,7 +5213,7 @@ kvcache的量化：[https://zhuanlan.zhihu.com/p/691537237](https://zhuanlan.zhi
 
 [https://github.com/vllm-project/vllm](https://github.com/vllm-project/vllm)
 
-(toread)
+[图解Vllm V1系列1：整体流程](https://mp.weixin.qq.com/s/agtNbHsVZ9FuWxyK4Ttvdg)
 
 [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/pdf/2309.06180.pdf)
 
@@ -9081,6 +9083,14 @@ item有各种特征，如title、img、id等
 
 。。好像没啥，就是预测未来k个，并且设计了滑动窗口的mask（右下角）
 
+## 华为的UniGRF（没落地）
+
+[Killing Two Birds with One Stone: Unifying Retrieval and Ranking with a Single Generative Recommendation Model](https://arxiv.org/pdf/2504.16454)
+
+[sigir‘25「华为」统一召回+排序框架](https://mp.weixin.qq.com/s/eKU_AlffGR1Lx_wQspuLpQ?poc_token=HEPlGGijUUqAuU1VTCkeSPkWDfZG99B1eN5xtLkh)
+
+
+
 # LLM+推荐：输入文本
 
 ## 华为的KAR（落地）
@@ -11700,6 +11710,12 @@ DeepCoder-14B-Preview
 
 RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而其输出的正确答案，早已藏在基座模型的「基因」里。  
 
+## RLFT
+
+[谷歌DeepMind：大模型也很任性，知道最优路径偏要撞南墙](https://mp.weixin.qq.com/s/8wxEyYNYr5L9k0Kb64_O4g)
+
+[LLMs are Greedy Agents: Effects of RL Fine-tuning on Decision-Making Abilities](https://arxiv.org/pdf/2504.16078)
+
 ## 小结
 
 [从ReFT, Kimi K1.5到DeepSeek R1，聊聊Reasoning Model的精巧实现](https://mp.weixin.qq.com/s/yaBMe-XOlINOBg6_CL0vEw)
@@ -12023,6 +12039,10 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可以理解庞大数据集并处理来自不同信息源的复杂问题，包括文本、音频、图像、视频，甚至是整个代码库。2.5 pro擅长创造视觉上引人注目的Web应用程序和智能体代码。
 
 
+[52页PPT，谷歌Gemini预训练负责人首次揭秘！扩展定律最优解](https://mp.weixin.qq.com/s/IB_Bum3Md5mafAaEVxk9QA)
+
+[https://vladfeinberg.com/assets/2025-04-24-princeton-talk.pdf](https://vladfeinberg.com/assets/2025-04-24-princeton-talk.pdf)
+
 ## gemma-3
 
 [Google 发布多模态开源模型 Gemma 3：性能与功能全面升级，附技术报告英中对照版](https://mp.weixin.qq.com/s/WyBNvIsPKMGjSMk_F2Xrpg)
@@ -12041,6 +12061,158 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 [https://github.com/QwenLM/Qwen2.5-Omni/tree/main](https://github.com/QwenLM/Qwen2.5-Omni/tree/main)
 
 [https://github.com/QwenLM/Qwen2.5-Omni](https://github.com/QwenLM/Qwen2.5-Omni)
+
+## Qwen3
+
+[猛击OpenAI o1、DeepSeek-R1！刚刚，阿里Qwen3登顶全球开源模型王座，深夜爆火](https://mp.weixin.qq.com/s/gvWJMfy2ah4IHqyO-tP8MA)
+
+[Qwen3：思深，行速](https://mp.weixin.qq.com/s/OvobsCPW0IwxeSm8pljv-A)
+
+开源了两个MoE模型的权重：
+
++ Qwen3-235B-A22B：拥有2350多亿总参数和220多亿激活参数
++ Qwen3-30B-A3B：拥有约300亿总参数和30亿激活参数
+
+此外，还有6个Dense模型：Qwen3-32B、Qwen3-14B、Qwen3-8B、Qwen3-4B、Qwen3-1.7B和Qwen3-0.6B
+
+### 预训练
+
+Qwen2.5是在18万亿个token上进行预训练的，而Qwen3使用的数据量几乎是其两倍，达到了约36万亿个token，涵盖了119种语言和方言。
+
+预训练过程分为三个阶段。
+
++ 第一阶段：模型在超过30万亿个token上进行了预训练，上下文长度为4Ktoken。这一阶段为模型提供了基本的语言技能和通用知识。
++ 第二阶段：通过增加知识密集型数据（如STEM、编程和推理任务）的比例来改进数据集，随后模型又在额外的5万亿个token上进行了预训练。
++ 第三阶段：使用高质量的长上下文数据将上下文长度扩展到32Ktoken，确保模型能够有效地处理更长的输入。
+
+效果：
+
++ Qwen3 Dense基础模型的整体性能与参数更多的Qwen2.5基础模型相：Qwen3-1.7B/4B/8B/14B/32B-Base分别与Qwen2.5-3B/7B/14B/32B/72B-Base表现相当。特别是在STEM、编码和推理等领域，Qwen3 Dense基础模型的表现甚至超过了更大规模的Qwen2.5模型。
++ Qwen3 MoE基础模型在仅使用 10% 激活参数的情况下，达到了与 Qwen2.5 Dense基础模型相似的性能，带来了训练和推理成本的显著节省。
+
+### 后训练
+
+四阶段：
+
++ 长思维链冷启动：使用多样的的长思维链数据对模型进行了微调，涵盖了数学、代码、逻辑推理和 STEM 问题等多种任务和领域。这一过程旨在为模型配备基本的推理能力。
++ 长思维链强化学习：重点是大规模强化学习，利用基于规则的奖励来增强模型的探索和钻研能力。
++ 思维模式融合：在一份包括长思维链数据和常用的指令微调数据的组合数据上对模型进行微调，**将非思考模式整合到思考模型中**。确保了推理和快速响应能力的无缝结合。
++ 通用强化学习：在包括指令遵循、格式遵循和Agent能力等在内的20多个通用领域的任务上应用了强化学习，以进一步增强模型的通用能力并纠正不良行为。
+
+### 使用
+
+vllm：
+
+```shell
+vllm serve Qwen/Qwen3-30B-A3B --enable-reasoning --reasoning-parser deepseek_r1
+# 要禁用思考模式，可以移除--reasoning-parser以及--enable-reasoning
+```
+
+软切换机制，可以在```enable_thinking=True```时动态控制模型的行为，即在用户prompt或系统prompt中添加```/think```和```/no_think```来逐轮切换模型的思考模式。
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+classQwenChatbot:
+    def __init__(self, model_name="Qwen3-30B-A3B/Qwen3-30B-A3B"):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        self.history = []
+
+    def generate_response(self, user_input):
+        messages = self.history + [{"role": "user", "content": user_input}]
+
+        text = self.tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
+        )
+
+        inputs = self.tokenizer(text, return_tensors="pt")
+        response_ids = self.model.generate\
+          (**inputs, max_new_tokens=32768)[0][len(inputs.input_ids[0]):].tolist()
+        response = self.tokenizer.decode(response_ids, skip_special_tokens=True)
+
+        # Update history
+        self.history.append({"role": "user", "content": user_input})
+        self.history.append({"role": "assistant", "content": response})
+
+        return response
+
+# Example Usage
+if __name__ == "__main__":
+    chatbot = QwenChatbot()
+
+    # First input (without /think or /no_think tags, 
+    # thinking mode is enabled by default)
+    user_input_1 = "How many r's in strawberries?"
+    print(f"User: {user_input_1}")
+    response_1 = chatbot.generate_response(user_input_1)
+    print(f"Bot: {response_1}")
+    print("----------------------")
+
+    # Second input with /no_think
+    user_input_2 = "Then, how many r's in blueberries? /no_think"
+    print(f"User: {user_input_2}")
+    response_2 = chatbot.generate_response(user_input_2)
+    print(f"Bot: {response_2}") 
+    print("----------------------")
+
+    # Third input with /think
+    user_input_3 = "Really? /think"
+    print(f"User: {user_input_3}")
+    response_3 = chatbot.generate_response(user_input_3)
+    print(f"Bot: {response_3}")
+```
+
+MCP：可以使用MCP配置文件，使用Qwen-Agent内置的工具，或者自行集成其他工具。
+
+```python
+from qwen_agent.agents import Assistant
+
+# Define LLM
+llm_cfg = {
+    'model': 'Qwen3-30B-A3B',
+    # Use the endpoint provided by Alibaba Model Studio:
+    # 'model_type': 'qwen_dashscope',
+    # 'api_key': os.getenv('DASHSCOPE_API_KEY'),
+    # Use a custom endpoint compatible with OpenAI API:
+    'model_server': 'http://localhost:8000/v1',  # api_base
+    'api_key': 'EMPTY',
+    # Other parameters:
+    # 'generate_cfg': {
+    #         # Add: When the response content is `<think>this is the thought</think>this is the answer;
+    #         # Do not add: When the response has been separated by reasoning_content and content.
+    #         'thought_in_content': True,
+    #     },
+}
+
+# Define Tools
+tools = [
+    {'mcpServers': {  # You can specify the MCP configuration file
+            'time': {
+                'command': 'uvx',
+                'args': ['mcp-server-time', '--local-timezone=Asia/Shanghai']
+            },
+            "fetch": {
+                "command": "uvx",
+                "args": ["mcp-server-fetch"]
+            }
+        }
+    },
+  'code_interpreter',  # Built-in tools
+]
+
+# Define Agent
+bot = Assistant(llm=llm_cfg, function_list=tools)
+
+# Streaming generation
+messages = [{'role': 'user', 'content': 
+  'https://qwenlm.github.io/blog/ Introduce the latest developments of Qwen'}]
+for responses in bot.run(messages=messages):
+    pass
+print(responses)
+```
 
 
 # deep research
@@ -12112,7 +12284,9 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
   + length prompts：let's use less than k tokens
   + routing by difficulty：训一个小模型，决定简单问题不思考，困难问题再思考
 
-# GRM+SPCT
+# deepseek
+
+## GRM+SPCT
 
 [刚刚，DeepSeek公布推理时Scaling新论文，R2要来了？](https://mp.weixin.qq.com/s/TbPWc4ooFyf0it5pEaLRUA)
 
@@ -12120,7 +12294,7 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 critique：生成的文本评价，即评论
 
-## RM分类
+### RM分类
 
 ![](../assets/rm-patterns.png)
 
@@ -12142,7 +12316,7 @@ RM可以进行如下分类：
 + LLM-as-a-Judge：semi-scalr或者generative + pairwise
 + Pointwise GRM：generative + pointwise
 
-## SPCT
+### SPCT
 
 核心：principle（准则）不再只是辅助性的输入，而是使模型能在生成过程中**主动生成**并**基于此生成对应的critique**
 
@@ -12163,6 +12337,47 @@ Self-Principled Critique Tuning (SPCT)
   + voting：
     + 基于生成式reward：即每个里的response1的reward求和，同理response2的reward求和，得到1和2的总得分
     + 基于meta RM：训练一个pointwise scalar RM，用二分类来判断principle+critique对不对(label和RFT的一样)。使用：对这m个结果打分，干掉质量差的（图中就是只保留了第1和第3个），然后对剩下的$$k_{meta}$$个去投票
+
+## DeepSeek-Prover-V2
+
+[DeepSeek开源Prover-V2强推理模型，网友：奥数从没这么简单过](https://mp.weixin.qq.com/s/UYn-9vX5rpWpB3Y1xFW8Jg)
+
+专为Lean 4 打造的开源大语言模型，专注于形式化定理证明。
+
+[https://github.com/deepseek-ai/DeepSeek-Prover-V2/blob/main/DeepSeek_Prover_V2.pdf](https://github.com/deepseek-ai/DeepSeek-Prover-V2/blob/main/DeepSeek_Prover_V2.pdf)
+
+下载了一份：[pdf](https://github.com/daiwk/collections/blob/master/assets/DeepSeek_Prover_V2.pdf)
+
+两阶段训练，建立了两种互补的证明生成模式：
+
+1. 高效非思维链（non-CoT）模式：针对快速生成正式的Lean证明代码进行优化，专注于生成简洁的证明，没有显式的中间推理步骤。 
+2. 高精度思维链（CoT）模式：系统地阐述中间推理步骤，强调透明度和逻辑进展，然后构建最终的正式证明。
+
+与 DeepSeek-Prover-V1.5一致，这两种生成模式由两个不同的引导提示控制。
+
++ 第一阶段采用专家迭代，在课程学习框架内训练一个非CoT证明模型，同时通过基于子目标的递归证明合成难题的证明。选择非CoT生成模式是为了加速迭代训练和数据收集过程。
++ 在此基础上，第二阶段利用了冷启动链式思维（CoT）数据，通过将 DeepSeek-V3 复杂的数学推理模式与合成形式证明相结合而生成。CoT模式通过进一步的强化学习阶段得到增强，遵循了通常用于推理模型的标准训练流程。
+
+DeepSeek-Prover-V2的非CoT模式训练过程遵循专家迭代的范式，这是开发形式化定理证明器广泛采用的框架。在每次训练迭代中，当前最佳证明策略用于生成那些在先前迭代中未解决的难题的证明尝试。这些成功的尝试经由Lean证明助手验证后，被纳入SFT数据集以训练改进的模型。
+
+这一迭代循环不仅确保模型能够从初始演示数据集中学习，还能提炼出自己的成功推理轨迹，逐步提高其解决更难问题的能力。总体训练过程与 DeepSeek-Prover-V1 的训练过程大致一致，仅对训练问题的分布进行了两项修改：
+
++ Prover-V2引入了来自自动形式化和各种开源数据集的额外问题，扩大了训练问题领域的覆盖范围。
++ 新模型通过子目标分解生成的问题来扩充数据集，旨在解决MiniF2F基准测试有效划分中的更多挑战性实例。
+
+在DeepSeek-V3-Base-671B上使用恒定的学习率5e-6，在16384个token的上下文中进行监督微调。训练语料库由两个互补来源组成：
+
++ 通过专家迭代收集的非CoT数据，生成无需中间推理步骤的Lean代码；
++ 冷启动CoT数据，将DeepSeek-V3的高级数学推理过程提炼为结构化的证明路径。非CoT组件强调精益定理证明器生态系统中的形式验证技能，而CoT示例明确地建模了将数学直觉转化为形式证明结构的认知过程。
+
+Prover-V2采用GRPO，通过为每个定理提示采样一组候选证明并根据它们的相对奖励优化策略，消除了对单独critic模型的需求。训练使用二元奖励，每个生成的Lean证明如果被验证为正确则获得1个奖励，否则为0。为了确保有效学习，研究人员精心挑选训练提示，仅包括那些对监督微调模型具有足够挑战性但可解决的问题。模型在每次迭代中采样256个不同的问题，为每个定理生成32个候选证明，最大序列长度为32768个token。
+
+模型蒸馏：
+
++ 把DeepSeek-Prover-V1.5-Base-7B的最大上下文长度从4096个token扩展到了32768个，并使用DeepSeek-Prover-V2-671B强化学习阶段收集的rollout数据对这个扩展上下文模型进行微调。
++ 除了CoT推理模式外，还整合了专家迭代过程中收集的非CoT证明数据，以实现一种成本效益高的证明选项，该选项能够生成简洁的形式化输出，并且模型规模较小。
++ 7B模型也采用了与671B模型训练相同的强化学习阶段以提升性能。
+
 
 # 推理模型总结
 
