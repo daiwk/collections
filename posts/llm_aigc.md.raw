@@ -2530,9 +2530,94 @@ Llama 3的主要亮点：
 
 NVIDIA用TensorRT-LLM优化了Llama 3.1 8B和Llama-3.1-Minitron 4B模型。
 
-### LLama-3.1-Nemotron
+### LLama-Nemotron
 
 [英伟达开源最新大模型Nemotron 70B后，只有OpenAI o1一个对手了](https://mp.weixin.qq.com/s/ebJkBkGAn8QS-_xVK__MMw)
+
+[公开模型一切，优于DeepSeek-R1，英伟达开源Llama-Nemotron家族](https://mp.weixin.qq.com/s/Ofw7l6XPNNinXvFReGI3vw)
+
+[Llama-Nemotron: Efficient Reasoning Models](https://arxiv.org/pdf/2505.00949)
+
+[https://github.com/NVIDIA/NeMo](https://github.com/NVIDIA/NeMo)
+
+[https://huggingface.co/collections/nvidia/llama-nemotron-67d92346030a2691293f200b](https://huggingface.co/collections/nvidia/llama-nemotron-67d92346030a2691293f200b)
+
+post training的数据集：
+
+[https://huggingface.co/datasets/nvidia/Llama-Nemotron-Post-Training-Dataset](https://huggingface.co/datasets/nvidia/Llama-Nemotron-Post-Training-Dataset)
+
+开源了LN-Nano（8B）、LN-Super（49B）与LN-Ultra（253B），还有独立变体LN-UltraLong（8B，支持超长上下文）。
+
+#### 构建面向推理优化的模型
+
+&nbsp;
+
+LN-Super和LN-Ultra通过Puzzle框架实现高效推理优化。Puzzle是一个神经网络架构搜索（Neural Architecture Search, NAS）框架，能够在真实部署约束条件下，将大型语言模型转化为面向硬件高效的变体([Puzzle: Distillation-Based NAS for Inference-Optimized LLMs](https://arxiv.org/abs/2411.19146))
+
+![](../assets/llama-nemotron-puzzle.png)
+
+以Llama 3 Instruct模型为起点（LN-Super(49B)基于Llama3.3-70B-Instruct，LN-Ultra(253B)基于Llama 3.1-405B-Instruct），Puzzle通过逐模块局部蒸馏（block-wise local distillation）方法构建可替代的Transformer模块库。每个模块独立训练且可**并行处理**，允许每个替代模块在**精度与效率之间进行权衡**（accuracy-efficiency tradeoff），模块变体主要包括以下几种类型：
+
++ **移除注意力机制（Attention removal）**：部分模块**完全省略注意力机制**，从而显著减少计算开销和KV cache内存占用。 
++ **可变FFN维度（Variable FFN dimensions）**：通过调整**FFN的中间维度**，在不同粒度下实现模型压缩（如将隐藏层维度压缩至原始的87%、75%、50%，甚至低至 10%）。
+
+尽管Puzzle同样支持其他结构替换方式（如多GQA中不同的kv head数、线性注意力替代方案、以及不执行操作的替换模块），但实际评估结果表明，在优化LN-Super和LN-Ultra两个模型的总体吞吐量与内存节省方面，最有效的技术仍是移除注意力机制与FFN压缩。
+
+在模块库构建完成后，Puzzle通过逐层选取模块的方式组装完整模型。模块选择过程由**整数混合规划**（Mixed-Integer Programming, MIP）**求解器**控制，在给定的约束条件下（如硬件兼容性、最大推理延迟、总内存预算或指定推理吞吐量）确定效率最优的模块配置。
+
+由于每一层支持多个具有不同精确度–效率权衡方案的模块变体，Puzzle允许用户精确定位至任何位于精度-效率帕累托前沿（Pareto frontier）上的模型配置点。例如，Puzzle 可生成满足特定智能体系统（agentic systems）或部署流程所需约束（如内存不可超出上限或端到端响应时间严格受限）的模型。
+
+**用FFN融合实现纵向压缩（Vertical Compression with FFN Fusion）**：针对LN-Ultra模型，引入了一种额外的压缩技术——FFN融合（FFN Fusion），该方法旨在降低模型的序列深度，并进一步缩短推理延迟。利用Puzzle移除部分注意力层后的结构特性：在这种结构下，模型中经常会出现**连续的FFN模块序列**。FFN Fusion会识别出这类序列，并将其替换为**更少但更宽的FFN层**，这些宽层可并行执行，从而减少序列处理步骤的数量，同时保留模型的表达能力，还能显著提升计算资源的利用率，特别是在多GPU环境中，可以有效降低跨层通信带来的开销。
+
+在NAS之后，进行了continue pretraining(CPT)：
+
++ LN-Super：使用([Puzzle: Distillation-Based NAS for Inference-Optimized LLMs](https://arxiv.org/abs/2411.19146)里的Distillation Mix数据集，以知识蒸馏目标函数训练了400亿个Token
++ LN-Ultra：首先使用相同的蒸馏数据集进行了650亿Token的蒸馏训练，随后在Nemotron-H第四阶段预训练数据集上进行了额外880亿Token的持续预训练。
+
+LN-Ultra不仅实现了与基准模型Llama 3.1-405B-Instruct相当的性能，还在多个关键基准测试上取得超越。说明**即使进行激进的架构优化，也可通过短周期的蒸馏与预训练恢复并提升模型性能。**
+
+#### 合成数据
+
+&nbsp;
+
+设计了「detailed thinking on/off」指令机制，在合成数据中**显式标记是否需要展开详细推理过程**，引导模型在训练中学习何时进行逐步思考、展示推理链条，何时直接给出简明答案。指令为「on」时，模型输出完整的中间推理过程并展示解题思路；指令为「off」时，模型仅呈现最终结果。
+
+拿deepseek-r1、llama-4等作为teacher来生产数据，产出的数据总共33,011,757条，里面66%是数学的，30%是代码的（这两部分里都是reasoning off占大头），剩下的是科学和instruction following
+
+#### SFT
+
+&nbsp;
+
+基于合成数据来进行SFT，不同大小的student用的seq_len、epoch数不太一样，也有一些小trick，详见原文
+
+#### 推理能力强化学习
+
+&nbsp;
+
+只蒸馏的话，student很难超越teacher，所以需要强化学习，考虑到资源问题，只对LN-Ultra搞了GRPO
+
+两个reward：
+
++ 准确率奖励（Accuracy rewards）：每个训练样本提供标准答案（数字、句子或段落），使用Llama-3.3-70B-Instruct模型判定策略模型响应是否与标准答案一致。
++ 格式奖励（Format rewards）：和DeepSeek一致，在detailed thinking on时，需将推理过程置于```<think></think>```标签之中；而在off时，确保不包含思考标签。
+
+一些trick：
+
++ 样本过滤：由LN-Super为每道题生成8个独立回答，计算通过率，并过滤通过率大于等于0.75的样本，提升总体训练数据难度。
++ 课程学习（curriculum learning）：渐进式批处理策略（progressive batching），使用预计算通过率作为样本难度指标，在固定batch size下，动态计算每个batch的目标难度分布。该分布以高斯函数建模，从早期批次集中在高通过率（简单样本），逐步过渡至后期批次的低通过率（高难度样本）。每个batch中，样本按目标分布随机分配，并根据不同通过率池中剩余样本量进行容量填充。**确保样本难度在batch层面逐步递进，同时batch内部保持随机性。**
++ 基于fp8的生成阶段：修改vLLM，支持bf16转fp8，然后用fp8做gemm
+
+#### 用于偏好优化的强化学习
+
+&nbsp;
+
++ 指令跟随：在前面的科学推理任务的强化学习之后，对LN-Super和LN-Ultra再进行短期的强化学习，提升指令跟随能力。参考[Instruction-following evaluation for large language models](https://arxiv.org/abs/2311.07911)，生成包含1至10条详细指令的合成提示词，用RLOO（[Back to basics: Revisiting reinforce style optimization for learning from human feedback in llms](https://arxiv.org/abs/2402.14740)）在batch128跑了120个steps，用自定义指令跟随验证器作为奖励函数。发现能同时提升指令跟随任务和推理类任务的效果。
++ RLHF：增强模型的通用协助能力（helpfulness）与多轮聊天能力
+    + LN-Super：用iterative online RPO（[ Reward-aware preference optimization: A unified mathematical framework for model alignment](https://arxiv.org/abs/2502.00203)）来最大化HelpSteer2数据集上的Llama-3.1-Nemotron-70B-Reward
+    + LN-Ultra：一样的方法，只是换成了GRPO
+    + LN-Nano：2轮的offline RPO
+        + 第一轮：用混合了reasoning和非reasoning的数据，来提升reasoning控制能力
+        + 第二轮：用使用当前正在训练（优化）的策略生成的数据（on-policy的数据），来提升指令遵循能力
 
 ### Llama-3.2
 
