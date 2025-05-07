@@ -1339,6 +1339,8 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可以理解庞大数据集并处理来自不同信息源的复杂问题，包括文本、音频、图像、视频，甚至是整个代码库。2.5 pro擅长创造视觉上引人注目的Web应用程序和智能体代码。
 
+[刚刚，Gemini 2.5 Pro升级，成编程模型新王](https://mp.weixin.qq.com/s/6wv6tUVYsJPfaN-7HxUjoQ)
+
 
 [52页PPT，谷歌Gemini预训练负责人首次揭秘！扩展定律最优解](https://mp.weixin.qq.com/s/IB_Bum3Md5mafAaEVxk9QA)
 

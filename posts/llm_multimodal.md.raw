@@ -1070,6 +1070,16 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
 
 DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视频中特定区域的详细描述。用户可以使用点、框、涂鸦或蒙版来指定区域，DAM将提供这些区域丰富的上下文描述。
 
+## Sparse VideoGen
+
+[ICML 2025 | 视频生成模型无损加速两倍，秘诀竟然是「抓住attention的时空稀疏性」](https://mp.weixin.qq.com/s/3gA0JVDuc5naWvaowOtQqQ)
+
+[Sparse VideoGen: Accelerating Video Diffusion Transformers with Spatial-Temporal Sparsity](https://arxiv.org/abs/2502.01776)
+
+[https://github.com/svg-project/Sparse-VideoGen](https://github.com/svg-project/Sparse-VideoGen)
+
+完全无需重新训练模型的视频生成加速方法。通过挖掘注意力机制中的空间与时间稀疏性，配合自适应稀疏选择与算子优化，成功将推理时间减半。
+
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)

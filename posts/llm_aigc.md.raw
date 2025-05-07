@@ -2538,6 +2538,8 @@ NVIDIA用TensorRT-LLM优化了Llama 3.1 8B和Llama-3.1-Minitron 4B模型。
 
 [Llama-Nemotron: Efficient Reasoning Models](https://arxiv.org/pdf/2505.00949)
 
+[https://github.com/NVIDIA/NeMo-Aligner/tree/llama-nemotron-dev](https://github.com/NVIDIA/NeMo-Aligner/tree/llama-nemotron-dev)
+
 [https://github.com/NVIDIA/NeMo](https://github.com/NVIDIA/NeMo)
 
 [https://huggingface.co/collections/nvidia/llama-nemotron-67d92346030a2691293f200b](https://huggingface.co/collections/nvidia/llama-nemotron-67d92346030a2691293f200b)
@@ -8251,6 +8253,16 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
 
 DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视频中特定区域的详细描述。用户可以使用点、框、涂鸦或蒙版来指定区域，DAM将提供这些区域丰富的上下文描述。
 
+## Sparse VideoGen
+
+[ICML 2025 | 视频生成模型无损加速两倍，秘诀竟然是「抓住attention的时空稀疏性」](https://mp.weixin.qq.com/s/3gA0JVDuc5naWvaowOtQqQ)
+
+[Sparse VideoGen: Accelerating Video Diffusion Transformers with Spatial-Temporal Sparsity](https://arxiv.org/abs/2502.01776)
+
+[https://github.com/svg-project/Sparse-VideoGen](https://github.com/svg-project/Sparse-VideoGen)
+
+完全无需重新训练模型的视频生成加速方法。通过挖掘注意力机制中的空间与时间稀疏性，配合自适应稀疏选择与算子优化，成功将推理时间减半。
+
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)
@@ -12122,6 +12134,8 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 [谷歌首款混合推理Gemini 2.5登场，成本暴降600%！思考模式一开，直追o4-mini](https://mp.weixin.qq.com/s/Tx6dbqKwPTx9dqAW1xzT3w)
 
 Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可以理解庞大数据集并处理来自不同信息源的复杂问题，包括文本、音频、图像、视频，甚至是整个代码库。2.5 pro擅长创造视觉上引人注目的Web应用程序和智能体代码。
+
+[刚刚，Gemini 2.5 Pro升级，成编程模型新王](https://mp.weixin.qq.com/s/6wv6tUVYsJPfaN-7HxUjoQ)
 
 
 [52页PPT，谷歌Gemini预训练负责人首次揭秘！扩展定律最优解](https://mp.weixin.qq.com/s/IB_Bum3Md5mafAaEVxk9QA)
