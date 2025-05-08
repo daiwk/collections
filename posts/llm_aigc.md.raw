@@ -12315,6 +12315,107 @@ for responses in bot.run(messages=messages):
 print(responses)
 ```
 
+## UniME
+
+[Breaking the Modality Barrier: Universal Embedding Learning with Multimodal LLMs](https://arxiv.org/pdf/2504.17432)
+
+### 阶段一：文本判别知识蒸馏
+
+![](../assets/unime-text-distill.png)
+
+用纯文本数据来增强MLLM中LLM的嵌入能力，用了273k个句子对。
+
++ teacher：基于LLM的嵌入模型NV-Embed V2（对比训练中移除了causal mask）离线批量产出文本的emb
++ student：MLLM中把LLM部分剥离出来，输入prompt ```Summary the above sentences in one word: \n”```，最后一个token的emb当成输出
++ 蒸馏：teacher和student间算KL散度，LoRA训练
+
+推理时：
+
++ 单模态输入：通过prompt的设置，决定只走对应的vision/text encoder
++ 图片+文字输入：通过prompt，各自过模型，然后把输出的2个emb进行融合 
+
+### 阶段二：困难负样本增强指令微调
+
+![](../assets/unime-img.png)
+
+拿多模态的样本对来提升图文之间的对齐，用了662k个pair对：
+
++ query: img+prompt
++ doc: img
+
+样本处理：
+
++ 干掉false negative：有些负样本和query的相似度太高了，干掉
++ 增加hard negative：除了正例和前面的false negative外，在负样本里找出k个和query最像的，当成hard negative
+
+loss是infoNCE，然后用QLoRA来微调
+
+代码：
+
+```python
+import torch
+from PIL import Image
+from torch.nn import functional as F
+from self_evaluate.utils.utils import init_model_and_transform
+
+model_name = "phi35V"
+base_model_path="DeepGlint-AI/UniME-Phi3.5-V-4.2B"
+# model_name = "llava_16"
+# base_model_path="DeepGlint-AI/UniME-LLaVA-1.6-7B"
+
+if model_name == "phi35V":
+    img_prompt = '<|user|>\n<|image_1|>\nSummary above image in one word: <|end|>\n<|assistant|>\n'
+    text_prompt = '<|user|>\n<sent>\nSummary above sentence in one word: <|end|>\n<|assistant|>\n'
+elif model_name == "llava_16":
+    img_prompt = "[INST] <image>\nSummary above image in one word: [/INST]"
+    text_prompt = "[INST] <sent>\nSummary above sentence in one word: [/INST]"
+
+text = "A man is crossing the street with a red car parked nearby."
+image_path = "figures/demo.png"
+input_texts = text_prompt.replace('<sent>', text)
+input_image_prompt = img_prompt
+input_image = [Image.open(image_path)]
+
+model, transform = init_model_and_transform(model_name, base_model_path)
+inputs_text = transform(text=input_texts,
+                    images=None,
+                    return_tensors="pt", 
+                    padding=True)
+for key in inputs_text: inputs_text[key] = inputs_text[key].to("cuda")
+inputs_image = transform(text=input_image_prompt,
+                    images=input_image, 
+                    return_tensors="pt", 
+                    padding=True).to("cuda")
+
+with torch.no_grad():
+  emb_text = model(**inputs_text, output_hidden_states=True, return_dict=True).hidden_states[-1][:, -1, :]
+  emb_image = model(**inputs_image, output_hidden_states=True, return_dict=True).hidden_states[-1][:, -1, :]
+  emb_text = F.normalize(emb_text, dim=-1)
+  emb_image = F.normalize(emb_image, dim=-1)
+  Score = emb_image @ emb_text.T
+print("Score: ", Score) # Score: 0.59
+```
+
+其中：
+
+```python
+def init_model_and_transform(model_name, base_model_path): 
+    if model_name == 'phi35V':
+        transform = AutoProcessor.from_pretrained("microsoft/Phi-3.5-vision-instruct", 
+        trust_remote_code=True)
+        model = AutoModelForCausalLM.from_pretrained(base_model_path,
+                            device_map="cuda", trust_remote_code=True,
+                            torch_dtype=torch.float16, 
+                            _attn_implementation='flash_attention_2')
+    elif model_name == "llava_16": 
+        transform = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf")
+        model = LlavaNextForConditionalGeneration.\
+          from_pretrained(base_model_path, device_map="cuda", 
+            torch_dtype=torch.float16, low_cpu_mem_usage=True) 
+    transform.tokenizer.padding_side = "left"
+    transform.tokenizer.padding = True
+    return model, transform
+```
 
 # deep research
 
