@@ -505,6 +505,11 @@ A2A促进了客户端 (client)智能体和远程 (remote)智能体之间的通�
 + 协作 (Collaboration): 智能体之间可以发送消息，以沟通上下文、回复、工件或用户指令
 + 用户体验协商 (User experience negotiation): 每条消息包含parts，即完整的内容片段（如生成的图像）。每个部分都有指定的内容类型，允许客户端和远程智能体协商所需格式，并明确协商用户的UI能力（例如是否支持iframe、视频、Web表单等）。
 
+## 字节的DeerFlow
+
+[字节跳动开源了一款 Deep Research 项目](https://mp.weixin.qq.com/s/Le7Ic9FgcwAkQeHDuorXMw)
+
+[https://github.com/bytedance/deer-flow](https://github.com/bytedance/deer-flow)
 
 # 一些其他比较重要的工作
 
