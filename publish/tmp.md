@@ -23,3 +23,7 @@
 | MQA | $2d_hl$  | Weak  |
 | MLA | $(d_c + d_h^R)l \approx \tfrac{9}{2}d_hl$ | Stronger |
 
+
+最终在计算时，需要cache的是图中的蓝色部分，所以是$(d_c + d_h^R)l$，在Deepseek-v2中，设置$d_c=4d_h, d^R_h=d_h/2$
+
+![](../assets/mla-kvcache.jpeg)
