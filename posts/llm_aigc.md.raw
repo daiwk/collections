@@ -9417,6 +9417,12 @@ class RQBottleneck(nn.Module):
 
 [Autoregressive Search Engines: Generating Substrings as Document Identifiers](https://arxiv.org/pdf/2204.10628)：例如一个item可以写成```<IDS> 1023 <IDE> Urban Decay Eyeshadow Palette Naked Heat <AS> Makeup <AE> <AS> Eyes <AE>```，并通过wavelet tree存储，给定开始token（如```<IDS>```或者```<AS>```），可以在$$O(Vlog(V))$$里找出所有可能的后续tokens。代码：[https://github.com/facebookresearch/SEAL](https://github.com/facebookresearch/SEAL)
 
+## 美团的MTGR
+
+[MTGR：美团外卖生成式推荐Scaling Law落地实践](https://mp.weixin.qq.com/s/JiDOqD-ThU0Upp6xnNg3Nw)
+
+听说是替换了精排
+
 
 ## 百度的COBRA
 
