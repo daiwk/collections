@@ -4452,6 +4452,30 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [DeepSeek开源数学大模型，高中、大学定理证明新SOTA](https://mp.weixin.qq.com/s/q-CZWNrcka6ttLuDW_1itg)
 
+![](../assets/mla-deepseekmoe.png)
+
+主要包括2部分：
+
++ MLA：图中一列是一个head，输入一个q/k/v，每个的dim都是$$d$$，split成$$n_h$$份，每份的dim是$$d_h=d/n_h$$
+    + MHA(Multi-head Attention)：等价于多个独立的单头注意力的拼接
+    + GQA(Grouped-Query Attention)：出自[GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/pdf/2305.13245)，将所有Head分为**g个组**（g可以整除h），**每组共享**同一对K、V
+    + MQA(Multi-Query Attention)：出自[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)，让**所有Attention Head共享同一个K、V**
+    + MHA(Multi-head Latent Attention)：
+
+![](../assets/mha-gqa-mqa-mla.png)
+
+| attn | KV Cache per Token | Capability |
+|-------|---------------------------------|-------|
+| MHA | $$2n_hd_hl$$ | Strong   |
+| GQA | $$2n_gd_h$$ | Moderate  |
+| MQA | $2d_hl$$  | Weak  |
+| MLA | $$(d_c + d_h^R)l \approx \tfrac{9}{2}d_hl$$ | Stronger |
+
+
++ DeepSeekMoE
+
+
+
 ## DeepSeek-Prover-V1.5
 
 [DeepSeek开源数学大模型，高中、大学定理证明新SOTA](https://mp.weixin.qq.com/s/q-CZWNrcka6ttLuDW_1itg)
