@@ -2529,5 +2529,3 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 ## gemini embedding
 
 [Gemini Embedding: Generalizable Embeddings from Gemini](https://arxiv.org/pdf/2503.07891)
-
-
