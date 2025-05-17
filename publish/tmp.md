@@ -1,29 +1,53 @@
-输入第$t$个token $h_t$，分别经过一个$W^Q$、$W^K$和$W^V$得到$d$维的$q_t=W^Qh_t$、$k_t=W^Kh_t$和$v_t=W^Vh_t$，split成$n_h$份，每份的dim是$d_h=d/n_h$，**每一份就是图里的一条竖线**
+[DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models](https://arxiv.org/pdf/2401.06066)
 
-+ MHA(Multi-head Attention)：每个head各自算注意力，再拼接
-+ GQA(Grouped-Query Attention)：出自[GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/pdf/2305.13245)，将所有Head分为$g$个组（g可以整除h），**每组共享**同一对K、V
-+ MQA(Multi-Query Attention)：出自[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)，让**所有Attention Head共享同一个K、V**
-+ MHA(Multi-head Latent Attention)：
-    + 降维：输入的$h_t$先过一个$W^{DKV}\in R^{d_c\times d}$，得到$c_t^{KV}=W^{DKV}h_t$，其中$d_c\ll d$
-    + 升维：$k^C_t=W^{UK}c_t^{KV}$，$v^C_t=W^{UV}c_t^{KV}$，其中$W^{UK}\in R^{d\times d_c}$，$W^{UV}\in R^{d\times d_c}$
-    + 同时对q也降维，不过是降到$d'_c$，$c^Q_t=W^{DQ}h_t$，$q^C_t=W^{UQ}c_t^Q$，其中$c^Q_t\in R^{d'_c}$，$W^{UQ}\in R^{d_hn_h\times d'_c}$
-    + 为了兼容RoPE，
-        + $q^R_t=RoPE(W^{QR}c^Q_t)$，其中$W^{QR}\in R^{d^R_hn_h\times d'_c}$，再split成$n_h$份：$[q^R_{t,1};q^R_{t,2};...;q^R_{t,n_h}]$，每一份的dim是$d^R_h$
-        + $k^R_t=RoPE(W^{KR}h_t)$
-        + $q_{t,i}=[q^C_{t,i};q^R_{t,i}]$，$k_{t,i}=[k^C_{t,i};k^R_t]$，维度都是$d_h+d^R_h$，
-        + 再拿这个q和k去算attn，$o_{t,i}=\sum ^t_{j=1}softmax_j(\frac{q^T_{t,i}k_{j,i}}{\sqrt {d_h+d^R_h}})v^C_{j,i}$
-        + $u_t=W^O[o_{t,1};o_{t,2};...;o_{t,n_h}]$
+[https://github.com/deepseek-ai/DeepSeek-MoE](https://github.com/deepseek-ai/DeepSeek-MoE)
 
-![](../assets/mha-gqa-mqa-mla.png)
+FFN部分的MoE，相比传统的[GShard](https://arxiv.org/pdf/2006.16668.pdf) 等MoE架构，DeepSeekMoE用了**更细粒度的专家分配机制**，并将部分专家设置为**共享专家**。
 
-| attn | KV Cache per Token | Capability |
-|-------|---------------------------------|-------|
-| MHA | $2n_hd_hl$ | Strong   |
-| GQA | $2n_gd_hl$ | Moderate  |
-| MQA | $2d_hl$  | Weak  |
-| MLA | $(d_c + d_h^R)l \approx \tfrac{9}{2}d_hl$ | Stronger |
+$\mathbf{u}_t$表示FFN输入的第$t$个token，$N_s$是shared experts的数量，$N_r$是routed experts的数量，$K_r$表示被激活的router专家数量 
 
+$$
+\begin{aligned}
+& \mathbf{h}_t^{\prime}=\mathbf{u}_t+\sum_{i=1}^{N_s} \operatorname{FFN}_i^{(s)}\left(\mathbf{u}_t\right)+\sum_{i=1}^{N_r} g_{i, t} \operatorname{FFN}_i^{(r)}\left(\mathbf{u}_t\right), \\
+& g_{i, t}= \begin{cases}s_{i, t}, & s_{i, t} \in \operatorname{Topk}\left(\left\{s_{j, t} \mid 1 \leqslant j \leqslant N_r\right\}, K_r\right), \\
+0, & \text { otherwise },\end{cases} \\
+& s_{i, t}=\operatorname{Softmax}_i\left(\mathbf{u}_t^T \mathbf{e}_i\right),
+\end{aligned}
+$$
 
-最终在计算时，需要cache的是图中的蓝色部分，所以是$(d_c + d_h^R)l$，在Deepseek-v2中，设置$d_c=4d_h, d^R_h=d_h/2$
+device-limited routing：保证每个token的目标专家**分布在最多$M$个设备上**
 
-![](../assets/mla-kvcache.jpeg)
++ 首先选择有最高相关性（即上面的$s_{i,t}$）的$M$个设备出来
++ 再从这$M$个设备里选出top-K个专家出来
+
+负载均衡的辅助loss：
+
++ expert-level的负载均衡loss：$\alpha_1$是超参
+
+$$
+\begin{aligned}
+\mathcal{L}_{\text {ExpBal }} & =\alpha_1 \sum_{i=1}^{N_r} f_i P_i, \\
+f_i & =\frac{N_r}{K_r T} \sum_{t=1}^T \mathbb{1}(\text { Token } t \text { selects Expert } i), \\
+P_i & =\frac{1}{T} \sum_{t=1}^T s_{i, t},
+\end{aligned}
+$$
+
++ device-level的负载均衡loss：把所有routed专家分成$D$组$\left\{\mathcal{E}_1, \mathcal{E}_2, \ldots, \mathcal{E}_D\right\}$，并把每一组放到一个单独的设备上：
+
+$$
+\begin{aligned}
+\mathcal{L}_{\text {DevBal }} & =\alpha_2 \sum_{i=1}^D f_i^{\prime} P_i^{\prime} \\
+f_i^{\prime} & =\frac{1}{\left|\mathcal{E}_i\right|} \sum_{j \in \mathcal{E}_i} f_j \\
+P_i^{\prime} & =\sum_{j \in \mathcal{E}_i} P_j
+\end{aligned}
+$$
+
++ 通信负载均衡loss：如果一个设备收到的token比较多，它的通信代价也比较大。因为要选$M$个设备出来，总共有$T$个词，所以，鼓励每个设备最多传输$MT$个隐层状态去其他设备，同时从其他设备接收到$MT$左右个的隐层状态。
+
+$$
+\begin{aligned}
+\mathcal{L}_{\text {CommBal }} & =\alpha_3 \sum_{i=1}^D f_i^{\prime \prime} P_i^{\prime \prime} \\
+f_i^{\prime \prime} & =\frac{D}{M T} \sum_{t=1}^T \mathbb{1}(\text { Token } t \text { is sent to Device } i) \\
+P_i^{\prime \prime} & =\sum_{j \in \mathcal{E}_i} P_j
+\end{aligned}
+$$
