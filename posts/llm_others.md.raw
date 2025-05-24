@@ -61,6 +61,21 @@
 
 [https://www.bilibili.com/video/BV1Yw4m1k7nH](https://www.bilibili.com/video/BV1Yw4m1k7nH)
 
+# 蒸馏
+
+## ABKD
+
+[ABKD: Pursuing a Proper Allocation of the Probability Massin Knowledge Distillation via α-β-Divergence](https://arxiv.org/pdf/2505.04560) ICML 2025 spotlight
+
+现有问题：
+
++ 前向KL：概率分配过于“佛系”，学生“雨露均沾”，难专注目标类
++ 反向KL：概率分配过于“内卷”，学生“死磕”高置信度类，忽略教师全局信息
+
+ABKD引入α-β散度，统一前向/反向KL，并推广到此前未探索的海灵格距离和β-散度等。
+
+[https://github.com/ghwang-s/abkd](https://github.com/ghwang-s/abkd)
+
 
 # LLM+math
 
