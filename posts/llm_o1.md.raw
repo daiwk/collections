@@ -1005,6 +1005,20 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 
 [LLMs are Greedy Agents: Effects of RL Fine-tuning on Decision-Making Abilities](https://arxiv.org/pdf/2504.16078)
 
+## CoRT
+
+[强迫模型自我争论，递归思考版CoT热度飙升！网友：这不就是大多数推理模型的套路吗？](https://mp.weixin.qq.com/s/lkQEy395JPnlntV1j6EfTQ)
+
+[https://github.com/PhialsBasement/Chain-of-Recursive-Thoughts](https://github.com/PhialsBasement/Chain-of-Recursive-Thoughts)
+
+## R1-Reward
+
+[RL训练总崩溃？R1-Reward稳定解锁奖励模型Long-Cot推理能力](https://mp.weixin.qq.com/s/PHGC6lQt5mXuieK6-8DiYw)
+
+[R1-Reward: Training Multimodal Reward Model Through Stable Reinforcement Learning](https://arxiv.org/abs/2505.02835)
+
+[https://github.com/yfzhang114/r1_reward](https://github.com/yfzhang114/r1_reward)
+
 ## 小结
 
 [从ReFT, Kimi K1.5到DeepSeek R1，聊聊Reasoning Model的精巧实现](https://mp.weixin.qq.com/s/yaBMe-XOlINOBg6_CL0vEw)
@@ -1134,6 +1148,13 @@ VLLM_MLA_DISABLE=1 VLLM_WORKER_MULTIPROC_METHOD=spawn python3 vllm_deepseek.py
 
 [Logic-RL: Unleashing LLM Reasoning with Rule-Based Reinforcement Learning](https://arxiv.org/pdf/2502.14768)
 
+## SGLang对R1的加速
+
+[全球首个，最接近原版DeepSeek开源复现来了！R1四个月狂飙26倍](https://mp.weixin.qq.com/s/O8_qnIsxVoc98y3RVR9sYw)
+
+[https://lmsys.org/blog/2025-05-05-large-scale-ep/](https://lmsys.org/blog/2025-05-05-large-scale-ep/)
+
+[https://docs.sglang.ai/references/deepseek.html](https://docs.sglang.ai/references/deepseek.html)
 
 # R1的微调
 
@@ -1177,11 +1198,19 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 # OpenAI
 
+## O3
+
 [OpenAI：强化学习确实可显著提高LLM性能，DeepSeek R1、Kimi k1.5发现o1的秘密](https://mp.weixin.qq.com/s/jh5L5MV6jU8W6coFH7jsAg)
 
 [Competitive Programming with Large Reasoning Models](https://arxiv.org/pdf/2502.06807)
 
 [刚刚，OpenAI放出最后大惊喜o3，高计算模式每任务花费数千美元](https://mp.weixin.qq.com/s/KmxARRFsjXiLTF8HScsmOQ)
+
+## O3与隐私
+
+[一张照片、一句简单提示词，就被ChatGPT人肉开盒，深度解析o3隐私漏洞](https://mp.weixin.qq.com/s/_pDsKWz9f9rjXFHWN2UJ_A)
+
+[Doxing via the Lens: Revealing Privacy Leakage in Image Geolocation for Agentic Multi-Modal Large Reasoning Model](https://arxiv.org/abs/2504.19373)
 
 # Claude
 
