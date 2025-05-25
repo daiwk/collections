@@ -22,6 +22,11 @@
 
 [中文版](https://github.com/GAIR-NLP/cognition-engineering/blob/main/assets/Cognition_Engineering_zh.pdf)，自己转存了[一份](https://github.com/daiwk/collections/blob/master/assets/Cognition_Engineering_zh.pdf)
 
+[刚刚！北大校友Lilian Weng最新博客来了：Why We Think](https://mp.weixin.qq.com/s/fcDRzd3cwuM_JOnQW5XRMQ)
+
+[https://lilianweng.github.io/posts/2025-05-01-thinking/](https://lilianweng.github.io/posts/2025-05-01-thinking/)
+
+
 ## 上半场
 
 上半场的游戏：专注于构建新的模型和方法（如Alexnet、transformer、GPT-3），而评估和基准测试（如Imagenet、WMT'14翻译）是次要的。原因：
@@ -74,6 +79,10 @@
 + 用方案解决它们，或者用新组件增强方案。继续这个循环。
 
 上半场的参与者在解决视频游戏和考试，充满了渐进式的方法和模型，而下半场的参与者可以通过构建有用的产品来建立价值数十亿甚至数千亿美元的公司，使用通用方案会轻易击败渐进式方法，除非你创造出打破方案的新假设。
+
+## 趋势
+
+[AI开源狂飙，OpenAI们慌了！GenAI大洗牌，2025趋势深度解读](https://mp.weixin.qq.com/s/h47YCdzC9hUk64Sr3IBHlg)
 
 
 # LLM概述
@@ -3240,6 +3249,17 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
+## gemini diffusion
+
+[大模型全面爆发，所有榜一都是Gemini！谷歌一夜站到了台前](https://mp.weixin.qq.com/s/EucnouIrBTIggQseKFSp9A)
+
+[12秒生成1万token！谷歌推出文本「扩散模型」Gemini Diffusion，研究员：演示都得降速看](https://mp.weixin.qq.com/s/paesPiFQgIMuKXCJusvjqg)
+
+## AlphaEvolve
+
+[打破56年数学铁律！谷歌AlphaEvolve自我进化实现算法效率狂飙，堪比AlphaGo“神之一手”](https://mp.weixin.qq.com/s/1bDOTjyuBRfR2cW8WrZNDQ)
+
+[AlphaEvolve: A coding agent for scientific and algorithmic discovery](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/AlphaEvolve.pdf)
 
 # DeepSeek系列
 
@@ -3377,6 +3397,10 @@ XXX
 直接写PTX（并行线程执行），PTX是专门为其GPU设计的中间指令集架构，位于高级GPU编程语言（如CUDA C/C++或其他语言前端）和低级机器代码（流处理汇编或SASS）之间。PTX是一种接近底层的指令集架构，将GPU呈现为数据并行计算设备，因此能够实现寄存器分配、线程/线程束级别调整等细粒度优化，这些是CUDA C/C++等语言无法实现的
 
 [首次披露！DeepSeek V3 发布软硬一体协同训练论文，公开「降成本」秘诀](https://mp.weixin.qq.com/s/LFOsOzINZNmyVDMRtGk83g)
+
+[刚刚，DeepSeek首曝V3降成本秘诀！软硬协同突破Scaling天花板](https://mp.weixin.qq.com/s/JgIZD0IMxsH55Vg6-lfgkQ)
+
+[DeepSeek-V3再发论文，梁文锋署名，低成本训练大模型的秘密揭开了](https://mp.weixin.qq.com/s/nTZH03aIIG1tQa7uiRc__A)
 
 [Insights into DeepSeek-V3: Scaling Challenges and Reflections on Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
 
@@ -3679,6 +3703,14 @@ Qwen2.5-Max同DeepSeek V3一样是超大规模的MoE模型，
 
 [Qwen3：思深，行速](https://mp.weixin.qq.com/s/OvobsCPW0IwxeSm8pljv-A)
 
+[Qwen3技术报告英中对照版.pdf](https://mp.weixin.qq.com/s/WJiW35ICxT7ox1-lGnqLIg)
+
+[Qwen3 Technical Report](https://github.com/QwenLM/Qwen3/blob/main/Qwen3_Technical_Report.pdf)
+
+[https://github.com/QwenLM/Qwen3](https://github.com/QwenLM/Qwen3)
+
+[Qwen3技术报告首次全公开！“混合推理模型”是这样炼成的](https://mp.weixin.qq.com/s/VvugM54Z14mxGV-OOaVuwQ)
+
 开源了两个MoE模型的权重：
 
 + Qwen3-235B-A22B：拥有2350多亿总参数和220多亿激活参数
@@ -3826,6 +3858,22 @@ for responses in bot.run(messages=messages):
     pass
 print(responses)
 ```
+
+## ParScale
+
+[ParScale：一种全新的大模型Scaling Law](https://mp.weixin.qq.com/s/Y51VKF7Kvd-avIvaYxjl0w)
+
+[Parallel Scaling Law for Language Models](https://arxiv.org/abs/2505.10475)
+
+[https://github.com/QwenLM/ParScale](https://github.com/QwenLM/ParScale)
+
+## WorldPM
+
+[建模世界偏好：偏好建模中的Scaling Laws](https://mp.weixin.qq.com/s/lI-2OxJ9zm7kBNK4TdorUw)
+
+[WorldPM: Scaling Human Preference Modeling](https://arxiv.org/abs/2505.10527)
+
+[https://huggingface.co/Qwen/WorldPM-72B](https://huggingface.co/Qwen/WorldPM-72B)
 
 # Kimi系列
 
