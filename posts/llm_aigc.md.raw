@@ -1251,6 +1251,11 @@ BART是一个适用于seq2seq模型的去噪自编码器。预训练包括两个
 
 [中文版](https://github.com/GAIR-NLP/cognition-engineering/blob/main/assets/Cognition_Engineering_zh.pdf)，自己转存了[一份](https://github.com/daiwk/collections/blob/master/assets/Cognition_Engineering_zh.pdf)
 
+[刚刚！北大校友Lilian Weng最新博客来了：Why We Think](https://mp.weixin.qq.com/s/fcDRzd3cwuM_JOnQW5XRMQ)
+
+[https://lilianweng.github.io/posts/2025-05-01-thinking/](https://lilianweng.github.io/posts/2025-05-01-thinking/)
+
+
 ## 上半场
 
 上半场的游戏：专注于构建新的模型和方法（如Alexnet、transformer、GPT-3），而评估和基准测试（如Imagenet、WMT'14翻译）是次要的。原因：
@@ -1303,6 +1308,10 @@ BART是一个适用于seq2seq模型的去噪自编码器。预训练包括两个
 + 用方案解决它们，或者用新组件增强方案。继续这个循环。
 
 上半场的参与者在解决视频游戏和考试，充满了渐进式的方法和模型，而下半场的参与者可以通过构建有用的产品来建立价值数十亿甚至数千亿美元的公司，使用通用方案会轻易击败渐进式方法，除非你创造出打破方案的新假设。
+
+## 趋势
+
+[AI开源狂飙，OpenAI们慌了！GenAI大洗牌，2025趋势深度解读](https://mp.weixin.qq.com/s/h47YCdzC9hUk64Sr3IBHlg)
 
 
 # LLM概述
@@ -4469,6 +4478,17 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
+## gemini diffusion
+
+[大模型全面爆发，所有榜一都是Gemini！谷歌一夜站到了台前](https://mp.weixin.qq.com/s/EucnouIrBTIggQseKFSp9A)
+
+[12秒生成1万token！谷歌推出文本「扩散模型」Gemini Diffusion，研究员：演示都得降速看](https://mp.weixin.qq.com/s/paesPiFQgIMuKXCJusvjqg)
+
+## AlphaEvolve
+
+[打破56年数学铁律！谷歌AlphaEvolve自我进化实现算法效率狂飙，堪比AlphaGo“神之一手”](https://mp.weixin.qq.com/s/1bDOTjyuBRfR2cW8WrZNDQ)
+
+[AlphaEvolve: A coding agent for scientific and algorithmic discovery](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/AlphaEvolve.pdf)
 
 # DeepSeek系列
 
@@ -4606,6 +4626,10 @@ XXX
 直接写PTX（并行线程执行），PTX是专门为其GPU设计的中间指令集架构，位于高级GPU编程语言（如CUDA C/C++或其他语言前端）和低级机器代码（流处理汇编或SASS）之间。PTX是一种接近底层的指令集架构，将GPU呈现为数据并行计算设备，因此能够实现寄存器分配、线程/线程束级别调整等细粒度优化，这些是CUDA C/C++等语言无法实现的
 
 [首次披露！DeepSeek V3 发布软硬一体协同训练论文，公开「降成本」秘诀](https://mp.weixin.qq.com/s/LFOsOzINZNmyVDMRtGk83g)
+
+[刚刚，DeepSeek首曝V3降成本秘诀！软硬协同突破Scaling天花板](https://mp.weixin.qq.com/s/JgIZD0IMxsH55Vg6-lfgkQ)
+
+[DeepSeek-V3再发论文，梁文锋署名，低成本训练大模型的秘密揭开了](https://mp.weixin.qq.com/s/nTZH03aIIG1tQa7uiRc__A)
 
 [Insights into DeepSeek-V3: Scaling Challenges and Reflections on Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
 
@@ -4908,6 +4932,14 @@ Qwen2.5-Max同DeepSeek V3一样是超大规模的MoE模型，
 
 [Qwen3：思深，行速](https://mp.weixin.qq.com/s/OvobsCPW0IwxeSm8pljv-A)
 
+[Qwen3技术报告英中对照版.pdf](https://mp.weixin.qq.com/s/WJiW35ICxT7ox1-lGnqLIg)
+
+[Qwen3 Technical Report](https://github.com/QwenLM/Qwen3/blob/main/Qwen3_Technical_Report.pdf)
+
+[https://github.com/QwenLM/Qwen3](https://github.com/QwenLM/Qwen3)
+
+[Qwen3技术报告首次全公开！“混合推理模型”是这样炼成的](https://mp.weixin.qq.com/s/VvugM54Z14mxGV-OOaVuwQ)
+
 开源了两个MoE模型的权重：
 
 + Qwen3-235B-A22B：拥有2350多亿总参数和220多亿激活参数
@@ -5055,6 +5087,22 @@ for responses in bot.run(messages=messages):
     pass
 print(responses)
 ```
+
+## ParScale
+
+[ParScale：一种全新的大模型Scaling Law](https://mp.weixin.qq.com/s/Y51VKF7Kvd-avIvaYxjl0w)
+
+[Parallel Scaling Law for Language Models](https://arxiv.org/abs/2505.10475)
+
+[https://github.com/QwenLM/ParScale](https://github.com/QwenLM/ParScale)
+
+## WorldPM
+
+[建模世界偏好：偏好建模中的Scaling Laws](https://mp.weixin.qq.com/s/lI-2OxJ9zm7kBNK4TdorUw)
+
+[WorldPM: Scaling Human Preference Modeling](https://arxiv.org/abs/2505.10527)
+
+[https://huggingface.co/Qwen/WorldPM-72B](https://huggingface.co/Qwen/WorldPM-72B)
 
 # Kimi系列
 
@@ -6225,6 +6273,14 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 [DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads](https://arxiv.org/abs/2410.10819)
 
 [https://github.com/mit-han-lab/duo-attention](https://github.com/mit-han-lab/duo-attention)
+
+## FlashInfer
+
+[叶子豪、陈天奇等人开源项目FlashInfer入选，MLSys2025最佳论文奖公布](https://mp.weixin.qq.com/s/ifDaTpoo0VXCa6UutgSmMA)
+
+[FlashInfer: Efficient and Customizable Attention Engine for LLM Inference Serving](https://arxiv.org/abs/2501.01005)
+
+[https://github.com/flashinfer-ai/flashinfer](https://github.com/flashinfer-ai/flashinfer)
 
 
 # speculative-decoding
@@ -7637,6 +7693,13 @@ XXX
 
 [https://github.com/LeslieTrue/SFTvsRL](https://github.com/LeslieTrue/SFTvsRL)
 
+## AttentionInfluence
+
+[字节最新大模型秘籍：只挑能有推理潜力的数据训练！1.3B模型无需标签自动挑选](https://mp.weixin.qq.com/s/FlP_m6WuWrvxrF4fvgyR9A)
+
+[AttentionInfluence: Adopting Attention Head Influence for Weak-to-Strong Pretraining Data Selection](https://arxiv.org/pdf/2505.07293)
+
+
 # 多模态（图像）
 
 [【IEEE Fellow何晓东&邓力】多模态智能论文综述：表示学习，信息融合与应用，259篇文献带你了解AI热点技](https://mp.weixin.qq.com/s/EMWpBP5iB1Qrleo3XNjbuQ)
@@ -8185,108 +8248,6 @@ EM3：[End-to-end training of Multimodal Model and ranking Model](https://arxiv.
 [Seedream 3.0 Technical Report](https://arxiv.org/abs/2504.11346)
 
 
-## UniME
-
-[Breaking the Modality Barrier: Universal Embedding Learning with Multimodal LLMs](https://arxiv.org/pdf/2504.17432)
-
-### 阶段一：文本判别知识蒸馏
-
-![](../assets/unime-text-distill.png)
-
-用纯文本数据来增强MLLM中LLM的嵌入能力，用了273k个句子对。
-
-+ teacher：基于LLM的嵌入模型NV-Embed V2（对比训练中移除了causal mask）离线批量产出文本的emb
-+ student：MLLM中把LLM部分剥离出来，输入prompt ```Summary the above sentences in one word: \n”```，最后一个token的emb当成输出
-+ 蒸馏：teacher和student间算KL散度，LoRA训练
-
-推理时：
-
-+ 单模态输入：通过prompt的设置，决定只走对应的vision/text encoder
-+ 图片+文字输入：通过prompt，各自过模型，然后把输出的2个emb进行融合 
-
-### 阶段二：困难负样本增强指令微调
-
-![](../assets/unime-img.png)
-
-拿多模态的样本对来提升图文之间的对齐，用了662k个pair对：
-
-+ query: img+prompt
-+ doc: img
-
-样本处理：
-
-+ 干掉false negative：有些负样本和query的相似度太高了，干掉
-+ 增加hard negative：除了正例和前面的false negative外，在负样本里找出k个和query最像的，当成hard negative
-
-loss是infoNCE，然后用QLoRA来微调
-
-代码：
-
-```python
-import torch
-from PIL import Image
-from torch.nn import functional as F
-from self_evaluate.utils.utils import init_model_and_transform
-
-model_name = "phi35V"
-base_model_path="DeepGlint-AI/UniME-Phi3.5-V-4.2B"
-# model_name = "llava_16"
-# base_model_path="DeepGlint-AI/UniME-LLaVA-1.6-7B"
-
-if model_name == "phi35V":
-    img_prompt = '<|user|>\n<|image_1|>\nSummary above image in one word: <|end|>\n<|assistant|>\n'
-    text_prompt = '<|user|>\n<sent>\nSummary above sentence in one word: <|end|>\n<|assistant|>\n'
-elif model_name == "llava_16":
-    img_prompt = "[INST] <image>\nSummary above image in one word: [/INST]"
-    text_prompt = "[INST] <sent>\nSummary above sentence in one word: [/INST]"
-
-text = "A man is crossing the street with a red car parked nearby."
-image_path = "figures/demo.png"
-input_texts = text_prompt.replace('<sent>', text)
-input_image_prompt = img_prompt
-input_image = [Image.open(image_path)]
-
-model, transform = init_model_and_transform(model_name, base_model_path)
-inputs_text = transform(text=input_texts,
-                    images=None,
-                    return_tensors="pt", 
-                    padding=True)
-for key in inputs_text: inputs_text[key] = inputs_text[key].to("cuda")
-inputs_image = transform(text=input_image_prompt,
-                    images=input_image, 
-                    return_tensors="pt", 
-                    padding=True).to("cuda")
-
-with torch.no_grad():
-  emb_text = model(**inputs_text, output_hidden_states=True, return_dict=True).hidden_states[-1][:, -1, :]
-  emb_image = model(**inputs_image, output_hidden_states=True, return_dict=True).hidden_states[-1][:, -1, :]
-  emb_text = F.normalize(emb_text, dim=-1)
-  emb_image = F.normalize(emb_image, dim=-1)
-  Score = emb_image @ emb_text.T
-print("Score: ", Score) # Score: 0.59
-```
-
-其中：
-
-```python
-def init_model_and_transform(model_name, base_model_path): 
-    if model_name == 'phi35V':
-        transform = AutoProcessor.from_pretrained("microsoft/Phi-3.5-vision-instruct", 
-        trust_remote_code=True)
-        model = AutoModelForCausalLM.from_pretrained(base_model_path,
-                            device_map="cuda", trust_remote_code=True,
-                            torch_dtype=torch.float16, 
-                            _attn_implementation='flash_attention_2')
-    elif model_name == "llava_16": 
-        transform = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf")
-        model = LlavaNextForConditionalGeneration.\
-          from_pretrained(base_model_path, device_map="cuda", 
-            torch_dtype=torch.float16, low_cpu_mem_usage=True) 
-    transform.tokenizer.padding_side = "left"
-    transform.tokenizer.padding = True
-    return model, transform
-```
-
 ## Seed-1.5 embedding
 
 [向量检索能力SOTA，字节Seed1.5-Embedding模型训练细节公开](https://mp.weixin.qq.com/s/gBcUyNxE1aqq_3wXksmOzA)。。没开源
@@ -8615,13 +8576,6 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [可灵视频生成可控性为什么这么好？快手又公开了四篇研究](https://mp.weixin.qq.com/s/3NI9YITmCrd8cDT1YMlA9A)
 
-
-## V2A
-
-[杀疯了！谷歌卷视频到语音，逼真音效让AI视频告别无声！](https://mp.weixin.qq.com/s/0D4QGeyZ0ZnmmWYz_x-56g)
-
-[https://deepmind.google/discover/blog/generating-audio-for-video/](https://deepmind.google/discover/blog/generating-audio-for-video/)
-
 ## 长视频LongVA
 
 [7B最强长视频模型！ LongVA视频理解超千帧，霸榜多个榜单](https://mp.weixin.qq.com/s/62rMYx94dbz1HwDkZclXtA)
@@ -8748,6 +8702,8 @@ UniDiffuser 主要擅长图文任务，能支持图文模态间的任意生成�
 
 [万相，开源！](https://mp.weixin.qq.com/s/l9EhkiwgsIL2aYfE0JcR4A)
 
+[阿里开源全能视频模型！生成编辑都精通，1.3B版本消费级显卡可跑](https://mp.weixin.qq.com/s/U8plksUWusZM19kjBAzODA)
+
 [https://github.com/Wan-Video](https://github.com/Wan-Video)
 
 [https://huggingface.co/Wan-AI](https://huggingface.co/Wan-AI)
@@ -8835,6 +8791,70 @@ DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视�
 
 [Zipper: A Multi-Tower Decoder Architecture for Fusing Modalities](https://arxiv.org/pdf/2405.18669)
 
+# 语音
+
+## Mini-Omni
+
+[让大模型能听会说，国内机构开源全球首个端到端语音对话模型Mini-Omni](https://mp.weixin.qq.com/s/2vf2QMnnmEdcdVbK8g9-_w)
+
+[Mini-Omni: Language Models Can Hear, Talk While Thinking in Streaming](https://arxiv.org/abs/2408.16725)
+
+[https://github.com/gpt-omni/mini-omni](https://github.com/gpt-omni/mini-omni)
+
+## Illuminate
+
+[任意论文一键变播客，谷歌正式发布Illuminate，它能重构研究者的学习方式吗？](https://mp.weixin.qq.com/s/2C2B5yNLjXXYyDQnQgqPyQ)
+
+[https://illuminate.google.com/home](https://illuminate.google.com/home)
+
+
+## V2A
+
+[杀疯了！谷歌卷视频到语音，逼真音效让AI视频告别无声！](https://mp.weixin.qq.com/s/0D4QGeyZ0ZnmmWYz_x-56g)
+
+[https://deepmind.google/discover/blog/generating-audio-for-video/](https://deepmind.google/discover/blog/generating-audio-for-video/)
+
+
+## Speech-02
+
+[超越OpenAI、ElevenLabs，MiniMax新一代语音模型屠榜！人格化语音时代来了](https://mp.weixin.qq.com/s/tZ3y4n-aMq5dFC2OmbWZpg)
+
+
+
+# 全模态
+
+## 综述
+
+[多模态与生成正迈向终极大一统！阿里最新3万字长文梳理统一的多模态理解和生成模型](https://mp.weixin.qq.com/s/GLWZsfGLOgdmtCXw9Cyo0g)
+
+[Unified Multimodal Understanding and Generation Models: Advances, Challenges, and Opportunities](https://arxiv.org/pdf/2505.02567)
+
+[https://github.com/AIDC-AI/Awesome-Unified-Multimodal-Models](https://github.com/AIDC-AI/Awesome-Unified-Multimodal-Models)
+
+
+## seed-1.5-VL
+
+[Seed1.5-VL Technical Report](https://arxiv.org/abs/2505.07062)
+
+[Seed VLM 技术报告首次公开：图像、视频、GUI、Game 完全体](https://mp.weixin.qq.com/s/uWvOVPEowCXAuowrTKefiA)
+
+[字节最强多模态模型登陆火山引擎！Seed1.5-VL靠20B激活参数狂揽38项SOTA](https://mp.weixin.qq.com/s/GgJVkh8IorB6MvqlxESJLw)
+
+## DanceGRPO
+
+[DanceGRPO：首个统一视觉生成的强化学习框架](https://mp.weixin.qq.com/s/jivb_FgsfdJSgV2tbDbNUA)
+
+[DanceGRPO: Unleashing GRPO on Visual Generation](https://arxiv.org/pdf/2505.07818)
+
+## MMaDA
+
+[比Gemini Diffusion更全能！首个多模态扩散大语言模型MMaDA发布，同时实现强推理与高可控性](https://mp.weixin.qq.com/s/uaJy9pz2EEcjf4DZCpoonw)
+
+[MMaDA: Multimodal Large Diffusion Language Models](https://arxiv.org/abs/2505.15809)
+
+[https://github.com/Gen-Verse/MMaDA](https://github.com/Gen-Verse/MMaDA)
+
+[https://huggingface.co/Gen-Verse/MMaDA-8B-Base](https://huggingface.co/Gen-Verse/MMaDA-8B-Base)
 # LLM+推荐：概述
 
 
@@ -9371,13 +9391,6 @@ class RQBottleneck(nn.Module):
 
 [Autoregressive Search Engines: Generating Substrings as Document Identifiers](https://arxiv.org/pdf/2204.10628)：例如一个item可以写成```<IDS> 1023 <IDE> Urban Decay Eyeshadow Palette Naked Heat <AS> Makeup <AE> <AS> Eyes <AE>```，并通过wavelet tree存储，给定开始token（如```<IDS>```或者```<AS>```），可以在$$O(Vlog(V))$$里找出所有可能的后续tokens。代码：[https://github.com/facebookresearch/SEAL](https://github.com/facebookresearch/SEAL)
 
-## 美团的MTGR
-
-[MTGR：美团外卖生成式推荐Scaling Law落地实践](https://mp.weixin.qq.com/s/JiDOqD-ThU0Upp6xnNg3Nw)
-
-听说是替换了精排
-
-
 ## 百度的COBRA
 
 [Sparse Meets Dense: Unified Generative Recommendations with Cascaded Sparse-Dense Representations](https://arxiv.org/abs/2503.02453)
@@ -9756,7 +9769,31 @@ item有各种特征，如title、img、id等
 
 [sigir‘25「华为」统一召回+排序框架](https://mp.weixin.qq.com/s/eKU_AlffGR1Lx_wQspuLpQ?poc_token=HEPlGGijUUqAuU1VTCkeSPkWDfZG99B1eN5xtLkh)
 
+## 美团的MTGR
 
+[MTGR：美团外卖生成式推荐Scaling Law落地实践](https://mp.weixin.qq.com/s/JiDOqD-ThU0Upp6xnNg3Nw)
+
+听说是替换了精排
+
+## 阿里的SORT-Gen（落地）
+
+[sigir'25「淘宝」多目标重排｜A Generative Re-ranking Model for List-level](https://mp.weixin.qq.com/s/b0PdyR4bFUXhLj9dToBK5A)
+
+[A Generative Re-ranking Model for List-level Multi-objective Optimization at Taobao](https://arxiv.org/pdf/2505.07197)
+
+将用户的所有行为聚合成一条样本。每个行为包括四个方面：用户侧、位置、商品侧、精排打分，将行为序列送入tansformer中。
+
+保序回归损失
+
+生成方法：先设计不同的rankscore得到多路序列候选，再比较每一路的top1，决定召回哪一路。
+
+纯价值驱动的列表生成可能有同质化的风险，导致多样性降低。引入相似度惩罚：
+
+## 小红书的RankGPT
+
+[小红书RankGPT:推荐系统生成式精排的落地实践](https://mp.weixin.qq.com/s/2D31iyO07DNdTBPdHp-3Qw)
+
+[Towards Large-scale Generative Ranking](https://arxiv.org/abs/2505.04180)
 
 # LLM+推荐：输入文本
 
@@ -10865,6 +10902,12 @@ infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿
 
 [https://github.com/microsoft/RecAI](https://github.com/microsoft/RecAI)
 
+新的一篇
+
+[Avoid Recommending Out-of-Domain Items: Constrained Generative Recommendation with LLMs](https://arxiv.org/pdf/2505.03336)
+
++ RecLM-ret通过检索机制，从域数据集中找到最相关的item
++ RecLM-cgen则使用约束生成策略，限制模型仅生成域内的item标题。
 
 
 ## Google的STAR
@@ -11382,6 +11425,116 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 ## gemini embedding
 
 [Gemini Embedding: Generalizable Embeddings from Gemini](https://arxiv.org/pdf/2503.07891)
+
+## BGE-code/VL
+
+[代码、多模态检索全面登顶SOTA！智源BGE向量模型三连击，并全面开放](https://mp.weixin.qq.com/s/DYGix_6Zf7M50aC8TtpQKg)
+
++ BGE-code：[Towards A Generalist Code Embedding Model Based On Massive Data Synthesis](https://arxiv.org/abs/2505.12697)
++ BGE-VL：[MegaPairs: Massive Data Synthesis For Universal Multimodal Retrieval](https://arxiv.org/abs/2412.14475)
++ BGE-VL-screenshot：[Any Information Is Just Worth One Single Screenshot: Unifying Search With Visualized Information Retrieval](https://arxiv.org/abs/2502.11431)
+
+## UniME
+
+[Breaking the Modality Barrier: Universal Embedding Learning with Multimodal LLMs](https://arxiv.org/pdf/2504.17432)
+
+### 阶段一：文本判别知识蒸馏
+
+![](../assets/unime-text-distill.png)
+
+用纯文本数据来增强MLLM中LLM的嵌入能力，用了273k个句子对。
+
++ teacher：基于LLM的嵌入模型NV-Embed V2（对比训练中移除了causal mask）离线批量产出文本的emb
++ student：MLLM中把LLM部分剥离出来，输入prompt ```Summary the above sentences in one word: \n”```，最后一个token的emb当成输出
++ 蒸馏：teacher和student间算KL散度，LoRA训练
+
+推理时：
+
++ 单模态输入：通过prompt的设置，决定只走对应的vision/text encoder
++ 图片+文字输入：通过prompt，各自过模型，然后把输出的2个emb进行融合 
+
+### 阶段二：困难负样本增强指令微调
+
+![](../assets/unime-img.png)
+
+拿多模态的样本对来提升图文之间的对齐，用了662k个pair对：
+
++ query: img+prompt
++ doc: img
+
+样本处理：
+
++ 干掉false negative：有些负样本和query的相似度太高了，干掉
++ 增加hard negative：除了正例和前面的false negative外，在负样本里找出k个和query最像的，当成hard negative
+
+loss是infoNCE，然后用QLoRA来微调
+
+代码：
+
+```python
+import torch
+from PIL import Image
+from torch.nn import functional as F
+from self_evaluate.utils.utils import init_model_and_transform
+
+model_name = "phi35V"
+base_model_path="DeepGlint-AI/UniME-Phi3.5-V-4.2B"
+# model_name = "llava_16"
+# base_model_path="DeepGlint-AI/UniME-LLaVA-1.6-7B"
+
+if model_name == "phi35V":
+    img_prompt = '<|user|>\n<|image_1|>\nSummary above image in one word: <|end|>\n<|assistant|>\n'
+    text_prompt = '<|user|>\n<sent>\nSummary above sentence in one word: <|end|>\n<|assistant|>\n'
+elif model_name == "llava_16":
+    img_prompt = "[INST] <image>\nSummary above image in one word: [/INST]"
+    text_prompt = "[INST] <sent>\nSummary above sentence in one word: [/INST]"
+
+text = "A man is crossing the street with a red car parked nearby."
+image_path = "figures/demo.png"
+input_texts = text_prompt.replace('<sent>', text)
+input_image_prompt = img_prompt
+input_image = [Image.open(image_path)]
+
+model, transform = init_model_and_transform(model_name, base_model_path)
+inputs_text = transform(text=input_texts,
+                    images=None,
+                    return_tensors="pt", 
+                    padding=True)
+for key in inputs_text: inputs_text[key] = inputs_text[key].to("cuda")
+inputs_image = transform(text=input_image_prompt,
+                    images=input_image, 
+                    return_tensors="pt", 
+                    padding=True).to("cuda")
+
+with torch.no_grad():
+  emb_text = model(**inputs_text, output_hidden_states=True, return_dict=True).hidden_states[-1][:, -1, :]
+  emb_image = model(**inputs_image, output_hidden_states=True, return_dict=True).hidden_states[-1][:, -1, :]
+  emb_text = F.normalize(emb_text, dim=-1)
+  emb_image = F.normalize(emb_image, dim=-1)
+  Score = emb_image @ emb_text.T
+print("Score: ", Score) # Score: 0.59
+```
+
+其中：
+
+```python
+def init_model_and_transform(model_name, base_model_path): 
+    if model_name == 'phi35V':
+        transform = AutoProcessor.from_pretrained("microsoft/Phi-3.5-vision-instruct", 
+        trust_remote_code=True)
+        model = AutoModelForCausalLM.from_pretrained(base_model_path,
+                            device_map="cuda", trust_remote_code=True,
+                            torch_dtype=torch.float16, 
+                            _attn_implementation='flash_attention_2')
+    elif model_name == "llava_16": 
+        transform = LlavaNextProcessor.from_pretrained("llava-hf/llava-v1.6-mistral-7b-hf")
+        model = LlavaNextForConditionalGeneration.\
+          from_pretrained(base_model_path, device_map="cuda", 
+            torch_dtype=torch.float16, low_cpu_mem_usage=True) 
+    transform.tokenizer.padding_side = "left"
+    transform.tokenizer.padding = True
+    return model, transform
+```
 # O1
 
 ## CoT开山之作
@@ -12402,6 +12555,29 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 [R1-Reward: Training Multimodal Reward Model Through Stable Reinforcement Learning](https://arxiv.org/abs/2505.02835)
 
 [https://github.com/yfzhang114/r1_reward](https://github.com/yfzhang114/r1_reward)
+
+## CTM
+
+[连续思维机器来了！Transformer八子之一创企推出，让AI不再「一步到位」拍脑袋做决定](https://mp.weixin.qq.com/s/L6Tlpf6xlL6VblTnV0MEfg)
+
+[https://github.com/SakanaAI/continuous-thought-machines/](https://github.com/SakanaAI/continuous-thought-machines/)
+
+[https://sakana.ai/ctm/](https://sakana.ai/ctm/)
+
+[Continuous Thought Machines](https://arxiv.org/abs/2505.05522)
+
+## INTELLECT-2
+
+[全球闲置算力训个模型，性能媲美R1，老黄天塌了！Karpathy曾投资它](https://mp.weixin.qq.com/s/NjQi_KAE18YkIBEqttnUuQ)
+
+##
+
+[纯蒸馏模型 SOTA 出现！直接 SFT 成本直降 50 倍，数据已全部开源](https://mp.weixin.qq.com/s/OlVQzw_WwziQTi0QnyWuOw)
+
+[Not All Correct Answers Are Equal: Why Your Distillation Source Matters](https://arxiv.org/abs/2505.14464)
+
+2个数据集：[a-m-team/AM-Thinking-v1-Distilled](https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled)和[a-m-team/AM-Qwen3-Distilled](https://huggingface.co/datasets/a-m-team/AM-Qwen3-Distilled)
+
 
 ## 小结
 
@@ -13720,22 +13896,6 @@ Neel Nanda（deepmind）的项目
 
 [Thinking in Space: How Multimodal Large Language Models See, Remember, and Recall Spaces](https://arxiv.org/pdf/2412.14171v1)
 
-
-# 语音
-
-## Mini-Omni
-
-[让大模型能听会说，国内机构开源全球首个端到端语音对话模型Mini-Omni](https://mp.weixin.qq.com/s/2vf2QMnnmEdcdVbK8g9-_w)
-
-[Mini-Omni: Language Models Can Hear, Talk While Thinking in Streaming](https://arxiv.org/abs/2408.16725)
-
-[https://github.com/gpt-omni/mini-omni](https://github.com/gpt-omni/mini-omni)
-
-## Illuminate
-
-[任意论文一键变播客，谷歌正式发布Illuminate，它能重构研究者的学习方式吗？](https://mp.weixin.qq.com/s/2C2B5yNLjXXYyDQnQgqPyQ)
-
-[https://illuminate.google.com/home](https://illuminate.google.com/home)
 
 # LLM+芯片设计
 
