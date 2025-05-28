@@ -1153,3 +1153,15 @@ DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视�
 [https://github.com/Gen-Verse/MMaDA](https://github.com/Gen-Verse/MMaDA)
 
 [https://huggingface.co/Gen-Verse/MMaDA-8B-Base](https://huggingface.co/Gen-Verse/MMaDA-8B-Base)
+
+
+## BAGEL
+
+[Seed Research｜理解与生成统一模型 BAGEL 开源，All-in-One Model！](https://mp.weixin.qq.com/s/ntZDIVYxpYxey7G-wUS3mw)
+
+[https://github.com/bytedance-seed/BAGEL](https://github.com/bytedance-seed/BAGEL)
+
+[Emerging Properties in Unified Multimodal Pretraining](https://arxiv.org/pdf/2505.14683)
+
+[https://huggingface.co/ByteDance-Seed/BAGEL-7B-MoT](https://huggingface.co/ByteDance-Seed/BAGEL-7B-MoT)
+
