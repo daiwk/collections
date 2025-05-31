@@ -4552,6 +4552,8 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 FFN部分的MoE，相比传统的[GShard](https://arxiv.org/pdf/2006.16668.pdf) 等MoE架构，DeepSeekMoE用了**更细粒度的专家分配机制**，并将部分专家设置为**共享专家**。
 
+细粒度专家分配：假设有$$N$$个专家，即么对于原来的每个专家，把它的intremediate hidden dim分成$$m$$份，每一份的长度是原来的$$\frac{1}{m}$$，这样就有了$$mN$$个专家，原来选$$k$$个，现在就选$$mK$$个
+
 $$\mathbf{u}_t$$表示FFN输入的第$$t$$个token，$$N_s$$是shared experts的数量，$$N_r$$是routed experts的数量，$$K_r$$表示被激活的router专家数量 
 
 XXX
@@ -4949,6 +4951,28 @@ Qwen2.5-Max同DeepSeek V3一样是超大规模的MoE模型，
 + Qwen3-30B-A3B：拥有约300亿总参数和30亿激活参数
 
 此外，还有6个Dense模型：Qwen3-32B、Qwen3-14B、Qwen3-8B、Qwen3-4B、Qwen3-1.7B和Qwen3-0.6B
+
+### 网络结构
+
+tokenizer用的是Qwen的，即BBPE（byte-level byte-pair encoding），词表大小是151,669
+
+dense架构和Qwen2.5类似，
+
++ 有GQA、SwiGLU、Rope和pre-normalization的RMSNorm等，
++ 删掉了Qwen2中的QKV-bias
++ 引入QK-Nomr，保证训练稳定
+
+MoE架构：
+
++ 类似Qwen2.5-MoE，实现了DeepseekMoE的细粒度的专家切分
++ 有128个专家，激活8个
++ 不同于Qwen2.5-MoE，没有共享专家
++ 使用global-batch load balancing loss来鼓励专家更专业化(specialization)，参考[Demons in the detail: On implementing load balancing loss for training specialized mixture-of-expert models](https://arxiv.org/abs/2501.11873)
+
+注：其中的tie embedding指的是输入的emb和输出的emb共享
+
+![](../assets/qwen3-arch.png)
+
 
 ### 预训练
 
