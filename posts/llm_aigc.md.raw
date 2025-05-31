@@ -4277,6 +4277,14 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [Multi-Token Attention](https://arxiv.org/pdf/2504.00927)
 
+## Linear MOE
+
+[Linear-MoE：线性注意力遇上混合专家的开源实践](https://mp.weixin.qq.com/s/Li6fP14bdwQweykdV6F3_g)
+
+[Linear-MoE: Linear Sequence Modeling Meets Mixture-of-Experts](https://arxiv.org/abs/2503.05447)
+
+[https://github.com/OpenSparseLLMs/Linear-MoE](https://github.com/OpenSparseLLMs/Linear-MoE)
+
 # Gemmini&Gemma系列
 
 ## Gemini 1.0
@@ -4478,11 +4486,6 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
-## gemini diffusion
-
-[大模型全面爆发，所有榜一都是Gemini！谷歌一夜站到了台前](https://mp.weixin.qq.com/s/EucnouIrBTIggQseKFSp9A)
-
-[12秒生成1万token！谷歌推出文本「扩散模型」Gemini Diffusion，研究员：演示都得降速看](https://mp.weixin.qq.com/s/paesPiFQgIMuKXCJusvjqg)
 
 ## AlphaEvolve
 
@@ -5325,6 +5328,27 @@ XXX
 + 任务复杂性：AI Agents通常处理单一、特定的任务，而Agentic AI处理需要协作的复杂、多步骤任务。
 + 协作：AI Agents独立运行，而Agentic AI涉及多智能体协作和信息共享。
 + 学习和适应能力：AI Agents在特定领域内学习和适应，而Agentic AI在更广泛的范围和环境中学习和适应。
+
+# diffusion LLM
+
+## gemini diffusion
+
+[大模型全面爆发，所有榜一都是Gemini！谷歌一夜站到了台前](https://mp.weixin.qq.com/s/EucnouIrBTIggQseKFSp9A)
+
+[12秒生成1万token！谷歌推出文本「扩散模型」Gemini Diffusion，研究员：演示都得降速看](https://mp.weixin.qq.com/s/paesPiFQgIMuKXCJusvjqg)
+
+
+## LLaDOU
+
+[与Gemini Diffusion共振！首个扩散式「发散思维链」来了](https://mp.weixin.qq.com/s/ENbw02E9JXbXwggA5vC02w)
+
+[Reinforcing the Diffusion Chain of Lateral Thought with Diffusion Language Models](https://arxiv.org/abs/2505.10446)
+
+[https://github.com/maple-research-lab/LLaDOU](https://github.com/maple-research-lab/LLaDOU)
+
+## fast-dLLM
+
+[谷歌之后，英伟达入局扩散大语言模型，Fast-dLLM推理速度狂飙27.6倍](https://mp.weixin.qq.com/s/uR7Bk6YpPGyR8cgN5u2oBw)
 
 # 训练框架
 
@@ -9832,6 +9856,10 @@ item有各种特征，如title、img、id等
 
 [MTGR：美团外卖生成式推荐Scaling Law落地实践](https://mp.weixin.qq.com/s/JiDOqD-ThU0Upp6xnNg3Nw)
 
+[推荐算法(2025.5.29)：美团的生成式推荐落地方案](https://mp.weixin.qq.com/s/hQrLSInDnrO5kgCW8I6gCQ)
+
+[MTGR: Industrial-Scale Generative Recommendation Framework in Meituan](https://www.arxiv.org/pdf/2505.18654v2)
+
 听说是替换了精排
 
 ## 阿里的SORT-Gen（落地）
@@ -11594,6 +11622,12 @@ def init_model_and_transform(model_name, base_model_path):
     transform.tokenizer.padding = True
     return model, transform
 ```
+
+
+## 百度召回
+
+[搜索广告召回的生成式革新](https://mp.weixin.qq.com/s/q4-KJvmroyIAlDtjtRMKIw)
+
 # O1
 
 ## CoT开山之作
@@ -12636,15 +12670,6 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 [Not All Correct Answers Are Equal: Why Your Distillation Source Matters](https://arxiv.org/abs/2505.14464)
 
 2个数据集：[a-m-team/AM-Thinking-v1-Distilled](https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled)和[a-m-team/AM-Qwen3-Distilled](https://huggingface.co/datasets/a-m-team/AM-Qwen3-Distilled)
-
-
-## LLaDOU
-
-[与Gemini Diffusion共振！首个扩散式「发散思维链」来了](https://mp.weixin.qq.com/s/ENbw02E9JXbXwggA5vC02w)
-
-[Reinforcing the Diffusion Chain of Lateral Thought with Diffusion Language Models](https://arxiv.org/abs/2505.10446)
-
-[https://github.com/maple-research-lab/LLaDOU](https://github.com/maple-research-lab/LLaDOU)
 
 ## 小结
 

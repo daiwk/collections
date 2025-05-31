@@ -1041,15 +1041,6 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 
 2个数据集：[a-m-team/AM-Thinking-v1-Distilled](https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled)和[a-m-team/AM-Qwen3-Distilled](https://huggingface.co/datasets/a-m-team/AM-Qwen3-Distilled)
 
-
-## LLaDOU
-
-[与Gemini Diffusion共振！首个扩散式「发散思维链」来了](https://mp.weixin.qq.com/s/ENbw02E9JXbXwggA5vC02w)
-
-[Reinforcing the Diffusion Chain of Lateral Thought with Diffusion Language Models](https://arxiv.org/abs/2505.10446)
-
-[https://github.com/maple-research-lab/LLaDOU](https://github.com/maple-research-lab/LLaDOU)
-
 ## 小结
 
 [从ReFT, Kimi K1.5到DeepSeek R1，聊聊Reasoning Model的精巧实现](https://mp.weixin.qq.com/s/yaBMe-XOlINOBg6_CL0vEw)

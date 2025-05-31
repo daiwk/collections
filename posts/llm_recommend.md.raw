@@ -916,6 +916,10 @@ item有各种特征，如title、img、id等
 
 [MTGR：美团外卖生成式推荐Scaling Law落地实践](https://mp.weixin.qq.com/s/JiDOqD-ThU0Upp6xnNg3Nw)
 
+[推荐算法(2025.5.29)：美团的生成式推荐落地方案](https://mp.weixin.qq.com/s/hQrLSInDnrO5kgCW8I6gCQ)
+
+[MTGR: Industrial-Scale Generative Recommendation Framework in Meituan](https://www.arxiv.org/pdf/2505.18654v2)
+
 听说是替换了精排
 
 ## 阿里的SORT-Gen（落地）
@@ -2678,3 +2682,9 @@ def init_model_and_transform(model_name, base_model_path):
     transform.tokenizer.padding = True
     return model, transform
 ```
+
+
+## 百度召回
+
+[搜索广告召回的生成式革新](https://mp.weixin.qq.com/s/q4-KJvmroyIAlDtjtRMKIw)
+
