@@ -1045,6 +1045,12 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 
 [https://github.com/RUCAIBox/Slow_Thinking_with_LLMs](https://github.com/RUCAIBox/Slow_Thinking_with_LLMs)
 
+## Embedded
+
+[大模型推理的“左右脑”革命！华为盘古Embedded凭昇腾之力，让快慢思考合二为一](https://mp.weixin.qq.com/s/Eem1OYzEE1sM1-MWqsfcpA)
+
+[Pangu Embedded: An Efficient Dual-system LLM Reasoner with Metacognition](https://arxiv.org/abs/2505.22375)
+
 ## 小结
 
 [从ReFT, Kimi K1.5到DeepSeek R1，聊聊Reasoning Model的精巧实现](https://mp.weixin.qq.com/s/yaBMe-XOlINOBg6_CL0vEw)
@@ -1322,6 +1328,14 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 [Visual Planning: Let’s Think Only with Images](https://arxiv.org/pdf/2505.11409)
 
 [https://github.com/yix8/VisualPlanning](https://github.com/yix8/VisualPlanning)
+
+## DeepEyes
+
+[OpenAI未公开的o3「用图思考」技术，被小红书、西安交大尝试实现了](https://mp.weixin.qq.com/s/yyfeEmxmIaA7Qu5raGVHyA)
+
+[DeepEyes: Incentivizing "Thinking with Images" via Reinforcement Learning](https://arxiv.org/abs/2505.14362)
+
+[https://github.com/Visual-Agent/DeepEyes](https://github.com/Visual-Agent/DeepEyes)
 
 # deep research
 
