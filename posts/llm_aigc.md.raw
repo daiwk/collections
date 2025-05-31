@@ -1414,7 +1414,7 @@ PLM（pretrained language models），即bert等
 
 + [Foundation Models for Natural Language Processing -- Pre-trained Language Models Integrating Media](https://github.com/daiwk/collections/blob/master/assets/LLM/foundation%20models%20NLP.pdf)
 + [大规模语言模型：从理论到实践](../assets/LLM/LLM-TAP.pdf)，[Pre-trained Models for Natural Language Processing: A Survey](https://arxiv.org/pdf/2003.08271.pdf)邱锡鹏等
-+ 人大的大模型综述：[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)，[自己存了一份pdf](https://github.com/daiwk/collections/blob/master/assets/LLM/LLM_Survey_Chinese.pdf)，（**！！！本文大部分内容按这个来组织！！！**）
++ 人大的大模型综述：[https://github.com/RUCAIBox/LLMSurvey](https://github.com/RUCAIBox/LLMSurvey)，[自己存了一份pdf](https://github.com/daiwk/collections/blob/master/assets/LLM/LLM_Survey_Chinese.pdf)，（**！！！本文大部分内容按这个来组织！！！**），出书和课件了：[https://llmbook-zh.github.io/](https://llmbook-zh.github.io/)
 + [Talking about large language models](https://arxiv.org/pdf/2212.03551.pdf)
 + [Pre-train, prompt, and predict: A systematic survey of prompting methods in natural language processing](https://arxiv.org/pdf/2107.13586.pdf)，引用数2k+
 + [A comprehensive survey on pretrained foundation models: A history from BERT to chatgpt](https://arxiv.org/pdf/2302.09419.pdf)，唐杰等
@@ -12694,6 +12694,10 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 [Not All Correct Answers Are Equal: Why Your Distillation Source Matters](https://arxiv.org/abs/2505.14464)
 
 2个数据集：[a-m-team/AM-Thinking-v1-Distilled](https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled)和[a-m-team/AM-Qwen3-Distilled](https://huggingface.co/datasets/a-m-team/AM-Qwen3-Distilled)
+
+## STILL系列
+
+[https://github.com/RUCAIBox/Slow_Thinking_with_LLMs](https://github.com/RUCAIBox/Slow_Thinking_with_LLMs)
 
 ## 小结
 
