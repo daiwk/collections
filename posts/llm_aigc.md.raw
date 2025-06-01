@@ -4976,17 +4976,25 @@ MoE架构：
 
 ### 预训练
 
-Qwen2.5是在18万亿个token上进行预训练的，而Qwen3使用的数据量几乎是其两倍，达到了约36万亿个token，涵盖了119种语言和方言。
+数据：
+
++ 数据规模：Qwen2.5是在18万亿个token上进行预训练的，而Qwen3使用的数据量几乎是其两倍，达到了约36万亿(36T)个token，涵盖了119种语言和方言。
++ 合成数据：
+    + 先使用Qwen2.5-VL对大量类似PDF的文档进行文本识别。再利用Qwen2.5对识别出的文本进行优化以提升其质量。获得了额外的总量达数万亿tokens 的高质量文本。
+    + 使用Qwen2.5、Qwen2.5-Math和Qwen2.5-Coder等模型合成了多种形式的文本token，包括教材、问答对、指令和代码片段等，覆盖数十个领域，总量达到数万亿tokens。
 
 预训练过程分为三个阶段。
 
-+ 第一阶段：模型在超过30万亿个token上进行了预训练，上下文长度为4Ktoken。这一阶段为模型提供了基本的语言技能和通用知识。
-+ 第二阶段：通过增加知识密集型数据（如STEM、编程和推理任务）的比例来改进数据集，随后模型又在额外的5万亿个token上进行了预训练。
-+ 第三阶段：使用高质量的长上下文数据将上下文长度扩展到32Ktoken，确保模型能够有效地处理更长的输入。
++ general stage：各Qwen3的模型都在超过30T个token上进行了预训练，序列长度为**4K token**，为模型提供了基本的语言技能和通用知识。
++ reasoning stage：通过增加如STEM、编程和推理任务的数据比例来改进数据集，在这额外的5T个token上进行了预训练。
++ long context stage：使用高质量的长上下文数据将序列长度扩展到**32K token**，确保模型能够有效地处理更长的输入。
+    + 数据集里有75%的长度是16384~32768，剩下的25%是4096~16384
+    + 通过ABF技巧([Effective long-context scaling of foundation models](https://arxiv.org/abs/2309.16039))，将RoPE的base频率从10000增加到1000000
+    + 使用YARN（[YaRN: Efficient context window extension of large language models](https://arxiv.org/abs/2309.00071)）和DCA(Dual Chunk Attention, [Training-free long-context scaling of large language models](https://arxiv.org/abs/2402.17463))，在推理阶段的序列长度capacity达到了4倍的增加
 
-效果：
+预训练效果：
 
-+ Qwen3 Dense基础模型的整体性能与参数更多的Qwen2.5基础模型相：Qwen3-1.7B/4B/8B/14B/32B-Base分别与Qwen2.5-3B/7B/14B/32B/72B-Base表现相当。特别是在STEM、编码和推理等领域，Qwen3 Dense基础模型的表现甚至超过了更大规模的Qwen2.5模型。
++ Qwen3 Dense基础模型的整体性能与参数更多的Qwen2.5基础模型相当：Qwen3-1.7B/4B/8B/14B/32B-Base分别与Qwen2.5-3B/7B/14B/32B/72B-Base表现相当。特别是在STEM、编码和推理等领域，Qwen3 Dense基础模型的表现甚至超过了更大规模的Qwen2.5模型。
 + Qwen3 MoE基础模型在仅使用10%激活参数的情况下，达到了与Qwen2.5 Dense基础模型相似的性能，带来了训练和推理成本的显著节省。
 
 ### 后训练
