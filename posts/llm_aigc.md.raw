@@ -226,6 +226,50 @@ GPU的显存分成两部分：
 + H2D：host to device，从cpu拷贝到gpu
 + D2H：device to host，从gpu拷贝到cpu
 
+### 一些注意点
+
+
+F是理论flops, B是理论访存bandwidth
+
+延时=max(2mkn/F, (mk+kn+mn)/B)
+
+如果是方阵m=n=k,xxx
+
+==>越长条形的矩阵越容易进入访存bound
+
+x=F/B
+
+如果一个模型算出来的x比上面这个x小,那一定是访存 bound，没必要优化
+
+美国的芯片禁令主要是减小带宽
+
+要优化mfu：
+1. 让它是计算bound
+2. 加快通信
+
+流水线：
+
+计算和通信是2个不同硬件，算一半就通信一半，通信的时候并行算另一半，xxx
+
+tensor core：专门算矩阵乘
+cuda core：算特征函数，例如exp，elementwise乘
+
+
+华为卡：算dropout很挫,模型里尽量不要有这个算子
+
+因为dropout的随机数发生器，底层是用cuda core里的计算，但华为有一个指令没在底层支持，所以后来专门搞了一个芯片来产生随机数，但这样就有带宽问题
+
+
+flash-attn的核心：搬到sram上
+
+==>L和D的关系，决定fa的收益
+
+
+triton最简单的是做fuse，即节省访存
+
+pytorch的compile会自己fuse
+
+
 ## Transformer加速
 
 ### lightseq
