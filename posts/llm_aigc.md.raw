@@ -1392,6 +1392,9 @@ EDD是如下的**写评估->做改动->跑评估->整合改进**的循环，确�
 
 [AI开源狂飙，OpenAI们慌了！GenAI大洗牌，2025趋势深度解读](https://mp.weixin.qq.com/s/h47YCdzC9hUk64Sr3IBHlg)
 
+[硅谷今夜集体失眠！互联网女皇340页AI报告猛料刷屏，大佬熬夜头秃](https://mp.weixin.qq.com/s/QqWM36GvUc8FwS2FqYmk-w)
+
+[AI 推理成本暴跌，「互联网女皇」 Mary Meeker 从中看到了什么？](https://mp.weixin.qq.com/s/Iy2PxBLtE6n3EOI_vjdOcQ)
 
 # LLM概述
 
@@ -4364,6 +4367,12 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [https://github.com/OpenSparseLLMs/Linear-MoE](https://github.com/OpenSparseLLMs/Linear-MoE)
 
+## 记忆能力
+
+[最新发现！每参数3.6比特，语言模型最多能记住这么多](https://mp.weixin.qq.com/s/DAoNui-_u0IlBjHl16wn-g)
+
+[How much do language models memorize?](https://arxiv.org/pdf/2505.24832)
+
 # Gemmini&Gemma系列
 
 ## Gemini 1.0
@@ -5289,6 +5298,11 @@ QwenLong-L1：
     + 模型评判：用Qwen2.5-1.5B-Instruct作为轻量级评判模型，评估预测答案和标准答案之间语义等价性。
     + 组合策略：取规则与模型评判的最大值，兼顾精确性与答案多样性。
 
+## token entropy
+
+[Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning](http://arxiv.org/pdf/2506.01939)
+
+推理能力的提升仅由高熵词贡献
 
 # Kimi系列
 
@@ -5312,6 +5326,44 @@ QwenLong-L1：
 [Kimi 16B胜GPT-4o！开源视觉推理模型：MoE架构，推理时仅激活2.8B](https://mp.weixin.qq.com/s/EsjsqnInCOJpU9SpJgyoOA)
 
 
+# 其他一些公司
+
+## 快手的AutoThink
+
+[DeepSeek-V3 & R1合体了？ 快手开源"Auto Think"大模型，根据问题自动调节思考深度](https://mp.weixin.qq.com/s/EcH4GMRtVkvGByonRU5H-Q)
+
+[https://huggingface.co/Kwaipilot/KwaiCoder-AutoThink-preview](https://huggingface.co/Kwaipilot/KwaiCoder-AutoThink-preview)
+
+### 冷启
+
+&nbsp;
+
+采用Agentic的流程设计，基于训练数据Query，为其构建其优势模式下的Response，构建多样化AutoThink冷启动数据，让模型适应AutoThink的数据形式，并指导其挖掘自身优势场景。即使通过非思考模型，也能获得高质量的带有思考过程的推理数据。
+
+![](../assets/auto-think-coldstart.png)
+
+### Reasoning RL
+
+&nbsp;
+
++ 采用动态调整context length的方式，提升RL的效率：在训练初期先用16K的最大回复长度，在训练过程中通过观察模型回复的截断概率，逐步扩大其回复长度限制，最终扩展至32K。
++ 采用了大的batchsize和rollout个数，利用off-policy的更新策略来进一步提升模型的训练效率。在训练过程中会动态地丢弃“过于简单”的样本，来保证batch内有效梯度样本的数量，如在SRPO论文([SRPO: A Cross-Domain Implementation of Large-Scale Reinforcement Learning on LLM](https://arxiv.org/pdf/2504.14286))
++ 为了平衡模型的探索-利用，通过训练时的熵值来调整KL-Loss的约束力度以及off-policy更新时模型的clip范围，进一步加速模型收敛。
+
+### Step-SRPO
+
+&nbsp;
+
+由于GRPO**缺乏可解释的过程监督信号**，导致我们在训练过程中出现了一系列不稳定现象，比如模型认为应该开启think模式却选择了不进行思考，以及对于一些代码/数学题，哪怕问题比较简单也会选择开启思考模式。
+
+面对这些问题，我们基于传统GRPO强化学习算法开发出了面向**带有中间过程**的Step-SRPO强化学习算法，对**不同的token根据未来期望收益使用不同的优势计算函数**。发现
+
++ 不仅模型判断的准确性提升了，同时思考能力和非思考性能都有大幅上升。
++ 在模型能力上升的同时，模型选择不开启思考模式的比例也在不断上升，模型回答的token数量也随之不断减少。
+
+从而实现了在控制推理资源消耗的同时，提升了模型的整体表现，达成性能与成本的最优协同。
+
+同时也观察到，对于有些榜单，即使模型没有开启思考模式，在这种强化学习过程之后，开启思考模式的比例大幅下降同时，模型性能仍然保持了比强化学习之前更高的基准。
 
 # mamba-transformer混合
 
@@ -5486,6 +5538,12 @@ XXX
 [12秒生成1万token！谷歌推出文本「扩散模型」Gemini Diffusion，研究员：演示都得降速看](https://mp.weixin.qq.com/s/paesPiFQgIMuKXCJusvjqg)
 
 
+## LLaDA
+
+[冲击自回归，扩散模型正在改写下一代通用模型范式](https://mp.weixin.qq.com/s/c-YllEX2BlhmDfPjPRU2vQ)
+
+[Large Language Diffusion Models](https://arxiv.org/abs/2502.09992)
+
 ## LLaDOU
 
 [与Gemini Diffusion共振！首个扩散式「发散思维链」来了](https://mp.weixin.qq.com/s/ENbw02E9JXbXwggA5vC02w)
@@ -5513,6 +5571,10 @@ XXX
 
 [Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents](https://arxiv.org/abs/2505.22954)
 
+哥德尔机：Jürgen Schmidhuber数十年前提出的构想，让AI通过重写自身代码（包括负责学习的代码）来实现自我改进。当它在数学上证明存在更优策略时，它会通过递归地重写自身代码来优化问题解决方案，因此成为元学习（即「学会学习」）领域的核心概念。虽然理论上的哥德尔机能确保可证明的良性自我修改，但其实现依赖于一个不切实际的假设：AI必须能**在数学上证明代码修改会带来净效益才会实施变更**。
+
+DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不断扩增的智能体库**。该系统通过交替执行自我修改与下游任务评估的方式，**持续创建新智能体**并对其进行评分。
+
 ## SRT
 
 [Can Large Reasoning Models Self-Train?](https://arxiv.org/abs/2505.21444)
@@ -5523,7 +5585,21 @@ XXX
 
 ## MM-UPT
 
-[Unsupervised Post-Training for Multi-Modal LLM Reasoning via GRPO]()# 训练框架
+[Unsupervised Post-Training for Multi-Modal LLM Reasoning via GRPO](https://arxiv.org/abs/2505.22453)
+
+[https://github.com/waltonfuture/MM-UPT](https://github.com/waltonfuture/MM-UPT)
+
+在完全无监督场景下，通过强化学习框架 GRPO 实现多模态大模型的持续自我改进。无需任何外部监督信号或真实答案，使得模型可以基于自身的「共识」行为进行强化学习，从而实现持续的性能提升。
+
++ 强化学习中的GRPO提供了稳定高效的在线策略优化能力；
++ 多数投票可以在无标签数据上为模型输出生成伪标签，驱动自我优化。
+
+流程：
+
++ 给定一张图片和一个问题，模型生成多个候选回答；
++ 使用多数投票选出出现频率最高的回答，作为当前输入的「伪标签」；
++ 使用这个「伪标签」来计算 reward，引导模型根据 GRPO 策略更新；
+# 训练框架
 
 mfu(Model Flops Utilization)模型算力利用率是分布式训练效率的优化目标。
 
@@ -10025,7 +10101,7 @@ item有各种特征，如title、img、id等
 
 [sigir‘25「华为」统一召回+排序框架](https://mp.weixin.qq.com/s/eKU_AlffGR1Lx_wQspuLpQ?poc_token=HEPlGGijUUqAuU1VTCkeSPkWDfZG99B1eN5xtLkh)
 
-## 美团的MTGR
+## 美团的MTGR（落地）
 
 [MTGR：美团外卖生成式推荐Scaling Law落地实践](https://mp.weixin.qq.com/s/JiDOqD-ThU0Upp6xnNg3Nw)
 
@@ -10049,11 +10125,18 @@ item有各种特征，如title、img、id等
 
 纯价值驱动的列表生成可能有同质化的风险，导致多样性降低。引入相似度惩罚：
 
-## 小红书的RankGPT
+## 小红书的RankGPT（落地）
 
 [小红书RankGPT:推荐系统生成式精排的落地实践](https://mp.weixin.qq.com/s/2D31iyO07DNdTBPdHp-3Qw)
 
 [Towards Large-scale Generative Ranking](https://arxiv.org/abs/2505.04180)
+
+## 美团的UniROM（落地）
+
+[美团UniROM:广告End2End全链路生成式建模范式](https://mp.weixin.qq.com/s/GfuxMwprP5TVSUTBl7Wc6w)
+
+[One Model to Rank Them All: Unifying Online Advertising with End-to-End Learning](https://arxiv.org/abs/2505.19755)
+
 
 # LLM+推荐：输入文本
 
@@ -10318,7 +10401,7 @@ XXX
 [小红书 NoteLLM-2：用于推荐的多模态表征](https://mp.weixin.qq.com/s/kVLHdFdHXGVsDbLQJrDTXQ)
 
 
-## Google的2个LLM
+## Google的2个LLM（落地）
 
 [谷歌短视频推荐:用户反馈对齐的LLM用于新颖推荐](https://mp.weixin.qq.com/s/ff34lzbbTVREQG6FSpdgeg)
 
@@ -10432,6 +10515,14 @@ Sequence-In-Set-Out：其实就是把```[UM]```的输出拆成H个，每个去�
 最终sft的时候计算UM的loss和LM的loss，即图中的item和文本的loss
 
 ![](../assets/urm-prompt.png)
+
+## Spotify的LLM Preview生成
+
+[Transforming Podcast Preview Generation: From Expert Models to LLM-Based Systems](https://arxiv.org/pdf/2505.23908)
+
+[推荐算法(2025.6.3)：Spotify的LLM应用，效果明显](https://mp.weixin.qq.com/s/2SJ5IdXa5Hmygx8VxGlDcQ)
+
+
 
 ## 蚂蚁的SLIM（没落地）
 
@@ -11341,6 +11432,22 @@ XXX
 + 首个工业级自动化内容判别解决方案：KuaiMod是首个在工业场景下验证了部署价值的自动化内容质量判别解决方案，在快手平台多个场景下的部署结果表明，KuaiMod方案具有能够与人工判别相媲美的准确率。
 + 基于用户反馈的强化学习训练+更新策略：区别于静态的规则或内容判别API，基于判例的劣质内容建模使得KuaiMod可以通过迭代训练数据完成判别策略的更新。为了保证实时性和准确率，我们设计了基于用户反馈的强化学习范式，利用用户的线上反馈构造新的训练数据，实现线上判别服务的天级更新。
 
+## GPSD
+
+[Scaling Transformers for Discriminative Recommendation via Generative Pretraining](https://arxiv.org/pdf/2506.03699)
+
++ 生成式预训练：使用Transformer架构，基于用户行为序列进行自回归生成训练，预测下一项。
++ 判别式训练：使用上面训练的Transformer，输入除了用户行为序列、候选项，还包括其他特征，输出分类概率。
+
+提出五种参数转移策略：
+
++ 无转移（NT）：从头训练，作为基线。
++ 全转移（FT）：转移所有参数（稀疏+密集）。
++ 稀疏转移（ST）：仅转移稀疏参数（如嵌入表）。
++ 全转移+稀疏冻结（FT&SF）：转移所有参数并冻结稀疏参数。
++ 稀疏转移+稀疏冻结（ST&SF）：转移稀疏参数并冻结。
+
+![](../assets/gpsd.png)
 
 # LLM+推荐小结
 
@@ -12853,6 +12960,44 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 [大模型推理的“左右脑”革命！华为盘古Embedded凭昇腾之力，让快慢思考合二为一](https://mp.weixin.qq.com/s/Eem1OYzEE1sM1-MWqsfcpA)
 
 [Pangu Embedded: An Efficient Dual-system LLM Reasoner with Metacognition](https://arxiv.org/abs/2505.22375)
+
+## CoM
+
+[微软等提出「模型链」新范式，与Transformer性能相当，扩展性灵活性更好](https://mp.weixin.qq.com/s/UFqC41KYaE3h6KnbLw5iXQ)
+
+[Chain-of-Model Learning for Language Model](https://arxiv.org/pdf/2505.11820)
+
++ CoR（Chain-of-Representation，表征链）：任何表征总是可以看作是隐藏维度上多个子表征的组合。每个子表征对应一条链。通过使用不同数量的前导链（preceding chains），其对应的特征可以用来编码不同的知识（称之为 scale）
++ CoL（Chain-of-layer，链式层）：在不同尺度之间引入因果依赖关系，确保每个尺度只能使用其前面尺度的信息。
++ CoLM（语言模型链）：将CoL的思想应用于 Transformer 的每一层，重新构建了语言模型架构
++ CoLM-Air：在注意力模块中进一步引入了键值共享机制，该机制要求所有键和值都在第一个链中进行计算
+
+![](../assets/cor.png)
+
+## ProRL
+
+[英伟达揭示RL Scaling魔力！训练步数翻倍=推理能力质变，小模型突破推理极限](https://mp.weixin.qq.com/s/RmeTW83hjTQYJLpl435o6A)
+
+[ProRL: Prolonged Reinforcement Learning Expands Reasoning Boundaries in Large Language Models](https://arxiv.org/pdf/2505.24864)
+
+[https://huggingface.co/nvidia/Nemotron-Research-Reasoning-Qwen-1.5B](https://huggingface.co/nvidia/Nemotron-Research-Reasoning-Qwen-1.5B)
+
+将RL训练步数从传统的几百步大幅提升至2000步以上，释放了小模型潜藏的巨大潜力
+
++ **多样化可验证奖励任务**：引入了数学、编程、科学问答（STEM）、逻辑谜题、指令遵循等多领域数据，这些任务具有程序化可验证的正确答案，为RL训练提供了可靠、客观的监督信号，不再依赖「易被骗」的奖励模型。
++ **GRPO+DAPO**：在GRPO框架基础上，融合DAPO关键的**解耦裁剪**（Decoupled Clipping）来避免策略更新失衡，以及**动态采样**（Dynamic Sampling）来过滤掉「太容易」或「完全不会」的无效样本，提升训练效率。
++ **KL正则+周期性参考策略重置**：
+  + 与一些去KL正则的做法相反，本论文发现**适度KL惩罚**是稳定训练的关键。
+  + 引入**参考策略重置**机制：当KL骤增或性能下滑时，**重置参考策略为当前模型副本，并重置优化器**，让训练「重启」。这个简单机制有效打破训练停滞，使模型持续进化。
+
+## TALE
+
+[ACL 2025 | 基于Token预算感知的大模型高效推理技术](https://mp.weixin.qq.com/s/ErKi3J41U33C-TzMgHmXPw)
+
+[Token-Budget-Aware LLM Reasoning](https://arxiv.org/pdf/2412.18547)
+
+[https://github.com/GeniusHTX/TALE](https://github.com/GeniusHTX/TALE)
+
 
 ## 小结
 
