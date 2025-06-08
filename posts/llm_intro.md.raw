@@ -80,6 +80,41 @@
 
 上半场的参与者在解决视频游戏和考试，充满了渐进式的方法和模型，而下半场的参与者可以通过构建有用的产品来建立价值数十亿甚至数千亿美元的公司，使用通用方案会轻易击败渐进式方法，除非你创造出打破方案的新假设。
 
+## 如何持续地评估AI产品
+
+[姚顺雨提到的「AI下半场」，产品评估仍被误解](https://mp.weixin.qq.com/s/ToqvRCuBXrDkNUH1Pe1Jfw)
+
+[https://eugeneyan.com/writing/eval-process/](https://eugeneyan.com/writing/eval-process/)
+
+总有人以为再加个工具、添个指标，或者让大语言模型当裁判（LLM-as-judge），就能解决问题拯救产品。这根本是在回避核心问题，逃避真正该做的工作。评估并非一劳永逸，也不是什么快速起效的方法——它是**运用科学方法的持续实践**，是评估驱动开发，是AI输出的持续监测。
+
+构建产品评估体系，本质上是一个**不断提问、实验和分析的循环**。
+
+![](../assets/ai-product-cycle.png)
+
++ **观察数据**：审视输入内容、AI输出结果，以及用户与系统的交互情况。数据会告诉我们系统哪里运转良好，更重要的是，哪里会出问题。发现这些故障模式才是有效改进的起点。
++ **标注数据**：优先处理问题输出。这意味着要**对成功和失败的样本进行标记**，建立**平衡且有代表性的数据集**。理想情况下，正负样本应该五五开，并覆盖各类输入场景。这个数据集将成为针对性评估的基础，帮我们追踪已发现问题的改进情况。
++ **提出假设**：为什么会出现这个错误？可能是RAG检索没返回相关上下文，也可能是模型处理复杂（有时自相矛盾）的指令时力不从心。通过分析检索文档、推理轨迹和错误输出等数据，我们能确定要优先修复的问题以及要验证的假设。
++ **设计实验验证假设**：比如重写提示词、更新检索组件或切换不同模型。好的实验要能明确验证假设是否成立，最好还设置基线对照组进行比较。
++ **测量(measure)和错误分析**：这不同于随意的感觉判断，**必须量化**实验改动是否真有效果：准确率提升了吗？缺陷减少了吗？新版本在对比测试中表现更优吗？无法量化的改进根本不算改进。
++ **实验成功就应用更新，失败就继续迭代**。
+
+评估驱动的开发（Eval-driven development，EDD）：开发AI功能前，先通过产品评估**定义成功标准**，确保从第一天就有**明确目标**和**可衡量的指标**。
+
+**评估指引开发方向**。我们先评估基线（比如简单提示词）获取基准数据。之后每个提示词调整、系统更新和迭代都要评估：简化提示词提升了准确性吗？检索更新增加了相关文档召回率吗？还是反而让效果变差了？
+
+EDD是如下的**写评估->做改动->跑评估->整合改进**的循环，确保了可衡量的改进，建立的不是模糊的直觉判断，而是扎根于软件工程实践的反馈闭环。
+
+![](../assets/edd.png)
+
+自动化评估工具（LLM-as-judge）也离不开**人工监督**。如果我们不主动审查AI输出和用户反馈，再多自动评估工具也救不了产品。
+
+要评估和监测 AI 产品，通常需要**采样输出**并**标注质量缺陷**。有了足够多高质量标注数据，我们就能**校准自动评估工具**，使其与人类判断一致。这可能涉及测量二元标签的召回率/准确率，或通过两两比较决定输出之间的相关性。校准后的评估工具能有效扩展AI系统的持续监测能力。
+
+但自动评估工具不能取代人工监督。我们仍需要定期采样、标注数据，分析用户反馈。理想情况下，我们应该设计能够**通过用户交互获取隐式反馈**的产品。不过，显式反馈虽然不那么频繁，偶尔也会有偏见，但也很有价值。**自动化评估工具本质上是人工标注与反馈流程的放大器。**
+
+![](../assets/auto-monitor.png)
+
 ## 趋势
 
 [AI开源狂飙，OpenAI们慌了！GenAI大洗牌，2025趋势深度解读](https://mp.weixin.qq.com/s/h47YCdzC9hUk64Sr3IBHlg)
@@ -3258,12 +3293,6 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 [一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
 
-## AlphaEvolve
-
-[打破56年数学铁律！谷歌AlphaEvolve自我进化实现算法效率狂飙，堪比AlphaGo“神之一手”](https://mp.weixin.qq.com/s/1bDOTjyuBRfR2cW8WrZNDQ)
-
-[AlphaEvolve: A coding agent for scientific and algorithmic discovery](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/AlphaEvolve.pdf)
-
 # DeepSeek系列
 
 ## DeepSeek-V2
@@ -4196,3 +4225,42 @@ XXX
 
 [谷歌之后，英伟达入局扩散大语言模型，Fast-dLLM推理速度狂飙27.6倍](https://mp.weixin.qq.com/s/uR7Bk6YpPGyR8cgN5u2oBw)
 
+# 自我进化系列
+
+[LSTM之父22年前构想将成真？一周内AI「自我进化」论文集中发布，新趋势涌现？](https://mp.weixin.qq.com/s/0PPw4t2YCwu-7zrxpjglcA)
+
+## AlphaEvolve
+
+[打破56年数学铁律！谷歌AlphaEvolve自我进化实现算法效率狂飙，堪比AlphaGo“神之一手”](https://mp.weixin.qq.com/s/1bDOTjyuBRfR2cW8WrZNDQ)
+
+[AlphaEvolve: A coding agent for scientific and algorithmic discovery](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/AlphaEvolve.pdf)
+
+
+## Darwin Gödel Machine
+
+[Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents](https://arxiv.org/abs/2505.22954)
+
+## SRT
+
+[Can Large Reasoning Models Self-Train?](https://arxiv.org/abs/2505.21444)
+
+[https://github.com/tajwarfahim/srt](https://github.com/tajwarfahim/srt)
+
+自我奖励训练（Self-Rewarded Training，SRT）。该方法在强化学习训练期间，通过模型生成的多个解决方案之间的一致性来评估正确性，从而在没有标注数据的情况下提供自监督信号。
+
+## MM-UPT
+
+[Unsupervised Post-Training for Multi-Modal LLM Reasoning via GRPO](https://arxiv.org/abs/2505.22453)
+
+[https://github.com/waltonfuture/MM-UPT](https://github.com/waltonfuture/MM-UPT)
+
+在完全无监督场景下，通过强化学习框架 GRPO 实现多模态大模型的持续自我改进。无需任何外部监督信号或真实答案，使得模型可以基于自身的「共识」行为进行强化学习，从而实现持续的性能提升。
+
++ 强化学习中的GRPO提供了稳定高效的在线策略优化能力；
++ 多数投票可以在无标签数据上为模型输出生成伪标签，驱动自我优化。
+
+流程：
+
++ 给定一张图片和一个问题，模型生成多个候选回答；
++ 使用多数投票选出出现频率最高的回答，作为当前输入的「伪标签」；
++ 使用这个「伪标签」来计算 reward，引导模型根据 GRPO 策略更新；
