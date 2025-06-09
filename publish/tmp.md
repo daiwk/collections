@@ -27,7 +27,7 @@ dense架构和Qwen2.5类似，
 
 + 有GQA、SwiGLU、Rope和pre-normalization的RMSNorm等，
 + 删掉了Qwen2中的QKV-bias
-+ 引入QK-Nomr，保证训练稳定
++ 引入QK-Norm，保证训练稳定
 
 MoE架构：
 
@@ -55,7 +55,7 @@ MoE架构：
 + general stage：各Qwen3的模型都在超过30T个token上进行了预训练，序列长度为**4K token**，为模型提供了基本的语言技能和通用知识。
 + reasoning stage：通过增加如STEM(science/technology/engineering/mathematics)、编程和推理任务的数据比例来改进数据集，在这额外的5T个token上进行了预训练。
 + long context stage：使用高质量的长上下文数据将序列长度扩展到**32K token**，确保模型能够有效地处理更长的输入。
-    + 数据集里有75%的长度是16384~32768，剩下的25%是4096~16384
+    + 数据集里有75%的长度是16384到32768之间，剩下的25%是4096到16384之间
     + 通过ABF技巧([Effective long-context scaling of foundation models](https://arxiv.org/abs/2309.16039))，将RoPE的base频率从10000增加到1000000
     + 使用YARN（[YaRN: Efficient context window extension of large language models](https://arxiv.org/abs/2309.00071)）和DCA(Dual Chunk Attention, [Training-free long-context scaling of large language models](https://arxiv.org/abs/2402.17463))，在推理阶段的序列长度capacity达到了4倍的增加
 
