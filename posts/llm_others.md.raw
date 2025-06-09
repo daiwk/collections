@@ -65,7 +65,12 @@
 
 ## ABKD
 
-[ABKD: Pursuing a Proper Allocation of the Probability Massin Knowledge Distillation via α-β-Divergence](https://arxiv.org/pdf/2505.04560) ICML 2025 spotlight
+
+[ICML Spotlight 2025丨追求概率质量的帕累托最优：基于广义α-β散度引导的知识蒸馏框架ABKD](https://mp.weixin.qq.com/s/UwRwDJJxWrS-9mVoHSUPDQ)
+
+[ABKD: Pursuing a Proper Allocation of the Probability Massin Knowledge Distillation via α-β-Divergence](https://arxiv.org/pdf/2505.04560)
+
+[https://github.com/ghwang-s/abkd](https://github.com/ghwang-s/abkd)
 
 现有问题：
 
@@ -73,8 +78,6 @@
 + 反向KL：概率分配过于“内卷”，学生“死磕”高置信度类，忽略教师全局信息
 
 ABKD引入α-β散度，统一前向/反向KL，并推广到此前未探索的海灵格距离和β-散度等。
-
-[https://github.com/ghwang-s/abkd](https://github.com/ghwang-s/abkd)
 
 
 # LLM+math
