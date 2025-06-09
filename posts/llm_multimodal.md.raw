@@ -1081,6 +1081,12 @@ DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视�
 
 完全无需重新训练模型的视频生成加速方法。通过挖掘注意力机制中的空间与时间稀疏性，配合自适应稀疏选择与算子优化，成功将推理时间减半。
 
+## AdaCM2
+
+[CVPR 2025 Highlight｜AdaCM2：首个面向超长视频理解的跨模态自适应记忆压缩框架](https://mp.weixin.qq.com/s/6UEwXmHa25mu7W8FIE5ZFg)
+
+[AdaCM2: On Understanding Extremely Long-Term Video with Adaptive Cross-Modality Memory Reduction](https://arxiv.org/pdf/2411.12593)
+
 ## 其他
 
 [扩散模型与文生视频](https://mp.weixin.qq.com/s/Bh3Gg7FCDpb_AmGEFkxQ2A)
