@@ -11946,6 +11946,24 @@ def init_model_and_transform(model_name, base_model_path):
 
 [搜索广告召回的生成式革新](https://mp.weixin.qq.com/s/q4-KJvmroyIAlDtjtRMKIw)
 
+## Qwen3-emb
+
+[Qwen3 Embedding: Advancing Text Embedding and Reranking Through Foundation Models](https://arxiv.org/pdf/2506.05176)
+
+### 架构
+
+![](../assets/qwen3-emb-arch.png)
+
+### 训练
+
+![](../assets/qwen3-emb-train.png)
+
+多阶段训练
+
++ Large-Scale Synthetic Data-Driven Weak Supervision Training：
++ High-Quality Synthetic Data Utilization in Supervised Fine Tuning: 
++ Model Merging: 
+
 # O1
 
 ## CoT开山之作
