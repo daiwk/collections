@@ -1,84 +1,82 @@
-# Qwen3-emb
+## GAVE
 
-[Qwen3 Embedding: Advancing Text Embedding and Reranking Through Foundation Models](https://arxiv.org/pdf/2506.05176)
+[sigir'25「快手」生成式出价-冠军方案｜Generative Auto-Bidding with Value-Guided](https://mp.weixin.qq.com/s/fttTPY6Q30gWaSwcoIpUsA)
 
-## 架构
+[Generative Auto-Bidding with Value-Guided Explorations](https://arxiv.org/pdf/2504.14587)
 
-![](../assets/qwen3-emb-arch.png)
+用序列（Decision Transformer）代替RL，再利用离线强化的方法去弥补没有模拟环境的缺点。DT的一些其他应用：
 
-+ emb模型：
-    + query：输入instruction+query，拿eos对应的emb作为输出
-    + doc：不用instrunction，直接输入doc，拿eos对应的emb作为输出
-+ rerank模型：输入instruction+query和doc，拿如下prompt的输出经过lm head输出yes/no的概率（是否匹配）
++ RAG：[Retrieval-Augmented Decision Transformer: External Memory for In-context RL](https://arxiv.org/pdf/2410.07071)
++ 序列推荐：[Sequential Recommend for Optimizing Both ImmediateFeedback and Long-term Retention](https://arxiv.org/pdf/2404.03637)
++ 重排：[PISDR: Page and Item Sequential Decision for Re-ranking Based on Offline Reinforcement Learning](https://raw.githubusercontent.com/mlresearch/v260/main/assets/yuan25a/yuan25a.pdf)
 
-```
-<|im_start|>system
-Judge whether the Document meets the requirements 
-based on the Query and the Instruct provided. 
-Note that the answer can only be "yes" or "no".<|im_end|>
-<|im_start|>user
-<Instruct>: {Instruction}
-<Query>: {Query}
-<Document>: {Document}<|im_end|>
-<|im_start|>assistant
-<think>\n\n</think>\n\n
-```
+MDP假设是状态独立的，本质上忽略了竞价序列中的**时序依赖**关系。
 
-## 合成数据
+自动出价：一般广告主会设置一个最低ROI（即价值/成本）作为约束，或者说是最大平均成本（CPA，即成本/价值），广告主给定的约束假设是$C$。
 
-数据：多样性，包括多语言、跨语言、多领域、多任务、长/短文本、代码检索
+## DT
 
-数据来源：
+DT的输入(reward, state, action)三元组的序列，输出是预测的action，
 
- + 人工标注数据：搜索(MS MARCO)、qa、MNLI、SNLI等，大概10M
- + 公开领域的弱监督数据：维基百科、redit、arxiv等，大概10亿，放弃了
- + 大模型合成数据：用Qwen3为每个doc生成相关问题，理论上可以构建无限数据
+**注意：对于t时刻来讲，输入的是0到t-1时刻的r+s+a，但只输入了t时刻的r和s**
 
-![](../assets/qwen3-emb-synthetic-data.jpg)
++ $s_t$：历史出价策略、剩余预算、广告的在线时间等
++ $a_t$：出价因子，在广告的value上乘以a，$b_t=a_tv_t$
++ $rw_t$：**t到t+1**所有候选impression的总value，$r w_t=\sum_{n=0}^{N_t} x_{n_t} v_{n_t}$
++ RTG（return to go） $r_t$：现在**到未来**的总收益，$r_t=\sum_{t^{\prime}=t}^T r w_{t^{\prime}}$
 
-+ 根据文档，从一个比较大的角色库（比如大学生、小学生、公务员、商人等）里检索出若干个角色，用llm判断哪些角色适合这个文档，以及他们会问什么类型的问题（keyword/summary/逻辑推理），难度（大学/小学）、长度、语言，生成一个config
-+ 拿角色+文档+config再给llm，生成真实的用户问题
-+ 再用一个预训练好的emb模型先进行检索，过滤掉那些比较低质的数据（例如相似度太低或者根本检索不到相关文档）
+## GAVE
 
-## 训练
+![](../assets/gave.png)
 
-![](../assets/qwen3-emb-train.png)
+预测如下4个值：
 
-多阶段训练
++ 当前时刻的action：$\hat{a}_t$
++ 当前时刻的探索系数：$\hat{\beta}_{t}$，其实是就是在$a_t$前面乘一个$\beta$得到$\tilde{a}_t=\hat{\beta}_t a_t$，然后约束一下$\beta$的范围在0.5到1.5之间（sigmoid(x)+0.5就行）可以减轻OOD(Out-of-Distribution)问题。
 
-+ stage1：Large-Scale Synthetic Data-Driven Weak Supervision Training：
-+ stage2：High-Quality Synthetic Data Utilization in Supervised Fine Tuning: 从合成数据中筛选出高质量数据，以及人工标注的高质量数据
-+ stage3：Model Merging: 对stage2中的多个ckpt进行merge
-
-rerank模型里stage1没啥用，直接用stage2和3，loss是sft的loss，即对yes/no去算交叉熵
-
-embedding模型是3阶段，用一个改进的对比学习来训：
+假设$\tilde{r}_{t+1}$是$\tilde{a}_{t+1}$的RTG，而$\hat{r}_{t+1}$是$a_t$的RTG，定义了如下的w（即$\tilde{r}_{t+1}$比$\hat{r}_{t+1}$大的概率）
 
 $$
-L_{\text {embedding }}=-\frac{1}{N} \sum_i^N \log \frac{e^{\left(s\left(q_i, d_i^{+}\right) / \tau\right)}}{Z_i}
+\left\{\begin{array}{l}
+\left.\left.\tilde{r}_{t+1}=\operatorname{GAVE}\left(r_{t-M}, s_{t-M}, a_{t-M}, \ldots, r_t, s_t, \tilde{a}_t\right)\right)\right) \\
+w_t=\operatorname{Sigmoid}\left(\alpha_r \cdot\left(\tilde{r}_{t+1}-\hat{r}_{t+1}\right)\right)
+\end{array}\right.
 $$
 
-+ 负例：$K$个hard neg $d^{-}_{i,k}$、batch内的其他query $q_j$、batch内的除了正负例的其他doc $d_j$
-+ 计算负样本与query的相似度s1，正样本与query的相似度s2，如果s1比s2大超过一个阈值那就是false negative，即下面的$m_{ij}$
+此外，还加了如下的辅助损失，其中$w'$和$\tilde{a}'$表示的是不更新梯度的$w$和$\tilde{a}$。第一个$L_r$让$\hat{r}_{t+1}$接近真实值，第二个$L_a$表示如果$w_t>0.5$，即$\tilde{r}_{t+1}$比$\hat{r}_{t+1}$大得比较多，第二项占主导，即让预测的action去你和探索的action $\tilde{a}_t'$，反之让预测的action去你和实际的action $a_t$
 
 $$
-Z_i=e^{\left(s\left(q_i, d_i^{+}\right) / \tau\right)}+\sum_k^K m_{i k} e^{\left(s\left(q_i, d_{i, k}^{-}\right) / \tau\right)}+\sum_{j \neq i} m_{i j} e^{\left(s\left(q_i, q_j\right) / \tau\right)}+\sum_{j \neq i} m_{i j} e^{\left(s\left(d_i^{+}, d_j\right) / \tau\right)}
+\left\{\begin{array}{l}
+L_r=\frac{1}{M+1} \sum_{t-M}^t\left(\hat{r}_{t+1}-r_{t+1}\right)^2 \\
+L_a=\frac{1}{M+1} \sum_{t-M}^t\left(\left(1-w_t^{\prime}\right) \cdot\left(\hat{a}_t-a_t\right)^2+w_t^{\prime} \cdot\left(\hat{a}_t-\tilde{a}_t^{\prime}\right)^2\right)
+\end{array}\right.
 $$
 
-其中，
++ 下一时刻的RTG值：$\hat{r}_{t+1}$，其实就是把CPA的约束加到RTG的计算里来：
 
 $$
-m_{i j}= \begin{cases}0 & \text { if } s_{i j}>s\left(q_i, d_i^{+}\right)+0.1 \text { or } d_j==d_i^{+} \\ 1 & \text { otherwise, }\end{cases}
+\left\{\begin{array}{l}
+C P A_t=\frac{\sum_i^{I_t} x_i c_i}{\sum_i^{I_t} x_i v_i} \\
+\mathbb{P}\left(C P A_t ; C\right)=\min \left\{\left(\frac{C}{C P A_t}\right)^\gamma, 1\right\} \\
+S_t=\mathbb{P}\left(C P A_t ; C\right) \cdot \sum_i^{I_t} x_i v_i \\
+r_t=S_T-S_{t-1}
+\end{array}\right.
 $$
 
-训练时的策略：
++ 下一时刻的价值分：$\hat{V}_{t+1}$
 
-+ 动态batchsize：训练数据长度不同，能接收的最大batchsize不同，所以对于不同长度用的bs不一样
-+ gradient checkpointing：将大的bs切成小的sub-bs，先计算每个sub-bs的emb，因为gradient checkpointing不保存梯度，所以这个时候可以merge，merge完后再计算梯度
-+ 训练的时候带了MRL loss
+目标是如何高效探索，用了一个expectile regression(IQL里的思想，[Offline Reinforcement Learning with Implicit Q-Learning](https://arxiv.org/abs/2110.06169))，如下，其中$L_2^\tau(y-m(x))$是一个loss函数，用模型$m(x)$来预测$y$的分位数$\tau \in (0,1)$，$\tau=0.85$就是让预估价值$\hat{V}_{t+1}$去预测top百分之85的reward $r_{t+1}$
 
-模型融合原理：多个ckpt，可能分别擅长不同的task，通过对模型参数的线性/球面插值，可以merge出一个对各任务都不错的模型。
+$$
+\begin{aligned}
+L_e & =\frac{1}{M+1} \sum_{t-M}^t\left(L_2^\tau\left(r_{t+1}-\hat{V}_{t+1}\right)\right) \\
+& =\frac{1}{M+1} \sum_{t-M}^t\left(\left|\tau-\mathbb{1}\left(\left(r_{t+1}-\hat{V}_{t+1}\right)<0\right)\right|\left(r_{t+1}-\hat{V}_{t+1}\right)^2\right)
+\end{aligned}
+$$
 
-参考[Improving general text embedding model: Tackling task conflict and data imbalance through model merging](https://arxiv.org/abs/2410.15035)的slerp，基于球面插值的融合方法，给定2个ckpt，分别算一下和训练前ckpt的差值，称为任务向量。然后拿这2个任务向量和原来ckpt的点构成的平面，使得少量训练数据和一个loss，算出合适的夹角和模长得到新向量，再去和其他ckpt重复这个步骤进行merge。
+而对于探索的reward $\tilde{r}_{t+1}$来讲，则不更新价值的梯度，即$\hat{V}_{t+1}^{\prime}$，只需要约束reward在价值附近就行
 
-训练的时候用的lora，emb和rerank的hard negative设计不一样
+$$
+L_v=\frac{1}{M+1} \sum_{t-M}^t\left(\tilde{r}_{t+1}-\hat{V}_{t+1}^{\prime}\right)^2
+$$
+
