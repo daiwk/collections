@@ -123,6 +123,24 @@ EDD是如下的**写评估->做改动->跑评估->整合改进**的循环，确�
 
 [AI 推理成本暴跌，「互联网女皇」 Mary Meeker 从中看到了什么？](https://mp.weixin.qq.com/s/Iy2PxBLtE6n3EOI_vjdOcQ)
 
+[刚刚，谷歌AI路线图曝光：竟要抛弃注意力机制？Transformer有致命缺陷！](https://mp.weixin.qq.com/s/SEyuyCjnL17rZwuIPfRQYg)
+
+s：短期/即将上线；m：中期，开发中的项目；r：研究、长期项目；
+
++ 全模态（r）：已经原生支持图像+音频生成，接下来是视频
++ Diffusion的早期实验（r）：详见[diffusion-llm部分](https://www.daiwk.net/1.2.llm_intro#diffusion-llm)
++ 默认具备Agent能力（m）：从单纯的token处理器转向具备系统化推理能力的智能体
+    + 之前：输入token，输出token，然后在外部构建各种scaffolding（支架）以增强功能。
+    + 现在：模型自身越来越系统化，越来越能自主做事，不再只是「被动计算器」。
+    + 未来：过去外部做的很多scaffolding，是否会被整合进模型的内部推理流程？
++ 推理能力持续扩展（s）：
++ 更多小模型（s）：很快会有更多内容可以分享
++ 无限上下文（r）：以当前注意力机制和上下文处理方式，这是不可能实现的，需要在核心架构层面进行全新创新，才能实现这一目标，例如：[moneta+yaad+memora](https://www.daiwk.net/1.2.llm_intro#monetayaadmemora)
++ 大模型：规模即一切
+
+AI的下一个阶段：“主动式AI”（Proactive AI），AI主动为你发现问题、提供建议、自动处理任务。
+
+
 # LLM概述
 
 PLM（pretrained language models），即bert等
@@ -3309,6 +3327,13 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 + 训练策略：Gemma 3的训练过程包括预训练和指令微调两个阶段。在预训练阶段，模型使用知识蒸馏技术，从大规模数据中学习语言和视觉表示。训练数据涵盖了文本、图像以及多语言等多种类型，且经过严格的筛选和清洗，以减少有害内容和低质量数据的影响。在指令微调阶段，Gemma 3 采用了新颖的训练方法，重点关注数学、聊天、指令遵循和多语言等能力的提升。
 
 [一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
+
+## moneta+yaad+memora
+
+[谷歌Transformer过时了？清华姚班校友等三连击，爆改注意力！](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652599608&idx=2&sn=788df4ed78ee5ac6b9498d645d57bfcb&scene=21#wechat_redirect)
+
+[It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://arxiv.org/pdf/2504.13173)
+
 
 
 # DeepSeek系列

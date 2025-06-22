@@ -1396,6 +1396,24 @@ EDD是如下的**写评估->做改动->跑评估->整合改进**的循环，确�
 
 [AI 推理成本暴跌，「互联网女皇」 Mary Meeker 从中看到了什么？](https://mp.weixin.qq.com/s/Iy2PxBLtE6n3EOI_vjdOcQ)
 
+[刚刚，谷歌AI路线图曝光：竟要抛弃注意力机制？Transformer有致命缺陷！](https://mp.weixin.qq.com/s/SEyuyCjnL17rZwuIPfRQYg)
+
+s：短期/即将上线；m：中期，开发中的项目；r：研究、长期项目；
+
++ 全模态（r）：已经原生支持图像+音频生成，接下来是视频
++ Diffusion的早期实验（r）：详见[diffusion-llm部分](https://www.daiwk.net/1.2.llm_intro#diffusion-llm)
++ 默认具备Agent能力（m）：从单纯的token处理器转向具备系统化推理能力的智能体
+    + 之前：输入token，输出token，然后在外部构建各种scaffolding（支架）以增强功能。
+    + 现在：模型自身越来越系统化，越来越能自主做事，不再只是「被动计算器」。
+    + 未来：过去外部做的很多scaffolding，是否会被整合进模型的内部推理流程？
++ 推理能力持续扩展（s）：
++ 更多小模型（s）：很快会有更多内容可以分享
++ 无限上下文（r）：以当前注意力机制和上下文处理方式，这是不可能实现的，需要在核心架构层面进行全新创新，才能实现这一目标，例如：[moneta+yaad+memora](https://www.daiwk.net/1.2.llm_intro#monetayaadmemora)
++ 大模型：规模即一切
+
+AI的下一个阶段：“主动式AI”（Proactive AI），AI主动为你发现问题、提供建议、自动处理任务。
+
+
 # LLM概述
 
 PLM（pretrained language models），即bert等
@@ -4583,6 +4601,13 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
+## moneta+yaad+memora
+
+[谷歌Transformer过时了？清华姚班校友等三连击，爆改注意力！](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652599608&idx=2&sn=788df4ed78ee5ac6b9498d645d57bfcb&scene=21#wechat_redirect)
+
+[It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://arxiv.org/pdf/2504.13173)
+
+
 
 # DeepSeek系列
 
@@ -6749,6 +6774,16 @@ prompt-lookup decoding：[https://github.com/apoorvumang/prompt-lookup-decoding]
 ## Mirage
 
 [告别CUDA无需Triton！Mirage零门槛生成PyTorch算子，人均GPU编程大师？](https://mp.weixin.qq.com/s/M3WFt17QErAt46VuqkFjFQ)
+
+
+## MPK
+
+[舍弃CUDA编程！CMU等用几十行代码将LLM编译成巨型内核，推理延迟可降6.7倍](https://mp.weixin.qq.com/s/D3fYjn8YksswteQE05Ohbw)
+
+[blog](https://zhihaojia.medium.com/compiling-llms-into-a-megakernel-a-path-to-low-latency-inference-cf7840913c17)
+
+[https://github.com/mirage-project/mirage/tree/mpk](https://github.com/mirage-project/mirage/tree/mpk)
+
 # 微调
 
 + 指令微调（instruct tuning）：增强/解锁LLM的能力，
@@ -11324,7 +11359,7 @@ finetune部分代码的大概逻辑如下：
 
 infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿softmax后的1-n的结果
 
-## GPLR
+## GPLR（学术界）SIGIR25
 
 [You Are What You Bought: Generating Customer Personas for E-commerce Applications](https://arxiv.org/abs/2504.17304)
 
@@ -11960,10 +11995,11 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 [https://github.com/McGill-NLP/llm2vec](https://github.com/McGill-NLP/llm2vec)
 
-+ 由3步组成：
- + Bi-directional：把causal mask干掉，改成全1mask
- + 引入masked next token predtion任务：类似mlm，mask掉中间的词，拿周围的词预测
- + 对比学习simcse：前两步让模型有了bi-directional的能力，把所有词的emb通过pooling（实验表明mean pooling最有效）得到句子表示，同一句话里mask掉几个词的为正例，不同句子为负例，对比学习
+由3步组成：
+
++ Bi-directional：把causal mask干掉，改成全1mask
++ 引入masked next token predtion任务：类似mlm，mask掉中间的词，拿周围的词预测
++ 对比学习simcse：前两步让模型有了bi-directional的能力，把所有词的emb通过pooling（实验表明mean pooling最有效）得到句子表示，同一句话里mask掉几个词的为正例，不同句子为负例，对比学习
 
 ## GDR
 
@@ -12200,6 +12236,39 @@ XXX
 参考[Improving general text embedding model: Tackling task conflict and data imbalance through model merging](https://arxiv.org/abs/2410.15035)的slerp，基于球面插值的融合方法，给定2个ckpt，分别算一下和训练前ckpt的差值，称为任务向量。然后拿这2个任务向量和原来ckpt的点构成的平面，使得少量训练数据和一个loss，算出合适的夹角和模长得到新向量，再去和其他ckpt重复这个步骤进行merge。
 
 训练的时候用的lora，emb和rerank的hard negative设计不一样
+
+
+# 传统推荐模型
+
+## Meta的MTMH
+
+[Optimizing Recall or Relevance? A Multi-Task Multi-Head Approach for Item-to-Item Retrieval in Recommendation](https://arxiv.org/pdf/2506.06239) KDD25
+
+![](../assets/mtmh.png)
+
+同时考虑target item与trigger item的相关性和个性化。
+
+多目标loss包括如下两部分：
+
++ 互动loss：正样本是trigger和target的共现，负样本是这个用户没交互过的item，用infoNCE loss
++ 内容相似loss：label是预训练的content encoder的输出向量的内积，和MTMH输出的item内积算一个kl距离
+
+输入item特征，经过MTMH后有2个head：
+
++ head1：只学互动loss，保证模型对高热的召回能力
++ head2：学多目标loss，即同时学互动和内容相似loss
+
+![](../assets/mtmh-serving-content.png)
+
+content encoder的训练：对比学习
+
++ 左边是text encoder（XLM-R-Large-550M）+vision encoder（VIT-H14-632M），只训练上面的mlp，输出是128dim
++ 右边是text encoder，输入concept(感觉是类似类目、tag之类的东西)，同样经过mlp输出128dim
+
+serving：2个head分别建索引，在线同一个trigger分别从这2个索引召回，再merge
+
+
+## 
 # O1
 
 ## CoT开山之作
