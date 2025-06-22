@@ -1001,6 +1001,13 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [https://github.com/flashinfer-ai/flashinfer](https://github.com/flashinfer-ai/flashinfer)
 
+## Multiverse
+
+[逐个token太慢！大模型原生并行出token，CMU、英伟达新作Multiverse](https://mp.weixin.qq.com/s/ZkYvbsHkob5qO5GgTw2j9Q)
+
+[Multiverse: Your Language Models Secretly Decide How to Parallelize and Merge Generation](https://arxiv.org/pdf/2506.09991v2)
+
+[https://github.com/Multiverse4FM/Multiverse](https://github.com/Multiverse4FM/Multiverse)
 
 # speculative-decoding
 

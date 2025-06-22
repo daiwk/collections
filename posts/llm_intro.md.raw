@@ -261,13 +261,6 @@ PLM（pretrained language models），即bert等
 + [GitHub超火开发者路线图库有AI学习路线了！star数近30万](https://mp.weixin.qq.com/s/P9hWHGsiWcfEfMq54E02xg)：[https://github.com/kamranahmedse/developer-roadmap](https://github.com/kamranahmedse/developer-roadmap)
 + [写的真好，万字长文串烧LLM大模型技术原理](https://mp.weixin.qq.com/s/ArTr-Df10LiTkJ4k9zlmZA)：[https://zhuanlan.zhihu.com/p/713794852](https://zhuanlan.zhihu.com/p/713794852)
 
-
-[大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
-
-[大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
-
-[大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
-
 [Jeff Dean演讲回顾LLM发展史，Transformer、蒸馏、MoE、思维链等技术都来自谷歌](https://mp.weixin.qq.com/s/5EUQlD5isnEEzXBw1AJEig)
 
 ## 课程
@@ -278,6 +271,17 @@ PLM（pretrained language models），即bert等
 
 [https://github.com/decodingml/llm-twin-course](https://github.com/decodingml/llm-twin-course)
 
+## 面试题
+
+[大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
+
+[大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
+
+[大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
+
+[信息过载时代，如何真正「懂」LLM？从MIT分享的50个面试题开始](https://mp.weixin.qq.com/s/u7aIm6jP1Nblfjr2NvakLw)
+
+[https://github.com/daiwk/collections/blob/master/assets/interviews/MIT_LLM_Interview_Questions.pdf](https://github.com/daiwk/collections/blob/master/assets/interviews/MIT_LLM_Interview_Questions.pdf)
 
 ## 扩展法则(scaling law)
 
@@ -2039,16 +2043,6 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 Baichuan4-Finance
 
 评测benchmark：[https://github.com/FLAME-ruc/FLAME/tree/main](https://github.com/FLAME-ruc/FLAME/tree/main)
-
-### minimax-01
-
-[MiniMax开源4M超长上下文新模型！性能比肩DeepSeek-v3、GPT-4o](https://mp.weixin.qq.com/s/pj6XZbyZu_mx2KRwIF1Q9g)
-
-[MiniMax押注线性注意力，让百万级长文本只用1/2700算力｜对话MiniMax-01架构负责人钟怡然](https://mp.weixin.qq.com/s/NigAnui9fXbfresW8KIX-Q)
-
-[MiniMax-01: Scaling Foundation Models with Lightning Attention](https://filecdn.minimax.chat/_Arxiv_MiniMax_01_Report.pdf)
-
-m层lightning attention后再接1层softmax attention，参数456B，每次推理激活45.9B。
 
 
 
@@ -4118,6 +4112,34 @@ QwenLong-L1：
 
 [Kimi 16B胜GPT-4o！开源视觉推理模型：MoE架构，推理时仅激活2.8B](https://mp.weixin.qq.com/s/EsjsqnInCOJpU9SpJgyoOA)
 
+
+# MiniMax
+
+## MiniMax-01
+
+[MiniMax开源4M超长上下文新模型！性能比肩DeepSeek-v3、GPT-4o](https://mp.weixin.qq.com/s/pj6XZbyZu_mx2KRwIF1Q9g)
+
+[MiniMax押注线性注意力，让百万级长文本只用1/2700算力｜对话MiniMax-01架构负责人钟怡然](https://mp.weixin.qq.com/s/NigAnui9fXbfresW8KIX-Q)
+
+[MiniMax-01: Scaling Foundation Models with Lightning Attention](https://filecdn.minimax.chat/_Arxiv_MiniMax_01_Report.pdf)
+
+m层lightning attention后再接1层softmax attention，参数456B，每次推理激活45.9B。
+
+## MiniMax-M1
+
+[性能比肩DeepSeek-R1，MiniMax仅花380万训出推理大模型性价比新王｜开源](https://mp.weixin.qq.com/s/FHis_2BmwtfA7yOe45Rdxg)
+
+[https://github.com/MiniMax-AI/MiniMax-M1](https://github.com/MiniMax-AI/MiniMax-M1)
+
+[MiniMax-M1: Scaling Test-Time ComputeEfficiently with Lightning Attention](https://github.com/MiniMax-AI/MiniMax-M1/blob/main/MiniMax_M1_tech_report.pdf)
+
+### 结构
+
+每7个Lightning Attention的Transnormer块后接1个传统Softmax Attention的Transformer块。这种设计理论上可以让推理长度高效扩展到数十万个token。
+
+### CISPO
+
+强化学习Clipped IS-weight Policy Optimization
 
 # 其他一些公司
 
