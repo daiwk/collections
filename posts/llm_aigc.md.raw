@@ -1534,13 +1534,6 @@ PLM（pretrained language models），即bert等
 + [GitHub超火开发者路线图库有AI学习路线了！star数近30万](https://mp.weixin.qq.com/s/P9hWHGsiWcfEfMq54E02xg)：[https://github.com/kamranahmedse/developer-roadmap](https://github.com/kamranahmedse/developer-roadmap)
 + [写的真好，万字长文串烧LLM大模型技术原理](https://mp.weixin.qq.com/s/ArTr-Df10LiTkJ4k9zlmZA)：[https://zhuanlan.zhihu.com/p/713794852](https://zhuanlan.zhihu.com/p/713794852)
 
-
-[大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
-
-[大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
-
-[大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
-
 [Jeff Dean演讲回顾LLM发展史，Transformer、蒸馏、MoE、思维链等技术都来自谷歌](https://mp.weixin.qq.com/s/5EUQlD5isnEEzXBw1AJEig)
 
 ## 课程
@@ -1551,6 +1544,17 @@ PLM（pretrained language models），即bert等
 
 [https://github.com/decodingml/llm-twin-course](https://github.com/decodingml/llm-twin-course)
 
+## 面试题
+
+[大模型面试八股](https://zhuanlan.zhihu.com/p/643560888)
+
+[大模型八股答案（一）——基础知识](https://zhuanlan.zhihu.com/p/643829565)
+
+[大模型八股答案（二）——训练框架](https://zhuanlan.zhihu.com/p/643836163)
+
+[信息过载时代，如何真正「懂」LLM？从MIT分享的50个面试题开始](https://mp.weixin.qq.com/s/u7aIm6jP1Nblfjr2NvakLw)
+
+[https://github.com/daiwk/collections/blob/master/assets/interviews/MIT_LLM_Interview_Questions.pdf](https://github.com/daiwk/collections/blob/master/assets/interviews/MIT_LLM_Interview_Questions.pdf)
 
 ## 扩展法则(scaling law)
 
@@ -3312,16 +3316,6 @@ grok-2：[Grok-2来了，能生图识图、性能比肩GPT-4o，马斯克：发�
 Baichuan4-Finance
 
 评测benchmark：[https://github.com/FLAME-ruc/FLAME/tree/main](https://github.com/FLAME-ruc/FLAME/tree/main)
-
-### minimax-01
-
-[MiniMax开源4M超长上下文新模型！性能比肩DeepSeek-v3、GPT-4o](https://mp.weixin.qq.com/s/pj6XZbyZu_mx2KRwIF1Q9g)
-
-[MiniMax押注线性注意力，让百万级长文本只用1/2700算力｜对话MiniMax-01架构负责人钟怡然](https://mp.weixin.qq.com/s/NigAnui9fXbfresW8KIX-Q)
-
-[MiniMax-01: Scaling Foundation Models with Lightning Attention](https://filecdn.minimax.chat/_Arxiv_MiniMax_01_Report.pdf)
-
-m层lightning attention后再接1层softmax attention，参数456B，每次推理激活45.9B。
 
 
 
@@ -5392,6 +5386,34 @@ QwenLong-L1：
 [Kimi 16B胜GPT-4o！开源视觉推理模型：MoE架构，推理时仅激活2.8B](https://mp.weixin.qq.com/s/EsjsqnInCOJpU9SpJgyoOA)
 
 
+# MiniMax
+
+## MiniMax-01
+
+[MiniMax开源4M超长上下文新模型！性能比肩DeepSeek-v3、GPT-4o](https://mp.weixin.qq.com/s/pj6XZbyZu_mx2KRwIF1Q9g)
+
+[MiniMax押注线性注意力，让百万级长文本只用1/2700算力｜对话MiniMax-01架构负责人钟怡然](https://mp.weixin.qq.com/s/NigAnui9fXbfresW8KIX-Q)
+
+[MiniMax-01: Scaling Foundation Models with Lightning Attention](https://filecdn.minimax.chat/_Arxiv_MiniMax_01_Report.pdf)
+
+m层lightning attention后再接1层softmax attention，参数456B，每次推理激活45.9B。
+
+## MiniMax-M1
+
+[性能比肩DeepSeek-R1，MiniMax仅花380万训出推理大模型性价比新王｜开源](https://mp.weixin.qq.com/s/FHis_2BmwtfA7yOe45Rdxg)
+
+[https://github.com/MiniMax-AI/MiniMax-M1](https://github.com/MiniMax-AI/MiniMax-M1)
+
+[MiniMax-M1: Scaling Test-Time ComputeEfficiently with Lightning Attention](https://github.com/MiniMax-AI/MiniMax-M1/blob/main/MiniMax_M1_tech_report.pdf)
+
+### 结构
+
+每7个Lightning Attention的Transnormer块后接1个传统Softmax Attention的Transformer块。这种设计理论上可以让推理长度高效扩展到数十万个token。
+
+### CISPO
+
+强化学习Clipped IS-weight Policy Optimization
+
 # 其他一些公司
 
 ## 快手的AutoThink
@@ -6698,6 +6720,13 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 [https://github.com/flashinfer-ai/flashinfer](https://github.com/flashinfer-ai/flashinfer)
 
+## Multiverse
+
+[逐个token太慢！大模型原生并行出token，CMU、英伟达新作Multiverse](https://mp.weixin.qq.com/s/ZkYvbsHkob5qO5GgTw2j9Q)
+
+[Multiverse: Your Language Models Secretly Decide How to Parallelize and Merge Generation](https://arxiv.org/pdf/2506.09991v2)
+
+[https://github.com/Multiverse4FM/Multiverse](https://github.com/Multiverse4FM/Multiverse)
 
 # speculative-decoding
 
@@ -10195,7 +10224,11 @@ XXX
 
 [OneRec: Unifying Retrieve and Rank with Generative Recommender and Preference Alignment](https://arxiv.org/pdf/2502.18965)
 
+[OneRec Technical Report](https://arxiv.org/abs/2506.13695)
+
 [「快手」全链路统一建模｜OneRec: Unifying Retrieve and Rank with Generative](https://mp.weixin.qq.com/s/wTEWnSe8aFaPiLsnoIeOSA)
+
+[效果&成本双突破！快手提出端到端生成式推荐系统OneRec！](https://mp.weixin.qq.com/s/o1Io4j7KsA9tvQX-_JCGwA)
 
 召回排序合为一体的生成式推荐——根据历史session序列，预测下一个session。
 
@@ -10261,6 +10294,21 @@ item有各种特征，如title、img、id等
 
 [One Model to Rank Them All: Unifying Online Advertising with End-to-End Learning](https://arxiv.org/abs/2505.19755)
 
+## Meta的RPG（没落地）
+
+[Generating Long Semantic IDs in Parallel for Recommendation](https://arxiv.org/pdf/2506.05781)
+
+![](../assets/rpg.png)
+
+训练：
+
++ 长语义ID（SID）构造：使用OPQ(optimized pq)将物品特征（文本、图像等）编码为SID（最多64个token），每个token来自不同codebook，编码物品语义子向量。相比RQ，OPQ没有token间的顺序依赖，适合并行生成，且信息分布更均衡。
++ 多token预测（MTP）：通过MTP损失函数，并行预测语义ID的所有token
+
+infer：
+
++ 图构建：将每个SID的64个token的embedding通过mean/max pooling成一个语义embedding。使用faiss存储这些embedding，并为每个语义ID搜索top-k个最相似的SID，作为图的边，构建一个的解码图。
++ 迭代图传播：随机初始化b个SID beam，从这b个节点出发，沿图传播，从相邻的SID里保留得分最高的b个ID。迭代q次，生成最终的top-K推荐列表。
 
 # LLM+推荐：输入文本
 
@@ -10557,6 +10605,14 @@ cluster包括了一系列短语，如(猫，狗，动物，宠物，小动物)�
 纯离线infer：用novelty llm采用比较高的temperature预测多次，然后用alignment llm打分选挑出topk的cluster，存起来给线上用。
 
 实验对比线上基线的novelty-llm，pointwise和pairwise在多样性、正反馈动作率、完成率均有提升，鈤pointise训练得更快，所以最终推全pointwise
+
+## Google的惊喜度推荐
+
+[推荐算法(2025.6.11)：Google的意外推荐](https://mp.weixin.qq.com/s?__biz=MzkzNDYyNjM1NA==&mid=2247484786&idx=1&sn=1170e694c1f7a2c6759cebf02e0f4945&scene=21#wechat_redirect)
+
+[Serendipitous Recommendation with Multimodal LLM](https://arxiv.org/pdf/2506.08283)
+
+
 
 ## 快手的LARM（落地）
 
@@ -13670,6 +13726,14 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [https://www.anthropic.com/engineering/built-multi-agent-research-system](https://www.anthropic.com/engineering/built-multi-agent-research-system)
 
+## Kimi-Researcher
+
+[月之暗面「调教」出最强Agent，在「人类最后一场考试」拿下最新 SOTA](https://mp.weixin.qq.com/s/1ektvvMVp_9z2VGgaK1_bw)
+
+[https://moonshotai.github.io/Kimi-Researcher/](https://moonshotai.github.io/Kimi-Researcher/)
+
+
+
 # 高效reasoning
 
 ## reasoning economy
@@ -14724,6 +14788,10 @@ Neel Nanda（deepmind）的项目
 [李飞飞、谢赛宁等探索MLLM「视觉空间智能」，网友：2025有盼头了](https://mp.weixin.qq.com/s/Z4Kv92fukfNTyE1tSpJslA)
 
 [Thinking in Space: How Multimodal Large Language Models See, Remember, and Recall Spaces](https://arxiv.org/pdf/2412.14171v1)
+
+## 具身多模态推理
+
+[统一框架下的具身多模态推理：自变量机器人让AI放下海德格尔的锤子](https://mp.weixin.qq.com/s/PAMxpArVFwyAEVOhcq_UAw)
 
 
 # LLM+芯片设计
