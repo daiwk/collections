@@ -11324,6 +11324,33 @@ finetune部分代码的大概逻辑如下：
 
 infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿softmax后的1-n的结果
 
+## GPLR
+
+[You Are What You Bought: Generating Customer Personas for E-commerce Applications](https://arxiv.org/abs/2504.17304)
+
+[https://github.com/Hanc1999/YouAreWhatYouBought](https://github.com/Hanc1999/YouAreWhatYouBought)
+
+[NUS-LLM小样本学习助力用户画像建模](https://www.xiaohongshu.com/explore/683b343f0000000022006648?app_platform=ios&app_version=8.87&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBjpcluHYwI6-nyp1gVu04fpW4voj7bMwSu2oY88K0f-c=&author_share=1&xhsshare=WeixinSession&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1750064425&share_id=c4b8d3de4af6496692a900106b0640f1)
+
+只对5%-20%的用户用LLM标注，再结合随机游走算法推断全量用户角色，大幅降低标注成本（如1,000万用户年成本由240万降至50万美元）。
+
++ 用户画像的定义与生成:
+    + 多维度可解释表示: 自然语言角色标签，如Bargain Hunters, Health Enthusiasts, Tech Savvy, and Busy Parents。
+    + LLM驱动的角色生成: 
+        + 原型用户标注：利用LLM分析部分原型用户的购买历史，自动生成如“健康生活倡导者”等标签。
+        + Prompt工程：通过多阶段提示优化(初步生成、去重筛选和用户反馈校验)，最终形成平台专属的角色标签集。
++ 小样本LLM标注DUSample(Diversity-Uncertainty，多样性-不确定性): 
+    + 从用户中筛选**稀有角色**用户和**高不确定性**用户(如购买行为难以归类的用户), 确保LLM标注的标签具有多样性，避免主流角色主导。
+    + 通过KL散度和熵计算用户的DU Score，优先标注多样得分高的用户，提升标签覆盖范围。
++ 随机游走传播: 用户-商品二分图建模，角色亲和力矩阵: 
+    + 通过随机游走概率矩阵计算用户间的行为相似性，结合原型用户的角色标签矩阵，得到所有用户与角色的亲和力; 
+    + 假设相似购买行为的用户具有相同角色, 通过加权聚合原型用户的标签推断未标注用户的角色。
++ 反向近似算法RevAff：
+    + 反向传播：从原型用户出发，反向计算其他用户的角色亲和力，避免全图矩阵运算。
+    + 误差控制：通过设定绝对误差阈值，仅保留影响大于阈值的传播路径
++ 用户画像与推荐模型集成：将角色表示作为输入特征融入GCN
+
+
 ## guided embedding
 
 [Improving LLM Interpretability and Performance via Guided Embedding Refinement for Sequential Recommendation](https://arxiv.org/pdf/2504.11658)
