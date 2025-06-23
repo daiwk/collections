@@ -1405,6 +1405,13 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [https://moonshotai.github.io/Kimi-Researcher/](https://moonshotai.github.io/Kimi-Researcher/)
 
+Kimi–Researcher是一个自主的智能体与思维模型，旨在通过多步规划、推理和工具使用来解决复杂问题。它利用了三个主要工具：
+
++ 并行的实时**内部搜索**工具
++ 用于**交互式网页任务**的基于文本的**浏览器**工具
++ 用于自动执行代码的**编码**工具
+
+
 
 
 # 高效reasoning
