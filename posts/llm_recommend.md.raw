@@ -1264,13 +1264,41 @@ cluster包括了一系列短语，如(猫，狗，动物，宠物，小动物)�
 
 实验对比线上基线的novelty-llm，pointwise和pairwise在多样性、正反馈动作率、完成率均有提升，鈤pointise训练得更快，所以最终推全pointwise
 
-## Google的惊喜度推荐
+## Google的惊喜度推荐（落地）
 
 [推荐算法(2025.6.11)：Google的意外推荐](https://mp.weixin.qq.com/s?__biz=MzkzNDYyNjM1NA==&mid=2247484786&idx=1&sn=1170e694c1f7a2c6759cebf02e0f4945&scene=21#wechat_redirect)
 
 [Serendipitous Recommendation with Multimodal LLM](https://arxiv.org/pdf/2506.08283)
 
+基于[Cluster Anchor Regularization to Alleviate Popularity Bias in Recommender Systems](https://dl.acm.org/doi/pdf/10.1145/3589335.3648312)搞了一个4级的聚类，每个item属于某个树节点，每个节点有对应的自然语言描述。
 
+惊喜度：2个item属于同一个中间节点，但不同的子节点，两个节点可以间隔若干层
+
+拿惊喜度高的样本(一个context item_id，next item_id)，即$$(v_i,n_j)$$来sft一个MLLM，通过如下方式保证不同cluster的均衡
+
++ 先把$$n_j$$映射到其cluster $$C(n_j)$$，得到$$(v_i, C(n_j))$$
++ 对每个context video $$v_i$$，聚合$$C(n_j)$$的满意度，即$$p_{iC(n_j)}$$
++ 对每个$$C(n_j)$$，选择$$p_{iC(n_j)}$$最高的10个context videos丢到训练数据里去
+
+![](../assets/serendipitous-prompts.png)
+
++ prompt1、2、3都是直接输出预测的cluster，1和2是单模态(text/video)，3是多模态（text+video）
++ prompt4是CoT，其实就是让模型先总结出当前视频的cluster，再预测下一个不同的cluster
+
+衡量标准：
+
++ match rate：生成的描述是否是合法的cluster
++ recall：生成的描述和label的描述是不是完全一样
+
+发现：
+
++ match rate不同prompt差不多，都能很快收敛到接近99%，而且video+CoT能大大加速这个收敛速度
++ video很重要，带上video的比text only要好很多
++ video+CoT比video略好
++ video+text不如video only，说明这个prompt3还比较粗暴
++ 另外还发现帧数越多效果越好，但match rate的收敛速度不受影响
+
+实际推理时用了能cover 80%展现的高热视频，只需要不到12小时就能推理完；后来做了增量更新版本，但因为高热视频变化不多，所以速度也可以接受
 
 ## 快手的LARM（落地）
 
