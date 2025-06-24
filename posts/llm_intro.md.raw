@@ -3121,6 +3121,20 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [https://github.com/D-Keqi/mtla](https://github.com/D-Keqi/mtla)
 
+## StreamBP
+
+[无损减少80%激活值内存，提升5倍训练序列长度，仅需两行代码](https://mp.weixin.qq.com/s/YqQYtKqzCVFKzr3Z7bYHsg)
+
+[StreamBP: Memory-Efficient Exact Backpropagation for Long Sequence Training of LLMs](https://arxiv.org/abs/2506.03077)
+
+[https://github.com/Ledzy/StreamBP](https://github.com/Ledzy/StreamBP)
+
+## DnD
+
+[LLM进入「拖拽时代」！只靠Prompt，几秒定制一个大模型，效率飙升12000倍](https://mp.weixin.qq.com/s/geOn7zyJRQwfJra38EjcxQ)
+
+[Drag-and-Drop LLMs: Zero-Shot Prompt-to-Weights](https://arxiv.org/abs/2506.16406)
+
 # Gemmini&Gemma系列
 
 ## Gemini 1.0
@@ -3622,58 +3636,6 @@ H800，精度和训练一致：
         + 推测：每秒每8卡输入的token数是608000000000 / 226.75/86400=31k，好像对不太上这个73.7k，可能猜测：缓存那部分非常快，非缓存很慢，而这31k是假设全天流量不变的平均值
     + decode任务：输出吞吐约 14.8k tokens/s。
         + 推测：每秒每8卡输出的token数是168000000000 / 226.75 /86400=8575，前面提到了每个请求每秒的输出token数是20~22，那就相当于每8卡机器每秒能处理有8575/21=408个请求，所以总的返回qps大概是408 * 226.75=9.25k
-
-## GRM+SPCT
-
-[刚刚，DeepSeek公布推理时Scaling新论文，R2要来了？](https://mp.weixin.qq.com/s/TbPWc4ooFyf0it5pEaLRUA)
-
-[Inference-Time Scaling for Generalist Reward Modeling](https://arxiv.org/abs/2504.02495)
-
-critique：生成的文本评价，即评论
-
-### RM分类
-
-![](../assets/rm-patterns.png)
-
-RM可以进行如下分类：
-
-+ reward生成范式：输入query和一些responses
-  + scalar：只输出reward值
-  + semi-scalar：生成critique和scalar
-  + generative：只输出critique
-+ 打分范式：输入query和2个responses
-  + pointwise：输出每个response的得分
-  + pairwise：输出二者的相对得分
-
-几种常见RM：
-
-+ Bradley-Terry，scalar + pointwise
-+ PairRM：scalr + pairwise
-+ CLoud：semi-scalr + pointwise
-+ LLM-as-a-Judge：semi-scalr或者generative + pairwise
-+ Pointwise GRM：generative + pointwise
-
-### SPCT
-
-核心：principle（准则）不再只是辅助性的输入，而是使模型能在生成过程中**主动生成**并**基于此生成对应的critique**
-
-Self-Principled Critique Tuning (SPCT)
-
-![](../assets/spct.png)
-
-+ 训练（2阶段）：输入query+2个response
-  + RFT（rejective fine-tuning）：使GRM能够生成格式正确且适配多种输入类型的principle与critique
-    + 使用预训练的pointwise-GRM，采样得到N个priciple + response，和goundtruth比较(groundtruth对应的reward是不是比其他N-1个结果对应的reward高)，满足下面条件的扔了，剩下的构造成一个数据集
-      + 全对的就是too-easy的，扔掉；
-      + 错误的也扔掉
-    + 同时还有一定比例的hint sampling，即把groundtruth提前泄露到GRM的prompt里去，让模型倾向于去对齐groudtruth
-  + RL（rule-based online RL）：通过不断优化生成的准则和评论，进一步增强泛化型奖励生成能力。
-    + 也是用的GRPO，只有accuracy reward，没format reward，加大KL-penalty
-+ 推理：输入query+2个response
-  + 并行采样出一堆的principles+critiques，即m条结果
-  + voting：
-    + 基于生成式reward：即每个里的response1的reward求和，同理response2的reward求和，得到1和2的总得分
-    + 基于meta RM：训练一个pointwise scalar RM，用二分类来判断principle+critique对不对(label和RFT的一样)。使用：对这m个结果打分，干掉质量差的（图中就是只保留了第1和第3个），然后对剩下的$$k_{meta}$$个去投票
 
 ## DeepSeek-Prover-V2
 
