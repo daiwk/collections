@@ -2979,6 +2979,11 @@ XXX
 
 训练的时候用的lora，emb和rerank的hard negative设计不一样
 
+## 百度AI搜索
+
+[Towards AI Search Paradigm](https://arxiv.org/abs/2506.17188) ..63页
+
+该采用由多个LLM驱动的智能体构成的模块化体系(Master、Planner、Executor和Writer)，能够动态适应从简单事实查询到复杂多阶段推理任务的各类信息需求。这些智能体通过动态协同的工作流程，评估查询复杂性，在Master的判断和指导下对应不同任务的特性的智能体动态组合，并针对复杂任务将问题分解为可执行的任务,并协调使用各种工具进行任务执行与内容合成。
 
 # 传统推荐模型
 
