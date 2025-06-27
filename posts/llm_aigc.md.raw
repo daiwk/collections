@@ -4615,7 +4615,115 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://arxiv.org/pdf/2504.13173)
 
+## gemini-cli
 
+[谷歌杀疯！百万token神器免费开源，Claude和Codex都顶不住了？](https://mp.weixin.qq.com/s/5n3wKaRqtMhpeemV3RWXOA)
+
+[https://github.com/google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli)
+
+## gemma-3n
+
+[谷歌开源Gemma 3n：2G内存就能跑，100亿参数内最强多模态模型](https://mp.weixin.qq.com/s/64QtpHWYTwxZkCTHY74JQg)
+
+[https://ai.google.dev/gemma/docs/gemma-3n](https://ai.google.dev/gemma/docs/gemma-3n)
+
+[https://huggingface.co/collections/google/gemma-3n-685065323f5984ef315c93f4](https://huggingface.co/collections/google/gemma-3n-685065323f5984ef315c93f4)
+
+[https://developers.googleblog.com/zh-hans/introducing-gemma-3n-developer-guide/](https://developers.googleblog.com/zh-hans/introducing-gemma-3n-developer-guide/)
+
+进一步地，可以开发一个ios的app
+
++ [https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/ios?hl=zh-cn](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference/ios?hl=zh-cn)
++ [https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/llm_inference/ios](https://github.com/google-ai-edge/mediapipe-samples/tree/main/examples/llm_inference/ios)
+
+安卓的：[https://github.com/google-ai-edge/gallery](https://github.com/google-ai-edge/gallery)
+
+用JAX和ML Pathways训练的模型
+
++ 多模态：原生支持图像、音频、视频和文本输入和文本输出，输入最多可以有32K的tokens
++ 内存优化：
+    + E2B：原始参数数量5B，运行内存占用2GB，与传统的2B相当
+    + E4B：原始参数数量8B，运行内存占用3GB，与传统的4B相当
++ 架构：
+    + MatFormer架构：提升infer速度、减小infer模型大小
+    + PLE(Per-Layer Embedding)：提高内存效率
+    + KV Cache Sharing：加速首token生成时间(time-to-first-token)
+    + USM：通用语音模型（USM）的高级音频编码器
+    + MobileNet-v5：视觉编码器
++ 质量提升：在多语言（支持140种文本语言和35种语言的多模态理解）、数学、编码和推理方面均实现了质量提升。
+
+### MatFormer
+
+&nbsp;
+
+[MatFormer: Nested Transformer for Elastic Inference](https://arxiv.org/pdf/2310.07707)
+
+![](../assets/matformer.png)
+
+对FFN进行处理，原来中间的dim是$$d_{ff}$$，取其中一小段搞出一些更小的，即$${d_{ff}/8, d_{ff}/4, d_{ff}/2, d_{ff}}$$，针对每层都是这个dim的各有一个transformer，共4个transformer，
++ 训练：每条样本从这4个trans里随机选一个去训练
++ infer：通过mix'n'match的启发式策略搞出给infer用的子网络，即每一层的粒度尽量慢慢变大，不要忽大忽小，即从2变到3比从1直接到4要好
+
+gemma-3n里的两种模型配置
+
++ E4B：35层，7个block，每个block里5层(4层sliding attn+1层full attn)，每层是8xFFN（即2048*8=16384）
++ E2B：30层，6个block，每个block里5层(4层sliding attn+1层full attn)，每层是4xFFN（即2048*4=8192）
+
+用户可以自己通过通过这个[代码](https://colab.research.google.com/github/google-gemini/gemma-cookbook/blob/main/Gemma/[Gemma_3n]MatFormer_Lab.ipynb)来用mix'n'match搞一个自定义的模型，即模型里intermediate_size这个参数，为list的时候就是指定每层的dim，否则就是每层都用这个dim
+
+### PLE
+
+&nbsp;
+
+PLE允许很大一部分参数（与每层相关的嵌入）在CPU上加载并高效计算，即只有核心Transformer权重（E2B约为2B，E4B约为4B）需要存储在通常较为受限的加速器内存 (VRAM) 中。
+原文讲得比较模糊，可以参考[https://www.reddit.com/r/LocalLLaMA/comments/1kuy45r/gemma_3n_architectural_innovations_speculation/](https://www.reddit.com/r/LocalLLaMA/comments/1kuy45r/gemma_3n_architectural_innovations_speculation/)，看config里的text_config里有laurel_rank可能和[LAuReL: Learned Augmented Residual Layer](https://arxiv.org/pdf/2411.07501v3)有关
+
+还有另一种Conditional parameter loading，可以skip掉一些参数的loading，并且是在运行时决定的。
+
+### KV Cache Sharing
+
+&nbsp;
+
+优化了模型处理初始输入处理阶段（即prefill阶段）的方式，来自局部和全局注意力机制的中间层的k和v将直接与所有顶层共享，与Gemma3 4B相比，prefill性能显著提升了两倍，即模型能够比以往更快地提取和理解较长的prompt。
+
+### USM
+
+&nbsp;
+
+[Google USM: Scaling Automatic Speech Recognition Beyond 100 Languages](https://arxiv.org/abs/2303.01037)
+
+每160毫秒的音频生成一个token（约每秒6个token）：
+
++ 自动语音识别 (ASR)：直接在设备上实现高质量的语音到文本的转录
++ 自动语音翻译 (AST)：将口语翻译成另一种语言的文本。英语与西班牙语、法语、意大利语和葡萄牙语之间的翻译AST效果尤为出色，可以通过如下的cot提升翻译效果
+
+```xml
+<bos><start_of_turn>user
+Transcribe the following speech segment in Spanish, 
+then translate it into English: 
+<start_of_audio><end_of_turn>
+<start_of_turn>model
+```
+
+### MobileNet-v5
+
+&nbsp;
+
+MobileNet-v5支持
+
++ 多种输入分辨率：原生支持256x256、512x512和768x768像素的分辨率。
++ 广泛的视觉理解：在广泛的多模式数据集上进行联合训练，在各种图像和视频理解任务中表现出色。
++ 高吞吐量：在Google Pixel上每秒处理高达60帧，实现实时设备视频分析和交互式体验。
+
+其架构创新包括：
+
++ [MobileNetV4 -- Universal Models for the Mobile Ecosystem](https://arxiv.org/abs/2404.10518)里的Universal Inverted Bottlenecks和Mobile MQA
++ 显著扩大的架构：采用混合深度金字塔模型，比最大的MobileNet-V4变体大10倍。
++ 一种新颖的多尺度(Multi-Scale)融合VLM适配器，可提高token的质量，从而提高准确性和效率。
+
+蒸馏后的MobileNet-V5-300M比基线Gemma3里的SoViT（用SigLip训练，没蒸馏）效果更好。在Google Pixel Edge TPU上，在量化的情况下实现了13倍的加速（不使用量化的情况下为6.5倍），所需参数减少了46%，内存占用减少了4倍，同时在视觉语言任务上实现了显著更高的准确率。
+
+要跑gemma3n需要```pip3 install timm transformers==4.53.0```
 
 # DeepSeek系列
 
@@ -5621,6 +5729,22 @@ XXX
 ## fast-dLLM
 
 [谷歌之后，英伟达入局扩散大语言模型，Fast-dLLM推理速度狂飙27.6倍](https://mp.weixin.qq.com/s/uR7Bk6YpPGyR8cgN5u2oBw)
+
+## DiffuCoder
+
+[苹果出手！改进GRPO，让dLLM也能高效强化学习](https://mp.weixin.qq.com/s/akWoBx1F8sEvi_IxMQpJbg)
+
+[DiffuCoder: Understanding and Improving Masked Diffusion Models for Code Generation](https://arxiv.org/pdf/2506.20639)
+
+[https://github.com/apple/ml-diffucoder](https://github.com/apple/ml-diffucoder)
+
+## Mercury
+
+[这个扩散LLM太快了！没有「请稍后」，实测倍速于Gemini 2.5 Flash](https://mp.weixin.qq.com/s/dSEkdYHOQbaiRN3O4D-hKg)
+
+[Mercury: Ultra-Fast Language Models Based on Diffusion](https://arxiv.org/pdf/2506.17298)
+
+[https://poe.com/Inception-Mercury](https://poe.com/Inception-Mercury)
 
 # 自我进化系列
 
@@ -7665,6 +7789,14 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [https://github.com/volcengine/veRL](https://github.com/volcengine/veRL)
 
+## ROLL
+
+[重磅！淘天联合爱橙开源强化学习训练框架ROLL，高效支持十亿到千亿参数大模型训练](https://mp.weixin.qq.com/s/4JaXQd_X_XheZuSILfE2Pw)
+
+[Reinforcement Learning Optimization for Large-Scale Learning: An Efficient and User-Friendly Scaling Library](https://arxiv.org/pdf/2506.06122)
+
+[https://github.com/alibaba/ROLL](https://github.com/alibaba/ROLL)
+
 # Alignment：RLHF变种
 
 ## Alignment综述
@@ -9286,7 +9418,7 @@ DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视�
 
 [Zipper: A Multi-Tower Decoder Architecture for Fusing Modalities](https://arxiv.org/pdf/2405.18669)
 
-# 语音
+# 多模态（语音）
 
 ## Mini-Omni
 
@@ -9361,6 +9493,20 @@ DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视�
 [Emerging Properties in Unified Multimodal Pretraining](https://arxiv.org/pdf/2505.14683)
 
 [https://huggingface.co/ByteDance-Seed/BAGEL-7B-MoT](https://huggingface.co/ByteDance-Seed/BAGEL-7B-MoT)
+
+## Kwai Keye-VL
+
+[快手开源多模态大模型Kwai Keye-VL，引领视频理解新纪元](https://mp.weixin.qq.com/s/2JRGYhB_VDPecXMjp3gZsQ)
+
+[https://github.com/Kwai-Keye/Keye](https://github.com/Kwai-Keye/Keye)
+
+## Kling-Foley
+
+[音画同步，AI视频也能有完美「原声音」，可灵AI刚上线的！](https://mp.weixin.qq.com/s/8h5sZUIxsmce9GRRMDkEBg)
+
+[Kling-Foley: Multimodal Diffusion Transformer for High-Quality Video-to-Audio Generation](https://www.arxiv.org/pdf/2506.19774)
+
+[https://github.com/klingfoley/Kling-Foley](https://github.com/klingfoley/Kling-Foley)
 
 # LLM+推荐：概述
 

@@ -422,6 +422,14 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [https://github.com/volcengine/veRL](https://github.com/volcengine/veRL)
 
+## ROLL
+
+[重磅！淘天联合爱橙开源强化学习训练框架ROLL，高效支持十亿到千亿参数大模型训练](https://mp.weixin.qq.com/s/4JaXQd_X_XheZuSILfE2Pw)
+
+[Reinforcement Learning Optimization for Large-Scale Learning: An Efficient and User-Friendly Scaling Library](https://arxiv.org/pdf/2506.06122)
+
+[https://github.com/alibaba/ROLL](https://github.com/alibaba/ROLL)
+
 # Alignment：RLHF变种
 
 ## Alignment综述
