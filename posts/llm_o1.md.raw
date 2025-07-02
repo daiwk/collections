@@ -1483,6 +1483,7 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
   + length prompts：let's use less than k tokens
   + routing by difficulty：训一个小模型，决定简单问题不思考，困难问题再思考
 
+例如[跟着台大李宏毅老师学：别让推理模型想太多](https://mp.weixin.qq.com/s/dXxuRN311-c6CN4zOl8lFg)里提到的[L1: Controlling How Long A Reasoning Model Thinks With Reinforcement Learning](https://arxiv.org/pdf/2503.04697)
 
 # 推理模型总结
 

@@ -940,11 +940,15 @@ item有各种特征，如title、img、id等
 
 纯价值驱动的列表生成可能有同质化的风险，导致多样性降低。引入相似度惩罚：
 
-## 小红书的RankGPT（落地）
+## 小红书的GenRank（落地）
+
+最开始叫rankgpt，后来改名了，GenRank
 
 [小红书RankGPT:推荐系统生成式精排的落地实践](https://mp.weixin.qq.com/s/2D31iyO07DNdTBPdHp-3Qw)
 
 [Towards Large-scale Generative Ranking](https://arxiv.org/abs/2505.04180)
+
+[「小红书」生成式方案｜Towards Large-scale Generative Ranking](https://mp.weixin.qq.com/s/C4CKr4jfm_f799KCeyFrSw)
 
 ## 美团的UniROM（落地）
 
