@@ -1533,8 +1533,8 @@ PLM（pretrained language models），即bert等
 + [14天速成LLM高手！大佬开源学习笔记，GitHub狂揽700星](https://mp.weixin.qq.com/s/aDkH9E5b0yNd1J_Kthkh5Q)：[https://github.com/hesamsheikh/ml-retreat](https://github.com/hesamsheikh/ml-retreat)
 + [GitHub超火开发者路线图库有AI学习路线了！star数近30万](https://mp.weixin.qq.com/s/P9hWHGsiWcfEfMq54E02xg)：[https://github.com/kamranahmedse/developer-roadmap](https://github.com/kamranahmedse/developer-roadmap)
 + [写的真好，万字长文串烧LLM大模型技术原理](https://mp.weixin.qq.com/s/ArTr-Df10LiTkJ4k9zlmZA)：[https://zhuanlan.zhihu.com/p/713794852](https://zhuanlan.zhihu.com/p/713794852)
-
-[Jeff Dean演讲回顾LLM发展史，Transformer、蒸馏、MoE、思维链等技术都来自谷歌](https://mp.weixin.qq.com/s/5EUQlD5isnEEzXBw1AJEig)
++ [Jeff Dean演讲回顾LLM发展史，Transformer、蒸馏、MoE、思维链等技术都来自谷歌](https://mp.weixin.qq.com/s/5EUQlD5isnEEzXBw1AJEig)
++ [盘一盘，2017年Transformer之后，LLM领域的重要论文](https://mp.weixin.qq.com/s/1lUSlc0tvEWLuOFOP0WkUA)
 
 ## 课程
 
@@ -1543,6 +1543,11 @@ PLM（pretrained language models），即bert等
 [https://github.com/PacktPublishing/LLM-Engineers-Handbook](https://github.com/PacktPublishing/LLM-Engineers-Handbook)
 
 [https://github.com/decodingml/llm-twin-course](https://github.com/decodingml/llm-twin-course)
+
+[Sebastian Raschka著作免费开放！《机器学习与AI核心30问》，新手专家皆宜](https://mp.weixin.qq.com/s/Q1j1Obk5ayhE_WzIofYZTA)
+
+[https://sebastianraschka.com/books/ml-q-and-ai/#table-of-contents](https://sebastianraschka.com/books/ml-q-and-ai/#table-of-contents)
+对应的代码：[https://github.com/rasbt/MachineLearning-QandAI-book](https://github.com/rasbt/MachineLearning-QandAI-book)
 
 ## 面试题
 
@@ -1555,6 +1560,7 @@ PLM（pretrained language models），即bert等
 [信息过载时代，如何真正「懂」LLM？从MIT分享的50个面试题开始](https://mp.weixin.qq.com/s/u7aIm6jP1Nblfjr2NvakLw)
 
 [https://github.com/daiwk/collections/blob/master/assets/interviews/MIT_LLM_Interview_Questions.pdf](https://github.com/daiwk/collections/blob/master/assets/interviews/MIT_LLM_Interview_Questions.pdf)
+
 
 ## 扩展法则(scaling law)
 
@@ -3000,33 +3006,6 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 [Multitask Prompted Training Enables Zero-Shot Task Generalization](https://arxiv.org/pdf/2110.08207)设计了一个系统，将任意nlp任务映射成一个人类可读的prompt格式。训练了一个encoder-decoder的T0模型，输入文本，输出文本，在混合数据集上进行多任务学习。
 
-### ERNIE 3.0
-
-&nbsp;
-
-[ERNIE 3.0: Large-scale Knowledge Enhanced Pre-training for Language Understanding and Generation](https://arxiv.org/pdf/2107.02137)结合自回归网络和autoencoding网络，让模型能够同时做语言理解和语言生成任务，可以支持zero-shot、few-shot和finetuning。有10B参数，在4TB的文本和图谱数据上训练。
-
-![ernie3.0](../assets/ernie3.0.png)
-
-### 文心X1和4.5
-
-&nbsp;
-
-[提前免费！百度连发两款模型，我们实测：能听歌看电影，还会蛐蛐人](https://mp.weixin.qq.com/s/XKim3L7__c9VXJ2bj4FYhA)
-
-推理模型文心X1：
-
-+ 应用了递进式强化学习训练方法
-+ 具备 “长思维链”，采用了思维链和行动链耦合的端到端训练方式，不是只学习思考或者只学习行动，而是把思考和行动结合起来
-+ 采用了多元统一的奖励系统
-
-文心4.5：
-
-+ FlashMask 动态注意力掩码：[FlashMask: Efficient and Rich Mask Extension of FlashAttention](https://arxiv.org/abs/2410.01359)，通过列式稀疏掩码表示方法，将传统的二维稠密掩码矩阵转换为一维的行索引区间表示，从而显著降低了存储复杂度，从$$O(N^2)$$降低到$$O(N)$$。极致的加速了大模型训练效率，尤其是长序列场景下的训练效率。
-+ 多模态异构专家扩展技术：结合多模态数据处理与混合专家模型（MoE）的创新架构，旨在通过针对不同模态特点构建的**异构专家模块**，解决多模态融合中的梯度不均衡问题，提升模型的多模态融合能力。多模态异构专家扩展技术在多个应用场景中展现了显著优势，例如多模态问答任务，这种技术能够更高效地处理复杂的多模态数据。
-+ 时空维度表征压缩技术：把图片和视频里的关键信息进行浓缩的方法。在不丢失重要细节的情况下，在时空维度对图片和视频的语义表征进行高效压缩，让这些数据变得更小、更高效。这样一来，训练多模态模型（也就是同时处理文字、图片、视频等多种数据的模型）时就能更快、更省资源。
-+ 基于知识点的大规模数据构建技术：知识分级采样优先把重要的、核心的知识挑出来，接着把挑出来的知识点进行压缩，去掉多余的部分，把相关的知识融合在一起。对于那些比较少见、不太好找的知识点，专门合成一些相关内容，确保这些重要的小众知识也不会被遗漏。这样一来，模型幻觉大大降低。
-+ 基于自反馈的Post-training技术：通过多种评估方式不断优化模型的后训练方法。简单来说，它让模型在训练过程中不断反思自己的表现，根据不同的评价标准调整自己，从而让模型变得更稳定、更可靠。这种技术还能显著提升预训练模型理解人类意图的能力，让模型的回答更符合人类的期望。
 
 ### RETRO
 
@@ -5497,9 +5476,45 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 
 强化学习Clipped IS-weight Policy Optimization
 
-# 其他一些公司
+# 百度
 
-## 快手的AutoThink
+## ERNIE 3.0
+
+[ERNIE 3.0: Large-scale Knowledge Enhanced Pre-training for Language Understanding and Generation](https://arxiv.org/pdf/2107.02137)结合自回归网络和autoencoding网络，让模型能够同时做语言理解和语言生成任务，可以支持zero-shot、few-shot和finetuning。有10B参数，在4TB的文本和图谱数据上训练。
+
+![ernie3.0](../assets/ernie3.0.png)
+
+## ERNIE4.5
+
+[提前免费！百度连发两款模型，我们实测：能听歌看电影，还会蛐蛐人](https://mp.weixin.qq.com/s/XKim3L7__c9VXJ2bj4FYhA)
+
+推理模型文心X1：
+
++ 应用了递进式强化学习训练方法
++ 具备 “长思维链”，采用了思维链和行动链耦合的端到端训练方式，不是只学习思考或者只学习行动，而是把思考和行动结合起来
++ 采用了多元统一的奖励系统
+
+文心4.5：
+
++ FlashMask 动态注意力掩码：[FlashMask: Efficient and Rich Mask Extension of FlashAttention](https://arxiv.org/abs/2410.01359)，通过列式稀疏掩码表示方法，将传统的二维稠密掩码矩阵转换为一维的行索引区间表示，从而显著降低了存储复杂度，从$$O(N^2)$$降低到$$O(N)$$。极致的加速了大模型训练效率，尤其是长序列场景下的训练效率。
++ 多模态异构专家扩展技术：结合多模态数据处理与混合专家模型（MoE）的创新架构，旨在通过针对不同模态特点构建的**异构专家模块**，解决多模态融合中的梯度不均衡问题，提升模型的多模态融合能力。多模态异构专家扩展技术在多个应用场景中展现了显著优势，例如多模态问答任务，这种技术能够更高效地处理复杂的多模态数据。
++ 时空维度表征压缩技术：把图片和视频里的关键信息进行浓缩的方法。在不丢失重要细节的情况下，在时空维度对图片和视频的语义表征进行高效压缩，让这些数据变得更小、更高效。这样一来，训练多模态模型（也就是同时处理文字、图片、视频等多种数据的模型）时就能更快、更省资源。
++ 基于知识点的大规模数据构建技术：知识分级采样优先把重要的、核心的知识挑出来，接着把挑出来的知识点进行压缩，去掉多余的部分，把相关的知识融合在一起。对于那些比较少见、不太好找的知识点，专门合成一些相关内容，确保这些重要的小众知识也不会被遗漏。这样一来，模型幻觉大大降低。
++ 基于自反馈的Post-training技术：通过多种评估方式不断优化模型的后训练方法。简单来说，它让模型在训练过程中不断反思自己的表现，根据不同的评价标准调整自己，从而让模型变得更稳定、更可靠。这种技术还能显著提升预训练模型理解人类意图的能力，让模型的回答更符合人类的期望。
+
+[文心4.5系列模型，正式开源！](https://mp.weixin.qq.com/s/BVQzYwcnpDzUAWvRzP5g_g)
+
+[https://huggingface.co/collections/baidu/ernie-45-6861cd4c9be84540645f35c9](https://huggingface.co/collections/baidu/ernie-45-6861cd4c9be84540645f35c9)
+
+[ERNIE 4.5 Technical Report](https://yiyan.baidu.com/blog/publication/ERNIE_Technical_Report.pdf)
+
+参考小红书上的[帖子](https://www.xiaohongshu.com/explore/6862589e000000000b02c132?app_platform=ios&app_version=8.89.2&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBLxlIs436Wy49lyj05bhyg3F53jxc7IUn7w-hlr-Yy2Y=&author_share=1&xhsshare=WeixinSession&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1751276127&share_id=04bd5b0ad1c54fc5adf59e464eea0389)
+
+
+
+# 快手
+
+## AutoThink
 
 [DeepSeek-V3 & R1合体了？ 快手开源"Auto Think"大模型，根据问题自动调节思考深度](https://mp.weixin.qq.com/s/EcH4GMRtVkvGByonRU5H-Q)
 
@@ -5546,11 +5561,15 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 
 核心设计原则是使用与用户相同的语言进行推理。在未经任何处理的数学和编程问题上进行强化学习通常会导致模型在推理过程中出现混合语言。在没有语言限制的初步实验中，Mistral也经常观察到混合英语、中文和俄语单词的输出。虽然这些输出是连贯的，但为了避免语言切换，他们在计算对话（由**问题、想法、答案**组成）的奖励时，首先通过删除LaTeX内容和代码块对这三个部分进行归一化，然后对每个部分应用fastText分类器。如果**分类器指示所有三个部分都使用相同的语言**，则会额外给予0.1的奖励。
 
-## RPT
+# 智谱
 
-[「Next-Token」范式改变！刚刚，强化学习预训练来了](https://mp.weixin.qq.com/s/UABVUoHYTDlFWWNvD5R9Og)
+## GLM-4.1V-9B-Thinking
 
-[Reinforcement Pre-Training](https://www.arxiv.org/pdf/2506.08007)
+[9B“小”模型干了票“大”的：性能超8倍参数模型，拿下23项SOTA | 智谱开源](https://mp.weixin.qq.com/s/5jcSAR6I7MyHc4INo7f9BQ)
+
+[GLM-4.1V-Thinking: Towards Versatile Multimodal Reasoning with Scalable Reinforcement Learning](https://arxiv.org/abs/2507.01006)
+
+[https://github.com/THUDM/GLM-4.1V-Thinking](https://github.com/THUDM/GLM-4.1V-Thinking)
 
 # mamba-transformer混合
 
@@ -5815,6 +5834,12 @@ DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不
 
 + 外部RL循环：生成候选的自编辑(self edit, SE)
 + 内部更新循环：使用生成的自编辑通过梯度下降更新模型
+
+# 一些奇怪的东西
+
+[Gary Marcus惊世之言：纯LLM上构建AGI彻底没了希望！MIT、芝大、哈佛论文火了](https://mp.weixin.qq.com/s/rWvDwEjf-E8faRSSBQmY0Q)
+
+[Potemkin Understanding in Large Language Models](https://arxiv.org/pdf/2506.21521)
 
 # 训练框架
 
@@ -7377,6 +7402,22 @@ Flan-T5和Flan-PaLM（[Scaling instruction-finetuned language models](https://ar
 [史上最严“中文真实性评估”：OpenAI o1第1豆包第2，其它全部不及格](https://mp.weixin.qq.com/s/T8OmSsR-PLkmOfhniGnfdQ)
 
 [Chinese SimpleQA: A Chinese Factuality Evaluation for Large Language Models](https://arxiv.org/abs/2411.07140)
+
+# 一些新的方法
+
+## RPT
+
+[「Next-Token」范式改变！刚刚，强化学习预训练来了](https://mp.weixin.qq.com/s/UABVUoHYTDlFWWNvD5R9Og)
+
+[Reinforcement Pre-Training](https://www.arxiv.org/pdf/2506.08007)
+
+## DDO
+
+[ICML 2025 Spotlight | 清华朱军组&NVIDIA提出DDO：扩散/自回归模型训练新范式，刷新图像生成SOTA](https://mp.weixin.qq.com/s/tiytMxR8QJN2fFSry1mQ1w)
+
+[Direct Discriminative Optimization: Your Likelihood-Based Visual Generative Model is Secretly a GAN Discriminator](https://arxiv.org/abs/2503.01103)
+
+[https://github.com/NVlabs/DDO](https://github.com/NVlabs/DDO)
 
 # RLHF & InstructGPT
 
@@ -10463,11 +10504,15 @@ item有各种特征，如title、img、id等
 
 纯价值驱动的列表生成可能有同质化的风险，导致多样性降低。引入相似度惩罚：
 
-## 小红书的RankGPT（落地）
+## 小红书的GenRank（落地）
+
+最开始叫rankgpt，后来改名了，GenRank
 
 [小红书RankGPT:推荐系统生成式精排的落地实践](https://mp.weixin.qq.com/s/2D31iyO07DNdTBPdHp-3Qw)
 
 [Towards Large-scale Generative Ranking](https://arxiv.org/abs/2505.04180)
+
+[「小红书」生成式方案｜Towards Large-scale Generative Ranking](https://mp.weixin.qq.com/s/C4CKr4jfm_f799KCeyFrSw)
 
 ## 美团的UniROM（落地）
 
@@ -14024,6 +14069,7 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
   + length prompts：let's use less than k tokens
   + routing by difficulty：训一个小模型，决定简单问题不思考，困难问题再思考
 
+例如[跟着台大李宏毅老师学：别让推理模型想太多](https://mp.weixin.qq.com/s/dXxuRN311-c6CN4zOl8lFg)里提到的[L1: Controlling How Long A Reasoning Model Thinks With Reinforcement Learning](https://arxiv.org/pdf/2503.04697)
 
 # 推理模型总结
 
@@ -15032,12 +15078,21 @@ Neel Nanda（deepmind）的项目
 
 [统一框架下的具身多模态推理：自变量机器人让AI放下海德格尔的锤子](https://mp.weixin.qq.com/s/PAMxpArVFwyAEVOhcq_UAw)
 
+## PEVA
+
+[伯克利&Meta面向具身智能的世界模型：让AI通过全身动作「看见」未来](https://mp.weixin.qq.com/s/id_ISbf7wVvk3pl2GCIgWA)
+
+[Whole-Body Conditioned Egocentric Video Prediction](https://arxiv.org/pdf/2506.21552)
+
+[https://dannytran123.github.io/PEVA/](https://dannytran123.github.io/PEVA/)
+
 
 # LLM+芯片设计
 
 [登上Nature的AI芯片设计屡遭质疑，谷歌发文反击，Jeff Dean：质疑者连预训练都没做](https://mp.weixin.qq.com/s/u1NNmulcykGkgZjJb_A-UA)
 
 [That Chip Has Sailed: A Critique of Unfounded Skepticism Around AI for Chip Design](https://arxiv.org/pdf/2411.10053)
+
 
 
 # 其他
