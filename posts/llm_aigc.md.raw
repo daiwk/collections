@@ -4341,7 +4341,10 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 ## Miras
 
-[It’s All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://www.arxiv.org/pdf/2504.13173)
+[谷歌Transformer过时了？清华姚班校友等三连击，爆改注意力！](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652599608&idx=2&sn=788df4ed78ee5ac6b9498d645d57bfcb&scene=21#wechat_redirect)
+
+[It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://arxiv.org/pdf/2504.13173)
+
 
 ## atlas
 
@@ -4596,11 +4599,6 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [一台3090就能跑Gemma 3 27B！谷歌发布Gemma 3全系QAT版模型](https://mp.weixin.qq.com/s/OlfazHQpsrkQ_CtyQvXbJg)
 
-## moneta+yaad+memora
-
-[谷歌Transformer过时了？清华姚班校友等三连击，爆改注意力！](https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA==&mid=2652599608&idx=2&sn=788df4ed78ee5ac6b9498d645d57bfcb&scene=21#wechat_redirect)
-
-[It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://arxiv.org/pdf/2504.13173)
 
 ## gemini-cli
 
