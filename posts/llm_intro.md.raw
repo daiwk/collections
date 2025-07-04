@@ -3066,6 +3066,14 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [Titans: Learning to Memorize at Test Time](https://arxiv.org/abs/2501.00663v1)
 
+## Miras
+
+[It’s All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization](https://www.arxiv.org/pdf/2504.13173)
+
+## atlas
+
+[Atlas: Learning to Optimally Memorize the Context at Test Time](https://arxiv.org/pdf/2505.23735)
+
 ## Transformer^2
 
 [Transformer^2要做「活」的AI模型，动态调整权重，像章鱼一样适应环境](https://mp.weixin.qq.com/s/_vdA_KygkFWqFE5Xm6CDRg)
