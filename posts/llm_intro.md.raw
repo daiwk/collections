@@ -293,15 +293,15 @@ PLM（pretrained language models），即bert等
 
 ### openai的扩展法则
 
-2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个**非嵌入参数**）的性能，提出了在**计算预算**$$c$$的条件下，$$L$$是用nats表示的交叉熵损失，模型性能与**模型规模**$$N$$、**数据集规模**$$D$$以及**训练计算量**$$C$$间存在如下幂律关系：
+2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个**非嵌入参数**）的性能，提出了在**计算预算**$$c$$的条件下，$$L$$是用nats(信息量的单位，底数为e的ln，即交叉熵是用的ln，不是log2)表示的交叉熵损失，模型性能与**模型规模**$$N$$、**数据集规模**$$D$$以及**训练计算量**$$C$$间存在如下幂律关系：
 
 XXXL(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}XXX
 
-XXXL(D)=(\frac{D_c}{D})^{\alpha _D}, {\alpha}_D\sim 0.05,N_c\sim 5.4\times 10^{13}XXX
+XXXL(D)=(\frac{D_c}{D})^{\alpha _D}, {\alpha}_D\sim 0.095,D_c\sim 5.4\times 10^{13}XXX
 
 XXXL(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}XXX
 
-其中，$$N_c$$表示非嵌入参数数量，$$D_c$$表示训练token数量,$$C_c$$表示FP-days。
+其中，$$N_c$$表示非嵌入参数数量，$$D_c$$表示训练token数量，$$C_c$$表示PF-days，其中$$1 pf-days = 10^15\times 86400=8.64\times 10^19$$浮点数运算。
 
 [Go Wider Instead of Deeper](https://arxiv.org/pdf/2107.11817)说了，transformer效果的提升**不在于计算量的变大**，而应该在于通过**提升模型的hidden dim**来增加模型参数量
 
@@ -3124,6 +3124,14 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 [LLM进入「拖拽时代」！只靠Prompt，几秒定制一个大模型，效率飙升12000倍](https://mp.weixin.qq.com/s/geOn7zyJRQwfJra38EjcxQ)
 
 [Drag-and-Drop LLMs: Zero-Shot Prompt-to-Weights](https://arxiv.org/abs/2506.16406)
+
+## 2-simplicial attention
+
+[原来Scaling Law还能被优化？Meta这招省token又提效](https://mp.weixin.qq.com/s/vXtPIifdG-k3t_jdYbrBSg)
+
+[Fast and Simplex: 2-Simplicial Attention in Triton](https://arxiv.org/pdf/2507.02754.pdf)
+
+将Transformer的点积注意力机制泛化到了三线性形式。
 
 # Gemmini&Gemma系列
 
