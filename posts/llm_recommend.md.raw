@@ -2333,18 +2333,20 @@ XXX
 
 [Scaling Transformers for Discriminative Recommendation via Generative Pretraining](https://arxiv.org/pdf/2506.03699)
 
-+ 生成式预训练：使用Transformer架构，基于用户行为序列进行自回归生成训练，预测下一项。
-+ 判别式训练：使用上面训练的Transformer，输入除了用户行为序列、候选项，还包括其他特征，输出分类概率。
++ 生成式预训练：基于用户行为序列进行自回归生成训练，预测下一个item。
++ 判别式训练：使用上面训练的Transformer，除了用户行为序列和target item之外，还输入其他特征，输出正常的分类概率。
 
 提出五种参数转移策略：
 
-+ 无转移（NT）：从头训练，作为基线。
-+ 全转移（FT）：转移所有参数（稀疏+密集）。
-+ 稀疏转移（ST）：仅转移稀疏参数（如嵌入表）。
-+ 全转移+稀疏冻结（FT&SF）：转移所有参数并冻结稀疏参数。
-+ 稀疏转移+稀疏冻结（ST&SF）：转移稀疏参数并冻结。
++ no transfer（NT）：从头训练，作为基线。
++ full transfer（FT）：转移所有参数（sparse+dense）。
++ sparse transfer（ST）：仅转移sparse
++ FT&SF：转移所有参数，冻结sparse。
++ ST&SF：转移并冻结sparse。
 
 ![](../assets/gpsd.png)
+
+实验发现ST&SF和FT&SF效果最好，上线时用的是ST&SF，可以理解为只是用生成式来训了一下sparse emb，然后freeze住
 
 ## GAVE
 
