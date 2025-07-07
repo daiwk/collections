@@ -29,21 +29,21 @@ change_format llm_recommend llm_recommend 1.7
 change_format llm_o1 llm_o1 1.8
 change_format llm_others llm_others 1.9
 
-cat ./posts/pre.md.raw  \
-        ./posts/pre_llm.md.raw \
-        ./posts/llm_intro.md.raw \
-        ./posts/llm_archs.md.raw \
-        ./posts/llm_sft_and_usages.md.raw \
-        ./posts/llm_alignment.md.raw \
-        ./posts/llm_multimodal.md.raw \
-        ./posts/llm_recommend.md.raw \
-        ./posts/llm_o1.md.raw \
-        ./posts/llm_others.md.raw \
-> ./posts/llm_aigc.md.raw
+# cat ./posts/pre.md.raw  \
+#         ./posts/pre_llm.md.raw \
+#         ./posts/llm_intro.md.raw \
+#         ./posts/llm_archs.md.raw \
+#         ./posts/llm_sft_and_usages.md.raw \
+#         ./posts/llm_alignment.md.raw \
+#         ./posts/llm_multimodal.md.raw \
+#         ./posts/llm_recommend.md.raw \
+#         ./posts/llm_o1.md.raw \
+#         ./posts/llm_others.md.raw \
+# > ./posts/llm_aigc.md.raw
 
-change_format llm_aigc llm_aigc 1
+# change_format llm_aigc llm_aigc 1
 
-cp ./posts/pre.md.raw ./posts/1.llm_aigc.md
+# cp ./posts/pre.md.raw ./posts/1.llm_aigc.md
 
 change_format recommend recommend 2
 change_format full collections 9
