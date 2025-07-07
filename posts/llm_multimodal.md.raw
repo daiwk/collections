@@ -1197,3 +1197,14 @@ DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视�
 
 [https://github.com/klingfoley/Kling-Foley](https://github.com/klingfoley/Kling-Foley)
 
+## Stream-Omni
+
+[Stream-Omni：同时支持各种模态组合交互的文本-视觉-语音多模态大模型](https://mp.weixin.qq.com/s/VFUvLoJsT7rOVjhCvLLmBA)
+
+[Stream-Omni: Simultaneous Multimodal Interactions with Large Language-Vision-Speech Model](https://arxiv.org/abs/2506.13642)
+
+[https://github.com/ictnlp/Stream-Omni](https://github.com/ictnlp/Stream-Omni)
+
+[https://huggingface.co/ICTNLP/stream-omni-8b](https://huggingface.co/ICTNLP/stream-omni-8b)
+
+
