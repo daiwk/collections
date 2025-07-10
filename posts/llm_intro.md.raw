@@ -4478,6 +4478,12 @@ XXX
 
 [VAMBA: Understanding Hour-Long Videos with Hybrid Mamba-Transformers](https://arxiv.org/pdf/2503.11579)
 
+## 干预训练使长度泛化
+
+[Transformer死角，只需500步后训练，循环模型突破256k长度泛化极限](https://mp.weixin.qq.com/s/l-J4N6hlFyiCHRmkdeIC6g)
+
+[Understanding and Improving Length Generalization in Recurrent Models](https://arxiv.org/pdf/2507.02782)
+
 # agentic AI
 
 [再见AI Agents，你好Agentic AI！](https://mp.weixin.qq.com/s/5_pjJLo5zDCwygcgM4A6xQ)
