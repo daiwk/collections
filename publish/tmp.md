@@ -1,82 +1,43 @@
-## GAVE
 
-[sigir'25「快手」生成式出价-冠军方案｜Generative Auto-Bidding with Value-Guided](https://mp.weixin.qq.com/s/fttTPY6Q30gWaSwcoIpUsA)
 
-[Generative Auto-Bidding with Value-Guided Explorations](https://arxiv.org/pdf/2504.14587)
+# openai的扩展法则
 
-用序列（Decision Transformer）代替RL，再利用离线强化的方法去弥补没有模拟环境的缺点。DT的一些其他应用：
+2020年,openai的[Scaling laws for neural language models](https://arxiv.org/pdf/2001.08361.pdf)通过拟合模型在不同数据大小（2000w到230亿个token）、不同的模型大小（7.68亿到15亿个**非嵌入参数**）的性能，提出了在**计算预算**$c$的条件下，$L$是用nats(信息量的单位，底数为e的ln，即交叉熵是用的ln，不是log2)表示的交叉熵损失，模型性能与**模型规模**$N$、**数据集规模**$D$以及**训练计算量**$C$间存在如下幂律关系：
 
-+ RAG：[Retrieval-Augmented Decision Transformer: External Memory for In-context RL](https://arxiv.org/pdf/2410.07071)
-+ 序列推荐：[Sequential Recommend for Optimizing Both ImmediateFeedback and Long-term Retention](https://arxiv.org/pdf/2404.03637)
-+ 重排：[PISDR: Page and Item Sequential Decision for Re-ranking Based on Offline Reinforcement Learning](https://raw.githubusercontent.com/mlresearch/v260/main/assets/yuan25a/yuan25a.pdf)
+$$L(N)=(\frac{N_c}{N})^{\alpha _N}, {\alpha}_N\sim 0.076,N_c\sim 8.8\times 10^{13}$$
 
-MDP假设是状态独立的，本质上忽略了竞价序列中的**时序依赖**关系。
+$$L(D)=(\frac{D_c}{D})^{\alpha _D}, {\alpha}_D\sim 0.095,D_c\sim 5.4\times 10^{13}$$
 
-自动出价：一般广告主会设置一个最低ROI（即价值/成本）作为约束，或者说是最大平均成本（CPA，即成本/价值），广告主给定的约束假设是$C$。
+$$L(C)=(\frac{C_c}{C})^{\alpha _C}, {\alpha}_C\sim 0.05,C_c\sim 3.1\times 10^{8}$$
 
-## DT
+其中，$N_c$表示非嵌入参数数量，$D_c$表示训练token数量，$C_c$表示PF-days，其中$1 PF-days = 10^{15}\times 86400=8.64\times 10^{19}$浮点数运算。
 
-DT的输入(reward, state, action)三元组的序列，输出是预测的action，
+[Go Wider Instead of Deeper](https://arxiv.org/pdf/2107.11817)说了，transformer效果的提升**不在于计算量的变大**，而应该在于通过**提升模型的hidden dim**来增加模型参数量
 
-**注意：对于t时刻来讲，输入的是0到t-1时刻的r+s+a，但只输入了t时刻的r和s**
+# Chinchilla扩展法则
 
-+ $s_t$：历史出价策略、剩余预算、广告的在线时间等
-+ $a_t$：出价因子，在广告的value上乘以a，$b_t=a_tv_t$
-+ $rw_t$：**t到t+1**所有候选impression的总value，$r w_t=\sum_{n=0}^{N_t} x_{n_t} v_{n_t}$
-+ RTG（return to go） $r_t$：现在**到未来**的总收益，$r_t=\sum_{t^{\prime}=t}^T r w_{t^{\prime}}$
-
-## GAVE
-
-![](../assets/gave.png)
-
-预测如下4个值：
-
-+ 当前时刻的action：$\hat{a}_t$
-+ 当前时刻的探索系数：$\hat{\beta}_{t}$，其实是就是在$a_t$前面乘一个$\beta$得到$\tilde{a}_t=\hat{\beta}_t a_t$，然后约束一下$\beta$的范围在0.5到1.5之间（sigmoid(x)+0.5就行）可以减轻OOD(Out-of-Distribution)问题。
-
-假设$\tilde{r}_{t+1}$是$\tilde{a}_{t+1}$的RTG，而$\hat{r}_{t+1}$是$a_t$的RTG，定义了如下的w（即$\tilde{r}_{t+1}$比$\hat{r}_{t+1}$大的概率）
+DeepMind在[Training compute-optimal large language models](https://arxiv.org/pdf/2203.15556.pdf)中提出了Chichilla扩展法则来指导LLM**最优计算量**的训练。通过变化更大范围的模型大小（7000w到160亿参数）和数据大小（50亿到5000亿个token）进行实验，拟合了如下的扩展法则：
 
 $$
-\left\{\begin{array}{l}
-\left.\left.\tilde{r}_{t+1}=\operatorname{GAVE}\left(r_{t-M}, s_{t-M}, a_{t-M}, \ldots, r_t, s_t, \tilde{a}_t\right)\right)\right) \\
-w_t=\operatorname{Sigmoid}\left(\alpha_r \cdot\left(\tilde{r}_{t+1}-\hat{r}_{t+1}\right)\right)
-\end{array}\right.
+L(N, D)=E+\frac{A}{N^\alpha}+\frac{B}{D^\beta}
 $$
 
-此外，还加了如下的辅助损失，其中$w'$和$\tilde{a}'$表示的是不更新梯度的$w$和$\tilde{a}$。第一个$L_r$让$\hat{r}_{t+1}$接近真实值，第二个$L_a$表示如果$w_t>0.5$，即$\tilde{r}_{t+1}$比$\hat{r}_{t+1}$大得比较多，第二项占主导，即让预测的action去你和探索的action $\tilde{a}_t'$，反之让预测的action去你和实际的action $a_t$
+其中$E=1.69,A=406.4,B=410.7,\alpha = 0.34, \beta =0.28$，通过在约束条件$C\approx 6ND$下优化损失$L(N,D)$，将计算预算最优地分配给模型大小和数据大小的方法：
 
 $$
-\left\{\begin{array}{l}
-L_r=\frac{1}{M+1} \sum_{t-M}^t\left(\hat{r}_{t+1}-r_{t+1}\right)^2 \\
-L_a=\frac{1}{M+1} \sum_{t-M}^t\left(\left(1-w_t^{\prime}\right) \cdot\left(\hat{a}_t-a_t\right)^2+w_t^{\prime} \cdot\left(\hat{a}_t-\tilde{a}_t^{\prime}\right)^2\right)
-\end{array}\right.
+N_{o p t}(C)=G\left(\frac{C}{6}\right)^a, \quad D_{o p t}(C)=G^{-1}\left(\frac{C}{6}\right)^b
 $$
 
-+ 下一时刻的RTG值：$\hat{r}_{t+1}$，其实就是把CPA的约束加到RTG的计算里来：
+其中$a=\frac{\alpha}{\alpha+\beta}$，$b=\frac{\beta}{\alpha+\beta}$，$G$是由$A,B,\alpha,\beta$计算出的扩展系数。
 
-$$
-\left\{\begin{array}{l}
-C P A_t=\frac{\sum_i^{I_t} x_i c_i}{\sum_i^{I_t} x_i v_i} \\
-\mathbb{P}\left(C P A_t ; C\right)=\min \left\{\left(\frac{C}{C P A_t}\right)^\gamma, 1\right\} \\
-S_t=\mathbb{P}\left(C P A_t ; C\right) \cdot \sum_i^{I_t} x_i v_i \\
-r_t=S_T-S_{t-1}
-\end{array}\right.
-$$
+随着计算预算的增加，
 
-+ 下一时刻的价值分：$\hat{V}_{t+1}$
++ openai的扩展法则更偏向于将更大预算分给**模型大小**，因为其对比各模型时使用了固定的训练数据量和学习率等超参，低估了数据量的作用。每增加10倍的计算量，应该让数据集大小增加为约1.8倍，模型参数量增加为约5.5倍。即**模型参数量更加的重要**。
++ Chinchilla扩展法则认为**模型大小和数据大小要同比例增加**，即$a$和$b$取值差不多。因为其在无视模型大小的前提下，发现设置与数据量差不多match的学习率能获得更好的loss。每增加10倍的计算量，应该让数据集大小增加为约3.16倍，模型参数量也增加为约3.16倍。即**数据集大小和模型参数量一样重要**。
 
-目标是如何高效探索，用了一个expectile regression(IQL里的思想，[Offline Reinforcement Learning with Implicit Q-Learning](https://arxiv.org/abs/2110.06169))，如下，其中$L_2^\tau(y-m(x))$是一个loss函数，用模型$m(x)$来预测$y$的分位数$\tau \in (0,1)$，$\tau=0.85$就是让预估价值$\hat{V}_{t+1}$去预测top百分之85的reward $r_{t+1}$
+然而，有一些能力（如涌现）无法根据扩展法则进行预测，只有当模型达到一定规模时才会出现。
 
-$$
-\begin{aligned}
-L_e & =\frac{1}{M+1} \sum_{t-M}^t\left(L_2^\tau\left(r_{t+1}-\hat{V}_{t+1}\right)\right) \\
-& =\frac{1}{M+1} \sum_{t-M}^t\left(\left|\tau-\mathbb{1}\left(\left(r_{t+1}-\hat{V}_{t+1}\right)<0\right)\right|\left(r_{t+1}-\hat{V}_{t+1}\right)^2\right)
-\end{aligned}
-$$
+![chinchilla-law](../assets/chinchilla-law.png)
 
-而对于探索的reward $\tilde{r}_{t+1}$来讲，则不更新价值的梯度，即$\hat{V}_{t+1}^{\prime}$，只需要约束reward在价值附近就行
-
-$$
-L_v=\frac{1}{M+1} \sum_{t-M}^t\left(\tilde{r}_{t+1}-\hat{V}_{t+1}^{\prime}\right)^2
-$$
+飘红的就是常见的10B模型，大概要205B的token来训练，能达到**计算最优点**，当然**并不一定是loss最小的点**，这个可以参考llama3的现象
 
