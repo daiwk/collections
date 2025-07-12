@@ -4619,7 +4619,7 @@ DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不
 + encoder + chunking：其中chunking模块包括两部分
     + routing module：通过相似度评分预测相邻元素之间的边界，可以理解为把原始输入分成k个词（chunk）
     + downsampler：基于边界进行下采样，即将每个边界词产出一个向量，共k个
-+ 主网络：
++ 主网络：可以是任意网络，例如transformer或者mamba
 + dechunking + decoder：其中dechunking模块包括两部分：
     + smoothing module：将离散的chunk转化成插值的表示，用的是指数滑动平均（EMA），所以图里看着有点渐变的那个样子
     + upsampler：基于边界还原成m个字，用到了ste（Straight-Through Estimator）的技巧来保证训练稳定：
