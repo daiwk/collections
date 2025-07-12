@@ -950,11 +950,17 @@ item有各种特征，如title、img、id等
 
 [「小红书」生成式方案｜Towards Large-scale Generative Ranking](https://mp.weixin.qq.com/s/C4CKr4jfm_f799KCeyFrSw)
 
-## 美团的UniROM（落地）
+## 美团的EGA-V1（落地）
 
 [美团UniROM:广告End2End全链路生成式建模范式](https://mp.weixin.qq.com/s/GfuxMwprP5TVSUTBl7Wc6w)
 
-[One Model to Rank Them All: Unifying Online Advertising with End-to-End Learning](https://arxiv.org/abs/2505.19755)
+[EGA-V1: Unifying Online Advertising with End-to-End Learning](https://arxiv.org/abs/2505.19755)
+
+## 美团的EGA-V2（未落地）
+
+[EGA-V2: An End-to-end Generative Framework for Industrial Advertising](https://arxiv.org/abs/2505.17549)
+
+
 
 ## Meta的RPG（没落地）
 
