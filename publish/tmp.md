@@ -1,16 +1,38 @@
+[MTGR: Industrial-Scale Generative Recommendation Framework in Meituan](https://www.arxiv.org/pdf/2505.18654v2)
 
-![](../assets/h-net.png)
+听说是替换了精排
 
-分层架构，假设输入有m个字
+传统模型：
 
-+ encoder + chunking：其中chunking模块包括两部分
-    + routing module：通过相似度评分预测相邻元素之间的边界，可以理解为把原始输入分成k个词（chunk）
-    + downsampler：基于边界进行下采样，即将每个边界词产出一个向量，共k个
-+ 主网络：
-+ dechunking + decoder：其中dechunking模块包括两部分：
-    + smoothing module：将离散的chunk转化成插值的表示，用的是指数滑动平均（EMA），所以图里看着有点渐变的那个样子
-    + upsampler：基于边界还原成m个字，用到了ste（Straight-Through Estimator）的技巧来保证训练稳定：
-        + 前向：1和soomthing的输出z相乘
-        + 反向：routing的输出p处理一下得到c（如果是边界那就是p，不是边界就用1-p，所以图中c和p有的一样，有的是“互补”的），和soomthing的输出z来相乘，其实就是保证有连续的梯度
+![](../assets/mtgr-tradition.png)
 
-![](../assets/hnet-upsampler.png)
+其中：
+
++ seq：用户的长期历史序列，静态的
++ rt：用户的实时序列，动态的
++ cross：历史与当前item交叉后的ctr/cvr
+
+![](../assets/mtgr.png)
+
++ 人口属性组成若干个token放在最前面
++ 然后放静态序列seq
++ 然后放rt序列，注意这里是由近及远地排列，即先发生rt2再发生rt1
++ 最后放若干个target（把cross放到candidate里了），也是由近及远地排列
++ 堆叠若干层hstu后得到target1、2、3的预估logit
+
+mask规则（深色是mask，白色可见）：
+
++ 人口属性和静态序列都是可见的
++ rt序列未来的看不到现在的，即rt2看不到rt1
++ 3个target：
+    + 相互之间仅自己可见
+    + 由于发生时间可能夹杂在rt1和rt2之间，所以需要按时间戳来决定它们对rt1和2的mask，例如图中的：
+        + 先有target3：但target3比rt2还早，所以它看不到rt1、rt2
+        + 再有target2：但target2在rt2和rt1之间，所以它看得到rt2，看不到rt1
+        + 最后有target1：且target1发生在rt2和rt1之后，所以它看得以rt2和rt1
+
+总结一下事件的发生顺序：
+
+```python
+seq2->seq1->target3->rt2->target2->rt1->target1
+```
