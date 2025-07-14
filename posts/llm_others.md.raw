@@ -918,6 +918,26 @@ Neel Nanda（deepmind）的项目
 
 [https://monitor.transluce.org/dashboard/chat](https://monitor.transluce.org/dashboard/chat)
 
+## llm反思
+
+[ACL 2025｜自我怀疑还是自我纠正？清华团队揭示LLMs反思技术的暗面](https://mp.weixin.qq.com/s/Y8AOILcmnwoW68YrCR3LAQ)
+
+[Understanding the Dark Side of LLMs’ Intrinsic Self-Correction](https://arxiv.org/abs/2412.14959)
+
+反思失败的原因：
+
++ 内部答案波动：在多轮问答任务上，「你确定吗？请思考后再回答」的提示语会让LLMs反复更改答案。说明反思技术会造成LLMs内部答案的波动，表现出「自我怀疑」的倾向，最终可能导致回答出错
++ prompt偏差：LLMs在反思失败时会过度关注提示语「你确定吗？想一想再回答。」，而忽略问题本身；当反思失败时，LLMs在76.1%的情况下会更关注反思指令，而当坚持正确答案时，**LLMs对反思指令和问题本身的关注度非常相近**，分别为50.8%和49.2%。
++ 认知偏差：
+    + 过度思考：过度制定策略而不采取行动
+    + 认知过载：在长文本的反思中忽略关键信息
+    + 完美主义偏差：为了追求高效性而忽略环境限制
+
+反思失败的缓解方法：
+
++ 问题重复：在反思prompt的最后附上初始问题以引导LLMs维持对初始问题的关注。
++ 少样本微调：不引入知识的少样本（4-10 个样本）微调可纠正反思失败的异常行为。
+
 # Lifelong learning of LLM
 
 (toread)
@@ -996,6 +1016,14 @@ Neel Nanda（deepmind）的项目
 [Whole-Body Conditioned Egocentric Video Prediction](https://arxiv.org/pdf/2506.21552)
 
 [https://dannytran123.github.io/PEVA/](https://dannytran123.github.io/PEVA/)
+
+## MTU3D
+
+[ICCV 2025满分论文：一个模型实现空间理解与主动探索大统一](https://mp.weixin.qq.com/s/EpPhCVDtCZE90GsRflvrWw)
+
+[Move to Understand a 3D Scene: Bridging Visual Grounding and Exploration for Efficient and Versatile Embodied Navigation](https://arxiv.org/abs/2507.04047)
+
+[https://github.com/MTU3D/MTU3D](https://github.com/MTU3D/MTU3D)
 
 
 # LLM+芯片设计

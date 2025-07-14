@@ -1088,6 +1088,19 @@ RLVR（可验证奖励的强化学习）只是将采样做得更有效率，而�
 
 [https://github.com/GeniusHTX/TALE](https://github.com/GeniusHTX/TALE)
 
+## Q-chunking
+
+[用动作分块突破RL极限，伯克利引入模仿学习，超越离线/在线SOTA](https://mp.weixin.qq.com/s/y_g6Buw0DEzW0gXVOqYPdg)
+
+[Reinforcement Learning with Action Chunking](https://arxiv.org/abs/2507.07969)
+
+[https://github.com/ColinQiyangLi/qc](https://github.com/ColinQiyangLi/qc)
+
+传统强化学习方法在此类任务中的探索能力常常不足，因为只有在执行一系列较长的动作序列后才能获得奖励，这导致合理时间内找到有效策略变得极其困难。
+
+模仿学习通过观察专家的行为并模仿其策略来学习，通常用于强化学习的早期阶段，尤其是在状态空间和动作空间巨大且难以设计奖励函数的场景。
+
+Q-chunking将模仿学习中的动作分块（action chunking）引入到基于时序差分（Temporal Difference, TD）的强化学习中。
 
 ## 小结
 
@@ -1294,7 +1307,7 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [Claude 3.7 Sonnet System Card](https://assets.anthropic.com/m/785e231869ea8b3b/original/claude-3-7-sonnet-system-card.pdf)
 
-# seed-thinking
+# 字节
 
 [200B参数击败满血DeepSeek-R1，字节豆包推理模型Seed-Thinking-v1.5要来了](https://mp.weixin.qq.com/s/wUzb58pUnZ1s7fO9aYs1vQ)
 
