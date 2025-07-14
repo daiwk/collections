@@ -2106,6 +2106,8 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
 
+[语言模型窗口外推技术综述](https://mp.weixin.qq.com/s/5CqrlUZHrciMAFmeV2oYdw)
+
 以中文为例，大部分模型每个token对应的中文字数都>1.5个字，所以200k的token就对应30w字的上下文
 
 对长文本的几个要求：
@@ -2162,9 +2164,8 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
 
-## 外推问题
+## 待归类
 
-[语言模型窗口外推技术综述](https://mp.weixin.qq.com/s/5CqrlUZHrciMAFmeV2oYdw)
 
 ### longRoPE
 
