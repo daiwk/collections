@@ -2096,13 +2096,13 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
 
-
-
-# 新的模型结构
+# long context与外推
 
 ## 长上下文的问题
 
 [长序列（Long Context）大模型笔记](https://mp.weixin.qq.com/s/nUX3MbKbyxw6b6mhgoL-Mw?poc_token=HK37E2ejmhfX-g6qnVG3pIxFJXZEVk-vPpwriYAj)
+
+[https://zhuanlan.zhihu.com/p/689394585](https://zhuanlan.zhihu.com/p/689394585)
 
 [LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
 
@@ -2184,6 +2184,9 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [https://github.com/chuanyang-Zheng/DAPE](https://github.com/chuanyang-Zheng/DAPE)
 
+
+
+# 新的模型结构
 
 ## retrieval head
 
@@ -4202,6 +4205,13 @@ QwenLong-L1：
 
 [Kimi 16B胜GPT-4o！开源视觉推理模型：MoE架构，推理时仅激活2.8B](https://mp.weixin.qq.com/s/EsjsqnInCOJpU9SpJgyoOA)
 
+## K2
+
+[Kimi K2 发布并开源，擅长代码与 Agentic 任务](https://mp.weixin.qq.com/s/2RPmHf_8KqIjXbY5jLdztQ)
+
+[https://bigeagle.me/2025/07/kimi-k2/](https://bigeagle.me/2025/07/kimi-k2/)
+
+参考：[https://aider.chat/](https://aider.chat/)，[https://github.com/CharlesQ9/Alita](https://github.com/CharlesQ9/Alita)
 
 # MiniMax
 
