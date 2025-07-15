@@ -3108,4 +3108,26 @@ content encoder的训练：对比学习
 serving：2个head分别建索引，在线同一个trigger分别从这2个索引召回，再merge
 
 
-## 
+## ULIM
+
+[User Long-Term Multi-Interest Retrieval Model for Recommendation](https://arxiv.org/pdf/2507.10097)
+
+![](../assets/ulim.png)
+
++ Category-Aware Hierarchical Dual-Interest Learning：
+    + 短序列pooling得到p，同时过self-attn，然后和user profile一起过nn
+    + 长序列按类别分组，分成K段得到“长类目序列”，每段（当成k/v）和p（当成query）算target-attn，然后和user profile一起过nn，得到K个向量
+    + target item和短序列的输出算内积，和长序列对应类目的emb的输出算内积
++ Pointer-Enhanced Cascaded Category-to-Item Retrieval：
+    + PGIN（Pointer-Generator Interest Network）：
+        + pointer网络：长类目序列和短序列按时间序去重并merge得到query，然后和原始长类目序列和短序列分别算target attn，再过一个nn映射到每个类目的概率分布
+        + generator网络：长类目序列和短序列各自self attn，然后分别和user profile算taget attn，过nn后映射到每个类目的概率分布
+        + 通过一个p_poi将两个分布加权求和
+    + Category-Constrained Retrieval：取PGIN产出的top K个类目，产出K+1个向量，然后去并行地做ANN召回：
+        + 每个类目把对应的长类目序列拿出来，得到K个向量
+        + 把短序列向量取出来
+
+最终是在淘宝秒杀app上的，有一些收益
+论文中短序列最多100，不过作者没有说长序列有多长
+
+
