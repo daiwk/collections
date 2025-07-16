@@ -1329,6 +1329,12 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 [VAPO: Efficient and Reliable Reinforcement Learning for Advanced Reasoning Tasks](https://arxiv.org/abs/2504.05118)
 
+## POLARIS
+
+[Seed Research｜4B 模型数学推理接近 235B 表现，Seed 最新强化学习配方全面开源](https://mp.weixin.qq.com/s/6ohGURiGs9z-Osh_Ew7Grw)
+
+[https://github.com/ChenxinAn-fdu/POLARIS](https://github.com/ChenxinAn-fdu/POLARIS)
+
 # 多模态推理
 
 ## 综述
