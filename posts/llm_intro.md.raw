@@ -3152,6 +3152,51 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [Energy-Based Transformers are Scalable Learners and Thinkers](https://arxiv.org/pdf/2507.02092)
 
+## MoR
+
+[Transformer终结者！谷歌DeepMind全新MoR架构问世，新一代魔王来了](https://mp.weixin.qq.com/s/Uv-F9lIELcSr9PlTo9a6hQ)
+
+[「有望成为Transformer杀手」，谷歌DeepMind新架构MoR实现两倍推理速度](https://mp.weixin.qq.com/s/6IUoCHjm9P_FZllxBlQHPQ)
+
+[Mixture-of-Recursions: Learning Dynamic Recursive Depths for Adaptive Token-Level Computation](https://arxiv.org/pdf/2507.10524)
+
+[https://github.com/raymin0223/mixture_of_recursions](https://github.com/raymin0223/mixture_of_recursions) 暂时还没有
+
+![](../assets/mor.png)
+
++ 每个recurrent step里有固定层数的transformer，router决定每个token是pass through还是exit
++ recurrent block参数有一些是共享的
++ 一个句子里，有的token需要过多个block，有的不重要的token只需要过很少的block
+
+![](../assets/mor-cycle-strategy.png)
+
+其实就是哪些层在不同的recurrent block之间是共享的，总共有$$L$$个block，每个block里有$$N_r$$层
+
++ Cycle Strategy：所有block都共享
++ Middle-Cycle Strategy：block里第0层和最后一层不共享，其他的共享。【实验发现这种效果最好】
++ Sequence Strategy：参考下图(gpt解释的)
++ Middle-Sequence Strategy：把middle-cycle的机制用到sequence strategy里
+
+![](../assets/mor-sequence-cycle.png)
+
+![](../assets/mor-2.png)
+
+工程相关：
+
+routing机制：
+
++ Expert-choice routing：每个recursion step，routing选出top k的token继续，这里的k逐个step递减。优点是对计算负载均衡，缺点是会破坏causal，有泄露。
++ Token-choice routing：每个token只做一次routing计算，决定它走后面多少个recursion step。优点是不会泄露，但缺点是可能负载不均
+
+Kv caching机制：相比原始transformer都有优化
+
++ recursion-wise KV caching：在某一个recursion step，只有对被路由过来的token做kv cache并计算attention。相比下面的方法，kv cache的io更小，attention flops更低
++ recursive KV sharing：在第一个recursion step生成并缓存所有token的kv cache，然后在之后所有层中重复使用。相比上面的方法，kv cache存储更少，io更大，attention flops更高
+
+对比如下：
+
+![](../assets/mor-routing-cache-compare.png)
+
 # Gemmini&Gemma系列
 
 ## Gemini 1.0
