@@ -1207,4 +1207,38 @@ DAM(Describe Anything Model)多模态大语言模型，可以生成图像或视�
 
 [https://huggingface.co/ICTNLP/stream-omni-8b](https://huggingface.co/ICTNLP/stream-omni-8b)
 
+## ThinkDiff
 
+[ICML 2025｜多模态理解与生成最新进展：港科联合SnapResearch发布ThinkDiff，为扩散模型装上大脑](https://mp.weixin.qq.com/s/2A2NuLLcqQ8-bu8M-_-5uA)
+
+[I Think, Therefore I Diffuse: Enabling Multimodal In-Context Reasoning in Diffusion Models](https://arxiv.org/abs/2502.10458)
+
+不过这是2月的论文，现在代码还没放出来：[https://github.com/MiZhenxing/ThinkDiff](https://github.com/MiZhenxing/ThinkDiff)
+
+将现有VLM的推理能力迁移给扩散模型，使得最终的模型能够真正理解图像与文本提示之间的逻辑关系，以此为基础进行高质量的图像生成。
+
+![](../assets/thinkdiff-past.png)
+
+之前的工作，如pixart-alpha等，其实都是拿一个encoder-decoder的llm（例如T5），把encoder拿出来，freeze住，然后拿来训练diffusion的decoder
+
+![](../assets/thinkdiff.png)
+
+之前的reconstruction-based diffusion finetuning：
+
++ 训练+推理：拿text的encoder，还有图像的encoder过一个可训练的aligner，加在一起过diffusion decoder，去根据diffusion的loss来训练diffusion decoder和aligner
+
+ThinkDiff的vision-language training：
+
++ 训练：输入图像和文本经过VLM输入aligner，然后走llm的decoder生成文本，去算文本loss（如image caption类的任务）
++ 推理：同样输入图像和文本经过VLM输入tune过的aligner，然后改成接diffusion的decoder，直接生成图像
+
+![](../assets/thinkdiff-lvlm+clip.png)
+
++ Thinkdiff-LVLM：
+  + 训练：同上的训练部分，不过这里是拿结果的一部分(girl with)作为输入，并mask掉后面的(pearl earring)，通过llm decoder来预估被mask掉的部分
+  + 推理：同上的推理部分，改下prompt
++ Thinkdiff-CLIP：
+  + 训练：同上，把VLM改成CLIP抽取图像emb，llm encoder抽取文本emb，输入改成结果的一部分(girl with)，同样预测pearl earring
+  + 推理：同上
+
+aligner看着是一个类似ffn的结构，即norm(mlp(gelu(mlp)))
