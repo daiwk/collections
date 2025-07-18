@@ -2379,7 +2379,7 @@ XXX
 
 整体过程：
 
-+ 优化SA的参数$$\Theta^{S A}$$：用$$$$\mathcal{L}_{\text {sta }}\left(\hat{y}^{S A}, y\right)$$
++ 优化SA的参数$$\Theta^{S A}$$：用$$\mathcal{L}_{\text {sta }}\left(\hat{y}^{S A}, y\right)$$
 + 计算$$\operatorname{SG}\left(\hat{y}^{S A}\right)$$
 + 优化VM的参数$$\Theta^{V}$$：用$$\mathcal{L}_{\mathrm{ah}}+\mathcal{L}_{\mathrm{sa}}$$
 
