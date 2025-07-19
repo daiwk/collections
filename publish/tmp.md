@@ -1,26 +1,70 @@
+# 模型结构
 
-![](../assets/egav1-hfs.png)
+[https://huggingface.co/moonshotai/Kimi-K2-Instruct](https://huggingface.co/moonshotai/Kimi-K2-Instruct)
 
-+ 传统的特征抽取服务如左图，每个阶段都会rpc请求对应特征
-+ hfs：user侧只取一次，item侧只保留类别型特征，干掉交叉特征，全库取一次
+| 项目                             | 值                      |
+|---------------------------|----------------------|
+| 总参数量               | 1T                          |
+| 激活参数量             | 32B                         |
+| 层数   | 61                          |
+| Dense层数           | 1                           |
+| Attention Hidden Dimension       | 7168                        |
+| MoE Hidden Dimension (每个 Expert) | 2048                      |
+| Attention Head数        | 64                          |
+| 专家数                | 384                         |
+| 每个token选择的专家数       | 8                           |
+| 共享专家数         | 1                           |
+| Vocabulary Size                  | 160K                        |
+| Context Length                   | 128K                        |
+| Attention              | MLA                         |
+| 激活函数              | SwiGLU                      |
 
-![](../assets/egav1.png)
+# MuonClip优化器
 
-+ 输入：user长度为L的序列、user和context特征、全库N个候选、最终的K个广告位（slot）
-+ recformer
-    + Global Cluster Former(GCF)：聚类版本的self-attention，通过一个可学习的聚类矩阵将序列长度从$N$（候选10w量级，用户序列千级别）压缩到$N_c$（大概100），作为新的K和V，再去和原始的Q(长度为$N$)做attention，算完后长度还是$N$
-    + Mid-fusion Interest-Former(MIF)：用户序列和候选序列一起算cluster attention，即互相算一个target attention
-    + 因为是mid-fusion，所以就是比如先2层gcf，再一层mif，这样堆叠
-    + 最终输出N个候选的表示，和user emb concat一起，过mlp得到预估ctr
-+ aucformer
-    + Non-autoregressive generator(NAR-generator)：$N$个候选$H_{ad}\in R^{N\times d}$，$K$个广告位$T\in R^{K\times d}$，相乘得到分配矩阵$A=H_{ad}T^T\in R^{N\times K}$，结合出价$b$得到广告$i$在位置$k$上的概率：$\mathrm{z}_{i ; k}=\operatorname{Softmax}\left(\left[e^{w_z} \times \hat{q}_j^{\mathrm{ctr}} \times b_j+\mathbf{A}_{j, k}\right]_{j=1}^K\right)_i$）。推理的时候每个slot取得分最高的广告（根据先后顺序去重）
-    + Permutation-aware evaluator：把前面选出来的K个广告的emb，和K个slot的emb，通过GCF+MLP（同样最后会和user emb concat一起，过mlp）得到K个位置的考虑了位置信息和外部信息（user emb）的预估ctr
-    + Payment network：K个广告的emb，evaluator输出的预估ctr，以及除了当前广告外其他K-1个广告的bid，concat起来过mlp，得到最后的预估转化率
+[月之暗面开源改进版Muon优化器，算力需求比AdamW锐减48%，DeepSeek也适用](https://mp.weixin.qq.com/s/E65ULmjlK7Lv81dqvAubcQ)
 
-训练：
+原始muon：[https://github.com/KellerJordan/Muon](https://github.com/KellerJordan/Muon)
 
-+ 预训练：除了计算正常下发曝光的K个Item, 还会基于流行度采样$N_s$个样本用于计算整体的损失
-+ 后训练：
-    + 训练RM：permutation-aware evaluator当做奖励模型，只用曝光样本训练
-    + RL：基于RM，计算整个list的奖励，看着有点像vcg的东西
-    + 优化Payment network：引入拉格朗日乘子进行优化
+[Muon is Scalable for LLM Training](https://github.com/MoonshotAI/Moonlight/blob/master/Moonlight.pdf)
+
+[https://github.com/MoonshotAI/Moonlight](https://github.com/MoonshotAI/Moonlight)
+
+K2的架构和deepseek-v3类似，为了更好地scale up：
+
++ 减小了head数以提升长上下文的效率
++ 增加MoE的稀疏度以提升token效率
+
+但scale up的挑战就是attention logit的爆炸带来的训练不稳定，现有的例如logit的soft capping和q-k norm还不够。因此，对Muon优化器引入了qk-clip，即在Muon更新之后，对q和k的映射矩阵直接rescale，从而在源头上控制attention logits的scale，
+
+$$
+\begin{gathered}
+q_i=\eta^\alpha W_q x_i \\
+k_i=\eta^{1-\alpha} W_k x_i
+\end{gathered}
+$$
+
+其中$\alpha$是一个超参，对应的attention logit就变成了：
+
+$$
+\left(\eta^\alpha q_i\right)^{\top}\left(\eta^{1-\alpha} k_j\right)=\eta q_i^{\top} k_j
+$$
+
+而$\eta$是每个step后，根据这个step里的最大attention logit来设置的，$t$是一个提前设置好的阈值
+
+$$
+\eta=\min \left(\frac{t}{\max _{i, j}\left(q_i^{\top} k_j\right)}, 1\right)
+$$
+
+这种方法使得K2没有logit爆炸，且能保持下游任务的性能，在15.5T的tokens上稳定训练，没有loss spike
+
+# Agentic能力
+
++ 大规模Agentic Tool Use数据合成：参考ACEBench，开发了一个pipeline，可以大规模模拟真实世界的工具使用场景。覆盖数百领域、数千工具（包括MCP）。所有任务都基于评分标准（rubric），agent和user agent还有环境（工具模拟器）进行交互，通过llm进行judge，最终筛选出一个高质量的数据集。
+
+![](../assets/k2-agentic-data-synthesis.png)
+
++ 通用强化学习：
+
+可验证任务的如数学和编程竞赛，而撰写研究报告则是不可验证的任务。这个通用强化学习系统还采用自我判断(self-judging)机制，让模型充当自身的critic，为不可验证任务提供可扩展的、基于评分标准(rubric)的反馈。
+
+同时，使用可验证奖励的on-policy rollout来持续更新critic，使critic不断提高其在最新policy上的评估准确性。可以看成是一种利用可验证奖励来改进不可验证奖励估计的方法。
