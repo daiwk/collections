@@ -59,11 +59,13 @@ $$
 
 # Agentic能力
 
-+ 大规模Agentic Tool Use数据合成：参考ACEBench，开发了一个pipeline，可以大规模模拟真实世界的工具使用场景。覆盖数百领域、数千工具（包括MCP）。所有任务都基于评分标准（rubric），agent和user agent还有环境（工具模拟器）进行交互，通过llm进行judge，最终筛选出一个高质量的数据集。
++ 大规模Agentic Tool Use数据合成
+
+参考ACEBench，开发了一个pipeline，可以大规模模拟真实世界的工具使用场景。覆盖数百领域、数千工具（包括MCP）。所有任务都基于评分标准（rubric），agent和user agent还有环境（工具模拟器）进行交互，通过llm进行judge，最终筛选出一个高质量的数据集。
 
 ![](../assets/k2-agentic-data-synthesis.png)
 
-+ 通用强化学习：
++ 通用强化学习
 
 可验证任务的如数学和编程竞赛，而撰写研究报告则是不可验证的任务。这个通用强化学习系统还采用自我判断(self-judging)机制，让模型充当自身的critic，为不可验证任务提供可扩展的、基于评分标准(rubric)的反馈。
 
