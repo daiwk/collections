@@ -804,17 +804,6 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 + 相对位置编码：[Exploring the limits of transfer learning with a unified text-to-text transformer](https://arxiv.org/pdf/1910.10683.pdf)提出，其实是在[Self-attention with relative position representations](https://arxiv.org/pdf/1803.02155.pdf)一文提出的，根据**k和q之间的偏移量**生成emb
 + Alibi：[Train short, test long: Attention with linear biases enables input length extrapolation](https://arxiv.org/pdf/2108.12409.pdf)提出，使用**k和q之间距离的惩罚**来给注意力分数加bias，[What language model architecture and pretraining objective works best for zero-shot generalization](https://arxiv.org/pdf/2204.05832.pdf)发现其有更好的**零样本泛化能力**和更强的**外推能力**，能够在**比训练序列更长的序列**上表现良好。
 + RoPE：[Roformer: Enhanced transformer with rotary position embedding](https://arxiv.org/pdf/2104.09864.pdf)提出，**k和q之间的分数用相对位置信息计算**，利于建模长序列，在PaLM、LLaMA、GLM-130B中都有应用。
-  
-
-[Transformer升级之路：RoPE的底数设计原则](https://mp.weixin.qq.com/s/YhpfIz0Pi1OMLwN3V3J1mQ)
-
-[Base of RoPE Bounds Context Length](https://arxiv.org/pdf/2405.14591)
-
-[Decoder-only的LLM为什么需要位置编码？](https://mp.weixin.qq.com/s/3sBYrKyEPP93nwigaOAAAA)
-
-[HuggingFace工程师亲授：如何在Transformer中实现最好的位置编码](https://mp.weixin.qq.com/s/_vhyBrTM041FfHEohwLqMA)
-
-(toread)
 
 ### 注意力机制和Bias
 
@@ -2086,7 +2075,50 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 
 [开源模型进展盘点：最新Mixtral、Llama 3、Phi-3、OpenELM到底有多好？](https://mp.weixin.qq.com/s/bgdDYkGHbPZMMSJPIutFSQ)
 
-# long context与外推
+# 外推问题
+
+## 常见位置编码
+
+### alibi
+
+[Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation](https://arxiv.org/abs/2108.12409)，如下添加一个**不学习**的bias，ALiBi(Attention with Linear Biases)
+
+XXX
+\operatorname{softmax}\left(\mathbf{q}_i \mathbf{K}^{\top}+m \cdot[-(i-1), \ldots,-2,-1,0]\right)
+XXX
+
+其中的$$m$$是坡度（slope），和attention heads有关。假设有n个head，那取值范围就是$$2^{-8/n}, 2^{-8/n\times 2}, 2^{-8/n\times 3}, ...,2^{-8}$$
+
+![](../assets/alibi.png)
+
+### RoPE
+
+[Transformer升级之路：RoPE的底数设计原则](https://mp.weixin.qq.com/s/YhpfIz0Pi1OMLwN3V3J1mQ)
+
+[Base of RoPE Bounds Context Length](https://arxiv.org/pdf/2405.14591)
+
+[Decoder-only的LLM为什么需要位置编码？](https://mp.weixin.qq.com/s/3sBYrKyEPP93nwigaOAAAA)
+
+[HuggingFace工程师亲授：如何在Transformer中实现最好的位置编码](https://mp.weixin.qq.com/s/_vhyBrTM041FfHEohwLqMA)
+
+
+### longRoPE
+
+[LongRoPE：超越极限，将大模型上下文窗口扩展超过200万tokens](https://mp.weixin.qq.com/s/4ryyv59ofNOD--RCSdqktQ)
+
+### CoPE
+
+[解决Transformer根本缺陷，CoPE论文爆火：所有大模型都能获得巨大改进](https://mp.weixin.qq.com/s/JxB6JU6MxO3709mkg7penw)
+
+[Contextual Position Encoding: Learning to Count What’s Important](https://arxiv.org/pdf/2405.18719)
+
+### DAPE
+
+[NeurIPS 2024 | Transformer长度外推，全新位置编码DAPE大幅提升模型性能](https://mp.weixin.qq.com/s/-7YsAMYYO92nItRJbqSrpw)
+
+[DAPE: Data-Adaptive Positional Encoding for Length Extrapolation](https://arxiv.org/abs/2405.14722)
+
+[https://github.com/chuanyang-Zheng/DAPE](https://github.com/chuanyang-Zheng/DAPE)
 
 ## 长上下文的问题
 
@@ -2095,6 +2127,8 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 [https://zhuanlan.zhihu.com/p/689394585](https://zhuanlan.zhihu.com/p/689394585)
 
 [LLM长上下文的问题](https://mp.weixin.qq.com/s/5e5HtxJrxNuhsVxrKsL2gA)
+
+[专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
 
 [语言模型窗口外推技术综述](https://mp.weixin.qq.com/s/5CqrlUZHrciMAFmeV2oYdw)
 
@@ -2118,7 +2152,9 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 如果简单地增加长度，例如从4k变到32k，长度增加8倍，为了加速计算需要缓存中间结果（如QK的结果是$$s^2$$的空间复杂度），所以显存会扩大$$8^2=64$$倍。一般的做法是2阶段：
 
 + 第一阶段：用2k或者4k训练一个基础模型，让模型学好**文本内容**和**短位置关系**
-+ 第二阶段：用**比第一阶段小的数据量优化**模型在**长上下文的效果**，具体做法见下节
++ 第二阶段：用**比第一阶段小的数据量优化**模型在**长上下文的效果**
+
+## 外推方法
 
 ### 针对位置编码的插值类方法
 
@@ -2151,31 +2187,6 @@ Mistral NeMO 经历了高级微调和对齐阶段。与 Mistral 7B 相比，它�
 &nbsp;
 
 ### lossless long context
-
-[专访月之暗面杨植麟：lossless long context is everything](https://mp.weixin.qq.com/s/UMY0qZsCGh87KnW4wjfvoA)
-
-## 待归类
-
-
-### longRoPE
-
-[LongRoPE：超越极限，将大模型上下文窗口扩展超过200万tokens](https://mp.weixin.qq.com/s/4ryyv59ofNOD--RCSdqktQ)
-
-### CoPE
-
-[解决Transformer根本缺陷，CoPE论文爆火：所有大模型都能获得巨大改进](https://mp.weixin.qq.com/s/JxB6JU6MxO3709mkg7penw)
-
-[Contextual Position Encoding: Learning to Count What’s Important](https://arxiv.org/pdf/2405.18719)
-
-### DAPE
-
-[NeurIPS 2024 | Transformer长度外推，全新位置编码DAPE大幅提升模型性能](https://mp.weixin.qq.com/s/-7YsAMYYO92nItRJbqSrpw)
-
-[DAPE: Data-Adaptive Positional Encoding for Length Extrapolation](https://arxiv.org/abs/2405.14722)
-
-[https://github.com/chuanyang-Zheng/DAPE](https://github.com/chuanyang-Zheng/DAPE)
-
-
 
 # 新的模型结构
 
