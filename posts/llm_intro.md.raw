@@ -3413,11 +3413,7 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 [Gemini 2.5: Pushing the Frontier with Advanced Reasoning, Multimodality, Long Context, and Next Generation Agentic Capabilities.](https://arxiv.org/pdf/2507.06261)
 
-模型架构是sparse moe，支持多模态输入，context可以达到1M+，flash是对pro的蒸馏，别的细节没讲了…
-
-+ 训练架构：
-+ 后训练：
-+ thinking：
+模型架构是sparse moe，支持多模态输入，context可以达到1M+，flash是对pro的蒸馏，在多个8906卡TPUv5p集群上训练，引入一些容错和监控机制，缓解了SDC(silent data corruption)错误。别的细节没讲了…
 
 ## gemma-3
 
