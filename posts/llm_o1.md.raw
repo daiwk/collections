@@ -1459,14 +1459,34 @@ Kimi–Researcher是一个自主的智能体与思维模型，旨在通过多步
 
 用REINFORCE方法，
 
-+ on-policy：训练时
-+ 负采样控制：
++ on-policy：训练时关闭了LLM的engine机制（例如强制toolcall格式等），保证每个序列都是llm自己根据其概率分布产出的
++ 负采样控制：负样本会降低token概率，从而在训练rl的时候有entropy崩塌的风险。因此策略性地丢弃部分负样本，使模型能够在更长的训练周期中持续提升表现。
+
+训练时用的是outcome rewards：
+
++ format reward：惩罚非法工具调用或者上下文超过最大限制的情况
++ correctness reward：比较模型答案和ground truth
+
+还引入了gamma-decay，即第$$i$$个step的reward是$$r\times \gamma ^{T-i}$$，其中$$T$$是step数，$$\gamma\in(0,1)$$。可以鼓励模型做出更高效更短的探索。即当两个序列都会有相同的最终reward时，更短的那个在开始时就能拿到更高reward。
 
 ### context management
 
+如果不做memory management，对于那种很长的research来讲，很容易在10轮内就超过最大长度限制。设计了一个context-management mechanism，让模型能够保留重要的信息，丢掉没什么用的文档，从而可以扩大到50轮。
+
 ### 大规模agent RL架构
 
+![](../assets/kimi-researcher-agent-rl-infra.png)
 
++ Fully asynchronous rollout：实现了一个可扩展的类Gym接口的全异步rollout系统。server-base的架构能够高效并行地协调(orchestrate)智能体的轨迹生成、环境交互与奖励计算。相比同步系统消除了资源idle时间。
++ Turn-level Partial Rollout：在Agent RL训练中，大多数任务可在早期阶段完成，但仍有一小部分任务需要大量迭代。为解决这一长尾问题，超出时间预算的任务将被保存至 replay buffer，在后续迭代中以更新后的模型权重继续执行剩余部分。
++ 鲁棒的沙盒环境：构建了统一的沙盒架构，在保持任务隔离性的同时，消除了容器间通信开销。基于Kubernetes的混合云架构实现了零停机调度(zero-downtime scheduling)与动态资源分配。Agent与工具之间通过MCP进行通信，支持有状态会话与断线重连功能。支持多副本部署，确保在生产环境中具备容错能力与高可用性。
+
+### 智能体能力涌现
+
+出现了一些值得关注的能力涌现
+
++ 面对多来源信息冲突时，能通过迭代假设修正与自我纠错机制(hypothesis refinement and self-correction)来消除矛盾，逐步推导出一致且合理的结论。
++ 展现出谨慎与严谨的行为模式：即便面对看似简单的问题，也会主动进行额外搜索，并交叉验证信息后再作答。
 
 # 高效reasoning
 
