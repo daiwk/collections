@@ -1,3 +1,20 @@
+# 前言
+
+最近随着[onerec](https://arxiv.org/abs/2506.13695)的pr，生成式推荐一下子就火起来了。发现深度学习第一次用到推荐的[youtubednn](https://static.googleusercontent.com/media/research.google.com/zh-CN//pubs/archive/45530.pdf)是recsys16的，转眼快十年过去了，就来简单讨论下生成式推荐
+
+[transformer](https://arxiv.org/abs/1706.03762)是2017年的文章，[din](https://arxiv.org/abs/1706.06978)是同年并且中了kdd18，在那段时间就出现了很多尝试把lstm/rnn/transformer用到推荐里的工作，例如至今还是很多论文baseline的2018年的[sasrec](https://arxiv.org/abs/1808.09781)。那么，生成式推荐和它有啥区别吗?
+
+说实话单看模型结构和loss真没啥区别..
+
+但我觉得以下几点还是有一些价值的：
+
++ 现在的gpu卡比以前强无数倍了，模型大小可以尽情scale up上去，毕竟llm这么成熟，对应的一堆优化都是现成的
++ [tiger](https://arxiv.org/abs/2305.05065)提出了可以用rqvae之类的方法产出语义id(sid)来代替itemid，这样解码就可以有新的可能。以前召回因为候选巨大，都是ann，而sid其实类似很2020年字节的[dr](https://arxiv.org/abs/2007.07203)，有某一种聚类的含义，就算极限情况做到了sid和itemid的一对一唯一映射，sid的解码还是会很有优势。当然这里还可以引出另一个话题那就是推荐和多模态的结合
++ rlhf造就了chatgpt，onerec里把rl思想引进来了。看似很创新，但rl+推荐早在2018年的[topkoff policy correction reinforce](https://arxiv.org/abs/1812.02353)那个工作就被熟知了。不过借助着现在因为llm reasoning而带来的各种rl变种，应该会有一些新的思路吧
++ 链路合并的可能性，例如[hstu](https://arxiv.org/abs/2402.17152)号称统一召回+精排，onerec号称xxx，而真正的最大入口的场景能做到吗?毕竟堆积了那么多年的逻辑，是说替换就能替换的吗?现在互联网已经这么难了，不会造成更多的失业吗?但毕竟故事好听
++ 其他一些未知的可能性，llm毕竟也在飞速迭代，模型结构的创新、后训练的一些trick、llm世界知识怎么引入，甚至一些不需要训练的例如agent相关的东西，都有可能给现有的推荐算法有启发
+
+
 # 概述
 
 大模型=大语言模型或者多模态大模型
