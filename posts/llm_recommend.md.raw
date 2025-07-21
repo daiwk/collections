@@ -1453,6 +1453,28 @@ Finally, you need to return the result in the form of json:
 
 实验部分列了两个主场景的收益，但没有说实验流量
 
+## 阿里的LUM（落地）
+
+[Unlocking Scaling Law in Industrial Recommendation Systems with a Three-step Paradigm based Large User Model](https://arxiv.org/pdf/2502.08309)
+
+![](../assets/lum-1.png)
+
+将LLM用到推荐系统里的3个步骤：
+
++ 知识构建：拿用户行为序列(condition token+item token)预训练一个LUM
++ 知识查询：输入用户行为序列+query(构造的condition token)，得到answer(用户在这个condition下可能感兴趣的item token)
++ 知识应用：把上一步得到的结果当成一个特征，加入精排模型里
+
+![](../assets/lum.png)
+
++ c预估下一个i，c和i没有label，c+i+c预测再下一个i。所以最后输入的是一个c，这样就可以预测下一个i了
++ 这里的condition token有比较多的可能性，例如场景、搜索query、类目等
++ 不同condition预测出多个next token，然后和target token算相似度，再输入给后面的精排
+
+![](../assets/lum-group.png)
+
+在线infer的加速，u的历史是可以共享的，所以同时把多个c输入进来，然后通过mask（感觉可以参考mtgr的mtp）就可以实现u侧历史只算一次
+
 ## 阿里的URM（落地？）
 
 [当购物用上大模型！阿里妈妈首发世界知识大模型，破解两大推荐难题](https://mp.weixin.qq.com/s/eJewql0mZk199HyzkjkiuA)
