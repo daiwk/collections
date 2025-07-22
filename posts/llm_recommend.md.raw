@@ -524,7 +524,15 @@ class RQBottleneck(nn.Module):
 
 [Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID](https://arxiv.org/pdf/2504.02137)
 
-Semantic ID prefix ngram
+假设总共有H个item id，有L级码本，每一级都是K个取值。c1、c2、c3的功能类比为一级类目、二级类目、三级类目。从semantic id映射到item id有如下几种方法
+
+![](../assets/prefix-ngram.png)
+
++ trigram/fourgram：可以理解为十进制数，c1是千位，c2是百位，以此类推
++ all bigrams：相邻两个码组合，映射出一个id，那id就是前面的个数加上$$Kc_i+c_{i+1}$$，因此，可以映射出好几个id
++ prefix-ngram：c1得到一个id，c1 c2得到一个id，c1 c2 c3得到一个id，因此可以得到好几个id
+
+后面两种方法得到的id有多个，需要把他们对应的emb sumpooling，得到当前id的emb。对比发现prefix-ngram的效果最好
 
 
 ## 受限beam search相关
