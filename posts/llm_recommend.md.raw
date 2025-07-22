@@ -2247,13 +2247,15 @@ infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿
     + 误差控制：通过设定绝对误差阈值，仅保留影响大于阈值的传播路径
 + 用户画像与推荐模型集成：将角色表示作为输入特征融入GCN
 
-## GMC
+## GMC（学术界）
 
 [Generative Multi-Target Cross-Domain Recommendation](https://arxiv.org/abs/2507.12871)
 
 ![](../assets/gmc.png)
 
-+ sid的学习：就是学一个rq-vae的sid，主要加了一个domain-aware的对比学习
++ sid的学习：通过llama3.1-8b-instruct产出4096的emb，然后学一个rq-vae的sid，主要加了一个domain-aware的对比学习（2个item相同domain则拉近距离，反之拉远），所以loss=loss_reconstruct+loss_rq+loss_domain
++ 推荐模型的学习：一个正常的transformer-based模型(本文用的T5-small)，预测下一个sid
++ domain-specific的微调：每个domain加一个小矩阵，该domain的数据只用lora训对应的那个小矩阵
 
 ## guided embedding
 
