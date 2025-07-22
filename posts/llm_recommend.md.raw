@@ -1091,10 +1091,29 @@ infer：
 
 [PinRec: Outcome-Conditioned, Multi-Token Generative Retrieval for Industry-Scale Recommendation Systems](https://arxiv.org/pdf/2504.1050)
 
-item表示：没有直接用itemid的emb，也没有用sid，对于query，用[OmniSearchSage: Multi-Task Multi-Entity Embeddings forPinterest Search](https://dl.acm.org/doi/pdf/10.1145/3589335.3648309)(其实就是个bert，不过和item一起拿用户行为训练过了)得到一个训练好的emb；对于item，用pinsage的表示。后面都会接2-3层mlp
+[Pinterest最新干货PinRec:生成式检索在推荐系统的落地实践](https://zhuanlan.zhihu.com/p/1927696466241093671)
 
-经过transformer之后，
+![](../assets/pinrec-demo.png)
 
+用户的历史序列如上图，有item也有query，还有对应的场景。
+
+item表示：没有直接用itemid的emb，也没有用sid。对于query，用[OmniSearchSage: Multi-Task Multi-Entity Embeddings forPinterest Search](https://dl.acm.org/doi/pdf/10.1145/3589335.3648309)(其实就是个bert，不过和item一起拿用户行为训练过了)得到一个训练好的emb；对于item，用pinsage的表示。后面都会接2-3层mlp。此外，还有个item id的可学习的emb
+
+经过transformer之后，最后一层的hidden state，和下面的“条件”一起concat起来过一个mlp得到item的表示
+
+结果条件生成：
++ 每种action（点击、保存等）学一个emb
++ 训练时拿t+1的action作为t的额外输入，即期望下一时刻看到这种action的item
++ infer时把每种action都作为输入去分别召回，然后按给定的不同action的权重比例进行merge
+
+MTP：有点绕，大概意思就是现在是时间$$t$$，在后面的$$[t+1, t_{lim}]$$里采样出一个$$t'$$，然后找到$$[t', \Delta]$$这个窗口里和user最近的那个item（就公式里的min）拿来加到loss里去
+
+XXX
+\begin{aligned}
+& L_\theta^{\operatorname{mt}}\left(H\left(u, t_{\max }\right)\right)= \\
+& \quad \frac{1}{\left|H\left(u, t_{\max }\right)\right|} \sum_t \mathbb{E}_{t^{\prime} \sim p_{t^{\prime}}(\cdot \mid t)}\left[\min \left\{L_s\left(\hat{\mathbf{i}}_{u, t}, \mathbf{i}_{u, i}\right) \mid \forall i \in\left[t^{\prime}, t^{\prime}+\Delta\right]\right\}\right]
+\end{aligned}
+XXX
 
 ## Pinterest的PinFM（落地）
 
