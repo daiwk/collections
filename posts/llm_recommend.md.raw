@@ -1475,11 +1475,11 @@ Finally, you need to return the result in the form of json:
 
 在线infer的加速，u的历史是可以共享的，所以同时把多个c输入进来，然后通过mask（感觉可以参考mtgr的mtp）就可以实现u侧历史只算一次
 
-## 阿里的URM（落地？）
+## 阿里的URM（落地）
 
 [当购物用上大模型！阿里妈妈首发世界知识大模型，破解两大推荐难题](https://mp.weixin.qq.com/s/eJewql0mZk199HyzkjkiuA)
 
-[Large Language Models Are Universal Recommendation Learners](https://arxiv.org/pdf/2502.03041)
+[Large Language Model as Universal Retriever in Industrial-Scale Recommender System](https://arxiv.org/pdf/2502.03041)
 
 ![](../assets/urm.jpeg)
 
@@ -2247,6 +2247,13 @@ infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿
     + 误差控制：通过设定绝对误差阈值，仅保留影响大于阈值的传播路径
 + 用户画像与推荐模型集成：将角色表示作为输入特征融入GCN
 
+## GMC
+
+[Generative Multi-Target Cross-Domain Recommendation](https://arxiv.org/abs/2507.12871)
+
+![](../assets/gmc.png)
+
++ sid的学习：就是学一个rq-vae的sid，主要加了一个domain-aware的对比学习
 
 ## guided embedding
 
