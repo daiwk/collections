@@ -4793,6 +4793,8 @@ DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不
 
 ## MTP改造
 
+[五倍推理加速，激发自回归潜能，苹果新工作让LLM预测未来](https://mp.weixin.qq.com/s/Ji3L43WLZKMIlma52HKErw)
+
 [Your LLM Knows the Future: Uncovering Its Multi-Token Prediction Potential](https://arxiv.org/pdf/2507.11851)
 
 ![](../assets/know-future-1.png)
@@ -4801,5 +4803,13 @@ DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不
 + 通过mask来finetue一个mtp的版本，能在top10里找到答案
 + 再加一个sampler能进一步提升
 
+
+![](../assets/know-future-2.png)
+
++ gated LoRA adaptation
+
+![](../assets/know-future-3.png)
+
+![](../assets/know-future-4.png)
 
 
