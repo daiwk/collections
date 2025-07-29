@@ -881,6 +881,17 @@ XXX
 
 [AttentionInfluence: Adopting Attention Head Influence for Weak-to-Strong Pretraining Data Selection](https://arxiv.org/pdf/2505.07293)
 
+## GHPO
+
+[首次结合RL与SFT各自优势，动态引导模型实现推理⾼效训练](https://mp.weixin.qq.com/s/_skJ9jIzkIhX1CGHZbaFFw?scene=1)
+
+[GHPO: Adaptive Guidance for Stable and Efficient LLM Reinforcement Learning](https://arxiv.org/abs/2507.10628)
+
+## GSPO
+
+[解密Qwen3三连发：强化学习新算法GSPO！](https://mp.weixin.qq.com/s/Y5pfNNX4K6k0hfxXr87dkQ)
+
+[Group Sequence Policy Optimization](https://www.arxiv.org/abs/2507.18071)
 
 # Reward model相关
 
