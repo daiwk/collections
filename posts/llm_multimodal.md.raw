@@ -1035,6 +1035,10 @@ torchrun --nproc_per_node=8 generate.py --task t2v-14B \
   --save_file "demo.mp4"
 ```
 
+[阿里开源电影级AI视频模型！MoE架构，5B版本消费级显卡可跑](https://mp.weixin.qq.com/s/RKR16Qw1BdvlVSLMrj17lg?scene=1)
+
+[https://github.com/Wan-Video/Wan2.2](https://github.com/Wan-Video/Wan2.2)
+
 ## Tarsier2
 
 [年末惊喜！ByteDance Research视频理解大模型「眼镜猴」正式发布](https://mp.weixin.qq.com/s/tVr-QidbmA9AudaXaNOKgA)
