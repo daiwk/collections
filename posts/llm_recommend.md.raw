@@ -1611,6 +1611,15 @@ Sequence-In-Set-Out：其实就是把```[UM]```的输出拆成H个，每个去�
 
 [推荐算法(2025.6.3)：Spotify的LLM应用，效果明显](https://mp.weixin.qq.com/s/2SJ5IdXa5Hmygx8VxGlDcQ)
 
+## 快手的OneSug（落地）
+
+[OneSug: The Unified End-to-End Generative Framework for E-commerce Query Suggestion](https://arxiv.org/pdf/2506.06913v1)
+
+prefix->query的场景
+
+![](../assets/onesug.png)
+
+
 
 ## 快手的GREAT（落地）
 
