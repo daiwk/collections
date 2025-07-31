@@ -1166,8 +1166,11 @@ DCA(Deduplicated Cross-Attention Transformer)：user的历史序列当成context
 
 ![](../assets/pinfm-serving.png)
 
+## Yandex的1B模型
 
+[Scaling Recommender Transformers to One Billion Parameters](https://www.arxiv.org/pdf/2507.15994)
 
+Yandex的音乐推荐场景
 
 # LLM+推荐：输入文本
 
@@ -1639,11 +1642,20 @@ prefix->query的场景
 
 ![](../assets/great.png)
 
-## 快手的R4ec
+## 快手的R4ec（落地）
 
 [RecSys'25|快手R4ec：用 “反思” 让推荐更懂你](https://mp.weixin.qq.com/s/zYkZE8fqARBfywWFeJwiNQ?scene=1)
 
 [R4ec: A Reasoning, Reflection, and Refinement Framework for Recommendation Systems](https://arxiv.org/pdf/2507.17249)
+
+![](../assets/r4ec.png)
+
+![](../assets/r4ec-dataset.png)
+
+## 阿里的RecGPT（落地）
+
+[RecGPT Technical Report](https://www.arxiv.org/pdf/2507.22879)
+
 
 ## 蚂蚁的SLIM（没落地）
 
@@ -3268,6 +3280,12 @@ XXX
 
 # 传统推荐模型
 
+## Pinnerformer
+
+[PinnerFormer: Sequence Modeling for User Representation at Pinterest](https://arxiv.org/pdf/2205.04507)
+
+
+
 ## Meta的MTMH
 
 [Optimizing Recall or Relevance? A Multi-Task Multi-Head Approach for Item-to-Item Retrieval in Recommendation](https://arxiv.org/pdf/2506.06239) KDD25
@@ -3329,7 +3347,7 @@ serving：2个head分别建索引，在线同一个trigger分别从这2个索引
 正常的模型建模的是CABA，如图，加一个tower，建模CABB（点了A，但是买了别的东西），同时加上A和B的相似度来给loss加权（那些差得很远的就当成是噪音），其中相似度的逻辑：
 
 + 统计不同叶子类目在同一session里的共现信息
-+ 用传统的item-cf方法作用到叶子类目粒度，即每个叶子类目有一个长度为user数的向量，每个元素是用户对这个类目的加权求和($$w_1\times 购买数+w_2\times 加入购物车次数+w_3\times 点击次数+ ...$$)
++ 用传统的item-cf方法作用到叶子类目粒度，即每个叶子类目有一个长度为user数的向量，每个元素是用户对这个类目的加权求和($$w_1\times buycnt+w_2\times addcartcnt+w_3\times clickcnt+ ...$$)
 + 不同类目的向量算cos，但因为每个数都是正的，所以算出来的cos是0到1之间，这个就是上面用到的相似度
 
 另外看图里是这两个目标加权得到输出，去和一个ad conversion label算loss，这个label感觉应该是session内是否购买吧
