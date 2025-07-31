@@ -1174,6 +1174,12 @@ Yandex的音乐推荐场景
 
 ![](../assets/argus-pretrain.png)
 
+预训练：输入f(feedback)、i(item)、c(context)，emb相加，过transformer得到h
+
++ 召回任务：concat(h,c)接一个mlp预估next item
++ 精排任务：concat(h,c,下一个i)接一个mlp预估feedback
+
+微调：主要的下游任务是排序，参考pinnerformer，设计了双塔，输入和预训练一样也是f、i、c，输出的h就是user表示，然后和item算内积得到相似度，再过pointwise或者group wise的排序loss
 
 ![](../assets/argus-finetune.png)
 
