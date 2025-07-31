@@ -1180,6 +1180,12 @@ Yandex的音乐推荐场景
 
 将邻居候选列表引入生成式reranking框架，结合evaluator‑generator策略和非自回归采样机制，使reranker可跳跃组合优化。
 
+## SnapChat的GRID（框架）
+
+[Generative Recommendation with Semantic IDs: A Practitioner's Handbook](https://arxiv.org/pdf/2507.22224)
+
+[https://github.com/snap-research/GRID](https://github.com/snap-research/GRID) 不过目前打不开。。
+
 # LLM+推荐：输入文本
 
 ## 华为的KAR（落地）
@@ -1656,13 +1662,47 @@ prefix->query的场景
 
 [R4ec: A Reasoning, Reflection, and Refinement Framework for Recommendation Systems](https://arxiv.org/pdf/2507.17249)
 
+![](../assets/r4ec-dataset.png)
+
+目前有```(hist, item, label)```，label可以是正样本或者负样本
+
++ 输入(hist,item)，问模型用户会不会喜欢这个item(pred)，并总结用户偏好(reasoning)
++ 输入(hist,item,reasoning)，问模型这个用户偏好是否合理（judge），并反思出不合理的原因（reflect）
+    + 如果judge == 合理 and pred == label：
+        + ```[(hist),(reasoning)]```加到**reasoning数据集**里
+        + ```[(hist,reasoning), (judge, reflect="")]```加到**reflect数据集**里
+    + 如果judge == 不合理 and pred != label：
+        + 输入hist,item,reasoning,reflect，让模型输出用户会不会喜欢这个item(pred')和refine后的用户偏好(reasoning_r)
+        + 如果pred' == label：
+            + ```[(hist,reasoning), (judge, reflect)]```加到**reflect数据集**里
+            + ```[(hist,reasoning,reflect),(reasoning_r)]```加到**refine数据集**里
+    + else：扔掉```(hist, item, label)```
+
+item侧也复用了类似的流程，把输入的(hist, item)改成(item, pos, neg)，pos是对这个item给过正反馈的user历史行为，neg类似，产出了对应的item的reasoning数据集、reflect数据集、refine数据集
+
 ![](../assets/r4ec.png)
 
-![](../assets/r4ec-dataset.png)
+训练：用lora训练2个模型
+
++ actor模型：用reasoning数据集和refine数据集训练
++ reflection模型：用reflect数据集训练
+
+发现actor模型7b就够了，但reflection模型从0.5b到72b效果会一直涨
+
+推理：
+
++ 迭代优化：通过actor产出知识(即reasoning），然后让reflection模型给出reflect，再refine，直到产出靠谱知识
++ 过滤：actor并行产出多个知识，reflection模型过滤掉很不靠谱的，剩下的知识对应的向量取平均
+
+在线使用：通过actor生成user和item的知识，然后用bge-m3产出向量给推荐模型用
 
 ## 阿里的RecGPT（落地）
 
 [RecGPT Technical Report](https://www.arxiv.org/pdf/2507.22879)
+
+[搜广推工业界论文每日速递-20250731-阿里RecGPT: 淘宝首猜全量上线](https://mp.weixin.qq.com/s/hrxoPwbw8OErX3XompmAZQ)
+
+
 
 
 ## 蚂蚁的SLIM（没落地）
