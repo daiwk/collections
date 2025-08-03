@@ -1,14 +1,8 @@
-快手：
-
-+ OneSug: The Unified End‑to‑End Generative Framework for E‑commerce Query Suggestion
-+ KuaiFormer: Transformer-Based Retrieval at Kuaishou
-
 美团：
 
-+ MTGRBoost: Boosting Large‑scale Generative Recommendation Models in Meituan
-+ Action is All You Need: Dual‑Flow Generative Ranking Network for Recommendation (DFGR)
++ MTGRBoost: Boosting Large‑scale Generative Recommendation Models in Meituan 架构
++ Action is All You Need: Dual‑Flow Generative Ranking Network for Recommendation (DFGR) 没落地
 + IterQR: LLM‑based Iterative Query Rewrite for E‑commerce Search https://arxiv.org/pdf/2504.05309
-+ RADAR: Recall Augmentation through Deferred Asynchronous Retrieval, Meta
 + Open‑Set Living Need Prediction with LLMs (PIGEON)， 首次将“生活需求预测”定义为 “开放集分类” 问题，提出 PIGEON 系统结合行为检索器与 Maslow 需求等级对用户意图进行文本生成预测，并与召回模块结合部署上线。相比传统闭集分类，Recall 提升约 19%
 
 
