@@ -1,0 +1,13 @@
++ PURE: LLM‑based User Profile Management for Recommendation
+发布机构：电商大厂团队
+
+摘要：PURE 框架将用户评价转化为可生成摘要，并动态更新用户画像，最终驱动推荐生成过程。由 Review Extractor → Profile Updater → Recommender 三模块组成，支持连续更新用户兴趣，显著提升长期推荐准确性。
+
++ Open‑Set Living Need Prediction with LLMs (PIGEON)
+发布机构：Meituan 团队
+
+摘要：首次将“生活需求预测”定义为 “开放集分类” 问题，提出 PIGEON 系统结合行为检索器与 Maslow 需求等级对用户意图进行文本生成预测，并与召回模块结合部署上线。相比传统闭集分类，Recall 提升约 19%
+
+https://arxiv.org/html/2506.02713v1
+
++ 
