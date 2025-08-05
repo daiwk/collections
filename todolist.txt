@@ -4,6 +4,8 @@
 + Action is All You Need: Dual‑Flow Generative Ranking Network for Recommendation (DFGR) 没落地
 + IterQR: LLM‑based Iterative Query Rewrite for E‑commerce Search https://arxiv.org/pdf/2504.05309
 + Open‑Set Living Need Prediction with LLMs (PIGEON)， 首次将“生活需求预测”定义为 “开放集分类” 问题，提出 PIGEON 系统结合行为检索器与 Maslow 需求等级对用户意图进行文本生成预测，并与召回模块结合部署上线。相比传统闭集分类，Recall 提升约 19%
++ SessionRec: Next Session Prediction Paradigm for Industrial Generative Recommendation，arXiv:2502.10157v1，essionRec 提出基于 HSTU 架构的“下一会话预测”生成式推荐框架，新增 session 内排序损失，提升候选列表质量。已部署于美团主页面召回阶段，在线 A/B 实验表明相比 baseline 有显著提升。
++ An LLM‑Infused Approach for Optimized CTR Prediction，2412.06860v1，该工作通过大模型知识蒸馏，将 LLM 融入点击率预测模块，在美团广告系统上线后，在线 A/B 测试取得 CTR 提升 +2.12%、CPM 增长 +2.59%，同时保持高效推理性能
 
 
 字节：
