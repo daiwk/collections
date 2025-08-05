@@ -1201,7 +1201,10 @@ Yandex的音乐推荐场景
 
 [Generative Recommendation with Semantic IDs: A Practitioner's Handbook](https://arxiv.org/pdf/2507.22224)
 
-[https://github.com/snap-research/GRID](https://github.com/snap-research/GRID) 不过目前打不开。。
+[https://github.com/snap-research/GRID](https://github.com/snap-research/GRID) 
+
+基于的这个模板：[https://github.com/ashleve/lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
+
 
 # LLM+推荐：输入文本
 
