@@ -15,3 +15,7 @@
 + LONGER: Scaling Up Long Sequence Modeling in Industrial Recommenders
 + Large Memory Network (LMN): Compress & Store Long-Term User Behavior for Recommendation
 + RankMixer: Scaling Up Ranking Models in Industrial Recommenders
+
+google
+
++ Item-centric Exploration for Cold Start Problem. https://arxiv.org/pdf/2507.09423
