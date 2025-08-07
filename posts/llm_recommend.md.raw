@@ -3484,5 +3484,12 @@ serving：2个head分别建索引，在线同一个trigger分别从这2个索引
 
 [Item-centric Exploration for Cold Start Problem](https://arxiv.org/pdf/2507.09423)
 
+。。就是用beta分布汤普森采样
+
 可以对比下meta在2023年的user-centric ranking：[Breaking the Curse of Quality Saturation with User-Centric Ranking](https://arxiv.org/pdf/2305.15333)
 
+## CAVE
+
+[From Generation to Consumption: Personalized List Value Estimation for Re-ranking](https://arxiv.org/pdf/2508.02242)
+
+重排里的list-wise evaluator，以前是对整个list给出价值预估，现在预估了一个用户退出的概率，只对退出之前的那些item的sub list预估价值

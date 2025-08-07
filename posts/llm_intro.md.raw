@@ -3276,6 +3276,14 @@ class ModelConfig:
 
 ### attention部分
 
+几个点：
+
++ 可以看下原始streaming-llm的实现，核心是在kvcache里的这段[https://github.com/mit-han-lab/streaming-llm/blob/main/streaming_llm/kv_cache.py](https://github.com/mit-han-lab/streaming-llm/blob/main/streaming_llm/kv_cache.py)，即cache中一直保留前start_size个token（sink token），还有当前token往前window_size个token
+
+![](../assets/streaming-llm-kvcache.jpeg)
+
++ oss是用到了attention bias的，可以看代码self.qkv是torch.nn.Linear，而这个类默认的参数就是bias=True，这个和hf的transformers里的实现也对上了
+
 ```python
 
 class AttentionBlock(torch.nn.Module):
