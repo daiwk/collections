@@ -1,46 +1,38 @@
-# Physiological Needs（生理需求）
-- Basic Diet（基本饮食）
-  - Home meals（家庭用餐）
-  - Restaurant dining（外出就餐）
-- Housing Needs（住房需求）
-  - Basic living space（基本居住空间）
-  - Quality living environment（优质居住环境）
-- Daily Living Supplies（日常生活用品）
-  - Essential supplies（必需用品）
-  - Fresh groceries（新鲜食品）
+[NGA: Non-autoregressive Generative Auction with Global Externalities for Advertising Systems](https://arxiv.org/pdf/2506.05685)
 
-# Safety Needs（安全需求）
-- Health Protection（健康保障）
-  - General wellness maintenance（日常健康维护）
-  - Specialized medical care（专业医疗服务）
-  - Preventive healthcare（预防性健康管理）
-- Home Security（家庭安全）
-  - Property protection（财产保护）
-  - Safety maintenance（安全维护）
-- Living Environment（居住环境）
-  - Cleaning services（清洁服务）
-  - Environmental maintenance（环境维护）
+美团的生成式广告混排
 
-# Social Belonging Needs（社交归属需求）
-- Group Activities（群体活动）
-  - Dining and social venues（餐饮与社交场所）
-  - Leisure and entertainment activities（休闲与娱乐活动）
-- Family and Parent-Child Interaction（家庭及亲子互动）
-  - Parent-child activities and entertainment（亲子活动与娱乐）
-  - Family celebrations and event organization（家庭庆祝与活动组织）
+$bid_i$是广告主的出价，$p_i$是payment，可以理解为计费，即广告主实际出的钱，一般要求$p_i\le bid_i$，平台的目标如下：
 
-# Esteem Needs（尊重需求）
-- Knowledge Development（知识发展）
-  - Educational training（教育培训）
-  - Arts and skill development（艺术与技能培养）
-- Career Growth（职业成长）
-  - Academic advancement（学术进步）
-  - Professional skills（职业技能）
+$$
+\max _{\mathcal{M}} \mathbb{E}_{a \in \mathcal{A}}[\operatorname{Rev}+\alpha \cdot \operatorname{Ord}]=\mathbb{E}_{a \in \mathcal{A}}\left(\sum_{i=1}^k p_i \cdot \operatorname{ctr}_i+\alpha \cdot \operatorname{ctr}_i \cdot \operatorname{cvr}_i\right),
+$$
 
-# Self-Actualization Needs（自我实现需求）
-- Cultural and Artistic Pursuits（文化与艺术追求）
-  - Cultural experiences and exhibitions（文化体验与展览）
-  - Artistic creation and expression（艺术创作与表达）
-- Travel and Experiential Activities（旅行与体验式活动）
-  - Travel and sightseeing（旅游与观光）
-  - Outdoor and experiential activities（户外与体验式活动）
+![](../assets/nga.png)
+
+n个广告（图中的ad），m个自然结果（图中的oi，没有bid），最终的list长度为k
+
+generator部分：
+
++ m+n个item emb过几层网络，k个pos emb过几层网络，中间二者会进行cross attention(快手的[Non-autoregressive Generative Models for Reranking Recommendation](https://arxiv.org/pdf/2402.06871)，即item当成k/v，pos当成query)，得到$(m+n)\times d$的x和$k\times d$的t
++ x和t矩阵乘得到一个$m+n\times k$的矩阵，再和每个item的ctr/bid/cvr一起算出一个融合分并过softmax（这个softmax是保证当前item在所有位置上的概率和是1）得到z
++ per-persition受限解码：根据各种业务规则，选择每个位置z最高的item，类似beam search，生成多个候选list，每个list有k个item
+
+evaluator部分：
+
++ 输入generator产出的若干个list、对应的每个item的预估分Z、还有一个self-exclusion bidding profile $B^{-}$(即当前list里，除了自己以外，其他k-1个item的bid)
++ 上述输入经过3个网络，得到当前list的预估cvr $\Gamma \in \mathbb{R}^{k \times 1}$、预估ctr $\Theta \in \mathbb{R}^{k \times 1}$、预估payment $\boldsymbol{p} \in \mathbb{R}^{k \times 1}$（这个的输入包括了$B^{-}$），$\operatorname{pay}_i=\operatorname{bid}_i \times p_i$
+
+$$
+\begin{aligned}
+& \Theta=\operatorname{Tower}\left(X_{\text {list }} ; Z\right) \\
+& \Gamma=\operatorname{Tower}\left(X_{\text {list }} ; Z\right) \\
+& \boldsymbol{p}=\operatorname{Tower}\left(X_{\text {list }} ; Z ; B^{-}\right)
+\end{aligned}
+$$
+
++ 最终算出来的list得分如下：
+
+$$
+R=\sum_{i=1}^k\left(\Theta_i \times \operatorname{bid}_i \times p_i+\alpha \times \Theta_i \times \Gamma_i\right)
+$$
