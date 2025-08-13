@@ -78,6 +78,7 @@ git add gen_pdfs.sh
 git add gen_dot_sub.py
 git add publish
 git add todolist.txt
+git add deep-research-assets
 git commit -m 'x'
 git push
 
