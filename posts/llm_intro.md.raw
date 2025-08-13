@@ -356,7 +356,7 @@ SIGIR24最佳论文：[Scaling Laws For Dense Retrieval](https://arxiv.org/pdf/2
 
 #### 词表的scaling law
 
-&np;
+&nbsp;
 
 [NeurIPS 2024 | 大模型的词表大小，同样适用于Scaling Law](https://mp.weixin.qq.com/s/_DTvTMCtrW9WV3vELjU9jw)
 
@@ -669,7 +669,7 @@ XVERSE-MoE-A36B，该模型总参数255B，激活参数36B，达到100B模型性
 
 ### 讨论：为什么现在的LLM都是Decoder only的架构？
 
-&np;
+&nbsp;
 
 [https://www.zhihu.com/question/588325646/answer/2940298964](https://www.zhihu.com/question/588325646/answer/2940298964)
 
@@ -685,7 +685,7 @@ XVERSE-MoE-A36B，该模型总参数255B，激活参数36B，达到100B模型性
 
 #### 去噪目标
 
-&np;
+&nbsp;
 
 **去噪目标**指的是span corruption任务的任意变体，即填充(infilling)或填空(fill in the blank)。表达方式有很多，比如span长度、随机性、sentinel token等。
 
@@ -699,7 +699,7 @@ XVERSE-MoE-A36B，该模型总参数255B，激活参数36B，达到100B模型性
 
 #### PrefixLM vs decoder-only
 
-&np;
+&nbsp;
 
 注：归纳偏置(inductive bias)指模型在预测未遇到的输入时，做的一些假设的集合，例如最小描述长度（奥卡姆剃刀）指的就是当构成一个假设时，试图去最小化其假设的描述长度。假设越简单，越可能为真的。
 
@@ -711,7 +711,7 @@ PrefixLM也存在缓存问题，是这类架构的一个固有缺陷
 
 #### encoder-decoder的优缺点
 
-&np;
+&nbsp;
 
 + 相比decoder-only的优势：endocer不受causal的限制，可以激进地试各种pooling/linear attention，因此可以offload一些**不那么重要的context到encoder中**，也可以**让encoder更小**，例如[Charformer](https://arxiv.org/pdf/2106.12672)
 + 相比prefixLM的缺点：输入和目标必须分配固定的预算，例如输入预算是1024token，那么encoder就**必须pad**到1024，而这可能会浪费大量计算。相反，在 PrefixLM 中，输入和目标可以直接concat起来，从而可以缓解这个问题
@@ -721,7 +721,7 @@ PrefixLM也存在缓存问题，是这类架构的一个固有缺陷
 
 ### 标准化（norm）
 
-&np;
+&nbsp;
 
 LN(layer norm)能缓解LLM训练不稳定的问题，其位置很重要。
 
@@ -756,7 +756,7 @@ class DyT(nn.Module):
 
 ### 激活函数
 
-&np;
+&nbsp;
 
 FFN中的激活函数：
 
@@ -799,7 +799,7 @@ XXX\operatorname{FFN}_{\text {SwiGLU }}\left(x, W, V, W_2\right)=\left(\operator
 
 ### 位置编码
 
-&np;
+&nbsp;
 
 Transformer的self-attention有转换不变性，故要位置编码以引入绝对或相对位置信息来建模序列。
 
@@ -823,7 +823,7 @@ Transformer的self-attention有转换不变性，故要位置编码以引入绝�
 
 #### 归一化位置
 
-&np;
+&nbsp;
 
 sublayer表示FFN或self-attention模块
 
@@ -869,7 +869,7 @@ sublayer表示FFN或self-attention模块
 
 ### 语言建模
 
-&np;
+&nbsp;
 
 语言建模是**仅解码器LLM**的常见目标，给定token序列$$\mathbf{x}=\left\{x_1, \ldots, x_n\right\}$$，旨在基于序列中前面的token，自回归地预估目标token：
 
@@ -919,7 +919,7 @@ if labels is not None:
 
 ### 去噪自编码
 
-&np;
+&nbsp;
 
 DAE是BERT待模型的常见任务，即MLM（masked language model），输入$$\mathbf{x}_{\backslash \tilde{\mathbf{x}}}$$是一些**有随机替换区间的损坏文本**，目标是恢复被替换的token $$\tilde{\mathbf{x}}$$：
 
@@ -951,13 +951,13 @@ llm榜单：
 
 ### GPT3
 
-&np;
+&nbsp;
 
 2020年的gpt3：[Language models are few-shot learners](https://arxiv.org/pdf/2005.14165.pdf)，175b（1750亿）参数，当参数量到达千亿时出现了『涌现』现象，发现可以in-context learning。
 
 ### CODEX
 
-&np;
+&nbsp;
 
 [Evaluating Large Language Models Trained on Code](https://arxiv.org/pdf/2107.03374.pdf)
 
@@ -965,7 +965,7 @@ llm榜单：
 
 ### WebGPT
 
-&np;
+&nbsp;
 
 [WebGPT: Browser-assisted question-answering with human feedback](https://arxiv.org/a/2112.09332)
 
@@ -994,7 +994,7 @@ llm榜单：
 
 ### InstructGPT
 
-&np;
+&nbsp;
 
 [Training language models to follow instructions with human feedback](https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf)
 
@@ -1002,7 +1002,7 @@ sft+rm+rl，在最小性能降低的情况下，提升了生成结果的真实�
 
 ### ChatGPT&GPT-4
 
-&np;
+&nbsp;
 
 2022.11.30推出了ChatGPT，基于GPT3.5，即InstructGPT的兄弟
 
@@ -1014,7 +1014,7 @@ o3/o4-mini：[Agent 要被吃进大模型了](https://mp.weixin.qq.com/s/89QkOqY
 
 ### LLaMA
 
-&np;
+&nbsp;
 
 2023年2月发布，[LLaMA: Open and Efficient Foundation Language Models](https://arxiv.org/a/2302.13971)，开源的LLaMA-13B比 GPT3 175B在很多任务上都更好
 
@@ -1029,7 +1029,7 @@ llama只用公开数据训练，而Chinchilla、PaLM、GPT-3都有自己的未�
 
 #### 预训练数据
 
-&np;
+&nbsp;
 
 + English CommonCrawl(67%)：使用CCNet pipeline，去重、用fasttext把非英文的页面删了，用n-gram把低质内容删了。此外，还训了一个线性模型，对页面进行分类：作为维基百科的引用 vs 随机采样的页面，最后把不属于引用这个类别的页面删了
 + C4(15%)：与CCNet类似，主要区别在质量过滤是基于启发式的规则，如标点符号的存在，或者词数和句子数
@@ -1055,7 +1055,7 @@ tokenizer：BPE，使用sentencepiece的实现。将所有numbers切成单个数
 
 #### 网络结构
 
-&np;
+&nbsp;
 
 + SwiGLU激活函数(PaLM)：取代ReLU，[Glu variants improve trans- former](https://arxiv.org/a/2002.05202)，把PaLM里的$$4d$$改了$$2/34d$$
 
@@ -1212,7 +1212,7 @@ class RMSNorm(torch.nn.Module):
 
 #### 训练加速
 
-&np;
+&nbsp;
 
 + 对causal multi-head attention加速：实现在[http://github.com/facebookresearch/xformers](http://github.com/facebookresearch/xformers)中，降低内存使用和运行时间，参考[self-attention does not need $$o(n^2)$$ memory](https://arxiv.org/pdf/2112.05682.pdf)，以及[Flashattention: Fast and memory-efficient exact attention with io-awareness](https://arxiv.org/a/2205.14135)。思想是
     + 不存储attention weights
@@ -1222,7 +1222,7 @@ class RMSNorm(torch.nn.Module):
 
 ### LLaMA2
 
-&np;
+&nbsp;
 
 2023年7月，[Llama 2: Open Foundation and Fine-Tuned Chat Models](https://arxiv.org/pdf/2307.09288.pdf)
 
@@ -1244,7 +1244,7 @@ class RMSNorm(torch.nn.Module):
 
 #### 原始LLaMa3
 
-&np;
+&nbsp;
 
 2024年4月
 
@@ -1280,7 +1280,7 @@ Llama 3的主要亮点：
 
 #### 多模态llama3
 
-&np;
+&nbsp;
 
 [多模态 Llama-3 它来了 ！！[全网首发微调教程]](https://mp.weixin.qq.com/s/IFVIkVvMqeAL0lZF9OvRSA)
 
@@ -1288,7 +1288,7 @@ Llama 3的主要亮点：
 
 #### 中文llama3
 
-&np;
+&nbsp;
 
 [首批中文版Llama3模型来了，解释成语、答弱智吧问题](https://mp.weixin.qq.com/s/ny0gBOxf4-tJiwjgp3o9HQ)
 
@@ -1316,7 +1316,7 @@ Llama 3的主要亮点：
 
 #### 整体架构
 
-&np;
+&nbsp;
 
 ![multimodal-llama3.1](../assets/multimodal-llama3.1.png)
 
@@ -1344,7 +1344,7 @@ Llama 3的主要亮点：
 
 #### 预训练
 
-&np;
+&nbsp;
 
 在超过16,000个H100（80G HBM3）上训练，训练平台是[Meta open compute project, grand teton ai platform](https://engineering.fb.com/2022/10/18/open-source/ocp-summit-2022-grand-teton/)，基于[MAST: Global scheduling of ml training across geo-distributed datacenters at hyperscale](https://www.usenix.org/system/files/osdi24-choudhury.pdf)进行schedule
 
@@ -1373,7 +1373,7 @@ Llama 3的主要亮点：
 
 #### 后训练
 
-&np;
+&nbsp;
 
 采用iterative post-training procedure，即预训练后进行多轮对齐，每轮都使用sft、RS（拒绝采样）、直接偏好优化(DPO, Direct Preference Optimization)，能够为**每轮**创建**最高质量的合成数据**，并提高每项能力（capability）的性能。
 
@@ -1382,7 +1382,7 @@ Llama 3的主要亮点：
 
 #### 推理
 
-&np;
+&nbsp;
 
 从bf16量化为fp8
 
@@ -1426,7 +1426,7 @@ post training的数据集：
 
 #### 构建面向推理优化的模型
 
-&np;
+&nbsp;
 
 LN-Super和LN-Ultra通过Puzzle框架实现高效推理优化。Puzzle是一个神经网络架构搜索（Neural Architecture Search, NAS）框架，能够在真实部署约束条件下，将大型语言模型转化为面向硬件高效的变体([Puzzle: Distillation-Based NAS for Inference-Optimized LLMs](https://arxiv.org/a/2411.19146))
 
@@ -1454,7 +1454,7 @@ LN-Ultra不仅实现了与基准模型Llama 3.1-405B-Instruct相当的性能，�
 
 #### 合成数据
 
-&np;
+&nbsp;
 
 设计了「detailed thinking on/off」指令机制，在合成数据中**显式标记是否需要展开详细推理过程**，引导模型在训练中学习何时进行逐步思考、展示推理链条，何时直接给出简明答案。指令为「on」时，模型输出完整的中间推理过程并展示解题思路；指令为「off」时，模型仅呈现最终结果。
 
@@ -1462,13 +1462,13 @@ LN-Ultra不仅实现了与基准模型Llama 3.1-405B-Instruct相当的性能，�
 
 #### SFT
 
-&np;
+&nbsp;
 
 基于合成数据来进行SFT，不同大小的student用的seq_len、epoch数不太一样，也有一些小trick，详见原文
 
 #### 推理能力强化学习
 
-&np;
+&nbsp;
 
 只蒸馏的话，student很难超越teacher，所以需要强化学习，考虑到资源问题，只对LN-Ultra搞了GRPO
 
@@ -1485,7 +1485,7 @@ LN-Ultra不仅实现了与基准模型Llama 3.1-405B-Instruct相当的性能，�
 
 #### 用于偏好优化的强化学习
 
-&np;
+&nbsp;
 
 + 指令跟随：在前面的科学推理任务的强化学习之后，对LN-Super和LN-Ultra再进行短期的强化学习，提升指令跟随能力。参考[Instruction-following evaluation for large language models](https://arxiv.org/a/2311.07911)，生成包含1至10条详细指令的合成提示词，用RLOO（[Back to basics: Revisiting reinforce style optimization for learning from human feedback in llms](https://arxiv.org/a/2402.14740)）在batch128跑了120个steps，用自定义指令跟随验证器作为奖励函数。发现能同时提升指令跟随任务和推理类任务的效果。
 + RLHF：增强模型的通用协助能力（helpfulness）与多轮聊天能力
@@ -1572,7 +1572,7 @@ Stanford的羊驼（Alpaca）模型，有70亿（7b）参数，**没有使用RLH
 
 ### Guanaco
 
-&np;
+&nbsp;
 
 [QLoRA: Efficient Finetuning of Quantized LLMs](https://arxiv.org/pdf/2305.14314.pdf)也是对llama进行微调，使用了QLoRA，能够在一台48G的GPU上微调65B的模型。只需要在单台GPU上finetune 24小时就能达到99.3%的chatgpt的效果。
 
@@ -1584,7 +1584,7 @@ QLoRA将一个固定的4 bit量化的预训练权重转成low Rank Adapters来�
 
 ### Koala
 
-&np;
+&nbsp;
 
 [Koala: A dialogue model for academic research](https://bair.berkeley.edu/blog/2023/04/03/koala/)
 
@@ -1592,7 +1592,7 @@ QLoRA将一个固定的4 bit量化的预训练权重转成low Rank Adapters来�
 
 ### Mistral
 
-&np;
+&nbsp;
 
 [Mistral 7b](https://arxiv.org/pdf/2310.06825.pdf)
 
@@ -1650,19 +1650,19 @@ Mistral AI 基于此前Codestral 22B和Codestral Mamba的经验，在很大一�
 
 ### PaLM
 
-&np;
+&nbsp;
 
 2022年4月提出了第一个PaLM：[Palm: Scaling language modeling with pathways](https://arxiv.org/pdf/2204.02311.pdf)，直到2023年3月还是private的。是一个540B(5400亿)参数的模型，在包含了780B的tokens的高质量数据集上预训练。使用Pathways的6144块TPU v4进行训练。
 
 ### U-PaLM
 
-&np;
+&nbsp;
 
 [Transcending scaling laws with 0.1% extra compute](https://arxiv.org/pdf/2210.11399.pdf)提出了8B，62B和540B的U-PaLM模型，用**UL2R**来对PaLM进行继续训练，用的是UL2的**mixture-of-denoiser objective**([UL2: Unifying Language Learning Paradigms](https://arxiv.org/pdf/2205.05131.pdf))
 
 ### Flan-PaLM
 
-&np;
+&nbsp;
 
 Flan-PaLM（[Scaling instruction-finetuned language models](https://arxiv.org/pdf/2210.11416.pdf)）是instrunction-finetuned版本的U-PaLM。使用了更多的任务、更大的模型，以及CoT数据。使用了473个数据集，146类的task，总共1836个task。
 
@@ -1673,13 +1673,13 @@ Flan-PaLM（[Scaling instruction-finetuned language models](https://arxiv.org/pd
 
 ### PaLM-2
 
-&np;
+&nbsp;
 
 [PaLM 2 Technical Report](https://arxiv.org/pdf/2305.10403.pdf)是一个更计算高效型的LLM，有更好的多语种和reasoning能力，在很多任务上都比PaLM好，并且在infer上比PaLM要更快更高效。
 
 ### Med-PaLM
 
-&np;
+&nbsp;
 
 Nature的[Large language models encode clinical knowledge](https://www.nature.com/articles/s41586-023-06291-2)提出了Med-PaLM，在PaLM上用parameter-efficient方法进行instruction prompt tuning，使用少量的典型范例（exemplars）让LLM对齐到新领域。
 
@@ -1690,7 +1690,7 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 ### FLAN
 
-&np;
+&nbsp;
 
 [Finetuned language models are zero-shot learners](https://arxiv.org/pdf/2109.01652.pdf)
 
@@ -1706,7 +1706,7 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 ### Gopher
 
-&np;
+&nbsp;
 
 [Scaling language models: Methods, analysis & insights from training gopher](https://arxiv.org/pdf/2112.11446.pdf)基于152个多样的任务，对比了从44M到208B（Gopher）的不同transformer，发现Gopher在大多数任务上均达到sota：
 
@@ -1721,14 +1721,14 @@ Med-PaLM2([Towards expert- level medical question answering with large language 
 
 ### T0
 
-&np;
+&nbsp;
 
 [Multitask Prompted Training Enables Zero-Shot Task Generalization](https://arxiv.org/pdf/2110.08207)设计了一个系统，将任意nlp任务映射成一个人类可读的prompt格式。训练了一个encoder-decoder的T0模型，输入文本，输出文本，在混合数据集上进行多任务学习。
 
 
 ### RETRO
 
-&np;
+&nbsp;
 
 [参数量仅为4%，性能媲美GPT-3：开发者图解DeepMind的RETRO](https://baijiahao.baidu.com/s?id=1721015293574115195&wfr=spider&for=pc)
 
@@ -1750,7 +1750,7 @@ Retrieval Enhanced Transformer(Retro)基于与preceding(前述) tokens的相似�
 
 ### GLaM
 
-&np;
+&nbsp;
 
 [Glam: Efficient scaling of language models with mixture-of-experts](https://arxiv.org/pdf/2112.06905)提出了Generalist Language Model(GLaM)，用稀疏激活的MOE架构，同时能scale模型容量，也能相比dense更可观地降低训练成本。最大的模型有1.2T参数，是gpt3的7倍。但只需要GPT3的1/3的能量来训练，而且在infer时也只有一半的flops，且在29个NLP任务上都有更好的0/1/few shot效果。
 
@@ -1761,47 +1761,47 @@ Retrieval Enhanced Transformer(Retro)基于与preceding(前述) tokens的相似�
 
 ### LaMDA
 
-&np;
+&nbsp;
 
 [Lamda: Language models for dialog applications](https://arxiv.org/pdf/2201.08239)，有137B的参数，在1.5T的公开对话数据和互联网文本上pretrain，用标注数据微调，以及让模型能够咨询（consult）外部知识源能够让模型在安全性和factual grounding上有很好的改进。
 
 ### OPT
 
-&np;
+&nbsp;
 
 [OPT: Open Pre-trained Transformer Language Models](https://arxiv.org/pdf/2205.01068)提出了从125M到175B的预训练decoder-only模型
 
 ### Chinchilla
 
-&np;
+&nbsp;
 
 ### Galactica
 
-&np;
+&nbsp;
 
 ### CodeGen
 
-&np;
+&nbsp;
 
 ### AlexaTM
 
-&np;
+&nbsp;
 
 ### Sparrow
 
-&np;
+&nbsp;
 
 ### MoD
 
-&np;
+&nbsp;
 
 ### BLOOM
 
-&np;
+&nbsp;
 
 ### GLM
 
-&np;
+&nbsp;
 
 ACL22 [GLM: General Language Model Pretraining with Autoregressive Blank Infilling](https://arxiv.org/a/2103.10360)
 
@@ -1816,23 +1816,23 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/a/2210.
 
 ### Pythia
 
-&np;
+&nbsp;
 
 ### Orca
 
-&np;
+&nbsp;
 
 ### StarCoder
 
-&np;
+&nbsp;
 
 ### KOSMOS
 
-&np;
+&nbsp;
 
 ### Claude
 
-&np;
+&nbsp;
 
 [全球最强大模型一夜易主，GPT-4时代终结！Claude 3提前狙击GPT-5，3秒读懂万字论文理解力接近人类](https://mp.weixin.qq.com/s/WqQWS-hiQ1i1Ve6IPH3djw)
 
@@ -1852,7 +1852,7 @@ iclr23 [GLM-130B: An Open Bilingual Pre-trained Model](https://arxiv.org/a/2210.
 
 ### grok
 
-&np;
+&nbsp;
 
 [马斯克开源Grok-1：3140亿参数迄今最大，权重架构全开放，磁力下载](https://mp.weixin.qq.com/s/hvt5zwoazDx26KOaKuTs_w)
 
@@ -2184,33 +2184,33 @@ Sinusoidal位置编码是一种“想要成为相对位置编码的绝对位置�
 
 #### 线性插值
 
-&np;
+&nbsp;
 
 [Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/pdf/2306.15595.pdf)
 
 #### NTK-Aware Interpolation
 
-&np;
+&nbsp;
 
 #### NTK-by-parts
 
-&np;
+&nbsp;
 
 #### Dynamically NTK Scaled RoPE
 
-&np;
+&nbsp;
 
 ### 针对attention score的缩放方法
 
 #### YaRN
 
-&np;
+&nbsp;
 
 [Qwen和DeepSeek为何都选YaRN？](https://mp.weixin.qq.com/s/D6aHJT549iCwmctcdReR4w)
 
 #### logn
 
-&np;
+&nbsp;
 
 ### lossless long context
 
@@ -2264,13 +2264,13 @@ global attention在infer阶段的效率和序列长度成二次关系，而且�
 
 #### Residual Block
 
-&np;
+&nbsp;
 
 受pre-norm transformer的启发，用的RMSNorm
 
 #### MLP block
 
-&np;
+&nbsp;
 
 参考[Language modeling with gated convolutional networks](https://arxiv.org/pdf/1612.08083)（类似star两个W直接element-wise product），采用了gated MLP，即如下两个linear的结果（输入维度$$D$$，输出维度都是$$MD,M=3$$）进行element-wise product(类似GeGLU（[Glu variants improve transformer]((https://arxiv.org/pdf/2002.05202.pdf))）)，再过一个linear
 
@@ -2295,17 +2295,17 @@ global attention在infer阶段的效率和序列长度成二次关系，而且�
 
 #### Temporal-mixing block
 
-&np;
+&nbsp;
 
 ##### global Multi-Query Attention(MQA)
 
-&np;
+&nbsp;
 
 [Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)中为了加速推理，采用了MQA的方法，本文固定了head的维度为$$D_{head}=128$$，head的个数$$H$$也固定，且$$HD_{head}=D$$，所以model的维度$$D$$需要是128的倍数。没用绝对位置编码，用了RoPE。
 
 ##### local(sliding-window) MQA
 
-&np;
+&nbsp;
 
 [Longformer: The long-document transformer](https://arxiv.org/pdf/2004.05150)提出了可以用local attention，即滑动窗口attention。让每个位置只和前面的固定个tokens去算attentioin，可以
 
@@ -2314,7 +2314,7 @@ global attention在infer阶段的效率和序列长度成二次关系，而且�
 
 ##### RG-LRU
 
-&np;
+&nbsp;
 
 类似GSS block，也类似Mamba，输入$$D$$，分别过一个linear得到两个分支，均是$$D_{RNN}$$：
 
@@ -2439,7 +2439,7 @@ XXX
 
 ##### gate特点
 
-&np;
+&nbsp;
 
 先复习一下LSTM：
 
@@ -2489,7 +2489,7 @@ GRU：
 
 ### 标准的self-attention公式
 
-&np;
+&nbsp;
 
 对于序列长度=$$n$$的输入$$\boldsymbol{X}=\left\{\mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n\right\} \in \mathbb{R}^{n \times d}$$，输出$$\boldsymbol{Y}=\left\{\mathbf{y}_1, \mathbf{y}_2, \ldots, \mathbf{y}_n\right\} \in \mathbb{R}^{n \times d}$$
 
@@ -2512,7 +2512,7 @@ XXX
 
 ### EMA
 
-&np;
+&nbsp;
 
 对于输出的序列$$\boldsymbol{Y}$$采用Exponential Moving Average(指数滑动平均)如下
 
@@ -2536,7 +2536,7 @@ XXX
 
 ### MEGA
 
-&np;
+&nbsp;
 
 EMA可以看成是一种**与位置相关的归纳偏置（inductive bias）**，即假设当前位置与之前位置满足滑动平均的关系，而attention矩阵的计算其实并没有考虑位置信息，所以可以把二者结合一下。
 
@@ -2897,7 +2897,7 @@ XXX
 
 ### order的重要性
 
-&np;
+&nbsp;
 
 线性attention的recurrent state很小，存储空间有限，往往很难选择要存储哪些state。
 
@@ -2905,7 +2905,7 @@ XXX
 
 ### JRT-Prompt
 
-&np;
+&nbsp;
 
 上下文学习任务以$$(\mathcal{C}, \mathcal{Q}, \mathcal{Y})$$作为输入，$$\mathcal{C}$$为一些上下文来源（如文档或代码存储库），$$\mathcal{Q}$$为给定上下文时对模型的一些问题或请求，$$\mathcal{Y}$$为答案。
 
@@ -2931,7 +2931,7 @@ XXX
 
 ### base的linear transformer
 
-&np;
+&nbsp;
 
 通过$$\phi: \mathbb{R}^d \rightarrow \mathbb{R}^{\tilde{d}}$$，使得$$\phi\left(\boldsymbol{q}_i\right)^{\top} \phi\left(\boldsymbol{k}_j\right) \approx \exp \left(\boldsymbol{q}_i^{\top} \boldsymbol{k}_j / \sqrt{d}\right) .$$
 
@@ -2953,7 +2953,7 @@ infer阶段包括两个phases：
 
 ### JRT-RNN架构
 
-&np;
+&nbsp;
 
 PLA（Prefix Linear Attention）受Prefix-LM启发，主要有2个特点：
 
@@ -3766,7 +3766,7 @@ Gemini 2.5 Pro的上下文窗口是1M tokens，并且支持原生多模态：可
 
 ### MatFormer
 
-&np;
+&nbsp;
 
 [MatFormer: Nested Transformer for Elastic Inference](https://arxiv.org/pdf/2310.07707)
 
@@ -3785,7 +3785,7 @@ gemma-3n里的两种模型配置
 
 ### PLE
 
-&np;
+&nbsp;
 
 PLE允许很大一部分参数（与每层相关的嵌入）在CPU上加载并高效计算，即只有核心Transformer权重（E2B约为2B，E4B约为4B）需要存储在通常较为受限的加速器内存 (VRAM) 中。
 原文讲得比较模糊，可以参考[https://www.reddit.com/r/LocalLLaMA/comments/1kuy45r/gemma_3n_architectural_innovations_speculation/](https://www.reddit.com/r/LocalLLaMA/comments/1kuy45r/gemma_3n_architectural_innovations_speculation/)，看config里的text_config里有laurel_rank可能和[LAuReL: Learned Augmented Residual Layer](https://arxiv.org/pdf/2411.07501v3)有关
@@ -3794,13 +3794,13 @@ PLE允许很大一部分参数（与每层相关的嵌入）在CPU上加载并�
 
 ### KV Cache Sharing
 
-&np;
+&nbsp;
 
 优化了模型处理初始输入处理阶段（即prefill阶段）的方式，来自局部和全局注意力机制的中间层的k和v将直接与所有顶层共享，与Gemma3 4B相比，prefill性能显著提升了两倍，即模型能够比以往更快地提取和理解较长的prompt。
 
 ### USM
 
-&np;
+&nbsp;
 
 [Google USM: Scaling Automatic Speech Recognition Beyond 100 Languages](https://arxiv.org/a/2303.01037)
 
@@ -3819,7 +3819,7 @@ then translate it into English:
 
 ### MobileNet-v5
 
-&np;
+&nbsp;
 
 MobileNet-v5支持
 
@@ -3862,7 +3862,7 @@ MobileNet-v5支持
 + MHA(Multi-head Attention)：每个head各自算注意力，再拼接
 + GQA(Grouped-Query Attention)：出自[GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/pdf/2305.13245)，将所有Head分为$$g$$个组（g可以整除h），**每组共享**同一对K、V
 + MQA(Multi-Query Attention)：出自[Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/pdf/1911.02150)，让**所有Attention Head共享同一个K、V**
-+ MHA(Multi-head Latent Attention)：
++ MLA(Multi-head Latent Attention)：
     + 降维：输入的$$h_t$$先过一个$$W^{DKV}\in R^{d_c\times d}$$，得到$$c_t^{KV}=W^{DKV}h_t$$，其中$$d_c\ll d$$
     + 升维：$$k^C_t=W^{UK}c_t^{KV}$$，$$v^C_t=W^{UV}c_t^{KV}$$，其中$$W^{UK}\in R^{d\times d_c}$$，$$W^{UV}\in R^{d\times d_c}$$
     + 同时对q也降维，不过是降到$$d'_c$$，$$c^Q_t=W^{DQ}h_t$$，$$q^C_t=W^{UQ}c_t^Q$$，其中$$c^Q_t\in R^{d'_c}$$，$$W^{UQ}\in R^{d_hn_h\times d'_c}$$
@@ -3888,7 +3888,7 @@ MobileNet-v5支持
 
 ### DeepSeekMoE
 
-&np;
+&nbsp;
 
 [DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models](https://arxiv.org/pdf/2401.06066)
 
@@ -3896,9 +3896,9 @@ MobileNet-v5支持
 
 FFN部分的MoE，相比传统的[GShard](https://arxiv.org/pdf/2006.16668.pdf) 等MoE架构，DeepSeekMoE用了**更细粒度的专家分配机制**，并将部分专家设置为**共享专家**。
 
-细粒度专家分配：假设有$$N$$个专家，即么对于原来的每个专家，把它的intremediate hidden dim分成$$m$$份，每一份的长度是原来的$$\frac{1}{m}$$，这样就有了$$mN$$个专家，原来选$$k$$个，现在就选$$mK$$个
+细粒度专家分配：假设有$$N$$个专家，即么对于原来的每个专家，把它的intremediate hidden dim分成$$m$$份，每一份的长度是原来的$$\frac{1}{m}$$，这样就有了$$mN$$个专家，原来选$$K$$个，现在就选$$mK$$个
 
-$$\mathbf{u}_t$$表示FFN输入的第$$t$$个token，$$N_s$$是shared experts的数量，$$N_r$$是routed experts的数量，$$K_r$$表示被激活的router专家数量 
+$$\mathbf{u}_t$$表示FFN输入的第$$t$$个token，$$N_s$$是shared experts的数量，$$N_r$$是routed experts的数量，$$K_r$$表示被激活的router专家数量，$$\mathbf{e}_i$$表示第i个routed专家的centroid vector，即每个专家有一个向量
 
 XXX
 \begin{aligned}
@@ -3908,6 +3908,22 @@ XXX
 & s_{i, t}=\operatorname{Softmax}_i\left(\mathbf{u}_t^T \mathbf{e}_i\right),
 \end{aligned}
 XXX
+
+score计算部分的代码实现：以[v3](https://github.com/huggingface/transformers/blob/849c3778c620004e8d117cfb66ceb332350a65c4/src/transformers/models/deepseek_v3/modular_deepseek_v3.py)为例，注意这里用的是sigmoid而非softmax，
+
+```
+class DeepseekV3TopkRouter(nn.Module):
+    def __init__(self, config):
+        #...
+        # 这个就是e，shape是[out_features, in_features]
+        self.weight = nn.Parameter(torch.empty((self.n_routed_experts, config.hidden_size)))
+    def forward(self, hidden_states):
+        hidden_states = hidden_states.view(-1, self.config.hidden_size)
+        # 这里算的就是u和e的矩阵乘
+        router_logits = F.linear(hidden_states.type(torch.float32), self.weight.type(torch.float32))
+        scores = router_logits.sigmoid()
+
+```
 
 device-limited routing：保证每个token的目标专家**分布在最多$$M$$个设备上**
 
@@ -4297,7 +4313,7 @@ MoE架构：
 
 #### stage1: Long-CoT cold start
 
-&np;
+&nbsp;
 
 使用多样的的长思维链数据对模型进行微调，涵盖了数学、代码、逻辑推理和STEM问题等多种任务和领域。每条样本都有验证过的reference答案或者是基于代码的测试用例。
 
@@ -4317,7 +4333,7 @@ MoE架构：
 
 #### stage2: Reasoning RL
 
-&np;
+&nbsp;
 
 重点是大规模强化学习，利用基于规则的奖励来增强模型的探索和钻研能力。query-verifer的pair数据必须满足4个条件：
 
@@ -4330,7 +4346,7 @@ MoE架构：
 
 #### stage3: Thinking Mode Fusion
 
-&np;
+&nbsp;
 
 在一份包括长思维链数据和常用的指令微调数据的组合数据上对模型进行微调，**将非思考模式整合到思考模型中**。确保了推理和快速响应能力的无缝结合。
 
@@ -4350,7 +4366,7 @@ MoE架构：
 
 #### stage4: General RL
 
-&np;
+&nbsp;
 
 建立了一个复杂的奖励系统，覆盖超过20种不同的任务，每项任务都配有定制化的评分标准。提升如下几个能力：
 
@@ -4368,7 +4384,7 @@ MoE架构：
 
 #### strong-to-weak蒸馏
 
-&np;
+&nbsp;
 
 包括5个密集模型（Qwen3-0.6B、1.7B、4B、8B和14B）以及一个MoE模型（Qwen3-30B-A3B），蒸馏过程主要分为两个阶段：
 
@@ -4768,7 +4784,7 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 
 ### 冷启
 
-&np;
+&nbsp;
 
 采用Agentic的流程设计，基于训练数据Query，为其构建其优势模式下的Response，构建多样化AutoThink冷启动数据，让模型适应AutoThink的数据形式，并指导其挖掘自身优势场景。即使通过非思考模型，也能获得高质量的带有思考过程的推理数据。
 
@@ -4776,7 +4792,7 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 
 ### Reasoning RL
 
-&np;
+&nbsp;
 
 + 采用动态调整context length的方式，提升RL的效率：在训练初期先用16K的最大回复长度，在训练过程中通过观察模型回复的截断概率，逐步扩大其回复长度限制，最终扩展至32K。
 + 采用了大的batchsize和rollout个数，利用off-policy的更新策略来进一步提升模型的训练效率。在训练过程中会动态地丢弃“过于简单”的样本，来保证batch内有效梯度样本的数量，如在SRPO论文([SRPO: A Cross-Domain Implementation of Large-Scale Reinforcement Learning on LLM](https://arxiv.org/pdf/2504.14286))
@@ -4784,7 +4800,7 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 
 ### Step-SRPO
 
-&np;
+&nbsp;
 
 由于GRPO**缺乏可解释的过程监督信号**，导致我们在训练过程中出现了一系列不稳定现象，比如模型认为应该开启think模式却选择了不进行思考，以及对于一些代码/数学题，哪怕问题比较简单也会选择开启思考模式。
 
@@ -4816,6 +4832,14 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 [GLM-4.1V-Thinking: Towards Versatile Multimodal Reasoning with Scalable Reinforcement Learning](https://arxiv.org/a/2507.01006)
 
 [https://github.com/THUDM/GLM-4.1V-Thinking](https://github.com/THUDM/GLM-4.1V-Thinking)
+
+## GLM-4.5
+
+[GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models](https://arxiv.org/pdf/2508.06471)
+
+MOE用的是[DeepSeek-V3 Technical Report](https://arxiv.org/pdf/2412.19437)里的loss-free balance routing（[Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts](https://arxiv.org/pdf/2408.15664)）和sigmoid gate
+
+
 
 # mamba-transformer混合
 
