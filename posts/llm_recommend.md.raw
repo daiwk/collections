@@ -1053,9 +1053,13 @@ seq2->seq1->target3->rt2->target2->rt1->target1
     + RL：基于RM，计算整个list的奖励，看着有点像vcg的东西
     + 优化Payment network：引入拉格朗日乘子进行优化
 
-## 美团的EGA-V2（未落地）
+## 美团的EGA-V2（没落地）
 
 [EGA-V2: An End-to-end Generative Framework for Industrial Advertising](https://arxiv.org/abs/2505.17549)
+
+## 淘宝的TBGRecall（落地）
+
+[TBGRecall: A Generative Retrieval Model for E-commerce Recommendation Scenarios](https://arxiv.org/pdf/2508.11977)
 
 
 ## Meta的RPG（没落地）
@@ -1097,7 +1101,7 @@ infer：
 
 ## Pinterest的PinRec（落地）
 
-[PinRec: Outcome-Conditioned, Multi-Token Generative Retrieval for Industry-Scale Recommendation Systems](https://arxiv.org/pdf/2504.1050)
+[PinRec: Outcome-Conditioned, Multi-Token Generative Retrieval for Industry-Scale Recommendation Systems](https://arxiv.org/pdf/2504.10507)
 
 [Pinterest最新干货PinRec:生成式检索在推荐系统的落地实践](https://zhuanlan.zhihu.com/p/1927696466241093671)
 
@@ -1767,6 +1771,28 @@ user/item都是正常的推荐模型，有id特征、序列特征等，tag塔就
 + 离线生产：如上所述，产出interest-item-理由离线表
 
 
+## 快手的LCU（落地）
+
+WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Understanding](https://arxiv.org/pdf/2504.01602)
+
+[https://github.com/lyingCS/LCU](https://github.com/lyingCS/LCU)
+
+![](../assets/lcu.png)
+
+
+## 快手的DAS（落地）
+
+[DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System](https://arxiv.org/pdf/2508.10584)
+
+![](../assets/das-kuaishou.png)
+
+## 网易云音乐的LEMON（落地）
+
+KDD25，[Enhanced Emotion-aware Music Recommendation via Large Language Models](https://dl.acm.org/doi/pdf/10.1145/3711896.3737212)
+
+
+
+
 ## 美团的PIGEON（没落地）
 
 [Open‑Set Living Need Prediction with LLMs](https://arxiv.org/pdf/2506.02713)
@@ -2080,6 +2106,7 @@ XXX
 其中的rank模块如下，是一个bert，输入原始query和4个rewrites，加上target item，MMOE，算5个query间的js散度(robust loss)，以及综合输出和label的accuracy loss
 
 ![](../assets/agent4ranking-rank.png)
+
 
 
 ## 丰田的SimUSER(没落地)
