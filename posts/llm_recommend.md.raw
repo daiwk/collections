@@ -3585,3 +3585,16 @@ XXX
 XXX
 R=\sum_{i=1}^k\left(\Theta_i \times \operatorname{bid}_i \times p_i+\alpha \times \Theta_i \times \Gamma_i\right)
 XXX
+
+
+## DGenCTR
+
+[基于离散扩散模型的生成式CTR预估](https://mp.weixin.qq.com/s/JKuVTu3UxYWa5rkK5v_3Ag)
+
+[DGenCTR: Towards a Universal Generative Paradigm for Click-Through Rate Prediction via Discrete Diffusion](https://arxiv.org/pdf/2508.14500)
+
+![](../assets/dgenctr.png)
+
+![](../assets/dgenctr-model.png)
+
+
