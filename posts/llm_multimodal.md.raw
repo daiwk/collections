@@ -1252,3 +1252,8 @@ ThinkDiff的vision-language training：
   + 推理：同上
 
 aligner看着是一个类似ffn的结构，即norm(mlp(gelu(mlp)))
+
+## 残差的影响
+
+[LLM为什么能看懂图？秘密不在Projector，残差结构才是跨模态理解的关键](https://mp.weixin.qq.com/s/B4SSNI2-0_zYsM4cLimNLQ)
+

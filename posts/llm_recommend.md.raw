@@ -518,6 +518,21 @@ class RQBottleneck(nn.Module):
 
 [RecSys'24 | 谷歌:使用语义ID提升推荐系统ID Embed泛化性](https://mp.weixin.qq.com/s/PR8NuRWkK_4vuCrE9xD6Jg)
 
+## Meta的sid+ID表征
+
+[[Meta 2025]突破推荐系统瓶颈：统一语义与ID表征学习框架全解析](https://mp.weixin.qq.com/s/HOu8nnmL9ntGyGoQofcPSg)
+
+[Unified Semantic and ID Representation Learning for Deep Recommenders](https://arxiv.org/pdf/2502.16474)
+
+![](../assets/unify-sid-id.png)
+
+![](../assets/unify-sid-id2.png)
+
+其实思想很简单，原来推荐id的emb是D维，然后通过RQ-VAE学出一个sid，L个码本，每个码本有K个码，每个码对应D'维的emb（D'大于D），然后D和D' concat起来，当成新的emb丢给推荐模型，注意点：
+
++ 联合训练sid与id，即loss=推荐loss+rqvae_loss+重建loss(encoder输入和decoder输出)
++ rq中浅层使用cos去检索，深层使用欧氏距离(发现cos更擅长解耦累积的嵌入，而欧氏距离在区分独特物品方面表现更优)，使得性能提升达到6%到17%，同时token大小减少了80%以上。
+
 ## meta提升id emb稳定性
 
 [Meta广告:提出使用语义ID提升推荐系统ID Embed稳定性](https://mp.weixin.qq.com/s/DIF8ClTyN1y4ah98VR6asw)
@@ -1802,6 +1817,8 @@ WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Unders
 
 
 ## 快手的DAS（落地）
+
+[CIKM'25|快手 DAS：让广告推荐更懂4亿用户](https://mp.weixin.qq.com/s/76ephhal3AuKROSHCOcAjg)
 
 [DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System](https://arxiv.org/pdf/2508.10584)
 
