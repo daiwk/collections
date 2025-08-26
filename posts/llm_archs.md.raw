@@ -406,6 +406,20 @@ FlashAttention通过一些特殊技巧，不需要算出$$C$$这个临时变量�
 + 减少Global Memory的大小
 + 加速attenttion的计算，因为读cache比访问Global Memory快多了。
 
+## flash attention2
+
+[FlashAttention-2: Faster Attention with Better Parallelism and Work Partitioning](https://arxiv.org/pdf/2307.08691)
+
+## flash attention3
+
+[FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision](https://arxiv.org/pdf/2407.08608)
+
+## flash attention4
+
+[FlashAttention-4震撼来袭，原生支持Blackwell GPU，英伟达的护城河更深了？](https://mp.weixin.qq.com/s/1PaAaz8Fbt6sFKmD1hRQ7w)
+
+[https://github.com/Dao-AILab/flash-attention](https://github.com/Dao-AILab/flash-attention)
+
 ## flexattention
 
 [新PyTorch API：几行代码实现不同注意力变体，兼具FlashAttention性能和PyTorch灵活性](https://mp.weixin.qq.com/s/8uoZZf4hNSLQYLKFr95jTw?poc_token=HAynt2ajgl8xoDMpMWq0t8R-ubMokh17VRDwmacE)
