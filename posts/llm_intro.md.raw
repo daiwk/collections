@@ -4929,6 +4929,14 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 ### 后训练
 
 
+# 美团
+
+## LongCat
+
+[https://longcat.chat/](https://longcat.chat/)
+
+[https://github.com/meituan-longcat/LongCat-Flash-Chat/blob/main/tech_report.pdf](https://github.com/meituan-longcat/LongCat-Flash-Chat/blob/main/tech_report.pdf)
+
 # mamba-transformer混合
 
 
