@@ -914,6 +914,8 @@ XXX
 
 召回排序合为一体的生成式推荐——根据历史session序列，预测下一个session。
 
+[OneRec-V2 Technical Report](https://arxiv.org/pdf/2508.20900)
+
 ## 阿里的HeteroRec（落地）
 
 [Hierarchical Causal Transformer with Heterogeneous Information for Expandable Sequential Recommendation](https://arxiv.org/pdf/2503.01469)
@@ -1819,7 +1821,7 @@ WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Unders
     + 用户无关的评论排序：给定评论list，给出评论热度的排序
     + 用户相关的评论排序：给定用户+评论list，预估用户对哪些评论会有互动
 
-## 美团的CoEA
+## 美团的CoEA（落地）
 
 [When Relevance Meets Novelty: Dual-Stable Periodic Optimization for Exploratory Recommendation](https://arxiv.org/pdf/2508.00450)
 
