@@ -1,9 +1,5 @@
 美团：
 
-+ MTGRBoost: Boosting Large‑scale Generative Recommendation Models in Meituan 架构
-+ Action is All You Need: Dual‑Flow Generative Ranking Network for Recommendation (DFGR) 没落地
-+ IterQR: LLM‑based Iterative Query Rewrite for E‑commerce Search https://arxiv.org/pdf/2504.05309
-+ Open‑Set Living Need Prediction with LLMs (PIGEON)， 首次将“生活需求预测”定义为 “开放集分类” 问题，提出 PIGEON 系统结合行为检索器与 Maslow 需求等级对用户意图进行文本生成预测，并与召回模块结合部署上线。相比传统闭集分类，Recall 提升约 19%
 + SessionRec: Next Session Prediction Paradigm for Industrial Generative Recommendation，arXiv:2502.10157v1，essionRec 提出基于 HSTU 架构的“下一会话预测”生成式推荐框架，新增 session 内排序损失，提升候选列表质量。已部署于美团主页面召回阶段，在线 A/B 实验表明相比 baseline 有显著提升。
 + An LLM‑Infused Approach for Optimized CTR Prediction，2412.06860v1，该工作通过大模型知识蒸馏，将 LLM 融入点击率预测模块，在美团广告系统上线后，在线 A/B 测试取得 CTR 提升 +2.12%、CPM 增长 +2.59%，同时保持高效推理性能
 
@@ -16,6 +12,18 @@
 + Large Memory Network (LMN): Compress & Store Long-Term User Behavior for Recommendation
 + RankMixer: Scaling Up Ranking Models in Industrial Recommenders
 
-google
 
-+ Item-centric Exploration for Cold Start Problem. https://arxiv.org/pdf/2507.09423
+当相关性遇上新颖性：探索性推荐的双稳态周期优化
+本文介绍CoEA方法，利用大型语言模型（LLMs）平衡推荐的新颖性和相关性，优化探索性推荐系统。在美团App首页部署，20天在线A/B测试显示总交易价值（GTV）提升1.203%，7天新型项目曝光比例提升2.364%。该框架有效提升用户潜在兴趣发现，适用于工业级电子商务场景。
+论文链接：https://arxiv.org/abs/2508.00450
+
+REG4Rec: 推理增强的生成模型用于大规模推荐系统
+本文提出REG4Rec模型，通过动态推理路径提升生成式推荐性能，适用于电子商务和广告平台。在阿里巴巴东南亚电商广告平台部署，在线A/B测试显示广告收入提升5.60%，点击率提升1.81%，总商品交易额提升3.29%。模型在工业环境中显著改善冷启动和性能瓶颈。
+论文链接：https://arxiv.org/abs/2508.15308
+
+
+TrackRec: 通过偏好对齐的链式思维迭代交替反馈用于推荐
+本文介绍TrackRec框架，利用大型语言模型（LLMs）通过迭代反馈和链式思维增强推荐推理能力。在快手广告平台部署，14天在线A/B测试显示整体收入增长2.3%，转化率提升1.6%；长尾数据上收入增长4.2%。框架有效解决工业推荐中的冷启动问题。
+论文链接：https://arxiv.org/abs/2508.15388
+
+
