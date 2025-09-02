@@ -1224,6 +1224,10 @@ Yandex的音乐推荐场景
 
 基于的这个模板：[https://github.com/ashleve/lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
 
+## 美团的SessionRec
+
+[SessionRec: Next Session Prediction Paradigm For Generative Sequential Recommendation](https://arxiv.org/pdf/2502.10157)
+
 
 # LLM+推荐：输入文本
 
@@ -1815,6 +1819,27 @@ WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Unders
     + 用户无关的评论排序：给定评论list，给出评论热度的排序
     + 用户相关的评论排序：给定用户+评论list，预估用户对哪些评论会有互动
 
+## 美团的CoEA
+
+[When Relevance Meets Novelty: Dual-Stable Periodic Optimization for Exploratory Recommendation](https://arxiv.org/pdf/2508.00450)
+
+设计了profile llm、novelty llm、relevance llm完成类目预估任务，并进行周期性的sft
+
+![](../assets/coea.png)
+
+1. 用户长期行为经过多层transformer产出user emb，并通过rq-vae得到sid
+2. 每个sid里采样一些用户，把他们的点击历史丢给profile LLM（不微调），总结出用户画像
+3. 用户短期行为的类目list(2个)+上面产出的用户画像，丢给novelty LLM（基于qwen2.5-7b-instruct-1M），预估1个类目(应该是要跑多次吧，或者prompt写错了)
+4. 上面的3个类目+用户画像丢给relevance LLM（基于qwen2.5-7b-instruct-1M），输出相关性得分
+
+![](../assets/coea-prompts.png)
+
+
+实现细节：
++ key=sid+近期类目，value=相关性得分最高的若干个类目，存到离线存储里，在线直接查，加一路召回
++ sft novelty LLM：给定历史类目预估下一个类目
++ sft relevance LLM：当成RM，用户点的是正例，从曝光未点击里随机出负例
++ 周期性地微调：收集用户反馈，固定relevance LLM，用dpo（RM打分高的vs打分低的）来finetune novelty LLM，同时加kl让模型不要离上一轮的太远
 
 ## 快手的DAS（落地）
 
@@ -1833,13 +1858,11 @@ WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Unders
 KDD25，[Enhanced Emotion-aware Music Recommendation via Large Language Models](https://dl.acm.org/doi/pdf/10.1145/3711896.3737212)
 
 
-
-
 ## 美团的PIGEON（没落地）
 
 [Open‑Set Living Need Prediction with LLMs](https://arxiv.org/pdf/2506.02713)
 
-
+将“生活需求预测”定义为 “开放集分类” 问题，提出PIGEON系统结合行为检索器与Maslow需求等级对用户意图进行文本生成预测。
 
 ## 蚂蚁的SLIM（没落地）
 
@@ -3511,7 +3534,7 @@ content encoder的训练：对比学习
 serving：2个head分别建索引，在线同一个trigger分别从这2个索引召回，再merge
 
 
-## ULIM
+## 阿里的ULIM
 
 [User Long-Term Multi-Interest Retrieval Model for Recommendation](https://arxiv.org/pdf/2507.10097)
 
@@ -3560,13 +3583,13 @@ serving：2个head分别建索引，在线同一个trigger分别从这2个索引
 
 和meta在2023年的user-centric ranking（[Breaking the Curse of Quality Saturation with User-Centric Ranking](https://arxiv.org/pdf/2305.15333)）没啥关系
 
-## CAVE
+## 快手的CAVE
 
 [From Generation to Consumption: Personalized List Value Estimation for Re-ranking](https://arxiv.org/pdf/2508.02242)
 
 重排里的list-wise evaluator，以前是对整个list给出价值预估，现在预估了一个用户退出的概率，只对退出之前的那些item的sub list预估价值
 
-## NGA
+## 美团的NGA
 
 [NGA: Non-autoregressive Generative Auction with Global Externalities for Advertising Systems](https://arxiv.org/pdf/2506.05685)
 
