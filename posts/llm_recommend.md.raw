@@ -3642,7 +3642,11 @@ XXX
 ![](../assets/dgenctr-model.png)
 
 
-## TransAct V2
+## Pinterest的TransAct V2
 
 [TransAct V2: Lifelong User Action Sequence Modeling on Pinterest Recommendation](https://arxiv.org/pdf/2506.02267)
+
+## Pinterest的multi-faceted预训练
+
+[Multi-Faceted Large Embedding Tables for Pinterest Ads Ranking](https://arxiv.org/pdf/2508.05700)
 
