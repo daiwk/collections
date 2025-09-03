@@ -361,6 +361,15 @@ class IndexingTrainer(Trainer):
 [Autoregressive Image Generation using Residual Quantization](https://arxiv.org/pdf/2203.01941.pdf)
 
 
+## 一些tokenizer方法
+
+vq/rq codebook容易坍塌，即马太效应
+lfq的熵损失函数能优化codebook利用率，即所有样本的$$-\sum plogp$$，让xx更尖锐？
+然后有个batch内的熵，让xx更平均？
+两个相减可以提升表示能力的同时提升利用率
+
+alit([Adaptive Length Image Tokenization via Recurrent Allocation](https://arxiv.org/pdf/2411.02393))：简单的图片不用那么多token，复杂的多一点
+
 ## TIGER
 
 [Recommender Systems with Generative Retrieval](https://arxiv.org/pdf/2305.05065.pdf)
@@ -554,38 +563,6 @@ class RQBottleneck(nn.Module):
 
 
 # LLM+推荐：输入ID/SID（工业界+落地）
-
-## Meta的sid+ID表征
-
-[[Meta 2025]突破推荐系统瓶颈：统一语义与ID表征学习框架全解析](https://mp.weixin.qq.com/s/HOu8nnmL9ntGyGoQofcPSg)
-
-[Unified Semantic and ID Representation Learning for Deep Recommenders](https://arxiv.org/pdf/2502.16474)
-
-![](../assets/unify-sid-id.png)
-
-![](../assets/unify-sid-id2.png)
-
-其实思想很简单，原来推荐id的emb是D维，然后通过RQ-VAE学出一个sid，L个码本，每个码本有K个码，每个码对应D'维的emb（D'大于D），然后D和D' concat起来，当成新的emb丢给推荐模型，注意点：
-
-+ 联合训练sid与id，即loss=推荐loss+rqvae_loss+重建loss(encoder输入和decoder输出)
-+ rq中浅层使用cos去检索，深层使用欧氏距离(发现cos更擅长解耦累积的嵌入，而欧氏距离在区分独特物品方面表现更优)，使得性能提升达到6%到17%，同时token大小减少了80%以上。
-
-## Meta提升id emb稳定性
-
-[Meta广告:提出使用语义ID提升推荐系统ID Embed稳定性](https://mp.weixin.qq.com/s/DIF8ClTyN1y4ah98VR6asw)
-
-[Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID](https://arxiv.org/pdf/2504.02137)
-
-假设总共有H个item id，有L级码本，每一级都是K个取值。c1、c2、c3的功能类比为一级类目、二级类目、三级类目。从semantic id映射到item id有如下几种方法
-
-![](../assets/prefix-ngram.png)
-
-+ trigram/fourgram：可以理解为十进制数，c1是千位，c2是百位，以此类推
-+ all bigrams：相邻两个码组合，映射出一个id，那id就是前面的个数加上$$Kc_i+c_{i+1}$$，因此，可以映射出好几个id
-+ prefix-ngram：c1得到一个id，c1 c2得到一个id，c1 c2 c3得到一个id，因此可以得到好几个id
-
-后面两种方法得到的id有多个，需要把他们对应的emb sumpooling，得到当前id的emb。对比发现prefix-ngram的效果最好
-
 
 ## Meta的HSTU
 
@@ -904,7 +881,52 @@ XXX
 
 ![hstu-scaling-law](../assets/hstu-scaling-law.png)
 
+## Meta的sid+ID表征
 
+[[Meta 2025]突破推荐系统瓶颈：统一语义与ID表征学习框架全解析](https://mp.weixin.qq.com/s/HOu8nnmL9ntGyGoQofcPSg)
+
+[Unified Semantic and ID Representation Learning for Deep Recommenders](https://arxiv.org/pdf/2502.16474)
+
+![](../assets/unify-sid-id.png)
+
+![](../assets/unify-sid-id2.png)
+
+其实思想很简单，原来推荐id的emb是D维，然后通过RQ-VAE学出一个sid，L个码本，每个码本有K个码，每个码对应D'维的emb（D'大于D），然后D和D' concat起来，当成新的emb丢给推荐模型，注意点：
+
++ 联合训练sid与id，即loss=推荐loss+rqvae_loss+重建loss(encoder输入和decoder输出)
++ rq中浅层使用cos去检索，深层使用欧氏距离(发现cos更擅长解耦累积的嵌入，而欧氏距离在区分独特物品方面表现更优)，使得性能提升达到6%到17%，同时token大小减少了80%以上。
+
+## Meta提升id emb稳定性
+
+[Meta广告:提出使用语义ID提升推荐系统ID Embed稳定性](https://mp.weixin.qq.com/s/DIF8ClTyN1y4ah98VR6asw)
+
+[Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID](https://arxiv.org/pdf/2504.02137)
+
+假设总共有H个item id，有L级码本，每一级都是K个取值。c1、c2、c3的功能类比为一级类目、二级类目、三级类目。从semantic id映射到item id有如下几种方法
+
+![](../assets/prefix-ngram.png)
+
++ trigram/fourgram：可以理解为十进制数，c1是千位，c2是百位，以此类推
++ all bigrams：相邻两个码组合，映射出一个id，那id就是前面的个数加上$$Kc_i+c_{i+1}$$，因此，可以映射出好几个id
++ prefix-ngram：c1得到一个id，c1 c2得到一个id，c1 c2 c3得到一个id，因此可以得到好几个id
+
+后面两种方法得到的id有多个，需要把他们对应的emb sumpooling，得到当前id的emb。对比发现prefix-ngram的效果最好
+
+
+## 美团的NLGR
+
+生成式重排
+
+[NLGR: Utilizing Neighbor Lists for Generative Rerank in Personalized Recommendation Systems](https://arxiv.org/pdf/2502.06097)
+
+将邻居候选列表引入生成式reranking框架，结合evaluator‑generator策略和非自回归采样机制，使reranker可跳跃组合优化。
+
+
+## 美团的SessionRec
+
+[SessionRec: Next Session Prediction Paradigm For Generative Sequential Recommendation](https://arxiv.org/pdf/2502.10157)
+
+提出基于 HSTU 架构的“下一会话预测”生成式推荐框架，新增 session 内排序损失，提升候选列表质量。已部署于美团主页面召回阶段，在线 A/B 实验表明相比 baseline 有显著提升。
 
 
 
@@ -991,21 +1013,6 @@ seq2->seq1->target3->rt2->target2->rt1->target1
     + RL：基于RM，计算整个list的奖励，看着有点像vcg的东西
     + 优化Payment network：引入拉格朗日乘子进行优化
 
-## 美团的NLGR
-
-生成式重排
-
-[NLGR: Utilizing Neighbor Lists for Generative Rerank in Personalized Recommendation Systems](https://arxiv.org/pdf/2502.06097)
-
-将邻居候选列表引入生成式reranking框架，结合evaluator‑generator策略和非自回归采样机制，使reranker可跳跃组合优化。
-
-
-## 美团的SessionRec
-
-[SessionRec: Next Session Prediction Paradigm For Generative Sequential Recommendation](https://arxiv.org/pdf/2502.10157)
-
-提出基于 HSTU 架构的“下一会话预测”生成式推荐框架，新增 session 内排序损失，提升候选列表质量。已部署于美团主页面召回阶段，在线 A/B 实验表明相比 baseline 有显著提升。
-
 ## 阿里的HeteroRec
 
 [Hierarchical Causal Transformer with Heterogeneous Information for Expandable Sequential Recommendation](https://arxiv.org/pdf/2503.01469)
@@ -1033,12 +1040,6 @@ item有各种特征，如title、img、id等
 纯价值驱动的列表生成可能有同质化的风险，导致多样性降低。引入相似度惩罚：
 
 
-
-## 阿里的TBGRecall
-
-[TBGRecall: A Generative Retrieval Model for E-commerce Recommendation Scenarios](https://arxiv.org/pdf/2508.11977)
-
-
 ## 阿里的GPSD
 
 [Scaling Transformers for Discriminative Recommendation via Generative Pretraining](https://arxiv.org/pdf/2506.03699)
@@ -1060,9 +1061,15 @@ item有各种特征，如title、img、id等
 
 不过落地的场景比较小
 
+
+## 阿里的TBGRecall
+
+[TBGRecall: A Generative Retrieval Model for E-commerce Recommendation Scenarios](https://arxiv.org/pdf/2508.11977)
+
+
 ## 阿里的REG4Rec
 
-[REG4Rec: Reasoning-Enhanced Generative Model for Large-Scale Recommendation Systems]()
+[REG4Rec: Reasoning-Enhanced Generative Model for Large-Scale Recommendation Systems](https://arxiv.org/pdf/2508.15308)
 
 
 ## 快手的RecGPT
@@ -1086,23 +1093,23 @@ item有各种特征，如title、img、id等
 
 [OneRec-V2 Technical Report](https://arxiv.org/pdf/2508.20900)
 
+## 字节的LMN
 
+[Large Memory Network for Recommendation](https://arxiv.org/abs/2502.05558)
 
-## 字节的Next-User Retrieval
-
-[Next‑User Retrieval: Enhancing Cold‑Start Recommendations via Generative Approach](https://arxiv.org/pdf/2506.15267)
 
 ## 字节的LONGER
 
 [LONGER: Scaling Up Long Sequence Modeling in Industrial Recommenders](https://arxiv.org/abs/2505.04421)
 
+## 字节的Next-User Retrieval
+
+[Next‑User Retrieval: Enhancing Cold‑Start Recommendations via Generative Approach](https://arxiv.org/pdf/2506.15267)
+
+
 ## 字节的RankMixer
 
 [RankMixer: Scaling Up Ranking Models in Industrial Recommenders](https://arxiv.org/abs/2507.15551)
-
-## 字节的LMN
-
-[Large Memory Network for Recommendation](https://arxiv.org/abs/2502.05558)
 
 
 ## Pinterest的PinRec
@@ -1406,21 +1413,6 @@ cluster包括了一系列短语，如(猫，狗，动物，宠物，小动物)�
 
 [DMGIN: How Multimodal LLMs Enhance Large Recommendation Models for Lifelong User Post-click Behaviors](https://arxiv.org/pdf/2508.21801)
 
-
-
-
-## 阿里的BAHE
-
-[SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
-
-[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347)
-
-![](../assets/bahe.png)
-
-+ 防止由于重复编码相同用户行为而产生的计算冗余：利用LLMs的预训练浅层提取来自用户序列的最细粒度的原子用户行为(例如购买星巴克、订酒店)的emb，并将它们存储在离线数据库中
-+ 从db里查出来，和item一起过LLMs的更深层可训练层
-
-
 ## 阿里的BEQUE
 
 [LLM落地淘宝电商搜索场景，显著提升长尾query改写效果](https://mp.weixin.qq.com/s/GmogjAHt0Hrwd8RmtOqS7A)
@@ -1455,6 +1447,21 @@ XXX
 XXX
 
 应用：离线刷库，实验的gmv、单量都有收益，长尾query效果更好
+
+
+
+
+## 阿里的BAHE
+
+[SIGIR'24 \| 打破长度障碍：LLM增强的长文本用户行为CTR预测](https://mp.weixin.qq.com/s/h0p1QrapTGxOonccxNVNuQ)
+
+[Breaking the Length Barrier: LLM-Enhanced CTR Prediction in Long Textual User Behaviors](https://arxiv.org/pdf/2403.19347)
+
+![](../assets/bahe.png)
+
++ 防止由于重复编码相同用户行为而产生的计算冗余：利用LLMs的预训练浅层提取来自用户序列的最细粒度的原子用户行为(例如购买星巴克、订酒店)的emb，并将它们存储在离线数据库中
++ 从db里查出来，和item一起过LLMs的更深层可训练层
+
 
 
 ## 阿里的LUM
@@ -1680,6 +1687,44 @@ Finally, you need to return the result in the form of json:
 
 实验部分列了两个主场景的收益，但没有说实验流量
 
+## 快手的LCU
+
+WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Understanding](https://arxiv.org/pdf/2504.01602)
+
+[https://github.com/lyingCS/LCU](https://github.com/lyingCS/LCU)
+
+![](../assets/staytime-analysis.jpeg)
+
+用户在一个视频上的的staytime=视频观看时长+评论区时长
+
+用户在评论区的staytime和如下几个因素的关系（后面两个和本文关系不大）：
+
++ top评论的平均点赞数：点赞数越多，评论区的staytime越短，说明在比较不成熟的评论区，用户需要滑动更多来找到他们喜欢的评论，反之用户则更容易在头部评论里找到喜欢的
++ 评论的用户互动数（点赞/回复）：互动数越多，评论区的staytime越长，说明用户更有沉浸感
++ 视频物理时长：物理时长更长的视频，评论区的staytime更长
++ 视频观看时长：视频观看时长更长的视频，评论区的staytime更长，且在1000到1200s处有一个突增
+
+![](../assets/lcu.png)
+
+两阶段：
+
++ 训练LLM：基于如下3个任务sft一个LLM
+    + staytime分桶预估：给定用户历史行为，预估用户在评论区的staytime
+    + top评论预估：给定一些评论，预估哪个评论的互动数最高
+    + 用户-评论互动预估：给定一些评论，基于用户历史行为预估用户最有可能对哪些评论互动
++ LLM集成到推荐系统中并增加辅助loss
+    + 用户无关的评论排序：给定评论list，给出评论热度的排序
+    + 用户相关的评论排序：给定用户+评论list，预估用户对哪些评论会有互动
+
+## 快手的KuaiMod
+
+[KuaiMod来了！快手用大模型重构短视频生态格局](https://mp.weixin.qq.com/s/HO7I_9E1iwteSRHLukz81A)
+
+[VLM as Policy: Common-Law Content Moderation Framework for Short Video Platform](https://arxiv.org/pdf/2504.14904v1)
+
++ 首个短视频平台劣质内容判别基准测试：面向快手生态构建了短视频劣质内容分类体系，形式化定义了短视频内容判别任务，并基于真实场景中的用户反馈构建了首个短视频劣质内容判别基准测试。KuaiMod劣质内容分类体系包含4种主要的劣质类别以及15种细粒度劣质类别。基准测试包含1000条短视频样本，涵盖 15种细粒度劣质类别，完全由人工标注，并经过多轮数据清洗以保证正确性。
++ 首个工业级自动化内容判别解决方案：KuaiMod是首个在工业场景下验证了部署价值的自动化内容质量判别解决方案，在快手平台多个场景下的部署结果表明，KuaiMod方案具有能够与人工判别相媲美的准确率。
++ 基于用户反馈的强化学习训练+更新策略：区别于静态的规则或内容判别API，基于判例的劣质内容建模使得KuaiMod可以通过迭代训练数据完成判别策略的更新。为了保证实时性和准确率，我们设计了基于用户反馈的强化学习范式，利用用户的线上反馈构造新的训练数据，实现线上判别服务的天级更新。
 
 
 ## 快手的OneSug
@@ -1708,15 +1753,6 @@ prefix->query的场景
 
 ![](../assets/great.png)
 
-## 快手的KuaiMod
-
-[KuaiMod来了！快手用大模型重构短视频生态格局](https://mp.weixin.qq.com/s/HO7I_9E1iwteSRHLukz81A)
-
-[VLM as Policy: Common-Law Content Moderation Framework for Short Video Platform](https://arxiv.org/pdf/2504.14904v1)
-
-+ 首个短视频平台劣质内容判别基准测试：面向快手生态构建了短视频劣质内容分类体系，形式化定义了短视频内容判别任务，并基于真实场景中的用户反馈构建了首个短视频劣质内容判别基准测试。KuaiMod劣质内容分类体系包含4种主要的劣质类别以及15种细粒度劣质类别。基准测试包含1000条短视频样本，涵盖 15种细粒度劣质类别，完全由人工标注，并经过多轮数据清洗以保证正确性。
-+ 首个工业级自动化内容判别解决方案：KuaiMod是首个在工业场景下验证了部署价值的自动化内容质量判别解决方案，在快手平台多个场景下的部署结果表明，KuaiMod方案具有能够与人工判别相媲美的准确率。
-+ 基于用户反馈的强化学习训练+更新策略：区别于静态的规则或内容判别API，基于判例的劣质内容建模使得KuaiMod可以通过迭代训练数据完成判别策略的更新。为了保证实时性和准确率，我们设计了基于用户反馈的强化学习范式，利用用户的线上反馈构造新的训练数据，实现线上判别服务的天级更新。
 
 ## 快手的R4ec
 
@@ -1758,34 +1794,6 @@ item侧也复用了类似的流程，把输入的(hist, item)改成(item, pos, n
 
 在线使用：通过actor生成user和item的知识，然后用bge-m3产出向量给推荐模型用
 
-## 快手的LCU
-
-WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Understanding](https://arxiv.org/pdf/2504.01602)
-
-[https://github.com/lyingCS/LCU](https://github.com/lyingCS/LCU)
-
-![](../assets/staytime-analysis.jpeg)
-
-用户在一个视频上的的staytime=视频观看时长+评论区时长
-
-用户在评论区的staytime和如下几个因素的关系（后面两个和本文关系不大）：
-
-+ top评论的平均点赞数：点赞数越多，评论区的staytime越短，说明在比较不成熟的评论区，用户需要滑动更多来找到他们喜欢的评论，反之用户则更容易在头部评论里找到喜欢的
-+ 评论的用户互动数（点赞/回复）：互动数越多，评论区的staytime越长，说明用户更有沉浸感
-+ 视频物理时长：物理时长更长的视频，评论区的staytime更长
-+ 视频观看时长：视频观看时长更长的视频，评论区的staytime更长，且在1000到1200s处有一个突增
-
-![](../assets/lcu.png)
-
-两阶段：
-
-+ 训练LLM：基于如下3个任务sft一个LLM
-    + staytime分桶预估：给定用户历史行为，预估用户在评论区的staytime
-    + top评论预估：给定一些评论，预估哪个评论的互动数最高
-    + 用户-评论互动预估：给定一些评论，基于用户历史行为预估用户最有可能对哪些评论互动
-+ LLM集成到推荐系统中并增加辅助loss
-    + 用户无关的评论排序：给定评论list，给出评论热度的排序
-    + 用户相关的评论排序：给定用户+评论list，预估用户对哪些评论会有互动
 
 ## 快手的DAS
 
@@ -1798,7 +1806,6 @@ WWW Companion 25，[Comment Staytime Prediction with LLM-enhanced Comment Unders
 ## 快手的TrackRec
 
 [TrackRec: Iterative Alternating Feedback with Chain-of-Thought via Preference Alignment for Recommendation](https://arxiv.org/abs/2508.15388)
-
 
 
 
@@ -2330,6 +2337,52 @@ XXX
 
 # LLM+推荐：输入文本（学术界）
 
+## P5 RecSys22
+
+[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+
+
+## GReaT ICLR23
+
+[Language Models are Realistic Tabular Data Generators](https://arxiv.org/pdf/2210.06280)
+
+ICLR2023，[https://github.com/kathrinse/be_great](https://github.com/kathrinse/be_great)
+
+通过自回归的LLM合成（synthesize）逼真的（realistic）表格化（tabular）数据
+
+![](../assets/great-finetune.png)
+
+finetune：
+
++ 把表格转化为逗号分隔的自然语言
++ 随机交换几个属性的位置得到训练语料
++ 基于交换后的语料进行自回归的finetune
+
+![](../assets/great-sample.png)
+
+sample：
+
++ 基于如下3种方式产出precondition：
+  + 只输入属性名，例如“年龄”
+  + 输入name-value pair，例如“年龄=26岁”
+  + 输入多个name-value pair：例如“年龄=59岁，教育程度是硕士”
++ 然后调用LLM输出其他属性
++ 再转化为表格格式
+
+
+## 微软的RecExplainer
+
+[RecExplainer: Aligning Large Language Models for Explaining Recommendation Models](https://arxiv.org/pdf/2311.10947)
+
+[https://github.com/microsoft/RecAI](https://github.com/microsoft/RecAI)
+
+新的一篇
+
+[Avoid Recommending Out-of-Domain Items: Constrained Generative Recommendation with LLMs](https://arxiv.org/pdf/2505.03336)
+
++ RecLM-ret通过检索机制，从域数据集中找到最相关的item
++ RecLM-cgen则使用约束生成策略，限制模型仅生成域内的item标题。
+
 
 ## CUP没中
 
@@ -2457,27 +2510,6 @@ XXX
 + 对话intent提取：输入对话和候选intents（使用咨询、恢复订单、退款异常等），选出对应intent
 
 
-## Llama4Rec SIGIR24
-
-[Integrating Large Language Models into Recommendation via Mutual Augmentation and Adaptive Aggregation](https://arxiv.org/pdf/2401.13870) SIGIR 24
-
-![](../assets/llama4rec.png)
-
-+ prompt增强：在prompt里引入推荐模型的信息
-    + 相似用户也喜欢item4、item5
-    + 另一个推荐模型给出的预估是xxx
-+ 数据增强：通过LLM给推荐模型增加样本
-    + 直接推荐：给定2个候选item，LLM判断哪个更好
-    + 序列推荐：给定候选list，LLM给出topk
-    + 评分预测：给定候选item，LLM给出打分
-+ adaptive aggregation：llm和推荐模型都给出排序，然后自定义融合公式算出融合分，得到最终排序
-
-示例prompt如下
-
-![](../assets/llama4rec-prompts.png)
-
-通过如上prompt构建一个instruct-tuning数据集，然后finetune一个llama2
-
 ## SAGCN ACM TOIS
 
 [Understanding Before Recommendation: Semantic Aspect-Aware Review Exploitation via Large Language Models](https://arxiv.org/pdf/2312.16275)
@@ -2495,32 +2527,6 @@ XXX
 
 ![](../assets/sagcn-graph.png)
 
-## GReaT ICLR23
-
-[Language Models are Realistic Tabular Data Generators](https://arxiv.org/pdf/2210.06280)
-
-ICLR2023，[https://github.com/kathrinse/be_great](https://github.com/kathrinse/be_great)
-
-通过自回归的LLM合成（synthesize）逼真的（realistic）表格化（tabular）数据
-
-![](../assets/great-finetune.png)
-
-finetune：
-
-+ 把表格转化为逗号分隔的自然语言
-+ 随机交换几个属性的位置得到训练语料
-+ 基于交换后的语料进行自回归的finetune
-
-![](../assets/great-sample.png)
-
-sample：
-
-+ 基于如下3种方式产出precondition：
-  + 只输入属性名，例如“年龄”
-  + 输入name-value pair，例如“年龄=26岁”
-  + 输入多个name-value pair：例如“年龄=59岁，教育程度是硕士”
-+ 然后调用LLM输出其他属性
-+ 再转化为表格格式
 
 ## ONCE WSDM24
 
@@ -2724,6 +2730,35 @@ finetune部分代码的大概逻辑如下：
 
 infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿softmax后的1-n的结果
 
+
+## Llama4Rec SIGIR24
+
+[Integrating Large Language Models into Recommendation via Mutual Augmentation and Adaptive Aggregation](https://arxiv.org/pdf/2401.13870) SIGIR 24
+
+![](../assets/llama4rec.png)
+
++ prompt增强：在prompt里引入推荐模型的信息
+    + 相似用户也喜欢item4、item5
+    + 另一个推荐模型给出的预估是xxx
++ 数据增强：通过LLM给推荐模型增加样本
+    + 直接推荐：给定2个候选item，LLM判断哪个更好
+    + 序列推荐：给定候选list，LLM给出topk
+    + 评分预测：给定候选item，LLM给出打分
++ adaptive aggregation：llm和推荐模型都给出排序，然后自定义融合公式算出融合分，得到最终排序
+
+示例prompt如下
+
+![](../assets/llama4rec-prompts.png)
+
+通过如上prompt构建一个instruct-tuning数据集，然后finetune一个llama2
+
+## MACRec SIGIR24
+
+把推荐系统拆成多个agent
+
+[MACRec: a Multi-Agent Collaboration Framework for Recommendation](https://arxiv.org/pdf/2402.15235)
+
+
 ## GPLR SIGIR25
 
 [You Are What You Bought: Generating Customer Personas for E-commerce Applications](https://arxiv.org/abs/2504.17304)
@@ -2749,16 +2784,6 @@ infer照理说应该是得到emb，然后去ann，但代码里偷懒了直接拿
     + 反向传播：从原型用户出发，反向计算其他用户的角色亲和力，避免全图矩阵运算。
     + 误差控制：通过设定绝对误差阈值，仅保留影响大于阈值的传播路径
 + 用户画像与推荐模型集成：将角色表示作为输入特征融入GCN
-
-## GMC
-
-[Generative Multi-Target Cross-Domain Recommendation](https://arxiv.org/abs/2507.12871)
-
-![](../assets/gmc.png)
-
-+ sid的学习：通过llama3.1-8b-instruct产出4096的emb，然后学一个rq-vae的sid，主要加了一个domain-aware的对比学习（2个item相同domain则拉近距离，反之拉远），所以loss=loss_reconstruct+loss_rq+loss_domain
-+ 推荐模型的学习：一个正常的transformer-based模型(本文用的T5-small)，预测下一个sid
-+ domain-specific的微调：每个domain加一个小矩阵，该domain的数据只用lora训对应的那个小矩阵
 
 ## guided embedding
 
@@ -2799,30 +2824,15 @@ guided embedding：prompt里包含m个aspect，让模型给出每个aspect的打
 ![](../assets/guided-emb-item-example.png)
 
 
-## P5 RecSys22
+## GMC
 
-[Recommendation as Language Processing (RLP):A Unified Pretrain, Personalized Prompt & Predict Paradigm (P5)](https://arxiv.org/pdf/2203.13366.pdf)
+[Generative Multi-Target Cross-Domain Recommendation](https://arxiv.org/abs/2507.12871)
 
-## 微软的RecExplainer
+![](../assets/gmc.png)
 
-[RecExplainer: Aligning Large Language Models for Explaining Recommendation Models](https://arxiv.org/pdf/2311.10947)
-
-[https://github.com/microsoft/RecAI](https://github.com/microsoft/RecAI)
-
-新的一篇
-
-[Avoid Recommending Out-of-Domain Items: Constrained Generative Recommendation with LLMs](https://arxiv.org/pdf/2505.03336)
-
-+ RecLM-ret通过检索机制，从域数据集中找到最相关的item
-+ RecLM-cgen则使用约束生成策略，限制模型仅生成域内的item标题。
-
-
-## MACRec（学术界）SIGIR24
-
-把推荐系统拆成多个agent
-
-[MACRec: a Multi-Agent Collaboration Framework for Recommendation](https://arxiv.org/pdf/2402.15235)
-
++ sid的学习：通过llama3.1-8b-instruct产出4096的emb，然后学一个rq-vae的sid，主要加了一个domain-aware的对比学习（2个item相同domain则拉近距离，反之拉远），所以loss=loss_reconstruct+loss_rq+loss_domain
++ 推荐模型的学习：一个正常的transformer-based模型(本文用的T5-small)，预测下一个sid
++ domain-specific的微调：每个domain加一个小矩阵，该domain的数据只用lora训对应的那个小矩阵
 
 
 # LLM+推荐：foundation model/蒸馏
@@ -3010,14 +3020,6 @@ L_v=\frac{1}{M+1} \sum_{t-M}^t\left(\tilde{r}_{t+1}-\hat{V}_{t+1}^{\prime}\right
 XXX
 
 
-## 一些tokenizer方法
-
-vq/rq codebook容易坍塌，即马太效应
-lfq的熵损失函数能优化codebook利用率，即所有样本的$$-\sum plogp$$，让xx更尖锐？
-然后有个batch内的熵，让xx更平均？
-两个相减可以提升表示能力的同时提升利用率
-
-alit([Adaptive Length Image Tokenization via Recurrent Allocation](https://arxiv.org/pdf/2411.02393))：简单的图片不用那么多token，复杂的多一点
 
 # LLM+推荐小结
 
