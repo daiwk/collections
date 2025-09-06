@@ -1830,6 +1830,12 @@ item侧也复用了类似的流程，把输入的(hist, item)改成(item, pos, n
 
 [HLLM-Creator: Hierarchical LLM-based Personalized Creative Generation](https://arxiv.org/abs/2508.18118)
 
+## 腾讯的LEADRE
+
+[LEADRE: Multi-Faceted Knowledge Enhanced LLM Empowered Display Advertisement Recommender System](https://arxiv.org/pdf/2411.13789)
+
+
+
 ## 微信的PRECISE Recsys24
 
 [微信PRECISE:多场景落地基于协同信号和语义信息的生成式序列推荐](https://mp.weixin.qq.com/s/pld010curqUv_NsqdvSEDA)
