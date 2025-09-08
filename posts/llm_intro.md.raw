@@ -5310,4 +5310,40 @@ DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不
 + 和下一个词预测的关系：与传统的机器学习问题不同，每个语句没有「真/假」标签，模型只看到流畅语言的正面示例，并且必须去近似整体分布。当没有任何被标注为无效的示例时，区分有效语句和无效语句会更加困难。但即使有标签，一些错误也是不可避免的。拼写和括号遵循一致的模式，就算有错误会随着规模的扩大而消失。但像宠物的生日这样**低频**的事实，无法仅凭模式预测，因此会导致幻觉。
 + 解决办法：对自信错误（confidential error）的惩罚力度大于对不确定性的惩罚力度，并对恰当表达不确定性的行为给予部分加分。如果主要评估指标依然继续为模型幸运的猜测给予奖励，模型就会继续学习猜测。修改评估指标可以扩大降低幻觉技术的采用范围，包括新开发的和先前研究的技术。
 
+## embed检索的问题
+
+[DeepMind爆火论文：向量嵌入模型存在数学上限，Scaling laws放缓实锤？](https://mp.weixin.qq.com/s/SZU053P-BOTmsnA0KyjJEg)
+
+[On the Theoretical Limitations of Embedding-Based Retrieval](https://arxiv.org/pdf/2508.21038)
+
+当知识库规模足够大、一个问题需要多份文档共同回答时，即使采用最先进的嵌入模型，也可能因为维度不足而无法完整召回关键信息。这会导致大模型在生成时受到错误或不完整上下文的干扰。
+
+
+## 持续学习
+
+[多模态大模型持续学习系列研究，综述+Benchmark+方法+Codebase一网打尽！](https://mp.weixin.qq.com/s/FBZw95e_0WibVbV075OyCA)
+
+[Continual Learning for Generative AI: From LLMs to MLLMs and Beyond](https://arxiv.org/pdf/2506.13045)
+
+## superweight
+
+[0.01%参数定生死！苹果揭秘LLM「超级权重」，删掉就会胡说八道](https://mp.weixin.qq.com/s/ulzYMMtN6s4cWKb1kECn7A)
+
+[The Super Weight in Large Language Models](https://arxiv.org/abs/2411.07191)
+
+## REFRAG
+
+[扎克伯格的豪赌初见成效？Meta新方法让LLM长上下文处理提速30倍](https://mp.weixin.qq.com/s/q-T8xtQNqmqj6PkXfASBsA)
+
+[Meta超级智能实验室首篇论文：重新定义RAG](https://mp.weixin.qq.com/s/ftP3-qoUcO5hNEdmwjFZVw)
+
+[REFRAG: Rethinking RAG based Decoding](https://arxiv.org/abs/2509.01092)
+
+## Universal Deep Research
+
+[英伟达推出通用深度研究系统，可接入任何LLM，支持个人定制](https://mp.weixin.qq.com/s/i6gn7u8ffZNgLeZ0FTUG0g)
+
+[https://research.nvidia.com/labs/lpr/udr/](https://research.nvidia.com/labs/lpr/udr/)
+
+[https://github.com/NVlabs/UniversalDeepResearch](https://github.com/NVlabs/UniversalDeepResearch)
 

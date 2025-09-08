@@ -1237,6 +1237,10 @@ decode出来有两个东西，rq的code和dense
 + 然后每一个code和原来的seq一起输入decoder，得到的pred就是dense，再拿这个dense去ann找n个item
 + 最后对这m*n个item拿两个相似度融合出一个得分，取topk出来
 
+## 百度的UNIQUE
+
+[百万美金背后的推荐技术突破，内部揭秘2025年百度最高奖获奖“心流”团队的背后故事](https://mp.weixin.qq.com/s/O4iqt1ADCWwKNEq0hCyMrg)
+
 ## 网易云音乐的Climber
 
 [Climber: Toward Efficient Scaling Laws for Large Recommendation Models](https://arxiv.org/pdf/2502.09888)
@@ -2867,9 +2871,9 @@ guided embedding：prompt里包含m个aspect，让模型给出每个aspect的打
 + domain-specific的微调：每个domain加一个小矩阵，该domain的数据只用lora训对应的那个小矩阵
 
 
-# LLM+推荐：foundation model/蒸馏
+# LLM+推荐：Foundation/蒸馏/其他
 
-## ExFM
+## Meta的ExFM
 
 [GPT4规模大模型落地，Meta提ExFM框架：万亿参数基础大模型的工业级落地成为可能](https://mp.weixin.qq.com/s/Y9rlMxg4EMl_bzi9N_s7GA)
 
@@ -2944,12 +2948,12 @@ XXX
 
 ![](../assets/sa-my-pic.png)
 
-## Foundation-Expert Paradigm
+## Meta的Foundation-Expert Paradigm
 
 [Realizing Scaling Laws in Recommender Systems: A Foundation–Expert Paradigm for Hyperscale Model Deployment](https://www.arxiv.org/pdf/2508.02929)
 
 
-## SLMRec
+## 蒸馏：SLMRec
 
 [ICLR2025 | SLMRec: 重新思考大语言模型在推荐系统中的价值](https://mp.weixin.qq.com/s/E6SGGKy6-D1h3zGro7KW0w)
 
@@ -2967,9 +2971,13 @@ XXX
   + student和真实label（target item）算loss
 + teacher frozen，只通过lora来训练student
 
+## Pinterest的DERM
 
+[推荐算法(2025.9.7)：Pinterest的跨域表征学习](https://mp.weixin.qq.com/s/hI3B6ZefpBDRnsuuHIiRNw)
 
-## GAVE
+[Decoupled Entity Representation Learning for Pinterest Ads Ranking](https://arxiv.org/pdf/2509.04337)
+
+## 生成式出价GAVE
 
 [sigir'25「快手」生成式出价-冠军方案｜Generative Auto-Bidding with Value-Guided](https://mp.weixin.qq.com/s/fttTPY6Q30gWaSwcoIpUsA)
 
@@ -3757,7 +3765,7 @@ R=\sum_{i=1}^k\left(\Theta_i \times \operatorname{bid}_i \times p_i+\alpha \time
 XXX
 
 
-## DGenCTR
+## 阿里的DGenCTR
 
 [基于离散扩散模型的生成式CTR预估](https://mp.weixin.qq.com/s/JKuVTu3UxYWa5rkK5v_3Ag)
 
@@ -3767,6 +3775,11 @@ XXX
 
 ![](../assets/dgenctr-model.png)
 
+## 快手的DimeRec
+
+[快手 | DimeRec: 扩散模型在序列推荐的应用](https://mp.weixin.qq.com/s/s21SJYsq8mRLt4zaQrAx5g)
+
+[DimeRec: A Unified Framework for Enhanced Sequential Recommendation via Generative Diffusion Models](https://arxiv.org/pdf/2408.12153)
 
 ## Pinterest的TransAct V2
 
@@ -3775,4 +3788,8 @@ XXX
 ## Pinterest的multi-faceted预训练
 
 [Multi-Faceted Large Embedding Tables for Pinterest Ads Ranking](https://arxiv.org/pdf/2508.05700)
+
+## Pinterest的DRL-PUT
+
+[Deep Reinforcement Learning for Ranking Utility Tuning in the Ad Recommender System at Pinterest](https://www.arxiv.org/pdf/2509.05292)
 
