@@ -446,6 +446,8 @@ Old Logprobs是一次性一个batch的数据计算的，这是因为在一个bat
 
 [老婆饼里没有老婆，RLHF里也没有真正的RL](https://mp.weixin.qq.com/s/dVCD0crxwCThE7-XVvoemg)
 
+[科普向：一文解构大模型后训练，GRPO和它的继任者们的前世今生](https://mp.weixin.qq.com/s/JjP6a9htmtdRDfMtyBaIGQ)
+
 ## DPO
 
 [Direct preference optimization: Your language model is secretly a reward model](https://arxiv.org/pdf/2305.18290)
