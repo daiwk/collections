@@ -5343,7 +5343,15 @@ DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不
 
 [英伟达推出通用深度研究系统，可接入任何LLM，支持个人定制](https://mp.weixin.qq.com/s/i6gn7u8ffZNgLeZ0FTUG0g)
 
-[https://research.nvidia.com/labs/lpr/udr/](https://research.nvidia.com/labs/lpr/udr/)
+[Universal Deep Research: Bring Your Own Model and Strategy](https://arxiv.org/pdf/2509.00244)
 
 [https://github.com/NVlabs/UniversalDeepResearch](https://github.com/NVlabs/UniversalDeepResearch)
+
+传统的deep research tool
+
+![](../assets/deep-research-tool.png)
+
+Universal Deep Research，输入有strategy和prompt
+
+![](../assets/udr.png)
 
