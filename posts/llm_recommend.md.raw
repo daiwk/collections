@@ -552,6 +552,10 @@ class RQBottleneck(nn.Module):
 
 [RecSys'24 | 谷歌:使用语义ID提升推荐系统ID Embed泛化性](https://mp.weixin.qq.com/s/PR8NuRWkK_4vuCrE9xD6Jg)
 
+假设RQ-VAE产出的sid是$$\left(c_1^v, c_2^v, \ldots, c_{L-1}^v, c_L^v\right)$$，假设每一级的码本都是K，有如下两种用法
+
++ N-gram：N=2，假设不重叠，那就有L/2个子词，每个词对应emb table的一行。每个子词对应的emb table有K^N行，这个emb table和推荐模型一起训练。每个N-gram对应的emb加起来就是这个item的表示
++ SPM(sentence piece model)：用SentencePiece对sid进行处理，得到动态长度的子词，流行的共现sid会自动组合为单个subgroup，能同时平衡泛化性和记忆性。
 
 ## 受限beam search
 
