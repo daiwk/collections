@@ -557,6 +557,28 @@ class RQBottleneck(nn.Module):
 + N-gram：N=2，假设不重叠，那就有L/2个子词，每个词对应emb table的一行。每个子词对应的emb table有K^N行，这个emb table和推荐模型一起训练。每个N-gram对应的emb加起来就是这个item的表示
 + SPM(sentence piece model)：用SentencePiece对sid进行处理，得到动态长度的子词，流行的共现sid会自动组合为单个subgroup，能同时平衡泛化性和记忆性。
 
+实验部分：内容向量是用videobert产出的2048维，SID的配置：L=8，K=2048。相关推荐场景，有用户历史、当前item和候选item。看随着emb词表变大，auc的变化情况
+
+![](../assets/sid-no-seq.png)
+
+没有用户历史特征：
+
++ 在全量样本上的auc：
+    + 直接用content的dense替换id：和基线一样多层nn时效果很差，把layer数乘1.5和乘2有涨，但仍不如SPM和基线
+    + n-gram：unigram效果很差，bigram接近layer乘2的效果了，但仍不如SPM和基线
+    + SPM：和基线差不多
++ 在冷启item样本上的auc：
+    + 直接用content的dense替换id：和基线一样多层nn时效果很差，把layer数乘1.5和乘2有涨，乘2时比基线更好
+    + n-gram：unigram和bigram效果都很差，不如基线
+    + SPM：超过基线很多
+
+![](../assets/sid-has-seq.png)
+
+有用户历史特征：不像前面只在当前item/候选item时才有训练，sid的emb有了更充分的训练，
+
++ 在全量样本上的auc：SPM超过基线很多，unigram不如基线，bigram超过基线，略低于SPM
++ 在冷启item样本上的auc：SPM、unigram和bigram效果差不多，都远高于基线，词表较小时n-gram会更好
+
 ## 受限beam search
 
 [Diverse Beam Search: Decoding Diverse Solutions from Neural Sequence Models](https://arxiv.org/abs/1610.02424)
