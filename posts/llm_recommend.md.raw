@@ -2984,7 +2984,7 @@ XXX
 
 [Generative Auto-Bidding with Value-Guided Explorations](https://arxiv.org/pdf/2504.14587)
 
-用序列（Decision Transformer）代替RL，再利用离线强化的方法去弥补没有模拟环境的缺点。DT的一些其他应用：
+用Decision Transformer代替RL，再利用离线强化的方法去弥补没有模拟环境的缺点。DT的一些其他应用：
 
 + RAG：[Retrieval-Augmented Decision Transformer: External Memory for In-context RL](https://arxiv.org/pdf/2410.07071)
 + 序列推荐：[Sequential Recommend for Optimizing Both ImmediateFeedback and Long-term Retention](https://arxiv.org/pdf/2404.03637)
@@ -2995,6 +2995,10 @@ MDP假设是状态独立的，本质上忽略了竞价序列中的**时序依赖
 自动出价：一般广告主会设置一个最低ROI（即价值/成本）作为约束，或者说是最大平均成本（CPA，即成本/价值），广告主给定的约束假设是$$C$$。
 
 ### DT
+
+![](../assets/decision-transformer.png)
+
+[Decision transformer: Reinforcement learning via sequence modeling](https://arxiv.org/pdf/2106.01345)，代码：[https://github.com/kzl/decision-transformer](https://github.com/kzl/decision-transformer)
 
 DT的输入(reward, state, action)三元组的序列，输出是预测的action，
 
