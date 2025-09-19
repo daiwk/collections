@@ -2662,6 +2662,7 @@ XXX
 
 [Mixture-of-Depths: Dynamically allocating compute in transformer-based language models](https://arxiv.org/pdf/2404.02258.pdf)
 
+每层选不同的token过moe
 
 ## multi-head moe
 
