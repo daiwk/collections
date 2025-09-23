@@ -4976,11 +4976,13 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 
 # 美团
 
-## LongCat
+## LongCat-flash
 
 [https://longcat.chat/](https://longcat.chat/)
 
 [https://github.com/meituan-longcat/LongCat-Flash-Chat/blob/main/tech_report.pdf](https://github.com/meituan-longcat/LongCat-Flash-Chat/blob/main/tech_report.pdf)
+
+[LongCat-Flash Technical Report](https://arxiv.org/pdf/2509.01322)
 
 ## Longcat-flash-thinking
 
@@ -5274,6 +5276,15 @@ DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不
 
 + 外部RL循环：生成候选的自编辑(self edit, SE)
 + 内部更新循环：使用生成的自编辑通过梯度下降更新模型
+
+# 高效attention总结
+
+[A Survey of Efficient Attention Methods: Hardware-efficient, Sparse, Compact, and Linear Attention](https://attention-survey.github.io/files/Attention_Survey.pdf)
+
+[https://github.com/attention-survey/Efficient_Attention_Survey](https://github.com/attention-survey/Efficient_Attention_Survey)
+
+![](../assets/efficient-attn.png)
+
 
 # 一些前沿
 
