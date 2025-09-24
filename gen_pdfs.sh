@@ -2,6 +2,7 @@
 
 #cat ./posts/full.md | python3 trans_format.py >> ./pdfs/collections-pdf.md
 
+mkdir ./pdfs
 
 python3 gen_dot_sub.py
 
@@ -71,9 +72,11 @@ change_format int-ml int-ml 8
 
 rm -rf pdfs/*.md
 
+rm -rf ../pdfs_save/
+mv ./pdfs/ ../pdfs_save/
+
 git add ./assets
 git add posts
-git add pdfs
 git add gen_pdfs.sh
 git add gen_dot_sub.py
 git add publish
