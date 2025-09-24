@@ -73,7 +73,7 @@ change_format int-ml int-ml 8
 rm -rf pdfs/*.md
 
 rm -rf ../daiwk_llm_pdfs/*
-mv ./pdfs/* ../daiwk_llm_pdfs/
+mv ./pdfs/* ~/Downloads/同步空间/daiwk_llm_pdfs/
 rm -rf ./pdfs
 
 git add ./assets
