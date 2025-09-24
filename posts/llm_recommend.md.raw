@@ -3567,11 +3567,11 @@ Note that the answer can only be "yes" or "no".<|im_end|>
 
 数据来源：
 
- + 人工标注数据：搜索(MS MARCO)、qa、MNLI、SNLI等，大概10M
- + 公开领域的弱监督数据：维基百科、redit、arxiv等，大概10亿，放弃了
- + 大模型合成数据：用Qwen3为每个doc生成相关问题，理论上可以构建无限数据
++ 人工标注数据：搜索(MS MARCO)、qa、MNLI、SNLI等，大概10M
++ 公开领域的弱监督数据：维基百科、redit、arxiv等，大概10亿，放弃了
++ 大模型合成数据：用Qwen3为每个doc生成相关问题，理论上可以构建无限数据
 
-![](../assets/qwen3-emb-synthetic-data.jpg)
+此外，
 
 + 根据文档，从一个比较大的角色库（比如大学生、小学生、公务员、商人等）里检索出若干个角色，用llm判断哪些角色适合这个文档，以及他们会问什么类型的问题（keyword/summary/逻辑推理），难度（大学/小学）、长度、语言，生成一个config
 + 拿角色+文档+config再给llm，生成真实的用户问题
