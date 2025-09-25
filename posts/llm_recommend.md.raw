@@ -3085,6 +3085,11 @@ XXX
 L_v=\frac{1}{M+1} \sum_{t-M}^t\left(\tilde{r}_{t+1}-\hat{V}_{t+1}^{\prime}\right)^2
 XXX
 
+## 生成式出价：快手的CBD
+
+[Generative Auto-Bidding in Large-Scale Competitive Auctions via Diffusion Completer-Aligner](https://arxiv.org/pdf/2509.03348)
+
+
 
 ## 生成式出价：美团的GRAD
 
@@ -3887,9 +3892,39 @@ XXX
 
 [TransAct V2: Lifelong User Action Sequence Modeling on Pinterest Recommendation](https://arxiv.org/pdf/2506.02267)
 
+## Pinterest的2阶段训练
+
+[Taming the One-Epoch Phenomenon in Online Recommendation System by Two-stage Contrastive ID Pre-training](https://arxiv.org/pdf/2508.18700)
+
+![](../assets/pinterest-2-stage.png)
+
+### pretrain阶段
+
+一个只有id的数据集，用的是pinnerformer里的对比学习loss，考虑了in-batch和uniform随机负例，其中$$\tau$$是可学习的温度。发现
+
+XXX
+\mathcal{L}\left(u_i, p_i\right)=-\log \left(e^{u_i^T p_i / \tau} /\left(e^{u_i^T p_i / \tau}+\sum_{j=1}^N e^{u_i^T n_j / \tau}\right)\right)
+XXX
+
+发现2点：
+
++ 这个对比学习Loss能够降低长尾item的有效维度，从而缓解过拟合问题。随着epoch变多，这个loss的hitrate@3会变得更好，而bce则会变差（过拟合）。
++ 因为模型很简单，且收敛速度变快（不用像复杂模型需要那么多数据才能收敛），所以可以使用下游任务10倍的数据来训练，即天然地可以merge更多场景的数据进来。
+
+### finetune阶段
+
+给更复杂的下游模型用
+
++ 把预训练的loss函数拿过来，直接搞成一阶段，是负的
++ 拿pretrain产出的emb过来，但freeze，有1.1%的收益
++ 拿pretrain产出的emb过来，同时finetune，有1.3%的收益
+
+
 ## Pinterest的multi-faceted预训练
 
 [Multi-Faceted Large Embedding Tables for Pinterest Ads Ranking](https://arxiv.org/pdf/2508.05700)
+
+
 
 ## Pinterest的DRL-PUT
 
