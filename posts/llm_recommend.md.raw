@@ -1095,9 +1095,11 @@ item有各种特征，如title、img、id等
 
 ## 阿里的REG4Rec
 
-[REG4Rec: Reasoning-Enhanced Generative Model for Large-Scale Recommendation Systems](https://arxiv.org/pdf/2508.15308)
+[REG4Rec: Reasoning-Enhanced Generative Model for Large-Scale Recommendation Systems](https://arxiv.org/pdf/2508.15308v2)
 
 ![](../assets/reg4rec.png)
+
+
 
 ## 阿里的MMQ
 
@@ -2121,6 +2123,27 @@ s_j^i & =W^p \cdot K_j^i,
 \end{aligned}
 XXX
 
+## Meta的RecoWorld
+
+[下一代推荐系统长这样，Meta最新研究RecoWorld，从「猜你喜欢」到「听你指令」](https://mp.weixin.qq.com/s/J2qoNk3UCRlT1wHLsvOHTA)
+
+[RecoWorld: Building Simulated Environments for Agentic Recommender Systems](https://arxiv.org/pdf/2509.10397)
+
+整体感觉和agent4rec差不多
+
+![](../assets/recoworld.png)
+
+用户模拟器输入用户历史行为，产出一个instruction，丢给agentic recsys，产出推荐list，用户模拟器产出用户action，同时再产出新的instruction，再丢给agentic sys，再产出新的推荐list，直到整个trajectory结束，产出整个轨迹的奖励，拿来用rl训练agentic recsys。
+
+![](../assets/recoworld-modeling.png)
+
+![](../assets/recoworld-mindset.png)
+
+用户模拟器的建模，可以是文本llm，还可以是多模态llm、把item换成sid的llm（需要先重新tune出一个llm才能用）。还加了memory模块（记录长期兴趣）、reasoning、midset update（如第二张图，给用户推了a，用户会是一个什么心态，下一步希望什么）
+
+![](../assets/recoworld-agentic-recsys.png)
+
+推荐系统是一个自动化的agent，包括4个能力：perception、reasning&planning、action(工具使用)、memory，其参数可以用RL来训练，环境的状态就是上面的用户的mindset，action就是推荐的item list，最终奖励就是整个多轮交互的总reward
 
 ## 美团的PIGEON
 
