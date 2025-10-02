@@ -982,3 +982,19 @@ Self-Principled Critique Tuning (SPCT)
 [http://github.com/thinking-machines-lab/tinker-cookbook](http://github.com/thinking-machines-lab/tinker-cookbook)
 
 文档：[https://tinker-docs.thinkingmachines.ai/training-sampling](https://tinker-docs.thinkingmachines.ai/training-sampling)
+
+主要提供了4个函数
+
+```python
+service_client = tinker.ServiceClient()
+training_client = service_client.create_lora_training_client(
+  base_model="meta-llama/Llama-3.2-1B", rank=32,
+)
+training_client.forward_backward(...)
+training_client.optim_step(...)
+training_client.save_state(...)
+training_client.load_state(...)
+
+sampling_client = training_client.save_weights_and_get_sampling_client(name="my_model")
+sampling_client.sample(...)
+```
