@@ -972,3 +972,13 @@ Self-Principled Critique Tuning (SPCT)
 [别再二选一了！一文看懂On-Policy与Off-Policy的本质分歧（含GRPO深度拆解）](https://mp.weixin.qq.com/s/am_ulGA18klm6T5KEuAI7w)
 
 核心区别：学习使用的数据是否来自当前策略本身，还是来自其他策略。
+
+# Tinker
+
+[刚刚，这家0产品0模型就估值854亿的公司，终于发布了首款产品！](https://mp.weixin.qq.com/s/LHnrWNnuY-BqbU3bU-a8dQ)
+
+[https://thinkingmachines.ai/blog/announcing-tinker/](https://thinkingmachines.ai/blog/announcing-tinker/)
+
+[http://github.com/thinking-machines-lab/tinker-cookbook](http://github.com/thinking-machines-lab/tinker-cookbook)
+
+文档：[https://tinker-docs.thinkingmachines.ai/training-sampling](https://tinker-docs.thinkingmachines.ai/training-sampling)
