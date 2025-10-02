@@ -1,73 +1,3 @@
-# 世界模型
-
-[怒斥Sora之后，LeCun放出「视觉世界模型」论文，揭示AI学习物理世界的关键​](https://mp.weixin.qq.com/s/KY-bTD-bxdB3Q-q97Gv7fg)
-
-[100万token，一次能分析1小时YouTube视频，「大世界模型」火了](https://mp.weixin.qq.com/s/8ONe7_ejQQIT1UwqDGK-vg)
-
-[WORLD MODEL ON MILLION-LENGTH VIDEO AND LANGUAGE WITH RINGATTENTION](https://arxiv.org/pdf/2402.08268.pdf)
-
-[https://github.com/LargeWorldModel/LWM](https://github.com/LargeWorldModel/LWM)
-
-[Sora是世界模拟器吗？全球首篇综述全面解析通用世界模型](https://mp.weixin.qq.com/s/rkq7NXGvB0O1Kstd_mTNJQ)
-
-[Is Sora a World Simulator? A Comprehensive Survey on General World Models and Beyond](https://arxiv.org/pdf/2405.03520)
-
-[世界模型也扩散！训练出的智能体竟然不错](https://mp.weixin.qq.com/s/AWt1Jgvr2aj6sjkGRV9-hg)
-
-[Diffusion for World Modeling: Visual Details Matter in Atari](https://arxiv.org/pdf/2405.12399)
-
-[https://github.com/eloialonso/diamond](https://github.com/eloialonso/diamond)
-
-
-
-## pandora
-
-[通用世界模型问世：不学习就能生成新领域视频，可实时控制](https://mp.weixin.qq.com/s/Vj2W3BtKITV4mxwVhDJHzg)
-
-[Pandora : Towards General World Model with Natural Language Actions and Video States](https://world-model.maitrix.org/assets/pandora.pdf)
-
-[https://github.com/maitrix-org/Pandora](https://github.com/maitrix-org/Pandora)
-
-
-[ACL 2024论文盖棺定论：大语言模型≠世界模拟器，Yann LeCun：太对了](https://mp.weixin.qq.com/s/FBqYb_gcBr5D204mDtmCOA)
-
-[Can Language Models Serve as Text-Based World Simulators?](https://arxiv.org/pdf/2406.06485)
-
-## WHALE
-
-[WHALE来了，南大周志华团队做出更强泛化的世界模型](https://mp.weixin.qq.com/s/9vk__IpfMdYj57VjtV1HvQ)
-
-[WHALE: TOWARDS GENERALIZABLE AND SCALABLE WORLD MODELS FOR EMBODIED DECISION-MAKING](https://arxiv.org/pdf/2411.05619)
-
-## genie 2
-
-[谷歌世界模型爆发：单张图生成可玩3D世界，还要和马斯克一起做AI游戏](https://mp.weixin.qq.com/s/PaUScHrclUwYABwT8LL5zg)
-
-[https://deepmind.google/discover/blog/genie-2-a-large-scale-foundation-world-model/](https://deepmind.google/discover/blog/genie-2-a-large-scale-foundation-world-model/)
-
-## NWM
-
-[LeCun团队新作：在世界模型中导航](https://mp.weixin.qq.com/s/V5rXxbLYmR8UuiVq-gsi9A)
-
-[Navigation World Models](https://arxiv.org/pdf/2412.03572v1)
-
-[https://www.amirbar.net/nwm/](https://www.amirbar.net/nwm/)
-
-## V-JEPA 2
-
-[刚刚，LeCun亲自出镜，Meta推出新世界模型！](https://mp.weixin.qq.com/s/i2lMeFX6VWWxqL_ZKmznfw)
-
-[V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning](https://ai.meta.com/research/publications/v-jepa-2-self-supervised-video-models-enable-understanding-prediction-and-planning/)
-
-[https://github.com/facebookresearch/vjepa2](https://github.com/facebookresearch/vjepa2)
-
-[https://huggingface.co/collections/facebook/v-jepa-2-6841bad8413014e185b497a6](https://huggingface.co/collections/facebook/v-jepa-2-6841bad8413014e185b497a6)
-
-## Agents-world-model
-
-[AGI真方向？谷歌证明：智能体在自研世界模型，世界模型is all You Need](https://mp.weixin.qq.com/s/k-hd-M1XK7fsH2LI80r5AA)
-
-[General agents need world models](https://arxiv.org/abs/2506.01622)
 
 # 泄露的系统提示词
 
@@ -572,6 +502,10 @@ A2A促进了客户端 (client)智能体和远程 (remote)智能体之间的通�
 [通义实验室大火的 WebAgent 续作：全开源模型方案超过GPT4.1 , 收获开源SOTA](https://mp.weixin.qq.com/s/p6ug9H4N_hbQkUQE-BTnKw?scene=1)
 
 [WebShaper: Agentically Data Synthesizing via Information-Seeking Formalization](https://arxiv.org/abs/2507.15061)
+
+## Reflection和Reflexion
+
+[从零构建能自我优化的AI Agent：Reflection和Reflexion机制对比详解与实现](https://mp.weixin.qq.com/s/Y9m_fmohARH8l_xN3MDxPg)
 
 # 一些其他比较重要的工作
 
