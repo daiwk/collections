@@ -3207,6 +3207,11 @@ XXX
 
 # LLM embedding
 
+## 如何选合适的emb模型
+
+[https://huggingface.co/spaces/mteb/leaderboard](https://huggingface.co/spaces/mteb/leaderboard)
+
+MTEB(Massive Text Embedding Benchmark)提供了评分体系。把模型放在各种任务上测试，包括分类、聚类、检索、排序和语义相似度等，还会给不同领域单独打分。法律、医学、代码、化学这些领域都有自己的分数。
 ## Gecko
 
 [谷歌DeepMind发布Gecko：专攻检索，与大7倍模型相抗衡](https://mp.weixin.qq.com/s/5e_Py_Xm0RsmP1YMcikpaQ)
@@ -3649,6 +3654,26 @@ XXX
 参考[Improving general text embedding model: Tackling task conflict and data imbalance through model merging](https://arxiv.org/abs/2410.15035)的slerp，基于球面插值的融合方法，给定2个ckpt，分别算一下和训练前ckpt的差值，称为任务向量。然后拿这2个任务向量和原来ckpt的点构成的平面，使得少量训练数据和一个loss，算出合适的夹角和模长得到新向量，再去和其他ckpt重复这个步骤进行merge。
 
 训练的时候用的lora，emb和rerank的hard negative设计不一样
+
+## EmbeddingGemma
+
+[EmbeddingGemma: Powerful and Lightweight Text Representations](https://arxiv.org/abs/2509.20354)
+
+[https://huggingface.co/google/embeddinggemma-300m](https://huggingface.co/google/embeddinggemma-300m)
+
+[解读](https://www.xiaohongshu.com/explore/68db1d3a00000000130372d4?app_platform=ios&app_version=9.3.1&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBL97bjctCoRqfMMLs0o7XzqpWS2lT-ucQJptp3cIpOAA=&author_share=1&xhsshare=WeixinSession&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1759251795&share_id=5456ef75a99043fe98df53343cf96991)
+
+![](../assets/t5gemma.png)
+
++ 不是直接用Gemma 3这种decoder-only的模型，而是先把它改造成一个encoder-decoder架构(用如上图的T5-gemma的方法，[Encoder-decoder gemma: Improving the quality-efficiency trade-off via adaptation](https://arxiv.org/abs/2504.06225))。然后再从这个架构里把encoder抽出来作为EmbeddingGemma的底座。并且内容中的消融研究证明了这种方式初始化的模型比直接用decoder-only的或者随机初始化的效果要好得多，因为encoder主要做内容理解，表征能力更强。
++ 蒸馏：用更大更强的Gemini Embedding模型当老师，通过embedding matching的几何蒸馏方法，直接对齐两个模型的嵌入空间。
++ 用了spread-out的正则化损失函数，目的是让生成的向量在嵌入空间里散得更开，充分利用整个空间的表达能力。这样做的好处是模型对量化更robust，而且用最近邻检索时效率也更高。
++ Model Souping：不是简单地把不同超参数训练出来的模型权重做平均，也不是随机把数据集分成几块训练多个模型做平均，而是先用贝叶斯优化搞出好几个专长于不同领域的“专家”数据集，然后用这些数据集分别训练模型，最后再把这些模型的权重平均起来。结果就是最终的模型泛化能力更强，在各个任务上都比单个模型表现更好。
+	
+效果：
+
++ 在MTEB的多语言、英语和代码榜单上，是5亿参数以下模型里的第一名，而且是断层领先，性能甚至能和一些接近它两倍大的模型相抗衡。
++ 性能在权重被量化到int4/int8，或者嵌入维度被砍到128维时，依然保持得很稳定
 
 # LLM+搜索
 
