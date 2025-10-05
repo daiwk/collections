@@ -884,15 +884,6 @@ Neel Nanda（deepmind）的项目
 + 问题重复：在反思prompt的最后附上初始问题以引导LLMs维持对初始问题的关注。
 + 少样本微调：不引入知识的少样本（4-10 个样本）微调可纠正反思失败的异常行为。
 
-# Lifelong learning of LLM
-
-(toread)
-
-[Towards Lifelong Learning of Large Language Models: A Survey](https://arxiv.org/abs/2406.06391)
-
-[https://github.com/qianlima-lab/awesome-lifelong-learning-methods-for-llm](https://github.com/qianlima-lab/awesome-lifelong-learning-methods-for-llm)
-
-
 # 自省
 
 [LLM 比之前预想的更像人类，竟也能「三省吾身」](https://mp.weixin.qq.com/s/Ri-Wdl_Xk5OxWF5IIJmrxg)
