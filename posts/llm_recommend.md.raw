@@ -3665,9 +3665,7 @@ XXX
 
 [解读](https://www.xiaohongshu.com/explore/68db1d3a00000000130372d4?app_platform=ios&app_version=9.3.1&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBL97bjctCoRqfMMLs0o7XzqpWS2lT-ucQJptp3cIpOAA=&author_share=1&xhsshare=WeixinSession&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1759251795&share_id=5456ef75a99043fe98df53343cf96991)
 
-![](../assets/t5gemma.png)
-
-![](../assets/embeddinggemma.png)
+![](../assets/t5gemma-embgemma.png)
 
 模型结构：
 
@@ -3701,15 +3699,15 @@ XXX
 
 来自[EmbedDistill: A Geometric Knowledge Distillation for Information Retrieval](https://arxiv.org/abs/2301.12005)，看着好像就是teacher和student的emb算一下L2距离，对query间、正样本间、hard负样本间均算这个loss：$$\mathcal{L}_{\mathcal{D}}=\mathcal{L}_{\mathcal{D}}^{\mathrm{Q}}+\mathcal{L}_{\mathcal{D}}^{\mathrm{P}^{+}}+\mathcal{L}_{\mathcal{D}}^{\mathrm{P}^{-}}$$
 
-此外，NCE和GOR的loss也通过MRL作用到了各个子emb上
+此外，NCE和GOR的loss也通过MRL作用到了各个子emb(512/256/128)上
 
 训练的trick：
 
 + Encoder-Decoder Training：用如上的T5Gemma方式改成enc-dec结构，然后在gemma3的预训练数据上通过UL2（[Ul2: Unifying language learning paradigms](https://arxiv.org/abs/2205.05131)）进行预训练，然后拿这个encoder来用
 + Pre-finetuning：用大量的无监督语料训练，加大batch size以充足的emb负例，并让梯度更稳定。任务覆盖了问答、句子相似度、代码检索、网络搜索等。
-+ Finetuning：高质量的数据，小的batchsize，加了hard negative，让batch内的样本更难
-
-+ Model Souping：不是简单地把不同超参数训练出来的模型权重做平均，也不是随机把数据集分成几块训练多个模型做平均，而是先用贝叶斯优化搞出好几个专长于不同领域的“专家”数据集，然后用这些数据集分别训练模型，最后再把这些模型的权重平均起来。结果就是最终的模型泛化能力更强，在各个任务上都比单个模型表现更好。
++ Finetuning：高质量的数据，小的batchsize，加了hard negative，让batch内的样本更难。将任务分成三类：任务多样性（task diversity）、语言多样性（language diversity）、编码能力（coding capability），拿gemeni embedding工作里通过grid search找到的混合比例作为贝叶斯优化的种子，还从Dirichlet分布中随机采样10组不同的混合比例，形成多个版本的数据集（即不同任务侧重不同）。
++ Model Souping：用这些数据集分别训练模型，最后再把这些模型的权重平均得到最终的模型。结果就是最终的模型泛化能力更强，在各个任务上都比单个模型表现更好。
++ Quantization-Aware Training：3种类型的权重表示: int4 per-block, int8 per-block, and mixed-precision per-channel，用QAT训练
 	
 效果：
 
