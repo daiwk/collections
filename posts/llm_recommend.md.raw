@@ -1288,6 +1288,16 @@ decode出来有两个东西，rq的code和dense
 
 [让推荐更懂你：百度2025最高奖‘心流’团队的标题改写实战](https://mp.weixin.qq.com/s/IDzjnXMw9NXHZXZue7RQKQ)
 
+## Shopee的OnePiece
+
+[OnePiece: Bringing Context Engineering and Reasoning to Industrial Cascade Ranking System](https://arxiv.org/pdf/2509.18091)
+
+![](../assets/onepiece-frame.png)
+
+![](../assets/onepiece-context-engineering.png)
+
+![](../assets/onepiece-reasoning-mtl.png)
+
 ## 网易云音乐的Climber
 
 [Climber: Toward Efficient Scaling Laws for Large Recommendation Models](https://arxiv.org/pdf/2502.09888)
