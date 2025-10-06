@@ -48,6 +48,7 @@ change_format llm_others llm_others 1.9
 
 change_format recommend recommend 2
 change_format llm_rec_summary llm_rec_summary 3
+change_format llm_note llm_note 4
 change_format full collections 9
 change_format int-ml int-ml 8
 
