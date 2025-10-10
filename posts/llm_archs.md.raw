@@ -1031,8 +1031,8 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 在Decode阶段，如下图所示，其中“max”表示batch size增大至显存容量上限。
 
-+ Attention通常是访存瓶颈（memory access bound），当增大batch size时，Attention的算力需求基本保持不变，因其已达到数据加载的上限
-+ FFN则更多表现为计算瓶颈（compute bound）。当增大batch size时，FFN能够获得一定的性能提升，这一特点在MoE架构中尤为明显，
++ Attention通常是访存瓶颈（memory access bound），因为有多个矩阵乘法，要读写多个矩阵（QKVO），有一些是串行的。当增大batch size时，Attention的算力需求基本保持不变，因其已达到数据加载的上限
++ FFN则更多表现为计算瓶颈（compute bound），因为只需要读一次2个矩阵，做大矩阵乘法比较慢。当增大batch size时，FFN能够获得一定的性能提升，这一特点在MoE架构中尤为明显
 
 ![](../assets/mega-scale-infer.png)
 

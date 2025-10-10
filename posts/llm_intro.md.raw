@@ -5635,3 +5635,17 @@ Universal Deep Research，输入有strategy和prompt
 
 ![](../assets/udr.png)
 
+## Markovian Thinker
+
+[算力成本大降！马尔可夫思考机来了，LLM推理成本直接降为线性](https://mp.weixin.qq.com/s/bIY_2cs4UOv3_oYSRpu3XA)
+
+[The Markovian Thinker](https://arxiv.org/abs/2510.06557v1)
+
+[https://github.com/McGill-NLP/the-markovian-thinker](https://github.com/McGill-NLP/the-markovian-thinker)
+
+## TRM
+
+[700万参数击败DeepSeek R1等，三星一人独作爆火，用递归颠覆大模型推理](https://mp.weixin.qq.com/s/Cw9IO6AW9GEfOffTqTcwdQ)
+
+[Less is More: Recursive Reasoning with Tiny Networks](https://arxiv.org/pdf/2510.04871v1)
+
