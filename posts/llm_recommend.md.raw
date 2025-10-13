@@ -3736,6 +3736,21 @@ XXX
 
 [Improving Pinterest Search Relevance Using Large Language Models](https://arxiv.org/pdf/2410.17152)
 
+## Google的BlockRank
+
+[Scalable In-context Ranking with Generative Models](https://arxiv.org/pdf/2510.05396)
+
+
+针对ICR微调的LLM注意力中存在的固有且可利用的结构：
+
++ 文档间块稀疏性：注意力在同一文档块内密集,但在不同文档间稀疏;
++ 查询-文档块相关性：中间层中某些查询词与文档块之间的注意力分数与该文档的实际相关性高度相关。
+
+BlockRank通过以下方式改进LLM的注意力操作：
+
++ 在架构上强制实现观察到的文档间块稀疏性,将注意力复杂度从二次降至线性，且不损失性能;
++ 在微调过程中通过辅助对比训练目标，优化真实相关文档的查询-文档块相关性，提升检索效果。
+
 ## 百度的Agent4Ranking
 
 [Agent4Ranking: Semantic Robust Ranking via Personalized Query Rewriting Using Multi-agent LLM](https://arxiv.org/pdf/2312.15450)

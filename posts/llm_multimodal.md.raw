@@ -199,6 +199,11 @@ claude-2-100k的回答。。
   + 均匀地在时间轴上抽样$$n_t$$个帧,然后把每帧处理成$$n_h \times n_w$$个patch,最终把所有patch连接起来
 
 
+## SAM系列
+
++ SAM：[CV不存在了？Meta发布「分割一切」AI 模型，CV或迎来GPT-3时刻](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650872938&idx=2&sn=ddb938b9c7e6206a0b97032cb9dee30a&scene=21)，[Segment Anything](https://arxiv.org/abs/2304.02643)
++ SAM2：[刚刚，Meta开源「分割一切」2.0模型，视频也能分割了](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650928134&idx=1&sn=7855c453083236c5c5d121d3b4fb955e&scene=21)，[SAM 2: Segment Anything in Images and Videos](https://arxiv.org/abs/2408.00714)
++ SAM3：[ICLR 2026惊现SAM 3，分割一切的下一步：让模型理解「概念」](https://mp.weixin.qq.com/s/7uDHXQd1ES2mV4dZFB7VMw)，[SAM 3: Segment Anything with Concepts](https://openreview.net/pdf?id=r35clVtGzw)
 
 
 # 多模态（图像）

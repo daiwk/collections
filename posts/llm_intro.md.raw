@@ -5157,6 +5157,14 @@ XXX
 
 [https://github.com/state-spaces/mamba](https://github.com/state-spaces/mamba)
 
+## Mamba3
+
+[Mamba-3惊现AI顶会ICLR 2026！CMU知名华人教授一作首代工作AI圈爆红](https://mp.weixin.qq.com/s/XpdIgXyMSTWF_MERFEdJtQ)
+
+[Mamba-3惊现ICLR 2026投稿：三重升级打满“推理优先”范式](https://mp.weixin.qq.com/s/ORCi6SWJJvynDf0x-X3YMQ)
+
+[Mamba-3: Improved Sequence Modeling using State Space Principles](https://openreview.net/pdf?id=HwCvaJOiCj)
+
 ## SAMBA
 
 [长文本模型近期研究工作梳理](https://mp.weixin.qq.com/s/5u2w08twsJ6CgHZ2FpN8JA)
@@ -5231,17 +5239,6 @@ XXX
 
 [Understanding and Improving Length Generalization in Recurrent Models](https://arxiv.org/pdf/2507.02782)
 
-# agentic AI
-
-[再见AI Agents，你好Agentic AI！](https://mp.weixin.qq.com/s/5_pjJLo5zDCwygcgM4A6xQ)
-
-[AI Agents vs. Agentic AI: A Conceptual Taxonomy, Applications and Challenges](https://arxiv.org/pdf/2505.10468)
-
-+ 定义：AI Agents是执行特定任务的自主软件程序，而Agentic AI是多个AI代理协作以实现复杂目标的系统。
-+ 自主性水平：AI Agents在其特定任务内具有高自主性，而Agentic AI具有更高的自主性，能够管理多步骤、复杂的任务。
-+ 任务复杂性：AI Agents通常处理单一、特定的任务，而Agentic AI处理需要协作的复杂、多步骤任务。
-+ 协作：AI Agents独立运行，而Agentic AI涉及多智能体协作和信息共享。
-+ 学习和适应能力：AI Agents在特定领域内学习和适应，而Agentic AI在更广泛的范围和环境中学习和适应。
 
 # diffusion LLM
 
@@ -5300,63 +5297,17 @@ XXX
 
 [Seed Diffusion: A Large-Scale Diffusion Language Model with High-Speed Inference](https://lf3-static.bytednsdoc.com/obj/eden-cn/hyvsmeh7uhobf/sdiff_updated.pdf)
 
+## RND1
 
-# 自我进化系列
+[Qwen3 变身扩散语言模型？不从零训练也能跑，30B参数创纪录](https://mp.weixin.qq.com/s/MwZ8tQamTMsUkxUJC_Nuiw)
 
-[LSTM之父22年前构想将成真？一周内AI「自我进化」论文集中发布，新趋势涌现？](https://mp.weixin.qq.com/s/0PPw4t2YCwu-7zrxpjglcA)
+[Training Diffusion Language Models at Scale using Autoregressive Models](https://www.radicalnumerics.ai/assets/rnd1_report.pdf)
 
-## AlphaEvolve
+[https://github.com/RadicalNumerics/RND1](https://github.com/RadicalNumerics/RND1)
 
-[打破56年数学铁律！谷歌AlphaEvolve自我进化实现算法效率狂飙，堪比AlphaGo“神之一手”](https://mp.weixin.qq.com/s/1bDOTjyuBRfR2cW8WrZNDQ)
++ 系统性研究了大规模A2D（Autoregressive-to-Diffusion）转换过程中的关键因素，如初始化策略、层级学习率和临界batchsize。
++ 识别出能够实现可扩展性与稳定性的关键因素，并证明当这些因素与成熟的自回归预训练方法结合时，简单的技术组合也能催生可扩展的DLM
 
-[AlphaEvolve: A coding agent for scientific and algorithmic discovery](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/AlphaEvolve.pdf)
-
-
-## Darwin Gödel Machine
-
-[Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents](https://arxiv.org/a/2505.22954)
-
-哥德尔机：Jürgen Schmidhuber数十年前提出的构想，让AI通过重写自身代码（包括负责学习的代码）来实现自我改进。当它在数学上证明存在更优策略时，它会通过递归地重写自身代码来优化问题解决方案，因此成为元学习（即「学会学习」）领域的核心概念。虽然理论上的哥德尔机能确保可证明的良性自我修改，但其实现依赖于一个不切实际的假设：AI必须能**在数学上证明代码修改会带来净效益才会实施变更**。
-
-DGM利用达尔文进化等开放式算法的原理，逐步构建起一个**不断扩增的智能体库**。该系统通过交替执行自我修改与下游任务评估的方式，**持续创建新智能体**并对其进行评分。
-
-## SRT
-
-[Can Large Reasoning Models Self-Train?](https://arxiv.org/a/2505.21444)
-
-[https://github.com/tajwarfahim/srt](https://github.com/tajwarfahim/srt)
-
-自我奖励训练（Self-Rewarded Training，SRT）。该方法在强化学习训练期间，通过模型生成的多个解决方案之间的一致性来评估正确性，从而在没有标注数据的情况下提供自监督信号。
-
-## MM-UPT
-
-[Unsupervised Post-Training for Multi-Modal LLM Reasoning via GRPO](https://arxiv.org/a/2505.22453)
-
-[https://github.com/waltonfuture/MM-UPT](https://github.com/waltonfuture/MM-UPT)
-
-在完全无监督场景下，通过强化学习框架 GRPO 实现多模态大模型的持续自我改进。无需任何外部监督信号或真实答案，使得模型可以基于自身的「共识」行为进行强化学习，从而实现持续的性能提升。
-
-+ 强化学习中的GRPO提供了稳定高效的在线策略优化能力；
-+ 多数投票可以在无标签数据上为模型输出生成伪标签，驱动自我优化。
-
-流程：
-
-+ 给定一张图片和一个问题，模型生成多个候选回答；
-+ 使用多数投票选出出现频率最高的回答，作为当前输入的「伪标签」；
-+ 使用这个「伪标签」来计算 reward，引导模型根据 GRPO 策略更新；
-
-## SEAL
-
-[LLM已能自我更新权重，自适应、知识整合能力大幅提升，AI醒了？](https://mp.weixin.qq.com/s/WvC7kX1_XfNO218YAa8g)
-
-[Self-Adapting Language Models](https://arxiv.org/pdf/2506.10943)
-
-[https://github.com/Continual-Intelligence/SEAL](https://github.com/Continual-Intelligence/SEAL)
-
-一个包含两个嵌套循环的算法：
-
-+ 外部RL循环：生成候选的自编辑(self edit, SE)
-+ 内部更新循环：使用生成的自编辑通过梯度下降更新模型
 
 # 高效attention总结
 
@@ -5501,7 +5452,6 @@ Online Learning 的关键在于突破人类知识上限，让模型具备探索�
 	
 总的来看，Online Learning 不仅是提升模型性能的一种方法，更是塑造未来AI交互和推理模式的关键。它要求模型和外部系统（如 memory）协同更新，从而实现动态优化。未来，我们可能看到模型具备自我生成任务、自我管理记忆的能力，这才是真正意义上的在线学习。
 
-
 # 一些前沿
 
 ## Potemkin Understanding
@@ -5565,14 +5515,6 @@ Online Learning 的关键在于突破人类知识上限，让模型具备探索�
 一致性loss：如图，m1其实是模拟的x1，所以他的输出也要和x1的输出去对齐，m2同理
 
 其中的投机采样细节看着有点复杂，还要再看下论文
-
-## context engineering
-
-[季逸超亲述Manus构建之谜，一文读懂AI智能体的上下文工程](https://mp.weixin.qq.com/s/vbf9_4xorAGTu5nuExk9jA?scene=1)
-
-[囊括1400+论文！大语言模型上下文工程全面综述：框架、系统与挑战](https://mp.weixin.qq.com/s/625oe8K3gZrbtMrZgbHe7w)
-
-[A Survey of Context Engineering for Large Language Models](https://arxiv.org/a/2507.13334)
 
 ## OaK
 
@@ -5648,4 +5590,19 @@ Universal Deep Research，输入有strategy和prompt
 [700万参数击败DeepSeek R1等，三星一人独作爆火，用递归颠覆大模型推理](https://mp.weixin.qq.com/s/Cw9IO6AW9GEfOffTqTcwdQ)
 
 [Less is More: Recursive Reasoning with Tiny Networks](https://arxiv.org/pdf/2510.04871v1)
+
+## FBAM
+
+[Attention is NOT All You Need：让“深度”重新流入时间，而非堆叠在参数之上](https://mp.weixin.qq.com/s/E12Zd358v20J6WkMzN9IQA)
+
+[Recurrence-Complete Frame-based Action Models](https://arxiv.org/pdf/2510.06828)
+
+与传统语言模型直接预测下一个 token 不同，FBAM 在每一步预测“动作（action）”，由环境反馈生成下一帧（frame），从而形成一个动态的交互式训练循环。
+
+1. Frame Head（帧头）：使用Transformer结构处理单帧内容，通过自注意力机制提取帧内特征；
+2. Integrator（整合器）：使用LSTM架构在帧间累积状态，实现跨时间的递归整合。
+
+两者共同构成了一个“帧内并行、帧间递归”的混合模型。这一设计保留了注意力机制在局部结构建模上的优势，同时恢复了时间维度上的深度。
+
+![](../assets/fbam.png)
 
