@@ -5561,22 +5561,6 @@ Online Learning 的关键在于突破人类知识上限，让模型具备探索�
 
 [REFRAG: Rethinking RAG based Decoding](https://arxiv.org/abs/2509.01092)
 
-## Universal Deep Research
-
-[英伟达推出通用深度研究系统，可接入任何LLM，支持个人定制](https://mp.weixin.qq.com/s/i6gn7u8ffZNgLeZ0FTUG0g)
-
-[Universal Deep Research: Bring Your Own Model and Strategy](https://arxiv.org/pdf/2509.00244)
-
-[https://github.com/NVlabs/UniversalDeepResearch](https://github.com/NVlabs/UniversalDeepResearch)
-
-传统的deep research tool
-
-![](../assets/deep-research-tool.png)
-
-Universal Deep Research，输入有strategy和prompt
-
-![](../assets/udr.png)
-
 ## Markovian Thinker
 
 [算力成本大降！马尔可夫思考机来了，LLM推理成本直接降为线性](https://mp.weixin.qq.com/s/bIY_2cs4UOv3_oYSRpu3XA)
