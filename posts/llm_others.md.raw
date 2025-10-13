@@ -370,54 +370,6 @@ XXX
 
 [https://github.com/geekan/MetaGPT/tree/main/metagpt/ext/sela](https://github.com/geekan/MetaGPT/tree/main/metagpt/ext/sela)
 
-# prompt engineering
-
-[万字长文总结提示词技巧！新加坡首届GPT-4提示工程大赛冠军最新分享](https://mp.weixin.qq.com/s/AWnQL3forAP-gB7e2ZEXdQ) 提出了CO-STAR框架
-
-[高能干货分享，有关提示词工程的一切都在这份教程里](https://mp.weixin.qq.com/s/RaIzHtRIShIcpXydRE6kQg)
-
-[https://github.com/NirDiamant/Prompt_Engineering](https://github.com/NirDiamant/Prompt_Engineering)
-
-[吴恩达：四个步骤，让大模型变得更好](https://mp.weixin.qq.com/s/ackyt5d2kqdzMy0-Ma_ElA)
-
-[Can Generalist Foundation Models Outcompete Special-Purpose Tuning? Case Study in Medicine](https://arxiv.org/pdf/2311.16452)
-
-让gpt4生成cot和答案的模板
-
-![self-generated-cot-template](../assets/self-generated-cot-template.png)
-
-![medprompt](../assets/medprompt.png)
-
-看着是借助GPT4+COT+RAG+投票
-
-+ 拿一坨question得到他们的向量，并按照上图的模板让gpt生成COT和答案，人工判断，对的存进知识库里
-+ 预测阶段：
-    + 拿测试question的向量从知识库里查出5个最像(cos距离)的(q, cot, answer)作为context
-    + 循环5次：
-        shuffle测试question的答案选项，让LLM回答
-    + 对生成的答案投票，选票数最多的
-
-## APE
-
-[还在人工炼丹？自动提示工程指南来了，还带从头实现](https://mp.weixin.qq.com/s/TxzkRUPhsiqtLhCyrIsQrQ)
-
-[https://github.com/marshmellow77/automated-prompt-engineering-from-scratch](https://github.com/marshmellow77/automated-prompt-engineering-from-scratch)
-
-## PAS
-
-[还在死磕AI咒语？北大-百川搞了个自动提示工程系统PAS](https://mp.weixin.qq.com/s/2etnB3hbRtOCth1notqyBQ)
-
-[PAS: Data-Efficient Plug-and-Play Prompt Augmentation System](https://arxiv.org/abs/2407.06027)
-
-## ell
-
-[OpenAI前研究者发布提示词工程框架ell，升级版LangChain，支持版本控制和多模态](https://mp.weixin.qq.com/s/LaNbu4bVrWLG3ueopFTj5g)
-
-[https://github.com/MadcowD/ell](https://github.com/MadcowD/ell)
-
-## 一些实践
-
-[gpt-4.1官方](https://www.xiaohongshu.com/explore/67fe98c1000000001d01477b?app_platform=ios&app_version=8.79&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBD6_QqRzI70CObFc2ZlGE4OyHkXfEAyuQpTgGllA2rLs=&author_share=1&xhsshare=WeixinSession&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1744847767&share_id=c452a695f467408c903e213ccf9f8d41)
 
 # 可解释AI
 
