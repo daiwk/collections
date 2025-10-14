@@ -219,6 +219,18 @@ claude-2-100k的回答。。
 
 ![](../assets/rae.png)
 
+原来的SD-VAE把$$256\times 256$$的图像压缩到$$32\times 32\times 4$$的潜在表征，限制了重建的保真度，也限制了表征的质量。
+
+假设输入图片是$$3\times H\times W$$，patch大小为$$p_e$$，隐层大小为$$d$$，那就是把原图像转成$$N=HW/p_{e}^2$$个token，每个token有$$d$$个通道，先过一个预训练好的freeze的编码器，然后过DiT，输出再过一个解码器，patch大小为$$p_d$$，变回$$3 \times H \frac{p_d}{p_e} \times W \frac{p_d}{p_e}$$，一般设置$$p_d=p_e$$，让输入和原图分辨率匹配
+
+只训练解码器，loss和vae一样：
+
+XXX
+\begin{gathered}
+z=E(x), \hat{x}=D(z) \\
+\mathcal{L}_{\text {rec }}(x)=\omega_L \operatorname{LPIPS}(\hat{x}, x)+\mathrm{L} 1(\hat{x}, x)+\omega_G \lambda \operatorname{GAN}(\hat{x}, x)
+\end{gathered}
+XXX
 
 # 多模态（图像）
 
