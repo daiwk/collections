@@ -205,6 +205,20 @@ claude-2-100k的回答。。
 + SAM2：[刚刚，Meta开源「分割一切」2.0模型，视频也能分割了](https://mp.weixin.qq.com/s?__biz=MzA3MzI4MjgzMw==&mid=2650928134&idx=1&sn=7855c453083236c5c5d121d3b4fb955e&scene=21)，[SAM 2: Segment Anything in Images and Videos](https://arxiv.org/abs/2408.00714)
 + SAM3：[ICLR 2026惊现SAM 3，分割一切的下一步：让模型理解「概念」](https://mp.weixin.qq.com/s/7uDHXQd1ES2mV4dZFB7VMw)，[SAM 3: Segment Anything with Concepts](https://openreview.net/pdf?id=r35clVtGzw)
 
+## RAE
+
+[VAE时代终结？谢赛宁团队「RAE」登场，表征自编码器或成DiT训练新基石](https://mp.weixin.qq.com/s/Z1ZJnco6oEXWMUdbrito9w)
+
+[Diffusion Transformers with Representation Autoencoders](https://arxiv.org/abs/2510.11690)
+
+[https://github.com/bytetriper/RAE](https://github.com/bytetriper/RAE)
+
+挑战了一个普遍的假设，即像DINOv2和SigLIP2这类预训练表征编码器不适合重建任务，因为它们“强调高层语义，而忽略了底层细节” 。
+
+该研究证明，只要解码器训练得当，冻结的表征编码器实际上可以作为扩散潜在空间的强大编码器。RAE将冻结的预训练表征编码器与一个基于ViT的解码器配对，其重建效果与SD-VAE相当甚至更优。
+
+![](../assets/rae.png)
+
 
 # 多模态（图像）
 
