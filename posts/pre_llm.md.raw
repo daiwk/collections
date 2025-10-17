@@ -74,6 +74,22 @@ hierarchical softmax是softmax的近似，suboptimal的。当如今计算资源�
 
 但在真实语言数据上，语言模型并不会显著地准备用于未来的信息。相反，它们是计算对预测**下一个token有用的特征**——事实证明**这对未来的步骤也很有用**。
 
+## 矩阵乘法的一些trick
+
+[https://www.thonking.ai/p/what-shapes-do-matrix-multiplications](https://www.thonking.ai/p/what-shapes-do-matrix-multiplications)
+
+[https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#tile-quant](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#tile-quant)
+
+[https://github.com/stanford-cs336/spring2025-lectures/blob/main/nonexecutable/2025%20Lecture%205%20-%20GPUs.pdf](https://github.com/stanford-cs336/spring2025-lectures/blob/main/nonexecutable/2025%20Lecture%205%20-%20GPUs.pdf)
+
+一些结论：
+
++ 矩阵size能被k整除时，k的取值变化对应的速度变化：2<8<16<32
++ 矩阵是连续分块读取的，通常会读连续的几个块出来，如果矩阵shape变化导致不连续了，就会导致访问时间上涨。如下例子：
++ A100有108的SM，例如分块为$$256\times 128$$，一个(2304,1536)的矩阵划分为$$9\times 12=108$$个tiles，刚好全部利用，如果矩阵略大一点比如(2304,1538), 划分为$$9\times 13=117$$个tiles，就需要多整整一倍的运行时间。
+
+==>尽量保证矩阵乘法的dim，dim/head等都尽量被2的幂次整除，同时尽量的保证分块数接近SM数的倍数
+
 
 ## Transformer的FLOPS和访存带宽
 
