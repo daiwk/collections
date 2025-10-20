@@ -4298,6 +4298,19 @@ Prover-V2采用GRPO，通过为每个定理提示采样一组候选证明并根�
 
 ![](../assets/mla-mqa-mha.png)
 
+## DeepSeek-OCR
+
+[DeepSeek-OCR: Contexts Optical Compression](https://github.com/deepseek-ai/DeepSeek-OCR/blob/main/DeepSeek_OCR_paper.pdf)
+
+一张包含文档文本的图像可以用比等效文本少得多的Token来表示丰富的信息，因此，初步探索了通过光学二维映射技术压缩长文本上下文可行性。
+
+效果：当文本token数量在视觉token的10倍以内（即压缩率 <10x）时，模型的解码（OCR）精度可达97%；即使在压缩率达到20x的情况下，OCR准确率仍保持在约60%。在实际生产环境中，单张A100-40G GPU每天可生成超过20万页（200k+）的LLM/VLM训练数据。
+
++ DeepEncoder：核心引擎，既能保持高分辨率输入下的低激活状态，又能实现高压缩比，从而生成数量适中的视觉token。提取图像特征，并将视觉表示进行 Token化和压缩。380M，包括80M的SAM-base和一个300M的CLIP-large串联而成
++ DeepSeek3B-MoE-A570M解码器：根据图像 Token 和提示词 (prompt) 生成所需的结果。3B MoE，激活参数量为5.7亿 (570M)
+
+
+
 # Qwen系列
 
 ## 早期的Qwen
