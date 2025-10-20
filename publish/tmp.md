@@ -1,21 +1,10 @@
-[ChoirRec: Semantic User Grouping via LLMs for Conversion Rate Prediction of Low-Activity Users](https://arxiv.org/pdf/2510.09393)
-
-+ stage1：Hierarchical Semantic User Group Generation
-    + Semantic Profile Synthesis via LLM：输入用户静态信息、各种时间窗口的行为类目序列、搜索序列，输出core identity、interest points和consumption philosophy
-    + Hierarchical Group Construction：
-        + 通过Qwen3-embedding-8B等模型将profile编码成emb，
-        + 通过RQ–KMeans搞出M级semantic group id
-+ stage2：构建Group-aware Hierarchical Representation
-    + Hierarchical Group ID Fusion：M级group id对应的emb按顺序融合，再concat过mlp
-    + Group Attribute Completion：当前group里用户的静态特征+统计特征聚合起来，相当于对低活用户可以有一个group级的初始化；可以预先算好
-    + Group Behavioral Sequence Construction：
-        + Group Interest Identification：group内所有用户的购买历史里，聚合出top-k的类目
-        + Group Sequence Construction：top-k类目中，保留每个类目里的头部item，同时用group内的平均购买时间来排序
-+ stage3：Group-aware Multi-granularity(多粒度) Module
-    + individual channel：作为teacher，U和I过tower
-    + group channel：作为student，G和I过mlp过tower
-    + group channel的输入通过fusion tower输入给individual channel，但对group channel有stop grad
-    + 用户活跃度特征过nn得到一个emb，然后输出2个gate：
-        + merge用：两个channel的logit进行merge的时候用上面的gate加权，$z_{\text {fused }}=\left(1-\alpha_{\text {fusion }}\right) \cdot z_{\text {ind }}+\alpha_{\text {fusion }} \cdot z_{\text {group }}$
-        + 蒸馏用：mse加上一个margin，另外有一个置信度的gate（用户购买数大于某阈值&teacher输出过完sigmloid比0.5大一定阈值）$g_{\text {qual }}=\mathbb{I}\left(\left|S_u^{\text {buy }}\right| \geq \theta_{\text {act }} \wedge\left|\sigma\left(z_{\text {ind }}\right)-0.5\right|>\theta_{\text {conf }}\right)$，还有上面的gate，$\mathcal{L}_{\mathrm{KD}}=g_{\text {qual }} \cdot \alpha_{\text {distill }} \cdot \mathcal{L}_{\text {margin }}$
-
++ DeepEncoder：提取图像特征，并将视觉表示进行Token化和压缩，共380M参数
+    + 80M的SAM-base：原始图像切成n个patch，单个patch大小为16x16，然后输入给SAM进行local attn
+    + 2层的卷积模块：对视觉Token进行16倍的下采样，即得到n/16个token。参考[Vary: Scaling up the vision vocabulary for large vision-language model](https://arxiv.org/pdf/2312.06109)，每个卷积层的核大小为3，步长为2，pad为1，通道数从256增加到1024。具体过程如下：
+        + 假设输入一张1024x1024的图像
+        + 输入给sam的是$1024\times 1024/16 \times 16 \times 16=64\times 64 \times (16\times 16)$，即$64\times 64$个patch
+        + 从sam输出的应该是$64\times 64 \times 256$。
+        + 经过第一个conv后，宽度变成$(64-2\times 1 - 3)/2 +1=32$，所以shape是(32,32,256)
+        + 再经过第二个conv后，宽度变成$(32-2\times 1-3)/2+1=16$，所以shape是(16,16,1024)，即token数变成了$16\times 16=256$，相比原来的$64\times 64$而言就是缩小了16倍。
+    + 300M的CLIP-large：进行global attn
++ DeepSeek3B-MoE-A570M解码器：根据图像Token和prompt生成所需的结果，用来重建文本表示。570M in 3B的MoE，64个router专家激活6个，还有2个共享专家
