@@ -238,6 +238,7 @@ GPU的显存分成两部分：
 + D2H：device to host，从gpu拷贝到cpu
 
 320GB/s（MLU580） vs 64GB/s（L20）
+L20缺乏高速NVLink，卡间通信只能依赖于PCIE 4.0（速率约16-22GB/s），远低于NVLink（通常>750GB/s）
 
 ### 一些注意点
 
