@@ -1,3 +1,16 @@
+# 工具调用
+
+原理：
+
+[https://chatgpt.com/share/68ff32eb-010c-8011-b7ca-feb0569804e8](https://chatgpt.com/share/68ff32eb-010c-8011-b7ca-feb0569804e8)
+
++ huggingface：[https://huggingface.co/blog/zh/agents](https://huggingface.co/blog/zh/agents)
++ vllm：[https://docs.vllm.ai/en/stable/features/tool_calling.html](https://docs.vllm.ai/en/stable/features/tool_calling.html)
+
+
+
+
+
 # prompt engineering
 
 [万字长文总结提示词技巧！新加坡首届GPT-4提示工程大赛冠军最新分享](https://mp.weixin.qq.com/s/AWnQL3forAP-gB7e2ZEXdQ) 提出了CO-STAR框架
