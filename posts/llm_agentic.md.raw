@@ -8,8 +8,43 @@
 + vllm：[https://docs.vllm.ai/en/stable/features/tool_calling.html](https://docs.vllm.ai/en/stable/features/tool_calling.html)
 
 
+大概流程：
+1. 用户输入 & 模板渲染
+  + 用户在客户端写一句话，比如：“帮我查一下东京明天天气。”
+  + 系统或你自己把这个消息、以前的上下文、还有工具定义（如一个 get_weather(location, unit) 函数）一起填进chat_template.jinja模板。
+  + 模板渲染后变成一串“对话 + 工具说明”的文本，送入模型，作为prompt。
+2. 模型生成阶段 #1：考虑是否调用工具
+  + 模型会预测接下来的token。它可能决定：“用户要查天气，我应该调用 get_weather 函数”，那么模型输出可能是一个标记，比如：
 
+```xml
+<minimax:tool_call>
+<invoke name="get_weather">
+<parameter name="location">"Tokyo, Japan"</parameter>
+<parameter name="unit">"celsius"</parameter>
+</invoke>
+</minimax:tool_call>
+```
+3. 外部实体：解析 + 执行工具
+  + 在模型输出后，框架看到了```<minimax:tool_call>…</minimax:tool_call>```标记
+  + 然后解析出：函数名```get_weather```，参数 ```{ "location": "Tokyo, Japan", "unit": "celsius" }```
+  + 然后真正调用你定义的```get_weather("Tokyo, Japan", "celsius")```（在 Python、API、脚本里）得到结果，比如 "明天天气 22°C 晴朗"。
+  + 再把这个结果以合适格式回馈给模型，比如插入一个“tool result”角色的消息。
+4. 模型生成阶段 #2：基于工具结果生成回答
+  + 模型现在看到新的上下文（包含工具调用和工具结果），它继续生成token，输出给用户的最终回答，比如：```根据最新数据，东京明天天气晴朗，约 22°C。还要帮你查空气质量吗？```
 
+这里的1、2是手动调用openai的接口，拿到模型返回结果时，从里面解析出来的要传给tool的参数，然后3需要我们自己本地调用具体函数，拿到结果再转成特定格式(加一个role为tool的content)，再去调用openai的接口拿到最终结果。整个过程可以看[https://github.com/daiwk/coding/blob/main/agentic/func_calling.py](https://github.com/daiwk/coding/blob/main/agentic/func_calling.py)
+
+关于模型是如何把函数描述解析成json的，相关代码可以参考：[vllm](https://docs.vllm.ai/en/stable/api/vllm/entrypoints/openai/tool_parsers/minimax_tool_parser.html#vllm.entrypoints.openai.tool_parsers.minimax_tool_parser.MinimaxToolParser)
+
+![](../assets/tool_call_code1.jpg)
+
+然后这个东西基于的是openai.BaseModel(transformers里最终也是走到这里)
+
+![](../assets/tool_call_code2.jpg)
+
+然后去openai里看
+
+![](../assets/tool_call_code3.jpg)
 
 # prompt engineering
 
