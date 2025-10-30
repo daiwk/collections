@@ -1448,6 +1448,49 @@ colossalai run --hostfile path-to-host-file --nprocpernode 8 \
 
 例如[跟着台大李宏毅老师学：别让推理模型想太多](https://mp.weixin.qq.com/s/dXxuRN311-c6CN4zOl8lFg)里提到的[L1: Controlling How Long A Reasoning Model Thinks With Reinforcement Learning](https://arxiv.org/pdf/2503.04697)
 
+# RL+reasoning的讨论（学习!）
+
+[What is the objective of reasoning with reinforcement learning?](https://arxiv.org/pdf/2510.13651)
+
+# RL最新进展
+
+## RL Grokking
+
+[AGI前夜重磅：RL突破模型「认知上限」，真·学习发生了！](https://mp.weixin.qq.com/s/0yk3VEJrpXWTTnR15bB4Qg)
+
+## Training free-GRPO
+
+[X上63万人围观的Traning-Free GRPO：把GRPO搬进上下文空间学习](https://mp.weixin.qq.com/s/mzww1pKILFSFqRA8aui0fA)
+
+[Training-Free Group Relative Policy Optimization](https://arxiv.org/abs/2510.08191)
+
+[https://github.com/TencentCloudADP/youtu-agent/tree/training_free_GRPO](https://github.com/TencentCloudADP/youtu-agent/tree/training_free_GRPO)
+
+## R-HORIZON
+
+[R-HORIZON：长程推理时代来临，复旦NLP&美团LongCat重磅发布LRMs能力边界探测新范式](https://mp.weixin.qq.com/s/d7sPy0hCnOu9usRFtiAepg)
+
+[R-HORIZON: How Far Can Your Large Reasoning Model Really Go in Breadth and Depth?](https://arxiv.org/abs/2510.08189)
+
+[https://github.com/meituan-longcat/R-HORIZON](https://github.com/meituan-longcat/R-HORIZON)
+
+## Reasoning with sampling
+
+[不用强化学习也能推理，哈佛新采样算法竟能让基础模型比肩GRPO后训练版本](https://mp.weixin.qq.com/s/JbJI5aixLAt9hfcqrepZoQ)
+
+[Reasoning with Sampling: Your Base Model is Smarter Than You Think](https://www.arxiv.org/pdf/2510.14901)
+
+[https://github.com/aakaran/reasoning-with-sampling](https://github.com/aakaran/reasoning-with-sampling)
+
+
+## DisCO
+
+[NeurIPS25高分论文｜以判别式监督学习强化推理LLM，解决难度偏差和熵崩塌难题](https://mp.weixin.qq.com/s/gmvJx4C_OaVvA-0zm_vbyg)
+
+[DisCO: Reinforcing Large Reasoning Models with Discriminative Constrained Optimization](https://arxiv.org/abs/2505.12366)
+
+[https://github.com/Optimization-AI/DisCO](https://github.com/Optimization-AI/DisCO)
+
 # 推理模型总结
 
 [从自我进化视角出发，全面解析LLM的推理能力技术演进路径](https://mp.weixin.qq.com/s/hkYW0c26eLEHE9WgIQxwHw)
