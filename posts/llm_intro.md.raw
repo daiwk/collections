@@ -4944,6 +4944,16 @@ XXX
 
 同时，使用可验证奖励的on-policy rollout来持续更新critic，使critic不断提高其在最新policy上的评估准确性。可以看成是一种利用可验证奖励来改进不可验证奖励估计的方法。
 
+## Kimi-Linear
+
+[Kimi Linear: An Expressive, Efficient Attention Architecture](https://github.com/MoonshotAI/Kimi-Linear/blob/master/tech_report.pdf)
+
++ Kimi Delta Attention (KDA):refines the gated delta rule with finegrained gating.
++ Hybrid Architecture: A 3:1 KDA-to-global MLA ratio reduces memory usage while maintaining or surpassing the quality of full attention.
++ 效果：在很多task上比full attention更好，包括long-context和RL-style benchmarks
++ 高吞吐: 最多6x的decoding加速，显著降低TPOT(time per output token).
+
+
 # MiniMax
 
 ## MiniMax-01
