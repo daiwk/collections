@@ -1166,7 +1166,7 @@ All-domain Moveline Evolution Network (AMEN)：
     + diversity：h个attention head两两的相似度尽量小：$$\mathcal{L}_{\mathrm{div}}=\sum_{t=t_0}^{t_0+T-1}\left(\frac{1}{\binom{H}{2}} \sum_{i=1}^{H-1} \sum_{j=i+1}^H\left(\operatorname{sim}\left(\mathbf{h}_i, \mathbf{h}_j\right)\right)^2\right)$$
 + 判别式微调：transformer的输入有如下几部分
     + 预训练产出的模型freeze，预估未来的T步，然后当成K和V，target item当成Q，算attn
-    + target item+context经过calibration net得到c
+    + target item+context（即当前时刻往前若干时间的序列）经过calibration net得到c
     + 用户特征、1-diversity、第一个预估token的velocity
 + 判别式增强（TSP，Temporal Sequential Pairwise）：对calibration net加的辅助loss
     + 直观理解：同样一条t-7到t的序列，
