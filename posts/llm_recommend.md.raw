@@ -1153,6 +1153,27 @@ XXX
 + 通过tokenizer得到对应的code，把code接到推荐模型里，可以适配判别式任务/生成式任务
 + loss=task loss+重构loss+正交正则loss
 
+## 阿里的AMEN
+
+[Next Interest Flow: A Generative Pre-training Paradigm for Recommender Systems by Modeling All-domain Movelines](https://arxiv.org/pdf/2510.11317)
+
+All-domain Moveline Evolution Network (AMEN)：
+
+![](../assets/next-interest-flow.png)
+
++ 生成式预训练：拿判别式模型（transformer）来初始化decoder的权重，输入历史序列，预估未来的T个item，在正常的生成式loss之外还加了：
+    + Velocity：限制模型预估的不要太跳跃，即相邻item尽量像一点：$$\mathcal{L}_{\mathrm{vel}}=\sum_{t=t_0+1}^{t_0+T-1}\left\|\left(\hat{\mathbf{f}}_t-\hat{\mathbf{f}}_{t-1}\right)-\left(\hat{\mathbf{f}}_{t-1}-\hat{\mathbf{f}}_{t-2}\right)\right\|_2^2$$
+    + diversity：h个attention head两两的相似度尽量小：$$\mathcal{L}_{\mathrm{div}}=\sum_{t=t_0}^{t_0+T-1}\left(\frac{1}{\binom{H}{2}} \sum_{i=1}^{H-1} \sum_{j=i+1}^H\left(\operatorname{sim}\left(\mathbf{h}_i, \mathbf{h}_j\right)\right)^2\right)$$
++ 判别式微调：transformer的输入有如下几部分
+    + 预训练产出的模型freeze，预估未来的T步，然后当成K和V，target item当成Q，算attn
+    + target item+context经过calibration net得到c
+    + 用户特征、1-diversity、第一个预估token的velocity
++ 判别式增强（TSP，Temporal Sequential Pairwise）：对calibration net加的辅助loss
+    + 直观理解：同样一条t-7到t的序列，
+    + t时刻收藏了书包，没收藏女装，说明应该归因到t-7到t-1里书包和夹克相关的行为，而和t-3到t-1的蜂蜜没啥关系
+    + t-1时刻把蜂蜜加进购物车，而在t-3时刻进行了搜索、t-2时刻加标签，并没有在t-3时刻收藏蜂蜜
+    + 但实际loss就是个bpr，即给定一个pair对，正样本的预估分比负样本高得越多越好，而因为每个item是根据历史序列得到的预测，所以变相地鼓励模型通过历史序列来隐式地归因：$$\mathcal{L}_{\text {tsp }}=-\frac{1}{\left|\mathcal{D}_{\text {paired }}\right|} \sum_{\mathcal{D}_{\text {paired }}} \log \sigma\left(\mathbb{I}\left(y_{t_1}\right)\left(c_{t_1}-c_{t_0}\right)\right)$$
+
 ## 快手的RecGPT
 
 [RecGPT: Generative Personalized Prompts for Sequential Recommendation via ChatGPT Training Paradigm](https://arxiv.org/pdf/2404.08675)
