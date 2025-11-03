@@ -1718,6 +1718,8 @@ user/item都是正常的推荐模型，有id特征、序列特征等，tag塔就
 
 sid每级code book的每个code搞一个special token(代码应该是```tokenizer.add_tokens([...])```)，location也类似地搞一下，用CPT让LLM学到sid的知识，然后预测下一个sid
 
+![](../assets/coast-data-prompt.png)
+
 ## 快手的LSVCR
 
 [Enhancing Sequential Recommender with Large Language Models for Joint Video and Comment Recommendation](https://arxiv.org/pdf/2403.13574) Recsys25
