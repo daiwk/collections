@@ -1503,6 +1503,38 @@ cluster包括了一系列短语，如(猫，狗，动物，宠物，小动物)�
 
 实际推理时用了能cover 80%展现的高热视频，只需要不到12小时就能推理完；后来做了增量更新版本，但因为高热视频变化不多，所以速度也可以接受
 
+## Google的PLUM
+
+[PLUM: Adapting Pre-trained Language Models for Industrial-scale Generative Recommendations](https://arxiv.org/pdf/2510.07784)
+
+[「谷歌a」PLUM: Adapting Pre-trained Language Models for Industrial](https://mp.weixin.qq.com/s/2kSjLHfegEvxtwjWCQvOVg)
+
+![](../assets/plum.png)
+
+sid生成:
++ 输入：多个多模态emb，各自过encoder再concat到一起，再映射成一个emb
++ 多层精细化量化：
+    + 多分辨率码本：码本大小$$2048/2^{{level}-1}$$，即越深层的码表越小
+    + 渐进式mask：即图中的m，训练的时候随机一个r，然后从1到r的layer保留，后面的layer mask掉
++ 共现对比学习正则：一条样本是一个共现pair，在batch内算softmax，$$\mathcal{L}_{\text {con }}=-\sum_{i=1}^{2 N_b} \frac{\exp \left(\operatorname{sim}\left(p_i, p_i^{+}\right)\right)}{\sum_{j=1}^{2 N_b} \exp \left(\operatorname{sim}\left(p_i, p_j\right)\right)}$$，
++ 最终loss就是重建Loss+rq_loss+共现正则
+
+![](../assets/plum-cpt-data.png)
+
+continue pre-training(CPT)
+
++ 一半的样本是用户行为
++ 一半的样本是video metadata
++ 训练200w个step，bs=16，总共260B的token，基于预训练好的LLM(900m in 4B的moe)进行CPT，发现CPT后的模型对于自然语言和sid的混合输入仍然有很好的in-context learning能力
+
+![](../assets/plum-sft.png)
+
+sft如图，输入有文本也有sid，预测下一个sid。设计了带reward（人工为每个点击拍的）的loss：$$\mathcal{L}_{\mathrm{SFT}}=-\sum_{t=1}^L r\left(\text { user, } v_{c l i c k}\right) \cdot \log P\left(\text { sid }_t \mid \text { Context }_{\text {user }}, \text { History }_{\text {user }}, \text { sid }_{<t}\right)$$
+
+infer时用beam search，发现幻觉率（生成不存在的sid）很低（<5%），uniq的sid-to-video映射(一个sid只对应一个视频，这种视频在所有视频里的比例)很高(96%+)
+
+实验部分看着是加了一路召回，比基线召回（reinforce recall）效率高，但serving细节没讲，比如模型更新频率、离线/流式/实时infer等
+
 
 ## 美团的MSD
 
@@ -1741,6 +1773,12 @@ user/item都是正常的推荐模型，有id特征、序列特征等，tag塔就
 sid每级code book的每个code搞一个special token(代码应该是```tokenizer.add_tokens([...])```)，location也类似地搞一下，用CPT让LLM学到sid的知识，然后预测下一个sid
 
 ![](../assets/coast-data-prompt.png)
+
+## 阿里的CoCo
+
+[Synergistic Integration and Discrepancy Resolution of Contextualized Knowledge for Personalized Recommendation](https://arxiv.org/pdf/2510.14257)
+
+通过动态构建用户特定上下文知识嵌入、自适应知识融合和矛盾解决模块，实现语义与行为潜在空间的深度整合。该方法端到端训练，支持任意推荐骨干网络的工业部署。
 
 ## 快手的LSVCR
 
@@ -3883,6 +3921,12 @@ BlockRank通过以下方式改进LLM的注意力操作：
 ## 美团的IterQR
 
 [IterQR: LLM-based Iterative Query Rewrite for E-commerce Search](https://arxiv.org/pdf/2504.05309)
+
+## 美团的RTD
+
+[From Reasoning LLMs to BERT: A Two-Stage Distillation Framework for Search Relevance](https://arxiv.org/pdf/2510.11056)
+
+Reasoning-then-Distilling (RTD)
 
 ## 阿里搜索广告
 
