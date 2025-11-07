@@ -5693,4 +5693,16 @@ Online Learning 的关键在于突破人类知识上限，让模型具备探索�
 
 [Continuous Autoregressive Language Models](https://arxiv.org/pdf/2510.27688)
 
+![](../assets/calm1.png)
+
+auto-encoder
+
++ 输入k个连续token，查到他们的emb，通过encoder映射到隐层，再decode回去
++ 加了一个VAE的正则$$\mathcal{L}_{\mathrm{KL}}\left(p_E\left(\mathbf{z} \mid \mathbf{x}_{1: K}\right) \| \mathcal{N}(0, \mathbf{I})\right)=-\frac{1}{2} \sum_{i=1}^l\left(1+\log \sigma_i^2-\sigma_i^2-\mu_i^2\right)$$，注意vae就是把隐层向量通过nn产出均值和方差，再基于这个去采样
+
+![](../assets/calm2.png)
+
+如图，原始token经过上面encoder的压缩后输入给transformer，然后加一个L层的energy-based的head，同时输入一个噪声，得到的输出就是预估的下一个向量。infer的时候再经过decoder得到原始token，再把这个输入trans
+
+![](../assets/calm3.jpg)
 
