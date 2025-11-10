@@ -2008,6 +2008,49 @@ item侧也复用了类似的流程，把输入的(hist, item)改成(item, pos, n
 
 [https://github.com/wangshy31/OneRec-Think](https://github.com/wangshy31/OneRec-Think)
 
+参考代码：
+
+```python
+def get_special_tokens(max_range: int = 256) -> list[str]:
+    special_tokens: list[str] = []
+
+    special_tokens.append("<|sid_begin|>")
+    special_tokens.append("<|sid_end|>")
+
+    for prefix in ["s_a", "s_b", "s_c", "s_d"]:
+        for idx in range(max_range):
+            special_tokens.append(f"<{prefix}_{idx}>")
+
+    return special_tokens
+
+
+def round_up_to_multiple(value: int, multiple: int) -> int:
+    if multiple <= 0:
+        raise ValueError("multiple must be a positive integer")
+    return ((value + multiple - 1) // multiple) * multiple
+
+def run():
+    tokenizer = AutoTokenizer.from_pretrained(base_model_dir)
+
+    new_tokens = get_special_tokens(max_range=256)
+    print(f"Preparing to add {len(new_tokens)} special tokens.")
+
+    tokens_added = tokenizer.add_special_tokens(
+        {"additional_special_tokens": new_tokens}, replace_additional_special_tokens=False
+    )
+    print(f"Successfully added {tokens_added} tokens.")
+
+    updated_vocab_size = len(tokenizer)
+    target_vocab_size = round_up_to_multiple(updated_vocab_size, 256)
+
+    print(
+        f"Current vocab size: {updated_vocab_size}, adjusting to: {target_vocab_size} (nearest 256 multiple)."
+    )
+    model.resize_token_embeddings(target_vocab_size)
+
+    config.vocab_size = target_vocab_size
+```
+
 
 ## 字节的HLLM-Creator
 
