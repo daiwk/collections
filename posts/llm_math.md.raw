@@ -40,9 +40,12 @@
 
 ![](../assets/alphaproof1.png)
 
-状态：Lean prover的逻辑状态，即
-环境：
-动作：
+状态：Lean prover的逻辑状态，即Lean tactic state，表示已经建立的假设，和剩下的目标
+环境：给定一个状态，和agent采取的动作，输出下一个状态
+动作：一个证明的中间步骤，例如“a=2,b=2a,==>b=4”
+episode结束条件：证明完成or超时
+proof network：
+tree search：
 
 ![](../assets/alphaproof2.png)
 
