@@ -1,32 +1,10 @@
-## AlphaProof(nature)
 
-[Olympiad-level formal mathematical reasoning with reinforcement learning](https://www.nature.com/articles/s41586-025-09833-y)
+定义：
 
++ 输入$n$个token $x_0, x_1, \ldots, x_{n-1}$，每个token包括item和对应的action，即$\left(\Phi_0, a_0, \ldots, \Phi_{n_c-1}, a_{n_c-1}\right)$，也就是$n=2 n_c$
++ 精排有$m$个候选 $\Phi_0^{\prime}, \ldots, \Phi_{m-1}^{\prime}$，Micro batchsize $b_m$，可以分成$\text { numMicrobatches }=\left(m+b_m-1\right) / / b_m$份
++ $\text { attnMask }=L_{n+b_m}$，直接加到attention logit上，是一个下三角矩阵，即下三角是0，其他的是$-\infty$；此外，$\operatorname{attnMask}[i, j]=-\infty \text { for } i, j \geq n, i \neq j$，表示大于n的那些item之间是互相看不到的，如下（白色可见，深色不可见）：
 
-![](../assets/alphaproof1.png)
+进行一次计算：$\left(a_0^{\prime}, a_1^{\prime}, \ldots, a_{b_m-1}^{\prime}\right), k v C a c h e \leftarrow f\left(e m b L a y e r\left(\left(x_0, x_1, \ldots, x_{n-1}, \Phi_0^{\prime}, \ldots, \Phi_{b_m-1}^{\prime}\right)\right), \varnothing, \text { attnMask }\right)$，其中$\text { predictions }=\left(a_0^{\prime}, a_1^{\prime}, \ldots, a_{b_m-1}^{\prime}\right)$
 
-+ 状态：Lean prover的逻辑状态，即Lean tactic state，表示已经建立的假设，和剩下的目标
-+ 环境：给定一个状态，和agent采取的动作，输出下一个状态
-+ 动作：一个证明的中间步骤，是一段文本，例如“a=2,b=2a,==>b=4”
-+ episode结束条件：证明完成or预算花完（例如超时）
-+ reward：每个tactic的reward都是-1，因为要鼓励用更少的步骤完成证明，即到达终点的分支路径最短
-
-prover agent是把dnn和alphazero的搜索算法相结合：
-
-+ proof network：是一个3B的encoder-decoder transformer，输入Lean tactic state，输出2个东西：
-    + policy：下一步要尝试的N个动作
-    + value：当前**状态**的价值，即从此刻到episode结束时的每步reward之和
-+ tree search：和alphazero类似，使用AND-OR tree structure将证明拆成多个独立的子目标(类似[Hypertree proof search for neural theorem proving](https://arxiv.org/pdf/2205.11491))，采样使用的progressive sampling
-
-![](../assets/alphaproof2.png)
-
-+ 预训练：proof network在大概300 billion tokens的代码和数学语料通过next token prediction预训练
-+ SFT：在300k的人类用matlab标注的证明语料(state-tactic pairs)上sft，
-+ main RL：
-    + 用gemini的LLM搞了一个自动形式化（formalization）的系统，将大概1M的非形式化的问题形式化成了80M的问题
-    + proof network+tree search和Lean环境交互，生成形式化的证明和反证（disproof），然后用Alphazero的方式基于得到的经验去RL训练
-+ inference：
-    + 首先参考Alphazero，增加tree search的预算，例如产生更多的搜索路径
-    + 如果增加了搜索路径还不够，那就用Test-time RL（TTRL）：
-        + 给定一个问题，variant generator生成其变种（例如简化或者泛化）
-        + 基于这些变种去进行RL训练
+算完第一个microbatch后，得到这n个token的kvcache。算下一个microbatch的时候，把这个的microbatch拼到这n个token后面，复用kvcache和attnmask，得到这个microbatch的预估值，以此类推。
