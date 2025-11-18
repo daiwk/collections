@@ -3146,6 +3146,31 @@ Transformer往往会过度关注不相关的上下文，即注意力噪声（att
 
 [Atlas: Learning to Optimally Memorize the Context at Test Time](https://arxiv.org/pdf/2505.23735)
 
+## Hope+Nested Learning
+
+TITANS的改进版
+
+[终结Transformer统治！清华姚班校友出手，剑指AI「灾难性遗忘」](https://mp.weixin.qq.com/s/1BBuGg95fVAuMbG7S8jg7A)
+
+[Nested Learning: The Illusion of Deep Learning Architectures](https://abehrouz.github.io/files/NL.pdf)
+
+![](../assets/nested-learning.png)
+
+嵌套学习将优化器（Optimizer，例如基于动量的优化器）视为一种联想记忆模块。这使我们能从联想记忆的角度重新设计优化算法。传统优化器通常依赖「点积相似度」来衡量样本间相似性，但这一机制无法考虑样本间的复杂关系。通过将优化目标改为标准损失函数，提出了新的动量更新公式，使优化过程对不完美数据更具鲁棒性。
+
+在标准的Transformer模型中，
+
++ 序列建模层承担短期记忆，保存当前上下文信息；
++ 而前馈神经网络层则充当长期记忆，存储训练前的知识。
+
+嵌套学习扩展了这一思想，提出「连续记忆系统」（Continuum Memory Systems，CMS），这是一种由多个模块组成的记忆谱系，每个模块以不同频率进行更新，这为持续学习创建了一个更加丰富、高效的记忆系统。
+
+![](../assets/hope-transformer.png)
+
+Hope是一种可自我修改的递归架构，能实现无限层级的上下文内学习。还结合了连续记忆系统，能够扩展到更大的上下文窗口。
+
+...看不懂
+
 ## Transformer^2
 
 [Transformer^2要做「活」的AI模型，动态调整权重，像章鱼一样适应环境](https://mp.weixin.qq.com/s/_vdA_KygkFWqFE5Xm6CDRg)
@@ -5519,6 +5544,96 @@ Dreamer 4是一种可扩展的智能体，它通过在快速且准确的世界�
 
 [Emu3.5: Native Multimodal Models are World Learners](https://zh.emu.world/Emu35_tech_report.pdf)
 
+
+# 具身智能
+
+[大模型走向物理世界，TeleAI 发布大模型驱动的具身智能综述，覆盖300篇文献](https://mp.weixin.qq.com/s/vzDhVsPmBqNT1iuZDnPjRw)
+
+[Embodied-AI with large models: research and challenges](https://www.sciengine.com/SSI/doi/10.1360/SSI-2024-0076)
+
+
+## 李飞飞的文章
+
+[李飞飞最新长文：AI的下一个十年——构建真正具备空间智能的机器](https://mp.weixin.qq.com/s/3w5zgnMXe13mKIR_ePBwAw)
+
+[From Words to Worlds: Spatial Intelligence is AI’s Next Frontier](https://drfeifei.substack.com/p/from-words-to-worlds-spatial-intelligence)
+
+## ReKep
+
+[李飞飞团队提出ReKep，让机器人具备空间智能，还能整合GPT-4o](https://mp.weixin.qq.com/s/AdyOPA6RhFIu5sjra5cW2Q)
+
+[ReKep: Spatio-Temporal Reasoning of Relational Keypoint Constraints for Robotic Manipulation](https://rekep-robot.github.io/rekep.pdf)
+
+[https://github.com/huangwl18/ReKep](https://github.com/huangwl18/ReKep)
+
+## GR-2
+
+[GR-2登场！ByteDance Research提出机器人大模型，具备世界建模和强大泛化能力](https://mp.weixin.qq.com/s/h-69PKoCkPtj4_sq9589Tw)
+
+[GR-2: A Generative Video-Language-Action Model with Web-Scale Knowledge for Robot Manipulation](https://arxiv.org/pdf/2410.06158)
+
+[https://gr2-manipulation.github.io/](https://gr2-manipulation.github.io/)
+
+## RDT-1B
+
+[清华开源全球最大双臂机器人扩散大模型RDT，懂调酒能遛狗，登顶HF具身热榜](https://mp.weixin.qq.com/s/LtuK9bN45Bkm2uDCi3cCvA)
+
+[RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation](https://arxiv.org/pdf/2410.07864)
+
+## HIL-SERL
+
+[强化学习训练一两个小时，100%自主完成任务：机器人ChatGPT时刻真来了？](https://mp.weixin.qq.com/s/5pVajhtp8KSFz4AnV8PVTQ)
+
+[Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning](https://hil-serl.github.io/static/hil-serl-paper.pdf)
+
+## Genesis
+
+[历时2年，华人团队力作，震撼开源生成式物理引擎Genesis，可模拟世界万物](https://mp.weixin.qq.com/s/ioYK3YV07f9m0Iu-l6tLsg)
+
+[https://github.com/Genesis-Embodied-AI/Genesis](https://github.com/Genesis-Embodied-AI/Genesis)
+
+## language of motion
+
+[李飞飞团队统一动作与语言，新的多模态模型不仅超懂指令，还能读懂隐含情绪](https://mp.weixin.qq.com/s/W8wS87YlW_z9rsDfnmtDLQ)
+
+[The Language of Motion: Unifying Verbal and Non-verbal Language of 3D Human Motion](https://arxiv.org/abs/2412.10523v1)
+
+## 视觉空间智能
+
+[李飞飞、谢赛宁等探索MLLM「视觉空间智能」，网友：2025有盼头了](https://mp.weixin.qq.com/s/Z4Kv92fukfNTyE1tSpJslA)
+
+[Thinking in Space: How Multimodal Large Language Models See, Remember, and Recall Spaces](https://arxiv.org/pdf/2412.14171v1)
+
+## 具身多模态推理
+
+[统一框架下的具身多模态推理：自变量机器人让AI放下海德格尔的锤子](https://mp.weixin.qq.com/s/PAMxpArVFwyAEVOhcq_UAw)
+
+## PEVA
+
+[伯克利&Meta面向具身智能的世界模型：让AI通过全身动作「看见」未来](https://mp.weixin.qq.com/s/id_ISbf7wVvk3pl2GCIgWA)
+
+[Whole-Body Conditioned Egocentric Video Prediction](https://arxiv.org/pdf/2506.21552)
+
+[https://dannytran123.github.io/PEVA/](https://dannytran123.github.io/PEVA/)
+
+## MTU3D
+
+[ICCV 2025满分论文：一个模型实现空间理解与主动探索大统一](https://mp.weixin.qq.com/s/EpPhCVDtCZE90GsRflvrWw)
+
+[Move to Understand a 3D Scene: Bridging Visual Grounding and Exploration for Efficient and Versatile Embodied Navigation](https://arxiv.org/abs/2507.04047)
+
+[https://github.com/MTU3D/MTU3D](https://github.com/MTU3D/MTU3D)
+
+
+## CoA
+
+[模仿学习新范式，Chain-of-Action：轨迹自回归实现动作推理](https://mp.weixin.qq.com/s/fJXWvpC1s_2FkoUYhnmTCg)
+
+[Chain-of-Action: Trajectory Autoregressive Modeling for Robotic Manipulation](https://arxiv.org/pdf/2506.09990)
+
+[https://github.com/ByteDance-Seed/Chain-of-Action](https://github.com/ByteDance-Seed/Chain-of-Action)
+
+
 # 持续学习
 
 ## Lifelong learning of LLM
@@ -5705,4 +5820,3 @@ auto-encoder
 如图，原始token经过上面encoder的压缩后输入给transformer，然后加一个L层的energy-based的head，同时输入一个噪声，得到的输出就是预估的下一个向量。infer的时候再经过decoder得到原始token，再把这个输入trans
 
 ![](../assets/calm3.jpg)
-

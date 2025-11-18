@@ -1,10 +1,22 @@
+[GPR: Towards a Generative Pre-trained One-Model Paradigm for Large-Scale Advertising Recommendation](https://arxiv.org/pdf/2511.10138)
 
-定义：
+![](../assets/rq-kmeans+.png)
 
-+ 输入$n$个token $x_0, x_1, \ldots, x_{n-1}$，每个token包括item和对应的action，即$\left(\Phi_0, a_0, \ldots, \Phi_{n_c-1}, a_{n_c-1}\right)$，也就是$n=2 n_c$
-+ 精排有$m$个候选 $\Phi_0^{\prime}, \ldots, \Phi_{m-1}^{\prime}$，Micro batchsize $b_m$，可以分成$\text { numMicrobatches }=\left(m+b_m-1\right) / / b_m$份
-+ $\text { attnMask }=L_{n+b_m}$，直接加到attention logit上，是一个下三角矩阵，即下三角是0，其他的是$-\infty$；此外，$\operatorname{attnMask}[i, j]=-\infty \text { for } i, j \geq n, i \neq j$，表示大于n的那些item之间是互相看不到的，如下（白色可见，深色不可见）：
+先用RQ-Kmeans得到一个高质量的码本，然后拿这个去初始化，然后再走正常的RQ-VAE，还在encoder里加了个残差，可以使训练更稳定&提升码本利用率
 
-进行一次计算：$\left(a_0^{\prime}, a_1^{\prime}, \ldots, a_{b_m-1}^{\prime}\right), k v C a c h e \leftarrow f\left(e m b L a y e r\left(\left(x_0, x_1, \ldots, x_{n-1}, \Phi_0^{\prime}, \ldots, \Phi_{b_m-1}^{\prime}\right)\right), \varnothing, \text { attnMask }\right)$，其中$\text { predictions }=\left(a_0^{\prime}, a_1^{\prime}, \ldots, a_{b_m-1}^{\prime}\right)$
+![](../assets/gpr.png)
 
-算完第一个microbatch后，得到这n个token的kvcache。算下一个microbatch的时候，把这个的microbatch拼到这n个token后面，复用kvcache和attnmask，得到这个microbatch的预估值，以此类推。
++ decoder输入的一个token包含4部分，u-token(user属性)、O-token(organic content，应该是体裁/场景之类的东西)、E-token（环境，例如设备、位置等）、I-token（item内容，用RQ-Kmeans+生成的sid表示），然后有如图的attn mask，decoder里会搞个token-aware FFN
++ decoder的最后一个输出emb，先输出几个thinking tokens，并通过refining module(类似扩散模型)，最终产出一个refine token
++ 拿这个refine token去生成下一个sid，生成的过程是value-guided trie-based beam search，这里的value是HTE（Hierarchical
+Token-wise Evaluator）的预估分，HTE通过如下方法训练
+
+![](../assets/gpr-training.png)
+
++ 预训练:用mtp的方式
++ value-aware finetuning：不同action有不同value(例如展现=1，点击=2，转化=4)，对mtp每个token的loss加权
++ RL：把训好的gpr部署在生产环境和模拟环境里（定期同步），
+    + 模拟环境中：用GPR产出k=40个item，然后请求该环境中的精排和后链路拿到打分，算一个融合分当成reward，这个其实是最细的那一级sid的reward
+    + 考虑流行度等因素把这个item粒度的reward细拆到每一级的sid上，同时训练HTE来给出每个value的预估，并和reward算loss
+
+还搞了Anticipatory Request Rehearsal (ARR)，来避免模型过拟合到历史数据上，即自己构造数据去请求模型得到样本，U-token复用，O-token拿用户最近的一个场景/体裁，E-token实时请求最新的，不同活跃度用户的构造频率不同
