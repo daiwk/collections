@@ -3933,6 +3933,20 @@ MobileNet-v5支持
 
 要跑gemma3n需要```pip3 install timm transformers==4.53.0```
 
+## Gemini 3
+
+[Gemini 3深夜来袭：力压GPT 5.1，大模型谷歌时代来了](https://mp.weixin.qq.com/s/m5DnddinQuH_SxXEyUbYaA?poc_token=HCNkHWmjIJiuSBFCEk9z-r8_RnhTld9axD37VFCy)
+
+Gemini 3 Pro：
+
++ 以1501 Elo的突破性高分登顶LMArena Leaderboard，在Humanity’s Last Exam（在不使用任何工具的情况下达到 37.5%）和GPQA Diamond（91.9%）上获得最高分，展示了博士级的推理能力。它还在数学方面为前沿模型树立了新标准，在MathArena Apex上达到了23.4%的最新SOTA水平。
++ 在多模态上，在MMMU-Pro和Video-MMMU上分别斩获了81%和87.6%的高分，这意味着无论是解析复杂的科学图表还是理解动态视频流，它都游刃有余。
++ 在SimpleQA Verified上取得了72.1%的成绩，显示出在事实准确性上的巨大进步
+
+Gemini 3 Deep Think：
+
++ 在Humanity's Last Exam（不使用工具的情况下得分41.0%）和 GPQA Diamond（得分93.8%）上的表现均优于Gemini 3 Pro
++ 在ARC-AGI-2（代码执行，已通过ARC Prize验证）上也取得了前所未有的45.1%的得分，展现了其解决全新挑战的能力。
 
 # Grok
 
