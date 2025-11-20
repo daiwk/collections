@@ -242,7 +242,6 @@ L20缺乏高速NVLink，卡间通信只能依赖于PCIE 4.0（速率约16-22GB/s
 
 ### 一些注意点
 
-
 F是理论flops, B是理论访存bandwidth
 
 延时=max(2mkn/F, (mk+kn+mn)/B)
@@ -283,6 +282,11 @@ triton最简单的是做fuse，即节省访存
 
 pytorch的compile会自己fuse
 
+
+roofline：[Roofline Model与深度学习模型的性能分析](https://zhuanlan.zhihu.com/p/34204282)
+
++ 计算瓶颈：不管模型的计算强度有多大，它的理论性能最大只能等于计算平台的算力。当模型的计算强度 大于计算平台的计算强度上限时，模型在当前计算平台处于 Compute-Bound状态
++ 访存瓶颈：当模型的计算强度小于计算平台的计算强度上限时，由于此时模型位于“房檐”区间，因此模型理论性能的大小完全由计算平台的带宽上限（房檐的斜率）以及模型自身的计算强度所决定，因此这时候就称模型处于Memory-Bound状态。
 
 ## Transformer加速
 
