@@ -2310,7 +2310,7 @@ XXX
 + DMIL(Disentangled Multi-Interest Learning Module)：R-refine和content encoder的special token的输出都会用这个模块来训练
     + 输入的R有s个向量，将未来一个时间窗口内的item聚成s类，然后通过匈牙利算法最大化pairwise的cos相似度，再加个对比学习
 
-最终serving时加了一路召回，拿用户的K个兴趣分别召回，近线预估，每次输入用户最近10个行为，在冷启item/user上有收益
+最终serving时加了一路召回，拿用户的s个兴趣分别召回，近线预估，每次输入用户最近10个行为，在冷启item/user上有收益
 
 ## 小红书的RED-Rec
 
@@ -2343,6 +2343,10 @@ KDD25，[Enhanced Emotion-aware Music Recommendation via Large Language Models](
 ## 亚马逊的MarketingFM
 
 [LLMs for Customized Marketing Content Generation and Evaluation at Scale](https://arxiv.org/pdf/2506.17863)
+
+## 亚马逊的SynerGen
+
+[SynerGen: Contextualized Generative Recommender for Unified Search and Recommendation](https://arxiv.org/pdf/2509.21777)
 
 
 # LLM+推荐：输入文本（工业界+没落地）
