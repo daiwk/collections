@@ -2455,7 +2455,7 @@ XXX
 
 ![](../assets/recoworld-agentic-recsys.png)
 
-推荐系统是一个自动化的agent，包括4个能力：perception、reasning&planning、action(工具使用)、memory，其参数可以用RL来训练，环境的状态就是上面的用户的mindset，action就是推荐的item list，最终奖励就是整个多轮交互的总reward
+推荐系统是一个自动化的agent，包括4个能力：perception、reasoning&planning、action(工具使用)、memory，其参数可以用RL来训练，环境的状态就是上面的用户的mindset，action就是推荐的item list，最终奖励就是整个多轮交互的总reward
 
 ## 美团的PIGEON
 
