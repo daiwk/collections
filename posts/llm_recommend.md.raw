@@ -2360,6 +2360,7 @@ KDD25，[Enhanced Emotion-aware Music Recommendation via Large Language Models](
 
 [SynerGen: Contextualized Generative Recommender for Unified Search and Recommendation](https://arxiv.org/pdf/2509.21777)
 
+用一个decoder-only生成式推荐模型，把搜索+推荐以及召回+排序全都统一，但只在公开数据集上有一些实验，没有在线ab的效果
 
 # LLM+推荐：输入文本（工业界+没落地）
 
