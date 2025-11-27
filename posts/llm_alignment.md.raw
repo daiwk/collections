@@ -187,7 +187,7 @@ pg_clipfrac = masked_mean(torch.gt(pg_losses2, pg_losses).double(), mask)
 
 &nbsp;
 
-critic是专门用来预测actor轨迹**每一步价值**的网络，actor上加几个线性层能够给每个token预测一个值。任务是估计状态的价值函数，也就是预测从当前状态开始，通过遵循某个策略，期望能得到的总回报。
+critic是专门用来预测actor轨迹**每一步价值**的网络(**这个是和reward model的核心区别，reward model只给出整个句子的reward，且不能训练，critic是每一步都能给一个值，且能训练**)，actor上加几个线性层能够给每个token预测一个值。任务是估计状态的价值函数，也就是预测从当前状态开始，通过遵循某个策略，期望能得到的总回报。
 
 Critic Loss是最小化它的预测价值与实际回报之间的差距，常用mse
 
