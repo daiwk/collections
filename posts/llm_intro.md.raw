@@ -5204,6 +5204,8 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 
 ## SSM
 
+[为什么线性注意力要加Short Conv？](https://kexue.fm/archives/11320)
+
 [挑战Transformer的Mamba是什么来头？作者博士论文理清SSM进化路径](https://mp.weixin.qq.com/s/oXSwnL0sD96nnnqJyko7UA)
 
 [Pretraining Without Attention](https://arxiv.org/pdf/2212.10544.pdf) 
