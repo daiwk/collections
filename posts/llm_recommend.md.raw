@@ -1240,6 +1240,7 @@ All-domain Moveline Evolution Network (AMEN)：
 
 [RankMixer: Scaling Up Ranking Models in Industrial Recommenders](https://arxiv.org/abs/2507.15551)
 
+pertoken ffn+qkv是[Hiformer: Heterogeneous Feature Interactions Learning with Transformers for Recommender Systems](https://arxiv.org/pdf/2311.05884)里提出来的
 
 ## Pinterest的PinRec
 
