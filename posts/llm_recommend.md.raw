@@ -2108,6 +2108,8 @@ def run():
 
 [https://huggingface.co/OpenOneRec](https://huggingface.co/OpenOneRec)；[https://github.com/Kuaishou-OneRec/OpenOneRec](https://github.com/Kuaishou-OneRec/OpenOneRec)
 
+数据集：[https://huggingface.co/datasets/OpenOneRec/OpenOneRec-RecIF](https://huggingface.co/datasets/OpenOneRec/OpenOneRec-RecIF)
+
 ## 快手的Align3GR
 
 [Align3GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation](https://arxiv.org/pdf/2511.11255)
