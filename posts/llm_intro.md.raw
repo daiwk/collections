@@ -5562,6 +5562,12 @@ Dreamer 4是一种可扩展的智能体，它通过在快速且准确的世界�
 
 [Emu3.5: Native Multimodal Models are World Learners](https://zh.emu.world/Emu35_tech_report.pdf)
 
+## FantasyWorld
+
+高德的
+
+[FantasyWorld: Geometry-Consistent World Modeling via Unified Video and 3D Prediction](https://arxiv.org/pdf/2509.21657)
+
 ## 小结
 
 world model和vla的讨论：[xhs](https://www.xiaohongshu.com/explore/69251b7a000000001e00db4d?app_platform=ios&app_version=9.10&share_from_user_hidden=true&xsec_source=app_share&type=normal&xsec_token=CBuaMv8cPQgYYDujmCXMmrnM3i3XiMwO4mOWr5cUjQfpM=&author_share=1&xhsshare=CopyLink&shareRedId=ODY2NUg4NE82NzUyOTgwNjY0OTc1STdO&apptime=1764075998&share_id=ebf896b18fe74496aea5f6f8aa1fbe5f)
