@@ -1622,6 +1622,35 @@ infer时用beam search，发现幻觉率（生成不存在的sid）很低（<5%�
 
 [DMGIN: How Multimodal LLMs Enhance Large Recommendation Models for Lifelong User Post-click Behaviors](https://arxiv.org/pdf/2508.21801)
 
+## 美团的UserLM-R1
+
+[UserLM-R1: Modeling Human Reasoning in User Language Models with Multi-Reward Reinforcement Learning](https://arxiv.org/pdf/2601.09215)
+
+![](../assets/userlm-r1.jpg)
+
++ Step 1：通用用户画像构建
+    + 静态画像：背景信息、人格特质、表达风格、生活场景。基于AlignX（[From 1,000,000 Users to Every User: Scaling Up Personalized Preference for User-level Alignment](https://arxiv.org/pdf/2503.15463)）的数据集，把其中如下图的90维偏好向量和人口属性特征丢给LLM，通过不同prompt产出上述4种静态画像
+
+    ![](../assets/profile-schema.png)
+
+    ![](../assets/alignx.jpg)
+
+    + 动态画像：场景记忆、核心诉求、决策策略、状态转移(如信任感、情绪变化)。基于[VoiceAgentEval: A Dual-Dimensional Benchmark for Expert-Level Intelligent Voice-Agent Evaluation of Xbench’s Professional-Aligned Series](https://arxiv.org/pdf/2510.21244)的SOP相关prompt进行修改，把用户相关的信息删了，SOP任务数从30个扩展到了450个。在用户与agent对话时，动态地调用LLM产出上述4种动态画像
+
++ Step 2：目标驱动的decision-making策略
+    + t-1时刻：输入prompt+静态profile+动态profile+历史对话，UserLLM输出CoT+新的动态profile+用户回答
+    + t时刻：把产出的新的动态profile替换掉t-1的动态profile，用户回答加入历史对话中，其他不变
++ Step 3：SFT：就是拿上面的语料来sft user llm
++ Step 4：多奖励强化学习优化
+    + 规则reward：输出格式、动态画像里的要点匹配等
+    + Rubic reward：LLM judge产出4种类型奖励：
+        + 回应一致性奖励（response consistency reward）：评估回复与角色画像的契合度、风格连贯性及口语自然度，确保生成的对话真实类人，且严格贴合目标角色设定。
+        + 推理质量奖励（reasoning quality reward）：通过惩罚模板化冗余内容，综合评估目标管理精度、状态转换有效性及推理深度，进而培养严谨的多步骤策略推理能力。
+        + 对齐度奖励（alignment reward）：考核对思维链（chain of thought）中制定的核心策略的忠实执行程度。
+        + 策略能力奖励（strategic capability reward）：激励模型准确识别对话陷阱、实现状态对齐，且关键在于通过逻辑反击主动掌握对话主动权，使模型能够稳健应对具有欺骗性的场景。
+
+
+
 ## 阿里的BEQUE
 
 [LLM落地淘宝电商搜索场景，显著提升长尾query改写效果](https://mp.weixin.qq.com/s/GmogjAHt0Hrwd8RmtOqS7A)
@@ -2473,6 +2502,7 @@ XXX
 [Open-Set Living Need Prediction with LLMs](https://arxiv.org/pdf/2506.02713)
 
 将“生活需求预测”定义为 “开放集分类” 问题，提出PIGEON系统结合行为检索器与Maslow需求等级对用户意图进行文本生成预测。
+
 
 ## 阿里的SLIM
 
