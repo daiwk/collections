@@ -1057,6 +1057,18 @@ remove padding的逻辑如下，把整个batch的数据变成一行数据，加�
 
 在auto-regressive decoding的过程中先采用**更小的draft model猜词**，然后送给**target model并行验证**，以通过在**访存限制**的情况下充分利用算力，提升模型的推理效率；并且保证decoding的分布与target model一致；
 
+整体流程如下：
+
+![](../assets/speculative-decoding.png)
+
++ draft model一次性猜出未来的K个draft token，概率是p，采样的token 是x
++ target model**并行**生成K+1个token，概率是q，即输入之前序列的和前n个draft token，预测下一个token
++ 从1到k，逐个验证，
+    + 如果verify(x,p,q)正确，直接用x
+    + 否则，用correct(p,q)，把后面的draft token都扔掉
+
+![](../assets/speculative-decoding-verify.png)
+
 ## 几篇比较早期的
 
 [Fast Inference from Transformers via Speculative Decoding](https://arxiv.org/pdf/2211.17192)
