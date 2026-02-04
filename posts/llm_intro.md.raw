@@ -4904,6 +4904,37 @@ MSRoPE如图所示，即图像的位置编码完后，沿对角线把文本的�
 
 [Kimi 16B胜GPT-4o！开源视觉推理模型：MoE架构，推理时仅激活2.8B](https://mp.weixin.qq.com/s/EsjsqnInCOJpU9SpJgyoOA)
 
+## Kimi-Researcher
+
+[https://moonshotai.github.io/Kimi-Researcher/](https://moonshotai.github.io/Kimi-Researcher/)
+
+### 训练数据
+
++ 设计了一系列有挑战的tool-centric任务，即这些任务只能通过特定工具才能解决，简单方法解决不了或者效率很差。可以使agent不仅学会何时调用工具，也能知道在真实任务中如何高效地编排工具调用
++ 设计并合成了reasoning-intensive的任务数据，包括
+    + Math and Code Reasoning：逻辑推理、解数学题等
+    + Hard Search：agent必须迭代地搜索、分析、推理，才能得到合法答案
+    
+### RL training
+
+用REINFORCE训的，如下两点能让训练更稳定：
+
++ On-policy Training: 
++ Negative Sample Control: 
+
+
+### Context management
+
+
+
+### Large-scale agent RL infra
+
+![](../assets/large-scale-agent-rl-infra.png)
+
++ Fully asynchronous rollout: 
++ Turn-level partial rollout:
++ Robust sandbox environment: 
+
 ## K2
 
 [Kimi K2 发布并开源，擅长代码与 Agentic 任务](https://mp.weixin.qq.com/s/2RPmHf_8KqIjXbY5jLdztQ)
