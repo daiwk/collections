@@ -4919,21 +4919,24 @@ MSRoPE如图所示，即图像的位置编码完后，沿对角线把文本的�
 
 用REINFORCE训的，如下两点能让训练更稳定：
 
-+ On-policy Training: 
-+ Negative Sample Control: 
++ On-policy Training: 训练的时候关掉了例如toolcall format enforcers的一些机制，来保证模型输出的就是它自己的分布
++ Negative Sample Control: 负样本会导致token概率的降低，从而在rl训练中增加entropy collapse的风险。因此会人为地丢掉一些负样本，让模型能训得更久
 
+用的是outcome rewards，包括Format Reward和Correctness Reward
+
+还加了一个gamma-decay，即如果两个轨迹都是正确答案，那么短的在初始action的时候reward就会更大
 
 ### Context management
 
-
+设计了context-management机制，让模型可以丢掉不重要的东西，只保留重要的信息。类似memory机制？没细讲
 
 ### Large-scale agent RL infra
 
 ![](../assets/large-scale-agent-rl-infra.png)
 
-+ Fully asynchronous rollout: 
-+ Turn-level partial rollout:
-+ Robust sandbox environment: 
++ Fully asynchronous rollout: 用可扩展的Gym-like接口实现了全异步rollout，server-based架构可以高效地并行编排actor rollouts、环境互动、reward计算 
++ Turn-level partial rollout: 在agentic rl里，大部分task很快就结束了，但有少量任务需要非常多轮。设计的Turn-level partial rollout，即超过时间预算的task会扔到replay buffer里去，在后续的迭代中，省下的轮数会使用新的模型参数。
++ Robust sandbox environment: 通用的沙盒架构消除了容器间的额外开销，同时保持隔离性。用基于k8s的混合云架构的Zero-downtime scheduling实现动态资源分配，通过MCP的agent tool通信维护了具有重连功能的有状态会话，还支持多分片部署和比较好的容错机制。
 
 ## K2
 
