@@ -5060,7 +5060,7 @@ alpha/beta/gate的nn改成了lora结构，alpha和beta也加了swish
 
 首次引入了「Agent 集群」(Agent Swarm)能力，经过并行智能体强化学习 (Parallel-Agent Reinforcement Learning, PARL) 训练，能够自主管理多达100个子智能体的智能体群，执行多达1500个协调步骤的并行工作流程，而无需预定义角色或手工设计的工作流程。
 
-PARL使用可训练的orchestrator（协调器）agent将任务分解为可并行化的子任务，每个子任务由动态实例化的frozen subagents执行。与顺序执行agents相比，并发运行这些子任务可显著降低端到端延迟。
+PARL使用可训练的orchestrator（协调器）agent将任务分解为可并行化的子任务，每个子任务由动态实例化的frozen subagents执行(只更新orchestrator，subagent的执行序列从优化目标里删掉了)。与顺序执行agents相比，并发运行这些子任务可显著降低端到端延迟。
 
 ![](../assets/orchestrator-parl.png)
 
