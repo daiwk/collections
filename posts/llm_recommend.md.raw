@@ -1884,6 +1884,17 @@ sid每级code book的每个code搞一个special token(代码应该是```tokenize
 
 通过动态构建用户特定上下文知识嵌入、自适应知识融合和矛盾解决模块，实现语义与行为潜在空间的深度整合。该方法端到端训练，支持任意推荐骨干网络的工业部署。
 
+## 阿里的LLM-I2I
+
+[LLM-I2I: Boost Your Small Item2Item Recommendation Model with Large Language Model](https://arxiv.org/abs/2512.21595)
+
+训2个llm：
+
++ generator：输入u，预估下一个item id（工业界数据集这个空间很大吧？不知道咋处理的，论文里好像没提），对长尾item有加权
++ discriminator：输入u+i，预测yes/no
+
+拿generator产出一堆数据，再拿discriminator过滤一下，保留高质量数据，加到训练样本里，然后训一个正常的i2i模型
+
 ## 快手的LSVCR
 
 [Enhancing Sequential Recommender with Large Language Models for Joint Video and Comment Recommendation](https://arxiv.org/pdf/2403.13574) Recsys25
