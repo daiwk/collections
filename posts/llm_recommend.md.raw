@@ -3340,6 +3340,33 @@ guided embedding：prompt里包含m个aspect，让模型给出每个aspect的打
 
 # LLM+推荐：Foundation/蒸馏/其他
 
+## Google的自进化推荐系统
+
+[Self-Evolving Recommendation System: End-To-End Autonomous Model Optimization With LLM Agents](https://arxiv.org/pdf/2602.10226)
+
+![](../assets/self-evolving-recsys.png)
+
+fast内层循环(offline agent)：输入当前排序模型配置和效果给llm，走think-code-verify循环，自己改代码（layer、优化器、loss、label等），然后在离线数据集上训练模型并重新改代码。有如下3类角色
+
++ Optimizer：使用工具compute_loss，迭代优化器、超参（bs/动量等），看不同配置下训出来模型的loss差异
++ Architecture：使用工具compute_loss，迭代网络结构
++ Reward：使用工具run_sql_query，自己分析各label和特征的分布，设计更好的label
+
+slow外层循环(online agent)：
+
++ offline agent产出的模型配置+人工设计的模型配置
++ 选择模型用于训练：过滤掉一些模型，例如编译有问题、模型太大但现有数据不够收敛的模型
++ 训练模型
++ 自动开在线实验并监控，当指标出问题时会自动停实验
++ 记录实验效果，可以给offline agent用
+
+
+![](../assets/self-evolving-recsys-prompt.png)
+
+![](../assets/self-evolving-recsys-modelsize.png)
+
+不同llm的效果差异（越小效果越好）：gemini pro比flash好，角色设置是有用的，对context进行裁剪效果会变差
+
 ## Meta的ExFM
 
 [GPT4规模大模型落地，Meta提ExFM框架：万亿参数基础大模型的工业级落地成为可能](https://mp.weixin.qq.com/s/Y9rlMxg4EMl_bzi9N_s7GA)
