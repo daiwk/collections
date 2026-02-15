@@ -26,7 +26,9 @@ llm训练时的teacher forcing机制：生成第i个token的输入：
 
 ## sft loss
 
-LM head：从hidden dim映射到vocab size
++ LM head：从hidden dim映射到vocab size
++ 正常是先过LM head，算出logit矩阵，然后每个位置对所有词表里的词算softmax得到p，再去算交叉熵（只有label那个字有log(p)），所以就是log(softmax(x))
++ prompt没有loss，只有response有loss，假设response长度为k，假设第i个位置对应的label是j，那交叉熵是$$-1/k\sum_{i=1}^{k} log(p_ij)$$
 
 
 # 一些常用的参数
