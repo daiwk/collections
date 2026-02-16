@@ -24,12 +24,29 @@ llm训练时的teacher forcing机制：生成第i个token的输入：
 
 ![](../assets/prefix-tuning-params.png)
 
-## sft loss
+## sft loss与logsoftmax
 
 + LM head：从hidden dim映射到vocab size
 + 正常是先过LM head，算出logit矩阵，然后每个位置对所有词表里的词算softmax得到p，再去算交叉熵（只有label那个字有log(p)），所以就是log(softmax(x))
 + prompt没有loss，只有response有loss，假设response长度为k，假设第i个位置对应的label是j，那交叉熵是$$-1/k\sum_{i=1}^{k} log(p_ij)$$
 
+对于response里的第i个词来说，词表大小为$$n$$，$$x_{max}=max(x_0,x_1,...,x_n)$$，下式第三行就是第二行分子分母同时乘$$e^{-x_{max}}$$
+
+XXX
+\begin{aligned}
+\operatorname{LogSoftmax}\left(x_i\right) & =\log \left(\operatorname{Softmax}\left(x_i\right)\right) \\
+& =\log \left(\mathrm{e}^{x_i} / \sum_{j=0}^n \mathrm{e}^{x_j}\right) \\
+& =\log \left(\mathrm{e}^{\left(x_i-x_{\text {max }}\right)} / \sum_{j=0}^n \mathrm{e}^{\left(x_j-x_{\text {max }}\right)}\right) \\
+& =\left(x_i-x_{\text {max }}\right)-\log \left(\sum_{j=0}^n \mathrm{e}^{\left(x_j-x_{\text {max }}\right)}\right)
+\end{aligned}
+XXX
+
+这个简化有2个好处：
+
++ 减少计算量：例如除法、少量对数
++ 数值稳定：上式是log-sum-exp技巧，减掉max可以避免溢出
+
+另外还有一个常用名词logprobs（log probabilities），即logsoftmax的结果，因为softmax是0到1，所以logprobs取值范围是负无穷到0
 
 # 一些常用的参数
 
