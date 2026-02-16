@@ -27,6 +27,7 @@ llm训练时的teacher forcing机制：生成第i个token的输入：
 ## sft loss与logsoftmax
 
 + LM head：从hidden dim映射到vocab size
++ 计算时label是shift得到的(左移一位，因为要预测next item)
 + 正常是先过LM head，算出logit矩阵，然后每个位置对所有词表里的词算softmax得到p，再去算交叉熵（只有label那个字有log(p)），所以就是log(softmax(x))
 + prompt没有loss，只有response有loss，假设response长度为k，假设第i个位置对应的label是j，那交叉熵是$$-1/k\sum_{i=1}^{k} log(p_ij)$$
 
@@ -55,6 +56,11 @@ sft阶段引入的新知识越多，幻觉发生率也越高
 模型主要通过预训练来获取知识，sft主要是用来教会模型如何更有效地利用这些知识。
 
 所以，新知识应该在预训练阶段或者基于预训练模型继续预训练（CPT），再用sft进行优化
+
+另外，sft选哪个版本的开源模型作为基础模型也有讲究：
+
++ 需要加一堆新知识进行深度微调时，选base版本，因为base版本未指令微调，更有通用性
++ 任务与现有指令任务类似（通用对话、开放域问答等），且指令数据不多，选指令微调版本（-instruct或者-chat）
 
 # 一些常用的参数
 
