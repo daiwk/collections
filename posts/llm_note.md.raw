@@ -68,3 +68,23 @@ sft阶段引入的新知识越多，幻觉发生率也越高
 + top-p：**控制长尾词的概率阈值**。top cummulative probability，是一个门槛，即从第一名往下数，累加后的概率大于p时，把后面的词扔掉，剩下的词再softmax，并去采样。调低会去掉长尾，输出稳定；调高会放低门槛，输出多样
 
 temperature和top-p虽然原理不同，但均是越大越多样，适用创作等场景；越小越稳定，适用于代码、数学
+
+# DPO
+
+DPO（direct preference optimization）是监督学习，不是强化学习，loss如下
+
+XXX
+\begin{aligned}
+& \mathcal{L}_{\mathrm{DPO}}\left(\pi_\theta ; \pi_{\mathrm{ref}}\right) \\
+& =-\mathbb{E}_{\left(x, y_{\mathrm{w}}, y_1\right) \sim \mathcal{D}}\left[\log \sigma\left(r\left(x, y_{\mathrm{w}}\right)-r\left(x, y_1\right)\right)\right] \\
+& =-\mathbb{E}_{\left(x, y_{\mathrm{w}}, y_1\right) \sim \mathcal{D}}[\log \sigma(\underbrace{\beta \log \frac{\pi_\theta\left(y_{\mathrm{w}} \mid x\right)}{\pi_{\text {ref }}\left(y_{\mathrm{w}} \mid x\right)}}_{\text {优质回答的隐式奖励}\uparrow }-\underbrace{\beta \log \frac{\pi_\theta\left(y_1 \mid x\right)}{\pi_{\text {ref }}\left(y_1 \mid x\right)}}_{\text {劣质回答的隐式奖励 } \downarrow})]
+\end{aligned}
+XXX
+
+其中，
+
++ $$r$$是策略模型和参考模型的比值，即一个隐式的奖励模型
++ 策略模型是复制的sft模型，参考模型一般也是复制sft模型，有些时候可以选一个更复杂的模型，但要注意两者的kl散度和训练数据分布不要差太多
+
+
+
