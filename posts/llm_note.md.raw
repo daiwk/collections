@@ -83,7 +83,7 @@ XXX
 
 其中，
 
-+ $$r$$是策略模型和参考模型的比值，即一个隐式的奖励模型
++ $$r$$是策略模型和参考模型的比值，即一个隐式的奖励模型，$$r_{\theta}(x,y)=\beta log \frac{\pi_{\theta}(y|x)}{\pi_{ref}(y|x)}$$
 + 策略模型是复制的sft模型，参考模型一般也是复制sft模型，有些时候可以选一个更复杂的模型，但要注意两者的kl散度和训练数据分布不要差太多
 
 ## DPO流程
@@ -108,3 +108,24 @@ XXX
 
 + $$\beta$$很小时，KL惩罚力度很小，策略模型有更多自由度去探索，策略模型和偏好数据分布更接近
 + $$\beta$$很大时，KL惩罚力度很大，策略模型始终要兼顾和参考模型的距离，策略模型和参考模型更接近
+
+## DPO的效果
+
+对无害性有很大提升，对基础能力基本无影响（MMLU等）
+
+## DPO的梯度
+
+XXX
+\nabla_\theta \mathcal{L}_{\mathrm{DPO}}\left(\pi_\theta ; \pi_{\mathrm{ref}}\right)=-\beta \mathbb{E}_{\left(x, y_{\mathrm{w}}, y_l\right) \sim \mathcal{D}}[\underbrace{\sigma\left(r_\theta\left(x, y_l\right)-r_\theta\left(x, y_{\mathrm{w}}\right)\right)}_{\text {动态系数 }}[\underbrace{\nabla_\theta \log \pi_\theta\left(y_{\mathrm{w}} \mid x\right)}_{\text {优质回答的概率 } \uparrow}-\underbrace{\nabla_\theta \log \pi_\theta\left(y_l \mid x\right)}_{\text {劣质回答的概率 } \downarrow}]]
+XXX
+
++ 增加优势回答出现的概率，降低劣势回答出现的概率
++ 动态系数：优势答案和劣势答案的隐式奖励差异（注意$$r_{\theta}(x,y)=\beta log \frac{\pi_{\theta}(y|x)}{\pi_{ref}(y|x)}$$），如下图：
+    + $$r_{\theta}(x,y_l)<r_{\theta}(x,y_w))$$时：隐式奖励模型能正确地给优质回答较高评分，图中左侧，说明已经学得比较好了，梯度比较小
+    + $$r_{\theta}(x,y_l)>r_{\theta}(x,y_w))$$时：隐式奖励模型不太行，图中右侧，要加强梯度
+
+![](../assets/dpo-grad.png)
+
+解释：
+
+![](../assets/dpo-dynamic-coeff.png)
