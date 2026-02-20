@@ -989,16 +989,25 @@ XXX
 
 将B200的MFU从17%提升到37% 
 
-Generalized Dot-Product Attention (GDPA)
-Hierarchical Seed Pooling(HSP)
-Sliding Window Attention
+Kunlun Transformer：
 
-Computation Skip (CompSkip)
-Event-level Personalization 
-
-![](../assets/kunlun.png)
++ Generalized Dot-Product Attention (GDPA)：Q是序列特征，KV是非序列特征
 
 ![](../assets/kunlun-pffn.png)
+
++ self-attn：序列内部的self-attn，看了下论文，应该这部分全是sliding window attn
+
+Kunlun interaction：
+
++ Weight Generation：输入非序列特征，生成GDPA要的权重
++ Hierarchical Seed Pooling(HSP)：将序列表示压缩得到序列summary，有点复杂。。用了PMA（interformer里的，类似perceiver）
++ Global Interaction：将序列summary和非序列特征一起过多expert的wukong(每个wukong就是一个Linear+FM)
+
+Computation Skip (CompSkip)：偶数层跳过self-attn，只算HSP；奇数层跳过HSP和PFFN，计算self-attn
+
+Event-level Personalization：点击序列比展现序列更重要，所以对应的序列长度、dim、HSP压缩的token数、window size、层数都更大
+
+看着scale的效果更好
 
 ![](../assets/kunlun-scale.png)
 
