@@ -983,6 +983,25 @@ XXX
 
 看着是跨地域的同步
 
+## Meta的Kunlun
+
+[Kunlun: Establishing Scaling Laws for Massive-Scale Recommendation Systems through Unified Architecture Design](https://arxiv.org/pdf/2602.10016)
+
+将B200的MFU从17%提升到37% 
+
+Generalized Dot-Product Attention (GDPA)
+Hierarchical Seed Pooling(HSP)
+Sliding Window Attention
+
+Computation Skip (CompSkip)
+Event-level Personalization 
+
+![](../assets/kunlun.png)
+
+![](../assets/kunlun-pffn.png)
+
+![](../assets/kunlun-scale.png)
+
 ## 美团的NLGR
 
 生成式重排
