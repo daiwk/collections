@@ -150,7 +150,7 @@ prompt设计原则：
 + 思维图：GoT，Graph of Thoughts，苏黎世联邦理工学院提出，能将模型生成的信息建模为任意图结构，其中信息单元（思维）作为顶点，边对应这些顶点间的依赖关系，能有效组合任意的信息单元
 + 自我一致性CoT：Self-consistency CoT，Google提出，先生成多样化的推理路径集，然后从多个路径中选出最一致的答案
 + Auto-CoT：自动构建CoT样本，先将问题聚类，再示例采样，每个类中选择一个具有代表性的问题，并用简单的Zero-shot CoT生成相应思维链
-+ 思维记忆：Memory of Thought，MoT，
++ 思维记忆：Memory of Thought，MoT，复旦提出，不用更新参数，预思考：在未标注数据集上思考并将思维保存为外部记忆；推理：回忆相关记忆以帮助推理并回答给定问题
 + XoT：Everything of Thoughts，
 
 # 一些常用的参数
