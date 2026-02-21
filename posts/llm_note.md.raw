@@ -191,4 +191,5 @@ prompt设计原则：
 + max_new_tokens：不包括prompt的总长度
 + repetition_penalty：大于1增加重复惩罚，减少重复token生成
 + length_penalty：beam类方法的长度惩罚，大于0时鼓励生成较长序列，反之鼓励较短序列
++ force_word_ids/bad_words_ids：必须生成的token id列表/不能生成的token id列表
 + output_logits/output_scores：输出logits/scores
