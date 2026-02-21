@@ -172,8 +172,11 @@ prompt设计原则：
 + diverse beam search：[Diverse Beam Search: Decoding Diverse Solutions from Neural Sequence Models](https://arxiv.org/pdf/1610.02424)，分成多个组（num_beam_groups），每个组内beam search，组间通过多样性惩罚降低生成结果的相似性
 + 受限beam search：[Guided Open Vocabulary Image Captioning with Constrained Beam Search](https://arxiv.org/pdf/1612.00576)，constraints参数指定限制条件，force_words_ids强制结果包含特定词/词组
 + temperature：**控制不同词的概率差距**。当调小时，x/T变大，然后经过exp会指数放大，这样高logit的会变得更巨大，词的差距会被拉大，所以模型的输出会更稳定，输出结果更确定；反之不同词的差距更小，输出更多样
-+ 多项式采样：multinomial sampling
-    + top-k：
-    + top-p：**控制长尾词的概率阈值**。top cummulative probability，是一个门槛，即从第一名往下数，累加后的概率大于p时，把后面的词扔掉，剩下的词再softmax，并去采样。调低会去掉长尾，输出稳定；调高会放低门槛，输出多样
++ 多项式采样：multinomial sampling，不是直接选概率最大的，而是按概率大小**随机采样**
+    + top-k：只在概率前k的词中进行采样
+    + top-p：累加概率大于p后截断，只对这些token采样，**控制长尾词的概率阈值**。top cummulative probability，是一个门槛，即从第一名往下数，累加后的概率大于p时，把后面的词扔掉，剩下的词再softmax，并去采样。调低会去掉长尾，输出稳定；调高会放低门槛，输出多样
 
-temperature和top-p虽然原理不同，但均是越大越多样，适用创作等场景；越小越稳定，适用于代码、数学
+==> temperature和top-p虽然原理不同，但均是越大越多样，适用创作等场景；越小越稳定，适用于代码、数学
+
+其他解码策略：
+
