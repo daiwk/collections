@@ -193,3 +193,19 @@ prompt设计原则：
 + length_penalty：beam类方法的长度惩罚，大于0时鼓励生成较长序列，反之鼓励较短序列
 + force_word_ids/bad_words_ids：必须生成的token id列表/不能生成的token id列表
 + output_logits/output_scores：输出logits/scores
+
+## RAG
+
+主要的点在于如何对文档进行分片（chunk），然后就是正常的向量召回流程了。例如Anthoripic的[Contextual RAG](https://www.anthropic.com/news/contextual-retrieval)会给每个chunk加一个上下文，把这段context放到chunk前面，然后再去做embedding。类似如下prompt：
+
+```python
+<document>…全文…</document>
+
+<chunk>…分片…</chunk>
+
+指令：“给一个简短、精炼的 context，用于把这个 chunk 放到整篇文档语境里，提升检索；只输出这段 context，不要输出其它内容。”
+```
+
+## 工具调用
+
+详见：[https://www.daiwk.net/5.llm_agentic#gong-ju-diao-yong](https://www.daiwk.net/5.llm_agentic#gong-ju-diao-yong)
