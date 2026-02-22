@@ -203,9 +203,13 @@ prompt设计原则：
 
 <chunk>…分片…</chunk>
 
-指令：“给一个简短、精炼的 context，用于把这个 chunk 放到整篇文档语境里，提升检索；只输出这段 context，不要输出其它内容。”
+指令：“给一个简短、精炼的 context，用于把这个 chunk 放到整篇文档语境里，提升检索；
+只输出这段 context，不要输出其它内容。”
 ```
 
 ## 工具调用
 
 详见：[https://www.daiwk.net/5.llm_agentic#gong-ju-diao-yong](https://www.daiwk.net/5.llm_agentic#gong-ju-diao-yong)
+
+# 强化学习
+
