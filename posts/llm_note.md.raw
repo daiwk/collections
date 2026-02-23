@@ -213,13 +213,13 @@ prompt设计原则：
 
 # 强化学习核心知识
 
-一些概念
+## 一些概念
 
 + 马尔可夫链(MC)：下一状态只和当前状态有关，和之前时刻的状态无关
 + 马尔可夫决策过程（MDP）：马尔可夫链的基础上引入动作和奖励，4元组$$(S,A,P,R)$$
 + 部分可观测马尔可夫决策过程（POMDP）：智能体无法观测到环境的完整状态，只能看到一部分，7元组$$(S,A,T,R,\Omega,O,\gamma)$$，$$\Omega$$是观测集，智能体能观测到的所有可能结果，$$\gamma$$是折扣因子，$$T$$是转移概率，当前状态和动作下，转移到下一状态的概率
 
-常见探索利用方法
+## 常见探索利用方法
 
 + $$\epsilon$$ -greedy：以$$\epsilon$$的概率随机选一个动作，$$1-\epsilon$$的概率选择Q最大的动作；训练初期可以用大的$$\epsilon$$鼓励探索，后期减小来鼓励利用
 + 上置信界（Upper Confidence Bound, UCB）：计算每个动作的置信度上界值，将预期回报和不确定性结合，选最高上界的动作
@@ -229,7 +229,7 @@ prompt设计原则：
 + 玻尔兹曼探索（Boltzmann Exploration）：引入温度系数，将动作的估计价值转化为概率分布，以概率的方式选择动作。温度较高时，各动作的概率差异较小，更倾向于探索
 + 噪声注入：OpenAI的[Parameter Space Noise for Exploration](https://arxiv.org/pdf/1706.01905)，在参数空间注入噪声，在奖励信号稀疏的任务中效果很好
 
-同/异策略、在/离线强化学习：
+## 同/异策略、在/离线强化学习：
 
 ![](../assets/on-offpolicy-rl.png)
 
@@ -241,12 +241,12 @@ prompt设计原则：
 + 在线强化学习：训练时策略持续和环境交互并收集经验，动态生成训练数据，目标策略也不断进化
 + 离线强化学习：又叫batch RL，或者fully off-policy RL，训练时智能体完全不和环境交互，仅依赖预先收集的数据。训练结束之后再将策略整体部署到线上环境中
 
-model-based/model-free：
+## model-based/model-free：
 
 + model-based：利用环境模型进行规划和决策，例如Dyna-Q、MCTS（用于AlphaGo等）
 + model-free：直接与环境交互，学习策略或者价值函数，例如基于价值(Q-learning、DQN、SARSA)、基于策略（REINFORCE、PG、GRPO）、Actor-Critic（DDPG、PPO、A3C）
 
-奖励、回报、价值函数
+## 奖励、回报、价值函数
 
 + 奖励r（reward）：t时刻执行动作后，环境给的的实时奖励，**在Sutton的教材**里记为$$R_{t+1}$$或者$$r_{t+1}$$（以下以这个为准），一般大写是随机变量，小写是观测到的具体值，另外，在别的地方也会记成$$r_t$$
 + 奖励塑形（reward shaping）：设计复杂的奖励函数以表示具体任务目标，例如短视频推荐就可以设计一个多目标融合公式
@@ -254,7 +254,17 @@ model-based/model-free：
 + 价值函数：
     + $$Q_{\pi}(s,a)$$：动作价值函数，在状态s下，采取动作a，获得的期望回报
     + $$V_{\pi}(s)$$：状态价值函数，在状态s下，采取所有可能动作获得的期望回报
-+ 贝尔曼方程
+
+## 贝尔曼方程
+
+用动态规划解决优化和决策问题。对于给定策略$$\pi$$，
+
++ 状态价值函数的贝尔曼方程为$$V_\pi(s)=\sum_a \pi(a \mid s) \sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma V_\pi\left(s^{\prime}\right)\right]$$
++ 动作价值函数的贝尔曼方程为$$Q_\pi(s, a)=\sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma \sum_{a^{\prime}} \pi\left(a^{\prime} \mid s^{\prime}\right) Q_\pi\left(s^{\prime}, a^{\prime}\right)\right]$$
++ 最优状态价值函数的贝尔曼方程为$$V_*(s)=\max _a \sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma V_*\left(s^{\prime}\right)\right]$$
++ 最优动作价值函数的贝尔曼方程为$$Q_*(s, a)=\sum_{s^{\prime}, r} p\left(s^{\prime}, r \mid s, a\right)\left[r+\gamma \max _{a^{\prime}} Q_*\left(s^{\prime}, a^{\prime}\right)\right]$$
+
+## 蒙特卡洛方法
 
 p.s.回头看一下reinforce recall：[Off-policy Learning in Two-stage Recommender Systems](https://www.researchgate.net/publication/341128860_Off-policy_Learning_in_Two-stage_Recommender_Systems)
 
