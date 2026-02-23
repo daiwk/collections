@@ -4388,10 +4388,11 @@ Prover-V2采用GRPO，通过为每个定理提示采样一组候选证明并根�
 
 ## DeepSeek-OCR-2
 
+[刚刚，DeepSeek又探索新架构了，开源OCR 2](https://mp.weixin.qq.com/s/MgO1z-8EPq7e-Jt1h1DzYw)
+
 [https://github.com/deepseek-ai/DeepSeek-OCR-2](https://github.com/deepseek-ai/DeepSeek-OCR-2)
 
 将原本基于CLIP的编码器替换为轻量级语言模型（Qwen2-500M），并引入了具有因果注意力机制的「因果流查询」。打破了传统模型必须按从左到右、从上到下的栅格顺序处理图像的限制，赋予了编码器根据图像语义动态重排视觉 Token 的能力。通过这种两级级联的 1D 因果推理结构（编码器重排与译码器解析），模型能够更精准地还原复杂文档（如带表格、公式和多栏布局）的自然阅读逻辑。
-
 
 # Qwen系列
 
@@ -4881,7 +4882,16 @@ MSRoPE如图所示，即图像的位置编码完后，沿对角线把文本的�
 
 (提了个issue问MTP的具体实现逻辑：[https://github.com/QwenLM/Qwen3-Omni/discussions/15](https://github.com/QwenLM/Qwen3-Omni/discussions/15))
 
+## Qwen3.5
 
+![](../assets/qwen3.5-rl.png)
+
+1. Qwen3.5-397B-A17B 与参数量超过1T的Qwen3-Max-Base表现相当
+2. 结构用了qwen3-next的gated deltanet+gated atten，并且moe稀疏度变大了
+3. 多模态的训练策略好像也有一些改进
+4. 搞了一个异步rl框架，看着和verl、roll类似
+	
+和qwen3-next一样是三层linear加一层full，用了mtp，另外加了img相关的，vocab size比之前qwen3大了不少
 
 # Kimi系列
 
