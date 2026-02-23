@@ -237,6 +237,7 @@ prompt设计原则：
 + 目标策略(target policy)：最终希望得到的策略，用来最大化长期回报。
 + 同策略：行为和目标策略是同一个策略，例如policy gradient和SARSA，因为通常依赖最新生成的经验来训练并更新策略，所以一般不能用replay buffer
 + 异策略：两个策略是不同版本或者不同类型，Q-learning/DQN都是，行为策略是$$\epsilon$$ -greedy，目标策略是最终要学习的，需要借助replay buffer
++ replay buffer：一般存$$(s_t,a_t,r_t,s_{t+1})$$四元组(非Sutton教材写法)
 + 在线强化学习：训练时策略持续和环境交互并收集经验，动态生成训练数据，目标策略也不断进化
 + 离线强化学习：又叫batch RL，或者fully off-policy RL，训练时智能体完全不和环境交互，仅依赖预先收集的数据。训练结束之后再将策略整体部署到线上环境中
 
@@ -244,4 +245,16 @@ model-based/model-free：
 
 + model-based：利用环境模型进行规划和决策，例如Dyna-Q、MCTS（用于AlphaGo等）
 + model-free：直接与环境交互，学习策略或者价值函数，例如基于价值(Q-learning、DQN、SARSA)、基于策略（REINFORCE、PG、GRPO）、Actor-Critic（DDPG、PPO、A3C）
+
+奖励、回报、价值函数
+
++ 奖励r（reward）：t时刻执行动作后，环境给的的实时奖励，**在Sutton的教材**里记为$$R_{t+1}$$或者$$r_{t+1}$$（以下以这个为准），一般大写是随机变量，小写是观测到的具体值，另外，在别的地方也会记成$$r_t$$
++ 奖励塑形（reward shaping）：设计复杂的奖励函数以表示具体任务目标，例如短视频推荐就可以设计一个多目标融合公式
++ 回报G（gain）：到未来的累计奖励，可以加折扣，$$G_t=R_{t+1}+\gamma G_{t+1}$$
++ 价值函数：智能体在特定状态下，或者采取特定动作获得的期望回报
+
+p.s.回头看一下reinforce recall：[Off-policy Learning in Two-stage Recommender Systems](https://www.researchgate.net/publication/341128860_Off-policy_Learning_in_Two-stage_Recommender_Systems)
+
+1. 当reward是one-step的时候，等价于监督学习下的policy gradient；
+2. 当reward是multi-step的时候（例如从列表页点击视频，进入落地页后的时长叠加），等价于TD(1)的强化学习
 
