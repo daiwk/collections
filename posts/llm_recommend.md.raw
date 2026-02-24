@@ -1015,7 +1015,19 @@ Event-level Personalization：点击序列比展现序列更重要，所以对�
 
 [Bending the Scaling Law Curve in Large-Scale Recommendation Systems](https://arxiv.org/pdf/2602.16986)
 
+![](../assets/ultra-hstu.png)
 
++ HSTU里item和action加起来成为一个token，而不像之前是2个，这样可以缩短一半的序列长度
++ 金字塔式堆叠，参考tt电商的onetrans([Onetrans: Unified feature interaction and sequence modeling with one transformer in industrial recommender](https://arxiv.org/pdf/2510.26104))，上层把早期的行为扔掉只对最近的算attn
++ MoT（Mixture of Transducers）：不同序列过不同的HSTU，然后再merge
++ 序列是按由近及远组织的，用了如下的semi-local attn，global window是K2，local window是K1
+
+![](../assets/semi-local-attn.png)
+
++ 还做了bf16/fp8的混精度算子融合，还适配了AMD卡
+
+![](../assets/fuse-mixed-ultra-hstu.png)
+ 
 
 ## 美团的NLGR
 
