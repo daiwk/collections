@@ -303,7 +303,7 @@ XXX
 V\left(s_t\right) \leftarrow V\left(s_t\right)+\alpha\left[G_t^\lambda-V\left(s_t\right)\right]
 XXX
 
-其中，$G_t^\lambda$$是在时间步$$t$$的$$\lambda$$回报，即综合考虑多个步数的回报，以$$\lambda$$为权重的加权和，计算公式如下：
+其中，$$G_t^\lambda$$是在时间步$$t$$的$$\lambda$$回报，即综合考虑多个步数的回报，以$$\lambda$$为权重的加权和，计算公式如下：
 
 XXX
 G_t^\lambda=\underbrace{(1-\lambda)_{n=1}^{T-t-1} \lambda^{n-1} G_{t: t+n}}_{\text {侧重于 } \mathrm{TD}}+\underbrace{\lambda^{T-t-1} G_t}_{\text {侧重于 } \mathrm{MC}}
