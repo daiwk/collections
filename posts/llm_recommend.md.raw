@@ -4478,7 +4478,18 @@ doc侧用完整LLM，query侧（假设query有n个token）做了如下精简：
 
 和meta在2023年的user-centric ranking（[Breaking the Curse of Quality Saturation with User-Centric Ranking](https://arxiv.org/pdf/2305.15333)）没啥关系
 
+## Google的熟悉度消偏
 
+[Learning to Alleviate Familiarity Bias in Video Recommendation](https://arxiv.org/pdf/2602.07987)
+
+familiarity bias（熟悉度偏置）：用户因为本来就熟悉某些内容/频道/创作者，更容易给高反馈，模型再学到这种反馈后，就会继续把这些“老熟人”推得更猛，结果就是推荐越来越重复，新内容和新作者更难被看到。
+
+挖掘一些熟悉度特征，然后用如下2种方式预估bias：
+
++ 离散/低维特征：把熟悉度特征分桶，比如“该频道历史看过0次、1–2次、3–8次……”之类，然后对每个bucket统计一个经验均值，作为校正因子
++ 连续/高维特征：用一个很小的神经网络去预测原始精排分。
+
+生效方式其实很简单，就是加了个消偏，精排分除以bias预估值。
 
 ## Meta的MTMH
 
