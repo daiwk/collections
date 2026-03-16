@@ -4367,13 +4367,53 @@ BlockRank通过以下方式改进LLM的注意力操作：
 
 [Semantic Search At LinkedIn](https://arxiv.org/abs/2602.07309)
 
+### 整体架构
+
 ![](../assets/slm-ranking.png)
 
-1. LLM as Relevance Judge: 使用一个强大的 LLM（Oracle）来定义和评估相关性策略，并为海量查询-文档对生成高质量的相关性标注。
-2. Multi-Teacher Distillation: 将多个教师模型（一个专注于相关性的LLM，另一个专注于用户参与度预测的模型，都是1.7B）的知识，通过多任务学习蒸馏到一个统一的、更小的“学生”模型（一个SLM，Small Language Model，0.6B）中。这个学生模型最终被部署到线上，用于对召回的候选进行重排 (rerank)。
-3. 模型与基础设施协同设计: 为了让 SLM 能够在线上以极高吞吐量运行，团队进行了一系列软硬件协同优化，包括结构化剪枝、离线上下文摘要压缩、文本与Embedding混合交互，以及一个专门为打分优化的、仅执行Prefill的推理栈。在固定的延迟约束下，将排序服务的吞吐量提升了 75倍以上，同时保持了接近教师模型的NDCG性能。
+prompt：prefix+context(query+用户特征)+document+suffix
+
+相关性训练：用oracle（8B LLM）来定义和评估相关性策略，并标注出高质量数据集。训一个SLM(Small Language Model，0.6B)来预估oracle的打分
+
++ domain reasoning蒸馏：用forward/reverse KL来蒸馏teacher的reasoning文本和打分
++ soft-label微调：将oracle的打分映射到$$[0,1]$$，再训一个2分类的yes/no概率。
++ ranking loss：在list-wise数据上sft，每个query包括top-k的EBR（emb-based检索，即召回候选）文档和k个随机文档
++ chat-template inference interface：chat-template里强调这是一个二分类相关性问题，包括query和紧凑的候选（title/公司/职级等），推理时取第一个yes/no的logit来用
+
+按这个训练过程训了2个相关性模型：
+
++ 拿oracle的打分先训一个1.7B的teacher
++ 再训一个0.6B的student，只学teacher打分，不学oracle
 
 ![](../assets/slm-ranking2.png)
+
+同样地，还拿来训了一个用户engagement的teacher，多分类（click、apply、dismiss、long-dwell、connect、follow、message等），发现人肉拍权重对权重大的task是有收益的
+
+上面2个teacher一起，来蒸馏出SLM
+
++ 先用一个相关性slm热启，再让它去学所有techer，主要学engagement目标，对相关性加一个小的权重
++ 叠加特征工程有进一步提升
+
+![](../assets/slm-ranking-ablation.png)
+
+还做了loss mask，即一些很sparse的正例很容易被淹没，因此对于每个正例，只保留它所在那些query的样本来做负例，如图
+
+![](../assets/slm-ranking-loss-mask.png)
+
+还加了校准，即（[LiRank: Industrial Large Scale Ranking Models at LinkedIn](https://arxiv.org/pdf/2402.06859)）里的Isotonic Calibration Layer（保序回归）
+
+特征工程：
+
++ summarization：参考[Rec-R1: Bridging Generative Large Language Models and User-Centric Recommendation Systems via Reinforcement Learning](https://arxiv.org/pdf/2503.24289)进行了RL，1.7B的actor，engagement teacher当成reward model。然后拿这个来产出用户profile的summary
++ 数值型特征：一些二值型特征和历史ctr这种，另外，数值型特征只保留小数点最后2位也没有损失
+
+### 语义召回
+
+从1.3B候选里选1000条，用fine-tuned embedding models和in-GPU retrieval-asranking (RAR) distance models来对全库同时优化相关性和engagement
+
+### 架构优化
+
+还进行了一系列软硬件协同优化，包括结构化剪枝、离线上下文摘要压缩、文本与Embedding混合交互，以及一个专门为打分优化的、仅执行Prefill的推理栈。在固定的延迟约束下，将排序服务的吞吐量提升了75倍以上，同时保持了接近教师模型的NDCG性能。
 
 
 ## 百度的Agent4Ranking
