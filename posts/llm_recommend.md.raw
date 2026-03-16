@@ -4409,7 +4409,14 @@ prompt：prefix+context(query+用户特征)+document+suffix
 
 ### 语义召回
 
-从1.3B候选里选1000条，用fine-tuned embedding models和in-GPU retrieval-asranking (RAR) distance models来对全库同时优化相关性和engagement
+架构参考[LiNR: Model Based Neural Retrieval on GPUs at LinkedIn](https://arxiv.org/abs/2407.13218)
+
+从1.3B候选里选1000条，用fine-tuned embedding models和in-GPU retrieval-asranking (RAR) distance models来对全库同时优化相关性和engagement，双塔：
+
++ infonce：用相关性label构造正负例
++ 还把多个个性化特征(公式里的f)加权，直接加到q,d的cosine上：$$S(q, d)=w_0\left\langle e_q, e_d\right\rangle+\sum_{i=1}^n w_i f_i(q, d),$$，然后这个score同时学相关性label和engagement label：$$\mathcal{L}_{\mathrm{RAR}}=\lambda \mathcal{L}_{\mathrm{BCE}}\left(S, L_R\right)+(1-\lambda) \mathcal{L}_{\mathrm{BCE}}\left(S, L_E\right)$$
+
+serving：GPU加速的exhaustive retrieval stack（暴力全库计算），先做了一些属性过滤、然后压缩向量维度
 
 ### 架构优化
 
