@@ -4614,6 +4614,38 @@ serving：2个head分别建索引，在线同一个trigger分别从这2个索引
 
 另外看图里是这两个目标加权得到输出，去和一个ad conversion label算loss，这个label感觉应该是session内是否购买吧
 
+## Meta的MFLI
+
+[Rethinking ANN-based Retrieval: Multifaceted Learnable Index for Large-scale Recommendation System](https://arxiv.org/pdf/2602.16124)
+
+![](../assets/mfli1.png)
+
+LI（learnable index）就是在训练的时候建好索引，参考当年的tdm
+
+![](../assets/mfli.png)
+
+训练：
+
++ Trigger items：用户历史UIH（user interaction history）里的触发item，经过DNN得到trigger embed，候选item也过共享的DNN得到emb
++ MF-RQ：多个facet的RQ，其实就是F个角度，每个角度有一个L级码本，最终每个item emb能量化成F个index
++ 训练完后产出item2index：每个item对应F个tuple，每个tuple里有L级的sid，对于这一个tuple来讲，可以用如下类似N进制的方法写成一个整数(unified index)，所以每个item最终就能对应F个数；
+
+XXX
+c^f=\sum_1^{L-1} c_l^f *\left(\Pi_{k=1}^{L-l} N_k\right)+c_L^f,
+XXX
+
+serving：
+
++ index lookup：trigger直接查索引得到对应的index
++ index selection：根据一些规则选top K个index
++ item lookup：每个unified index也能对应一堆item，即图中的reverted map(有全量和增量的逻辑)
++ per-index rerank：每个index取top N的item，再merge
+
+![](../assets/mfli-rebalancing.png)
+
+![](../assets/mfli-index-structure.png)
+
+
 ## 美团的NGA
 
 [NGA: Non-autoregressive Generative Auction with Global Externalities for Advertising Systems](https://arxiv.org/pdf/2506.05685)
