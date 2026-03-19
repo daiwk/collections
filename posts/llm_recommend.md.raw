@@ -1139,9 +1139,18 @@ seq2->seq1->target3->rt2->target2->rt1->target1
 
 ![](../assets/mtfm.png)
 
-1. 异构令牌化 (Heterogeneous Tokenization): MTFM不再强制要求跨场景的输入特征对齐，而是将来自不同领域（如外卖、团购、酒旅等）的数据抽象成统一的异构令牌序列。这种设计使得模型可以无缝地处理不同场景下的迥异特征，保证了框架的可扩展性。
-2. 混合目标注意力 (Hybrid Target Attention, HTA): 为了在处理长序列时平衡建模能力和计算效率，引入了HTA机制。巧妙地结合了稀疏和密集注意力：在少数关键层使用全注意力（Full Attention）来捕获全局依赖，而在大多数层使用目标注意力（Target Attention），仅更新与最终预测任务相关的T-Tokens。结合分组查询注意力（Grouped-Query Attention, GQA），HTA 在不牺牲模型性能的前提下，显著降低了内存占用和计算复杂度，实现了高效率。
-3. 用户级样本聚合与系统协同设计: 在数据层面，MTFM聚合一个用户在多个场景下的行为，形成更长的序列，有效提升了训练吞吐量。在系统层面，通过算子融合、消除 CPU-GPU阻塞等优化，进一步提升了训练和推理效率。这种模型与系统的协同设计，保证了其可扩展性能够真正在工业规模上落地。
+![](../assets/mtfm-mask.png)
+
+整体看和MTGR很像，H是历史行为序列，R是实时序列，T是target token
+
++ 上面的3种token都包括多场景的序列，直接按顺序concat起来，采用图中的mask方式（和MTGR思想类似）
++ attention部分有2层，都用的GQA，另外还用了GLN（group layer norm），H、R、T分到不同的group里去
+    + 第一层是full attn，即H、R、T一起做self-attn；
+    + 第二层是target attn，即H和R作为K/V，T作为Q，算attn
+
+整体比较好懂，group layer norm感觉可以参考下
+
+但感觉这种merge序列的方式，如果要加场景，感觉整个模型都得重训，有点不太像一个真正的foundation model
 
 ## 阿里的HeteroRec
 
