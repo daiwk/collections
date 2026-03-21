@@ -1488,6 +1488,32 @@ Token-wise Evaluator）的预估分，HTE通过如下方法训练
 
 还搞了Anticipatory Request Rehearsal (ARR)，来避免模型过拟合到历史数据上，即自己构造数据去请求模型得到样本，U-token复用，O-token拿用户最近的一个场景/体裁，E-token实时请求最新的，不同活跃度用户的构造频率不同
 
+
+## 腾讯的S-GRec
+
+[S-GRec: Personalized Semantic-Aware Generative Recommendation with Asymmetric Advantage](https://arxiv.org/pdf/2602.10606)
+
+![](../assets/s-grec.png)
+
+在GR里加了一个LLM as Judge产出语义reward，加上业务指标的reward一起RL
+
+![](../assets/s-grec-frame.png)
+
+PSJ(Personalized Semantic Judge)：产出semantic reward
+
++ part a：Aspect-level Semantic Scoring：给定u+ad，产出4个分数（用户profile相关性、未来兴趣相关性、新颖性、请求时上下文相关性）。标注流程包括线上样本->llm标注->人工检查->prompt修正。训练先SFT，再GRPO
++ part b：User-conditional Preference Aggregation：part a里有4个分数，每个用户有4个权重，融合成一个分。构造pairwise数据，同用户不同ad的偏好，然后用group-wise grpo去学这个权重
+
+![](../assets/s-grec-rl.png)
+
++ 左边是正常的GRPO，会把2个reward加起来，一起算mean和std，再去算advantage
++ 右边是A2PO（Asymmetric Advantage Policy Optimization），2个reward各自算advantage，然后按下式融合（商业价值为主，只有当2个reward正负号一致时semantic reward才生效）
+
+![](../assets/s-grec-advantage.png)
+
+注意，这里的GR是用的minionerec([MiniOneRec: An Open-Source Framework for Scaling Generative Recommendation](https://arxiv.org/pdf/2510.24431))，是个sid+LLM的生成式框架
+
+
 ## 腾讯的OneRanker
 
 [OneRanker: Unified Generation and Ranking with One Model in Industrial Advertising Recommendation](https://arxiv.org/pdf/2603.02999)
