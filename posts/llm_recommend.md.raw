@@ -2401,6 +2401,56 @@ def run():
 
 [推荐算法(2025.6.3)：Spotify的LLM应用，效果明显](https://mp.weixin.qq.com/s/2SJ5IdXa5Hmygx8VxGlDcQ)
 
+## Spotify的GLIDE
+
+[Deploying Semantic ID-based Generative Retrieval for Large-Scale Podcast Discovery at Spotify](https://arxiv.org/pdf/2603.17540)
+
+![](../assets/glide.png)
+
++ semantic grounding：双向翻译任务：SID -> 文本描述和文本描述 -> SID。训练上他们分两阶段：先冻住trans backbone，只训新增SID embedding；再冻结所有参数（包括emb），用LoRA去适配backbone。这个设计是为了尽量保住原始语言能力，避免灾难性遗忘。
++ instruction tuning：用户的协同emb通过soft token的方式引入，加上近期sid和一些文本特征构成prompt，再加上一个control token（这次是生成熟悉的内容，还是生成探索性的，这个感觉可以搞2个special token）来多任务sft
++ 数据处理：对exploration-driven placement的样本加权，对超热门episode(item)做popularity capping
++ serving：加了一路召回，没有细讲，看着有一些cache，应该是近线
+
+![](../assets/glide-prompt.png)
+
+soft token参考[Embedding-to-Prefix: Parameter-Efficient Personalization for Pre-Trained Large Language](https://arxiv.org/pdf/2505.17051)，这篇是把emb过了mlp后，拼在最前面，而现在这篇是拼在中间，实现方式(gpt教的)：
+
+```python
+''' input_ids: [B, T]; user_emb:  [B, D_user]'''
+
+token_emb = lm.get_input_embeddings()(input_ids)    # [B, T, H]
+soft_user = proj_mlp(user_emb).unsqueeze(1)         # [B, 1, H]
+
+'''假设 system instruction 长度固定为 sys_len'''
+inputs_embeds = torch.cat(
+    [
+        token_emb[:, :sys_len, :],
+        soft_user,
+        token_emb[:, sys_len:, :]
+    ],
+    dim=1
+)
+
+soft_mask = torch.ones(input_ids.size(0), 1, device=input_ids.device, dtype=torch.long)
+attention_mask = torch.cat(
+    [
+        attention_mask[:, :sys_len],
+        soft_mask,
+        attention_mask[:, sys_len:]
+    ],
+    dim=1
+)
+
+outputs = lm(
+    inputs_embeds=inputs_embeds,
+    attention_mask=attention_mask,
+    labels=labels_shifted_if_needed
+)
+```
+
+
+
 ## 华为的KAR
 
 [Towards Open-World Recommendation with Knowledge Augmentation from Large Language Models](https://arxiv.org/pdf/2306.10933)
