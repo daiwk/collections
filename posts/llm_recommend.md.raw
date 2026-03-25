@@ -1551,6 +1551,25 @@ GPR的延续，模型包括召回（step1+2）和排序（step3）部分，
 
 cikm2025 best applied paper
 
+## 网易云音乐的Climber-Pilot
+
+[Climber-Pilot: A Non-Myopic Generative Recommendation Model Towards Better Instruction-Following](https://arxiv.org/pdf/2602.13581)
+
+![](../assets/climber-pilot.png)
+
+预训练：
+
++ TAMIP（TimeAware Multi-Item Prediction）：如右下角，就是一个mtp，自回归的，每个item都会预测一下，即item 6会预测item 7，也会预测item 8
++ time-aware masking：时间差小于xx的mask掉（让模型看不到非常近的item，防止追打）
+
+SFT：加了个condition instruct(流行、古典、R&B等)，如右上角，只拿最后一个位置去预估，还会输入该位置的condition，同样是MTP
+
+![](../assets/climber-pilot-serving.png)
+
+serving如图，用户序列会存好kv cache，然后根据多个condition，生成多个的预估emb，再去分别ann召回再merge
+
+3层trans,emb dim=128，时间差设置为15min，MTP只预测2个分支
+
 ## Yandex的ARGUS
 
 [Scaling Recommender Transformers to One Billion Parameters](https://www.arxiv.org/pdf/2507.15994)
