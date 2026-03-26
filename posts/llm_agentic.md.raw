@@ -816,3 +816,5 @@ openclaw agents bind --agent super-pm --bind feishu
 ```
 
 然后人肉去json里配一下accountId
+
+用npx vercel可以部署到公网上
