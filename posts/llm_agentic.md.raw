@@ -787,4 +787,32 @@ Universal Deep Research，输入有strategy和prompt
 [揭秘GLM-5技术底牌：「异步强化学习框架Slime」成终极杀招](https://mp.weixin.qq.com/s/Qmg6iOYo2BXB9qFf4TOpsg?scene=1)
 
 
+# Harness engineering
 
+
+
+Vibe Coding就是聊天式的，只是抛出一个很粗略的想法，ai写出来的往往是个demo，看起来功能都有，但细节会有很多问题
+
+spec coding：是openai的人员在[演讲](https://www.youtube.com/watch?v=8rABwKRsec4)里提出的，不是和大模型直接聊天，而是写markdown文档。分类方式可以参考[Understanding Spec-Driven-Development: Kiro, spec-kit, and Tessl](https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html)
+
++ Spec-as-source：只维护spec，迭代需求时只改spec，不接触代码
++ Spec-anchored：同时维护Spec和代码，spec保留在代码库中，会维护和迭代
++ Spec-first：只维护代码，spec仅用于单次代码生成，不放进代码库
+
+![](../assets/spec-coding.png)
+
+harness engineering：[Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)，[中文版](https://openai.com/zh-Hans-CN/index/harness-engineering/)，openai的项目，所有代码（前已超过100万行）都用codex编写，参与项目的的工程师不允许写一行代码，只能用测试用例、lint等方式对AI进行约束，最终实现效率大幅提升，AI能够最长连续执行6个小时的长程任务。
+
+[https://github.com/openai/symphony](https://github.com/openai/symphony)
+
+# openclaw项目管理
+
+[https://github.com/daiwk/agent-teamwork](https://github.com/daiwk/agent-teamwork)
+
+```shell
+openclaw agents add super-pm --workspace /xxx/xxxx/agent-teamwork
+
+openclaw agents bind --agent super-pm --bind feishu
+```
+
+然后人肉去json里配一下accountId
