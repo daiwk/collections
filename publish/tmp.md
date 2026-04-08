@@ -1,30 +1,56 @@
 
-[Kimi 发布并开源 K2.5 模型，带来全新视觉理解、代码和 Agent 集群能力](https://mp.weixin.qq.com/s/Bhn43P1GnGXsvsh5MnN47Q)
+[Semantic IDs for Recommender Systems at Snapchat: Use Cases, Technical Challenges, and Design Choices](https://arxiv.org/pdf/2604.03949)
 
-原生的多模态架构设计，同时支持视觉与文本输入、思考与非思考模式、对话与Agent任务。
+# RQ-VAE回顾
 
-首次引入了「Agent 集群」(Agent Swarm)能力，经过并行智能体强化学习 (Parallel-Agent Reinforcement Learning, PARL) 训练，能够自主管理多达100个子智能体的智能体群，执行多达1500个协调步骤的并行工作流程，而无需预定义角色或手工设计的工作流程。
-
-PARL使用可训练的orchestrator（编排/协调器）agent将任务分解为可并行化的子任务，每个子任务由动态实例化的frozen subagents执行。与顺序执行agents相比，并发运行这些子任务可显著降低端到端延迟。
-
-![](../assets/orchestrator-parl.png)
-
-由于独立运行的子智能体提供的反馈存在延迟、稀疏和非平稳性，训练一个可靠的并行orchestrator极具挑战性。常见的故障模式是串行崩溃，即orchestrator尽管具备并行能力，却默认执行单智能体任务。为了解决这个问题，PARL采用了分阶段奖励塑造(staged reward shaping)，在训练初期鼓励并行性，并逐步将重点转移到任务成功上。reward如下，
+encoder把输入的d维向量映射成n维，有L级code，每一级有K个取值，第0个codebook的第0个sid code就是
 
 $$
-R_t=\lambda_{\text {aux }}(e) \cdot \underbrace{r_{\text {parallel }}}_{\text {instantiation reward }}+\left(1-\lambda_{\text {aux }}(e)\right) \cdot \underbrace{(\mathbb{I}[\text { success }] \cdot Q(\tau))}_{\text {task-level outcome }}
+\operatorname{sid}_0=\underset{c \in\{0,1, \ldots, K-1\}}{\arg \max }\left\|\mathbf{h}_i^0 \cdot \mathbf{C}_0[c]\right\|_{\mathrm{F}}, \text { with } \mathbf{h}_i^0=\operatorname{Enc}\left(\phi\left(x_i\right)\right)
 $$
 
-+ $\lambda_{\text {aux }}(e)$在训练中从0.1退火到0
-+ 早期，辅助奖励$r_{\text {parallel }}$激励subagents的实例化和并发执行，从而促进对并行调度空间的探索
-+ 随着训练的进行，优化方向转向端到端任务质量$Q(\tau)$，防止出现名义上启用并行但实际上却不启用并行的退化解决方案
-
-为了进一步促使并行策略的出现，我们引入了一个**计算瓶颈**，使得顺序执行变得不切实际。即不计算总步数，而是使用Critical Steps(关键步数)来评估性能，是一个受并行计算中关键路径(critical path)启发的、面向延迟的指标。根据此指标，只有当生成更多子任务能够缩短关键路径时，生成更多子任务才有帮助：
+然后第l个code如下，其中$\mathbf{h}_i^l=\mathbf{h}_i^{l-1}-\mathbf{C}_{l-1}\left[\operatorname{sid}_{l-1}\right]$
 
 $$
-\text { CriticalSteps }=\sum_{t=1}^T\left(S_{\operatorname{main}}^{(t)}+\max _i S_{\mathrm{sub}, i}^{(t)}\right)
+\operatorname{sid}_l=\underset{c \in\{0,1, \ldots, K-1\}}{\arg \max }\left\|\mathbf{h}_i^l \cdot \mathbf{C}_l[c]\right\|_{\mathrm{F}}
 $$
 
+最终再decode回去就是
 
-+ $S_{\text {main }}^{(t)}$记录orchestration开销
-+ $\max _i S_{\mathrm{sub}, i}^{(t)}$反映每个阶段中最慢的subagent
+$$
+\hat{\mathbf{h}}_i=\operatorname{Dec}\left(\sum_{l \in\{0, \ldots, L-1\}} \mathrm{C}_l\left[\operatorname{sid}_l\right]\right)
+$$
+
+有2个loss，一个是重建loss，一个是commitment loss（拉近h和c的距离）
+
+# 挑战
+
+挑战1：码本坍塌（Codebook Collapse）：模型只利用了码本的一小部分，设计了2种方式：
+
++ STE（straight-through estimator）：直接更新整个码本，原始RQ-VAE是只更新argmax出来的那个code，这种稀疏更新方式很依赖码本的初始化。最原始的VQ-VAE论文([Neural Discrete Representation Learning](https://proceedings.neurips.cc/paper_files/paper/2017/file/7a98af17e63a0ac09ce2e96d03992fbc-Paper.pdf))里也用到了，另外[https://www.daiwk.net/1.2.llm_intro#h-net](https://www.daiwk.net/1.2.llm_intro#h-net)这里也有。STE如下，其中$\operatorname{sim}\left(\mathbf{h}_i^l, \mathbf{C}_l\right) \in \mathcal{R}^K$表示cos相似度
+
+$$
+\hat{\mathbf{h}}_i=\operatorname{Dec}\left(\sum_{l \in\{0, \ldots, L-1\}} \mathrm{C}_l\left[\operatorname{sid}_l\right]+\operatorname{sim}\left(\mathbf{h}_i^l, \mathbf{C}_l\right) \cdot \mathbf{C}_l-\operatorname{sg}\left[\operatorname{sim}\left(\mathbf{h}_i^l, \mathbf{C}_l\right) \cdot \mathbf{C}_l\right]\right)
+$$
+
++ 基于多个embed来源来学习sid：例如图片emb、文本emb、meta数据对应的emb等，多个emb进行merge：
+
+$$
+\mathbf{h}_i=\sum_{m \in M} \operatorname{Enc}_m\left(x_m\right) \text { and } \hat{\mathbf{h}_{i, m}}=\operatorname{Dec}_m\left(\sum_{l \in\{0, \ldots, L-1\}} \mathrm{C}_l\left[\operatorname{sid}_l\right]\right)
+$$
+
+挑战2：SID-to-Item Resolution：同一个sid对应的一堆item如何消歧
+
++ 基于启发式方法的代码内消歧：其实就是加一些人工规则排序，例如后验/新鲜度等
++ 考虑检索深度而非广度：方案a只取少量的top sid，每个sid拉很多item出来；方案b取很多sid，每个sid只拉一点item出来，方案a效果更好
+
+# 在线实验
+
++ sid作为辅助特征：
+    + 广告排序：item文本信息过qwen得到emb，再搞成sid丢给精排
+    + 好友推荐和搜索排序：用[GraphHash: Graph Clustering Enables Parameter Efficiency in Recommender Systems](https://arxiv.org/pdf/2412.17245)搞了个基于模块度的Louvain方法做社区发现，将uid映射成多级社区的id表示（类似sid），当成特征加进排序模型
++ sid做GR召回：在之前的文章[Generative Recommendation with Semantic IDs: A Practitioner's Handbook](https://arxiv.org/pdf/2507.22224)里讲了模型细节，效果如下：拉长序列指标有涨，前面讲的方案a比方案b更好，启发式的规则排序能带来业务指标收益
+
+![](../assets/snapchat-sid-gr.png)
+
++ sid质量评估：uniqueness表示unique used SIDs / total number of items，其实就是衡量sid冲突严重程度的指标。发现这个值和recall@k并不是完全正相关，比较低的时候有这个趋势，但达到一定阈值的时候，uniqueness继续涨，recall@k基本平了
