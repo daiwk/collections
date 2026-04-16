@@ -1604,8 +1604,59 @@ Yandex的音乐推荐场景
 
 ![](../assets/argus-finetune.png)
 
+## 亚马逊的UniRec
 
+[UniRec: Bridging the Expressive Gap between Generative and Discriminative Recommendation via Chain-of-Attribute](https://arxiv.org/pdf/2604.12234)
 
+![](../assets/unirec.png)
+
+### Capacity-constrained Semantic ID
+
+之前的方法可能能做到每个code下item数均衡，但还是会有马太效应，即最终充分训练的还是高热的那些。统计到：top 10%的s0 token只占33.24%曝光，但到(s0,s1)组合就占到87.90%，到(s0,s1,s2)组合更到89.62%。也就是说，越往后层，流量越集中到极少数路径上。
+
+搞了两阶段的贪心策略：
+
++ 聚类：将item分到离自己最近的聚类中心，重构误差小
++ 超载修复：约束每个cluster承担的总曝光量V不超过设置的上限，如果超了，就把它里面的item挪到新的cluster里去，保证尽量近&新cluster的容量不超上限
+
+![](../assets/capacity-constrained-rq.png)
+
+### Chain-of-Attribute
+
+大家都认为判别式任务同时输入了u和i，上限应该比生成式高，因为生成式只输入了u，但作者分析了一下：
+
+用户u，item f（共n个特征），label y，首先有$$p(y|f,u)p(f|u)p(u)=p(f|y,u)p(y|u)p(u)$$，然后转换一下就是$$p(y|f,u) = p(f|y,u)p(y|u)/p(f|u)$$，此时因为我们看的是给定u和f时，y的概率，所以$$p(f|u)$$是个常量，可以忽略，那就是
+
+XXX
+p(y \mid \mathbf{f}, u) \propto p(\mathbf{f} \mid y, u) p(y \mid u)
+XXX
+
+而此时$$p(y|u)$$和item无关，所以判别式的打分等价于生成一个完整item的打分。根据链式法则，那就可以拆到这n个特征的每一个上来
+
+XXX
+p(\mathbf{f} \mid y, u)=\prod_{k=1}^n p\left(f_k \mid f_{<k}, y, u\right)
+XXX
+
+但要把所有特征全还原是代价很大的，现在的GR就通过sid来压缩，但可能压缩得太狠了，所以作者选择还原最重要的特征，即先生成类目、商家、品牌这m个属性，再生成sid
+
+### Conditional Decoding Context
+
++ task-conditioned BOS：把固定的BOS换成了带任务(点击、转化等)/场景（主feed、搜索、相关推荐等）信息的BOS embedding
++ context summary：如图中最右边的地方，每一步解码时给模型一个压缩过的prefix交叉特征摘要（前面已经生成了哪些attribute/SID），最暴力的做法就是两两组合的笛卡尔积，采用了类似布隆过滤器的方法，把每个组合通过多个hash函数，映射到一个**共享**embedding table里的几个位置，用的时候就分别去查出来，然后concat到一起
+
+模型输入：用户静态profile、历史sid序列、历史序列
+
+最终rank head的输入如下，过一个[SENet](https://arxiv.org/pdf/1709.01507)和[MaskNet](https://arxiv.org/pdf/2102.07619)，然后和对应的label（前m个是attr，后面的是sid）去算loss：
+
++ attn output：q是bos+attr+sid，k和v是历史序列，去做cross attn得到的输出
++ prefix emb：context summary的输入，t时刻之前decode出来的那些的emb
++ context summary：如上
++ aggregation表示：用户静态profile、历史sid序列的pooling、历史序列的pooling
+
+训练时还加了
+
++ RFT（Reward-Driven Fine-tuning）：其实就是时长/转化/gmv加权
++ DPO：同一个请求里，clik大于show之类的构造pair；还加了个layer-wise stop gradient，即DPO只在解码sid时作用，对attr的时候不生效，不然训练不稳定
 
 # LLM+推荐：输入ID/SID（工业界+没落地）
 
