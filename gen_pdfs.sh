@@ -86,6 +86,7 @@ git add gen_pdfs.sh
 git add gen_dot_sub.py
 git add publish
 git add deep-research-assets
+git add notes 
 git commit -m 'x'
 git push
 
