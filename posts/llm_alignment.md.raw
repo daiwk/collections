@@ -1026,3 +1026,89 @@ forward KL vs reverse KL
 + 在对垂域任务设计奖励系统时，对几十B模型的奖励策略可能难以直接扩展到上百B模型。
 + 高质量，多样化的合成数据是提升模型性能的必要非充分条件，这里的合成不仅有对话轮数粒度的合成，还有思考粒度、句子粒度的合成，也见过在思考链里插入一些个别token的合成方法。
 
+
+# 一些训练技巧
+
+## add special token
+
+```python
+
+special_tokens = [f"<SID_{i}>" for i in range(2000)]
+num_added = tokenizer.add_special_tokens(
+    {"additional_special_tokens": special_tokens}
+)
+print("num_added =", num_added)
+
+model.resize_token_embeddings(len(tokenizer))
+```
+
+## 只对special token的emb微调
+
+```python
+import torch
+
+original_vocab_size = tokenizer.vocab_size - num_added
+
+# 1) 先按你的逻辑：其他参数正常训练
+for name, param in model.named_parameters():
+    param.requires_grad = True
+
+# 2) embedding / lm_head 也先整体打开
+input_emb = model.get_input_embeddings()
+output_emb = model.get_output_embeddings()
+
+input_emb.weight.requires_grad = True
+if output_emb is not None:
+    output_emb.weight.requires_grad = True
+
+# 3) 构造 mask：只保留新增 token 的行梯度
+def build_row_mask(weight, original_vocab_size):
+    mask = torch.zeros(weight.size(0), dtype=torch.bool, device=weight.device)
+    mask[original_vocab_size:] = True
+    return mask
+
+input_mask = build_row_mask(input_emb.weight, original_vocab_size)
+
+def input_grad_hook(grad):
+    grad = grad.clone()
+    grad[~input_mask] = 0
+    return grad
+
+input_emb.weight.register_hook(input_grad_hook)
+
+# 4) lm_head 若与 embedding 不共享权重，则也单独处理
+if output_emb is not None and output_emb.weight is not input_emb.weight:
+    output_mask = build_row_mask(output_emb.weight, original_vocab_size)
+
+    def output_grad_hook(grad):
+        grad = grad.clone()
+        grad[~output_mask] = 0
+        return grad
+
+    output_emb.weight.register_hook(output_grad_hook)
+```
+
+如果是lora里，也可以直接
+
+```python
+special_token_ids = tokenizer.convert_tokens_to_ids(special_tokens)
+
+# 4) LoRA + 仅训练这些 token 的 embedding 行
+peft_config = LoraConfig(
+    task_type="CAUSAL_LM",
+    r=16,
+    lora_alpha=32,
+    lora_dropout=0.05,
+    target_modules=["q_proj", "k_proj", "v_proj"],
+    trainable_token_indices=special_token_ids,
+)
+
+model = get_peft_model(model, peft_config)
+
+# 看一下哪些参数可训练
+model.print_trainable_parameters()
+for n, p in model.named_parameters():
+    if p.requires_grad:
+        print("TRAIN:", n, tuple(p.shape))
+```
+
