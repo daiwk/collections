@@ -21,3 +21,17 @@ func efficient-cot
 
 pandoc -N -s --pdf-engine=xelatex --columns=30 --standalone --html-q-tags -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures --highlight-style tango ./llm-rec-deep-research.md -o ./llm-rec-deep-research.pdf
 pandoc -N -s --pdf-engine=xelatex --columns=30 --standalone --html-q-tags -V CJKmainfont='Heiti SC' -V mainfont='Times New Roman' -V geometry:margin=1in --metadata linkcolor=blue -f markdown+markdown_in_html_blocks+smart+raw_html-implicit_figures --highlight-style tango ./tmp.md -o ./tmp.pdf
+
+pandoc \
+  -s \
+  --pdf-engine=xelatex \
+  --number-sections \
+  -V CJKmainfont='Heiti SC' \
+  -V mainfont='Times New Roman' \
+  -V monofont='Menlo' \
+  -V geometry:margin=1in \
+  -V colorlinks=true \
+  -V linkcolor=blue \
+  -f markdown+tex_math_dollars+smart \
+  ./llm_arch_future.md \
+  -o ./llm_arch_future.pdf
