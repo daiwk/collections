@@ -323,3 +323,18 @@ p.s. 复习一下log trick
 
 ![](../assets/logtrick.png)
 
+
+# 一些总结
+
+## EvoLM
+
+[https://zhuanlan.zhihu.com/p/2024394597879619874](https://zhuanlan.zhihu.com/p/2024394597879619874)
+
+[EvoLM: In Search of Lost Language Model Training Dynamics](https://arxiv.org/pdf/2506.16029)
+
+[https://github.com/zhentingqi/evolm](https://github.com/zhentingqi/evolm)
+
+[https://huggingface.co/collections/ZhentingNLP/evolm-datasets](https://huggingface.co/collections/ZhentingNLP/evolm-datasets)
+
+[https://zhentingqi.github.io/internal/projects/EvoLM/](https://zhentingqi.github.io/internal/projects/EvoLM/)
+
