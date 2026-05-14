@@ -1358,7 +1358,24 @@ rankmixer的细节：
 假设有2组，第1组是21个token，第2组是3个token，那总共就是24个token，每个512维，第1层的rankmixer如下：
 
 + mixup转置，new_tokens假设是16，那每个新token就是$$24\times 512/16=768$$维
-+ 搞16个独立的FFN，每个可以是$$768->768*2->768$$这两层的mlp
+
+```python
+def mixup(x, new_tokens=16):
+    # 输入[bs, 24, 512]，最终输出[bs, 16, 768]
+    # [bs, 24, 512]
+    bs, token_num, dims = x.get_shape().as_list()
+    # 512/16 * 24 = 768
+    new_dim = dim // new_tokens * token_num
+    # 先把[bs,24,512]改成[bs, 24, 16, 512/16]
+    output = tf.reshape(x, [-1, token_nums, new_tokens, dim // new_tokens])
+    # 把[bs, 24, 16, 512/16]改成[bs, 16, 24, 512/16]
+    output = tf.transpose(output, [0, 2, 1, 3])
+    # 把[bs, 16, 24, 512/16]改成[bs, 16, 768]
+    output = tf.reshape(output, [-1, new_tokens, new_dim])
+    return output
+```
+
++ 搞16个独立的FFN，每个可以是$$768->768*2->768$$这两层的mlp（当然，还有很多别的变种，这里就不说了）
 
 第二层也是先mixup转置，例如你设置8个new_tokens，那就对应8个独立的FFN
 
