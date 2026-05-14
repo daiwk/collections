@@ -1320,7 +1320,55 @@ All-domain Moveline Evolution Network (AMEN)：
 
 [RankMixer: Scaling Up Ranking Models in Industrial Recommenders](https://arxiv.org/abs/2507.15551)
 
+[MLP-Mixer: An all-MLP Architecture for Vision](https://arxiv.org/pdf/2105.01601)
+
+![](../assets/mlpmixer.png)
+
+对于一个序列来讲，有两种混合：
+
+(i) 给定的一个位置
+(ii) 不同的位置之间，或者和(i)同时进行
+
+对于CNN来讲，
+
++ pooling：完成(ii)
++ 卷积：$$1\times 1$$的卷积完成(i)，$$N\times N$$的卷积完成(ii)
+
+对于transformer来讲，
+
++ attention：完成(ii)，即不同位置间的融合
++ FFN：完成(i)，即同一个位置内的融合
+
+mlpmixer：明确区分(i)和(ii)，且分别用一个MLP去实现
+
++ 第一层token mixing：做(ii)，即不同位置间的融合
++ 第二层channel mixing：做(i)，即同一个位置内的融合
+
+rankmixer v1：只有token mixing；rankmixer-large：token mixing和channel mixing都有了
+
+![](../assets/rankmixer.png)
+
+rankmixer的细节：
+
+人工分组：按先验知识，例如user的人口属性是一组，user的短序列行为是一组，对于每一组而言：
+
++ 所有特征concat后假设有10000维，以每个token 384维为例，就是切成$$10000/384 +1=21$$个token
++ 过一层mlp，把384映射成$$21\times 512$$，再split成21个token出来，所以就有21个token，每个是512维
+
+假设有2组，第1组是21个token，第2组是3个token，那总共就是24个token，每个512维，第1层的rankmixer如下：
+
++ mixup转置，new_tokens假设是16，那每个新token就是$$24\times 512/16=768$$维
++ 搞16个独立的FFN，每个可以是$$768->768*2->768$$这两层的mlp
+
+第二层也是先mixup转置，例如你设置8个new_tokens，那就对应8个独立的FFN
+
+最后一层的输出，取mean pooling，再送到后面的网络去
+
+[AutoInt: Automatic Feature Interaction Learning via Self-Attentive Neural Networks](https://arxiv.org/pdf/1810.11921)这个好像也提了pertoken
+
 pertoken ffn+qkv是[Hiformer: Heterogeneous Feature Interactions Learning with Transformers for Recommender Systems](https://arxiv.org/pdf/2311.05884)里提出来的
+
+onetrans的前身：[InterFormer: Effective Heterogeneous Interaction Learning for Click-Through Rate Prediction](https://arxiv.org/pdf/2411.09852)
 
 ## 字节的R3-VAE
 
