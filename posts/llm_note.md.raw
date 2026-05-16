@@ -351,3 +351,16 @@ p.s. 复习一下log trick
 这里真的是weight decay，即对原始w做了decay
 
 ![](../assets/adamw.png)
+
+## BP
+
+看周志明那本书的bp部分，没太看懂，和豆包与gpt讨论了下，发现：hiton 1986的[Learning representations by back-propagating errors](https://www.nature.com/articles/323533a0)，[pdf](https://www.cs.utoronto.ca/~hinton/absps/naturebp.pdf)
+
+BP之前确实有多层训练方法，但大多是：局部规则、试探式扰动、逐层构造、结构搜索、无监督自组织，而其实BP很早就有人提了，比如Werbos 1974年博士论文就包含把反向传播用于训练网络的思想；Widrow的综述也提到，Werbos 1971年发展出backpropagation训练算法，1974年发表在博士论文里。Amari 1960s也讨论过用随机梯度下降端到端训练多层感知机的想法；Schmidhuber的历史综述提到，Ivakhnenko是逐层训练深层网络，而Amari 1967年提出从头用SGD端到端训练多层MLP。
+
+但为什么大家还是把 1986 那篇当成“神经网络复兴”的关键？因为 Rumelhart、Hinton、Williams 把这个方法：讲清楚了、实验展示了、和hidden representation学习联系起来了、让社区真正用起来了。
+
+BP：实际相当于是一个动态规划，因为多层nn的不同参数，在链式求导时中间的梯度有很多是公用的部分，而bp可以先算出来，缓存起来，算别的参数的梯度时候可以直接复用（这一点应该是相比周志明那本书里提的直接前向模式，即一参一路径，串行独推，原生无共享机制）
+
+这个库实现了简单的自动求导，[https://github.com/karpathy/micrograd](https://github.com/karpathy/micrograd)
+
