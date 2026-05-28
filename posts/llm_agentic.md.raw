@@ -818,3 +818,13 @@ openclaw agents bind --agent super-pm --bind feishu
 然后人肉去json里配一下accountId
 
 用npx vercel可以部署到公网上
+
+# pi
+
+[https://pi.dev/docs/latest/providers](https://pi.dev/docs/latest/providers)
+
+```shell
+export MINIMAX_CN_API_KEY="你的国内 Token Plan Key"
+
+pi --provider minimax-cn --model MiniMax-M2.7
+```
