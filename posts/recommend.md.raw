@@ -432,6 +432,12 @@ XXX
 E(T) = odds = e ^{logit} = e ^{log odds} = e^{wx+b}
 XXX
 
+==>对于负样本采样率（保留百分之m的负样本）是m，正样本采样率（保留百分之n的正样本）是n
+
+XXX
+e^{-logit'}=\frac{1}{e^{logit'}}=1/odds=实际负样本数/实际正样本数=m/n * 负样本数/正样本数=m/n * e^{-logit}
+XXX
+
 参考tf的weighted sigmoid：```weighted_cross_entropy_with_logits```: [https://www.tensorflow.org/api_docs/python/tf/nn/weighted_cross_entropy_with_logits](https://www.tensorflow.org/api_docs/python/tf/nn/weighted_cross_entropy_with_logits)
 
 正常的sigmoid：
