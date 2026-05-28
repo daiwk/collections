@@ -438,6 +438,12 @@ XXX
 e^{-logit'}=\frac{1}{e^{logit'}}=1/odds=实际负样本数/实际正样本数=m/n * 负样本数/正样本数=m/n * e^{-logit}
 XXX
 
+然后对于经典的召回采样纠偏([Sampling-Bias-Corrected Neural Modeling for Large Corpus Item Recommendations](https://storage.googleapis.com/gweb-research2023-media/pubtools/5716.pdf))来讲，就是$$logit' = logit - log(p)$$，就有如下公式，和上面是类似的
+
+XXX
+exp(-logit')=exp(-logit+log(p))=p * exp(-logit)
+XXX
+
 参考tf的weighted sigmoid：```weighted_cross_entropy_with_logits```: [https://www.tensorflow.org/api_docs/python/tf/nn/weighted_cross_entropy_with_logits](https://www.tensorflow.org/api_docs/python/tf/nn/weighted_cross_entropy_with_logits)
 
 正常的sigmoid：
