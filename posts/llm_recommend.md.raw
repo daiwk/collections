@@ -4168,6 +4168,27 @@ Hierarchical Feature Enrichment：原始的覆盖率只有50%左右
   + 可逆性：所有渐变策略都可以随时暂停或反向执行，实现快速回滚，且整个过程同样无需重训。
 
 
+## 字节的Rec-Distill
+
+[Rec-Distill : An Industrial Distillation Pipeline for Large-Scale Recommendation Models](https://arxiv.org/pdf/2605.29755)
+
+![](../assets/rec-distill.png)
+
+精排模型不断scale up会遇到ROI问题，因此用蒸馏的思路，让更大的精排当teacher（流式训但不serving），线上精排当student。
+
+提升效果的核心思路：
+
++ teacher的scale up：mixer变大（最大可以到24b）+序列扩长（最长可以到2w）+增加训练数据
++ 迁移率的提升：
++ student拆成主塔+辅助塔：主塔正常学label，辅助塔学label+teacher logit
+    + 蒸馏loss设计：交叉熵比mse更好一些
+    + 采样纠偏：teacher和student的采样逻辑不一致，解法是teacher落原始logit，蒸馏时，按student采样纠偏后的新logit当成student要学的目标
+
+![](../assets/rec-distill-arch.png)
+
+核心是teacher先消费，边训边把logit落到存储里，并往现有样本里填充，放到新的样本流给student delay训练，流式数据也会定时dump到集群变成批式数据，供后续其他student迭代用
+
+
 ## 虾皮的Sortify
 
 [Let the Agent Steer: Closed-Loop Ranking Optimization via Influence Exchange](https://arxiv.org/pdf/2603.27765v1)
