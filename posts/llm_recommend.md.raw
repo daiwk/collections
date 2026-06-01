@@ -4171,6 +4171,20 @@ Hierarchical Feature Enrichment：原始的覆盖率只有50%左右
 
 [Memento: Personalized RAG-Style Long-Retention Data Scaling for Online Ads Recommendation](https://arxiv.org/pdf/2605.24051)
 
+![](../assets/memento.png)
+
++ RAG阶段：用user emb+ad emb+context特征作为query Q，去用户历史的doc倒排/向量索引里找出一些D出来，然后按MMR排序（sim uu指q里的u部分，和d算相似度，sim ua指q里的ad部分，和d算相似度）
+
+XXX
+\begin{aligned}
+\mathrm{MMR}= & \underset{D_i \in R \backslash S}{\arg \max }\left[\alpha \cdot \operatorname{Sim}_{U U}\left(D_i, Q\right)\right. \\
+& +\beta \cdot \operatorname{Sim}_{U A}\left(D_i, Q\right) \\
+& \left.-(1-\alpha-\beta) \cdot \max _{D_j \in S} \operatorname{Sim}_{U U}\left(D_i, D_j\right)\right]
+\end{aligned}
+XXX
+
++ 应用1：representation memento
++ 应用2：data memento
 
 
 ## 字节的Rec-Distill
