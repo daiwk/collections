@@ -4167,6 +4167,11 @@ Hierarchical Feature Enrichment：原始的覆盖率只有50%左右
   + 监控与自动回滚：持续监控核心指标（如模型 NE、业务指标），一旦超出安全阈值，可自动暂停或回滚渐变。
   + 可逆性：所有渐变策略都可以随时暂停或反向执行，实现快速回滚，且整个过程同样无需重训。
 
+## Meta的Memento
+
+[Memento: Personalized RAG-Style Long-Retention Data Scaling for Online Ads Recommendation](https://arxiv.org/pdf/2605.24051)
+
+
 
 ## 字节的Rec-Distill
 

@@ -761,6 +761,17 @@ Universal Deep Research，输入有strategy和prompt
 ![](../assets/udr.png)
 
 
+## HyperAgents
+
+[HyperAgents](https://arxiv.org/pdf/2603.19461)
+
+meta的开源库，[https://github.com/facebookresearch/Hyperagents](https://github.com/facebookresearch/Hyperagents)
+
+拆成
+
++ task agent：解决目标任务
++ meta agent：修改自己和task agent
+
 
 # context engineering
 
