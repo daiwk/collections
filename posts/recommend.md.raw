@@ -984,30 +984,6 @@ D2Q 算法的具体做法如下：
 由于推荐系统主要优化候选集的排序，评估指标 XAUC 能够更加直观的反映预估时长序的好坏，与论文的优化目标更加适配。
 
 
-## SUM
-
-[2024 META新作：SUM技术进行大规模在线用户表示，提升广告个性化效果](https://mp.weixin.qq.com/s/aX4diMBe3mRgp0cSRUX3pA)
-
-[Scaling User Modeling: Large-scale Online User Representations for Ads Personalization in Meta](https://arxiv.org/pdf/2311.09544)
-
-![sum](../assets/sum.png)
-
-## LTV——slateQ
-
-[SlateQ: A Tractable Decomposition for Reinforcement Learning with Recommendation Set](https://storage.googleapis.com/gweb-research2023-media/pubtools/5096.pdf)
-
-在ranking阶段，引入长期目标
-
-## ranking loss引入
-
-[KDD 2024 | 深入理解推荐模型中的辅助排序损失](https://mp.weixin.qq.com/s/Y4ErK09-_TSJ2m6lC6UGCA)
-
-
-## Wukong
-
-[Wukong: Towards a Scaling Law for Large-Scale Recommendation](https://arxiv.org/pdf/2403.02545.pdf)
-
-
 
 # 多目标
 
