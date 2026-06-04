@@ -1475,12 +1475,14 @@ DCA(Deduplicated Cross-Attention Transformer)：user的历史序列当成context
 
 [UniPinRec: Unifying Generative Retrieval and Ranking at Pinterest Scale](https://arxiv.org/pdf/2606.00422)
 
-生成sid的问题：Meta的两篇论文[How Well Does Generative Recommendation Generalize?](https://arxiv.org/pdf/2603.19809)和[Unifying Generative and Dense Retrieval for Sequential Recommendation](https://arxiv.org/pdf/2411.18814)，
+生成式(GR/TIGER)的问题：
+
+>Meta的两篇论文[How Well Does Generative Recommendation Generalize?](https://arxiv.org/pdf/2603.19809)和[Unifying Generative and Dense Retrieval for Sequential Recommendation](https://arxiv.org/pdf/2411.18814)
 
 + lossy compression：item信息被压成几个离散token，细粒度信息会丢
 + generation objective inefficient：next-token生成不是最适合topK retrieval的目标
 + cold-start failures：理论上semantic ID有冷启动优势，但实际beam search可能召不出来，因为新item没有交互，模型没有见过它作为target，自然容易给它低概率。
-+ token relations memorized in-parameter：所谓“泛化”很多时候是prefix token级记忆
++ token relations memorized in-parameter：所谓“泛化”很多时候是prefix token级记忆，GR看起来的item-level generalization，很多可以解释成 token-level memorization。即模型不是凭空理解了item之间的复杂关系，而是因为不同item共享semantic ID prefix，模型记住了prefix transition
 
 ![](../assets/unipinrec.png)
 
