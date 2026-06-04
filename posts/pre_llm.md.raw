@@ -254,7 +254,11 @@ num_attention_heads = 16
 num_key_value_heads = 8
 head_dim = 128
 ```
-意味着Q和O是用的16head，每个head是128，即$$16\times 128=2048$$；但K和V是用的8head，每个head也是128，那就是$$8\times 128=1024$$；所以Q和O的矩阵是$$2048\times 2048$$，而K和V的矩阵是$$2048\times 1024$$，至于multi head其实是先concat再reshape，这个前面算attn flops时讲了。所以Q和O的flops是$$2\times 768 \times 2048 \times 2048=6.44\times 10^9=6.44B FLOPS$$，K和V是$$2\times 768 \times 2048 \times 1024=3.22\times 10^9=3.22B FLOPS$$
+意味着Q和O是用的16head，每个head是128，即$$16\times 128=2048$$；但K和V是用的8head(即8个Group，每个group里共享)，每个head也是128，那就是$$8\times 128=1024$$；
+
+所以Q和O的矩阵是$$2048\times 2048$$，而K和V的矩阵是$$2048\times 1024$$，至于multi head其实是先concat再reshape，这个前面算attn flops时讲了。
+
+所以，假设序列长度是768，那么，Q和O的flops是$$2\times 768 \times 2048 \times 2048=6.44\times 10^9=6.44B FLOPS$$，K和V是$$2\times 768 \times 2048 \times 1024=3.22\times 10^9=3.22B FLOPS$$
 
 ### 一些注意点
 
@@ -263,7 +267,7 @@ head_dim = 128
 
 F是理论flops, B是理论访存带宽，模型的计算flops是f，模型的访存是b，MFU=f/F
 
-一个$m\times k$和$k\times n$的矩阵乘法的延时就是$$max(2mkn/F, (mk+kn+mn)/B)$$
+一个$$m\times k$$和$$k\times n$$的矩阵乘法的延时就是$$max(2mkn/F, (mk+kn+mn)/B)$$
 
 roofline：参考[Roofline: An Insightful Visual Performance Model for Floating-Point Programs and Multicore Architectures](https://people.eecs.berkeley.edu/~kubitron/cs252/handouts/papers/RooflineVyNoYellow.pdf)
 
