@@ -1477,7 +1477,7 @@ DCA(Deduplicated Cross-Attention Transformer)：user的历史序列当成context
 
 生成式(GR/TIGER)的问题：
 
->Meta的两篇论文[How Well Does Generative Recommendation Generalize?](https://arxiv.org/pdf/2603.19809)和[Unifying Generative and Dense Retrieval for Sequential Recommendation](https://arxiv.org/pdf/2411.18814)
+>Meta的两篇论文[How Well Does Generative Recommendation Generalize?](https://arxiv.org/pdf/2603.19809)和[Unifying Generative and Dense Retrieval for Sequential Recommendation](https://arxiv.org/pdf/2411.18814)(LIGER)
 
 + lossy compression：item信息被压成几个离散token，细粒度信息会丢
 + generation objective inefficient：next-token生成不是最适合topK retrieval的目标
@@ -1486,12 +1486,41 @@ DCA(Deduplicated Cross-Attention Transformer)：user的历史序列当成context
 
 ![](../assets/unipinrec.png)
 
+本文将召回和粗排(感觉应该算是召回内的rerank)合到一个模型里，2个head负责不同工作，还是item id粒度的建模，并没有用sid
 
 ![](../assets/unipinrec-arch.png)
 
++ 输入表示：将action emb和item emb concat在一起
++ mask机制：
+    + 历史序列里：以一定概率mask掉action，用```[mask]```替换
+    + 候选item及未来item的action：全部用```[mask]```
++ attention：类似m-falcon的一个causal mask，即候选可以看见所有历史的，但候选之间不可见（注：图中的attn mask里深色是可见的）
++ 训练目标：
+    + next-item predict（召回loss）：对每个没mask的历史位置，算samlped softmax
+    + action predict（排序loss）：h是一个mlp，映射到C个actoin，$$\mathcal{M}_{\text {past }}=\left\{i: m_i=0\right\}$$是历史里mask掉的那些item
+
+XXX
+\begin{gathered}
+\mathcal{L}_{\text {action }}=\sum_{c=1}^C w_c\left[\frac{1}{\left|\mathcal{M}_{\text {past }}\right|} \sum_{i \in \mathcal{M}_{\text {past }}} \ell_{\mathrm{BCE}}\left(h_{\psi_c}\left(z_i\right), a_i^{(c)}\right)\right. \\
+\left.+\frac{1}{k} \sum_{j=1}^k \ell_{\mathrm{BCE}}\left(h_{\psi_c}\left(z_j^{\prime}\right), a_j^{\prime(c)}\right)\right],
+\end{gathered}
+XXX
+
++ 优势：
+    + 召回和排序的序列是一样的
+    + 召回和排序的模型权重是可以share的，排序可以直接用召回的ckpt初始化
+    + random mask加强泛化能力
 
 ![](../assets/unipinrec-serving.png)
 
+他们的召回和排序服务是部署在同一机器/卡上的不同进程，感觉需要将同一个请求的召回/排序请求打到同一机器/卡上。
+
+主要是排序复用召回的shared KV pool。一般跨进程的kvcache传输会有d2h再h2d的开销，所以做了一个shared GPU memory pool：
+
++ 每个召回服务预分配一个$$[L,S,H,n,D]$$大小的gpu pool，对应(layer数，slot数(一台机器/一张卡缓存的请求数)，kv heads, 历史序列长度, head dim)，然后通过CUDA IPC handles暴露给排序服务。
++ 排序服务打开这些handle，把同一块GPU allocation映射到自己的地址空间。slot会round-robin复用。
+
+实验：
 基线：Pinrec，用ANN检索出K个候选，直接进排序(TransAct V2的精排)
 UniPinRec：先ANN（L0），再排序(L1)，得到K个候选，再进上面的排序
 
