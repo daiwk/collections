@@ -702,9 +702,10 @@ Kimi–Researcher是一个自主的智能体与思维模型，旨在通过多步
 
 ![](../assets/kimi-researcher-agent-rl-infra.png)
 
-+ Fully asynchronous rollout：实现了一个可扩展的类Gym接口的全异步rollout系统。server-base的架构能够高效并行地协调(orchestrate)智能体的轨迹生成、环境交互与奖励计算。相比同步系统消除了资源idle时间。
-+ Turn-level Partial Rollout：在Agent RL训练中，大多数任务可在早期阶段完成，但仍有一小部分任务需要大量迭代。为解决这一长尾问题，超出时间预算的任务将被保存至 replay buffer，在后续迭代中以更新后的模型权重继续执行剩余部分。
-+ 鲁棒的沙盒环境：构建了统一的沙盒架构，在保持任务隔离性的同时，消除了容器间通信开销。基于Kubernetes的混合云架构实现了零停机调度(zero-downtime scheduling)与动态资源分配。Agent与工具之间通过MCP进行通信，支持有状态会话与断线重连功能。支持多副本部署，确保在生产环境中具备容错能力与高可用性。
++ Fully asynchronous rollout: 用可扩展的Gym-like接口实现了全异步rollout，server-based架构可以高效地并行编排actor rollouts、环境互动、reward计算 
++ Turn-level partial rollout: 在agentic rl里，大部分task很快就结束了，但有少量任务需要非常多轮。设计的Turn-level partial rollout，即超过时间预算的task会扔到replay buffer里去，在后续的迭代中，省下的轮数会使用新的模型参数。
++ Robust sandbox environment: 通用的沙盒架构消除了容器间的额外开销，同时保持隔离性。用基于k8s的混合云架构的Zero-downtime scheduling实现动态资源分配，通过MCP的agent tool通信维护了具有重连功能的有状态会话，还支持多分片部署和比较好的容错机制。
+
 
 ### 智能体能力涌现
 
@@ -798,9 +799,15 @@ meta的开源库，[https://github.com/facebookresearch/Hyperagents](https://git
 [揭秘GLM-5技术底牌：「异步强化学习框架Slime」成终极杀招](https://mp.weixin.qq.com/s/Qmg6iOYo2BXB9qFf4TOpsg?scene=1)
 
 
+# Agentic RL
+
+[The Landscape of Agentic Reinforcement Learning for LLMs: A Survey](https://arxiv.org/pdf/2509.02547)
+
+![](../assets/agentic-rl-loop.png)
+
+
+
 # Harness engineering
-
-
 
 Vibe Coding就是聊天式的，只是抛出一个很粗略的想法，ai写出来的往往是个demo，看起来功能都有，但细节会有很多问题
 
