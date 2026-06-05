@@ -4215,6 +4215,9 @@ XXX
 ![](../assets/nsa-block.png)
 
 + token selection：
+    + Blockwise Selection：
+    + Importance Score Computation：
+    + Top-n Block Selection：
 
 + sliding window：
 
