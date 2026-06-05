@@ -4204,12 +4204,15 @@ XXX
 
 ![](../assets/nsa.png)
 
+### 整体逻辑
 
 整体逻辑：对于给定的kv，分别按3种策略compression(cmp)、selection(slc)、window(win)去和同一个q算attn，然后用gate把3个attn加权。
 
 核心就是q是$$1\times d$$，压缩后的k是$$d'\times d$$, v是$$d'\times d$$，那$$softmax(qk^T)v$$就是$$1 \times d$$、$$d\times d'$$和$$d'\times d$$，得到的还是1*d，这样3个就能相加了
 
-+ token compression：$$l$$是block长度，$$d$$是相邻block间滑动的stride（即相邻两个block起点间的距离），共$$\left\lfloor\frac{t-l}{d}\right\rfloor$$个block，每个block把$$l$$压缩成1维，所以最后得到的是$$\tilde{K}_t^{\mathrm{cmp}} \in \mathbb{R}^{d_k \times\left\lfloor\frac{t-l}{d}\right\rfloor}$$
+### token compression
+
+$$l$$是block长度，$$d$$是相邻block间滑动的stride（即相邻两个block起点间的距离），共$$\left\lfloor\frac{t-l}{d}\right\rfloor$$个block，每个block把$$l$$压缩成1维，所以最后得到的是$$\tilde{K}_t^{\mathrm{cmp}} \in \mathbb{R}^{d_k \times\left\lfloor\frac{t-l}{d}\right\rfloor}$$
 
 XXX
 \tilde{K}_t^{\mathrm{cmp}}=f_K^{\mathrm{cmp}}\left(\mathbf{k}_{: t}\right)=\left\{\varphi\left(\mathbf{k}_{i d+1: i d+l}\right) \left\lvert\, 0 \leqslant i \leqslant\left\lfloor\frac{t-l}{d}\right\rfloor\right.\right\}
@@ -4221,23 +4224,37 @@ XXX
 
 ### token selection
 
-+ Blockwise Selection：两点考虑，一是在gpu上计算效率高，因为block是连续的块；二是blockwise selection follow了固有的attention score的分布模式，[MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention](https://arxiv.org/pdf/2407.02490)提到了相邻位置的attention score的量级是差不多的
++ Blockwise Selection：这里是以block为单位进行select，两点考虑，一是在gpu上计算效率高，因为block是连续的块；二是blockwise selection follow了固有的attention score的分布模式，[MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention](https://arxiv.org/pdf/2407.02490)提到了相邻位置的attention score的量级是差不多的
 + Importance Score Computation：拿q和压缩后的key算attn得分，其中$$\mathbf{p}_t^{\mathrm{cmp}} \in \mathbb{R}^{\left\lfloor\frac{t-l}{d}\right\rfloor+1}$$，
 
 XXX
 \mathbf{p}_t^{\mathrm{cmp}}=\operatorname{Softmax}\left(\mathbf{q}_t^T \tilde{K}_t^{\mathrm{cmp}}\right)
 XXX
 
-假设选出来的block size是是$$l^{\prime}$$，如果$$l^{\prime}=l=d$$，那么很简单，选出来的attn score就是$$\mathbf{p}_t^{\text {slc }}=\mathbf{p}_t^{\text {cmp }}$$，给定$$l \leqslant l^{\prime}$$，$$d \mid l$$（整除）且$$d \mid l^{\prime}$$，有如下公式，其中$$[\cdot]$$是取下标
+假设选出来的block size是$$l^{\prime}$$，如果$$l^{\prime}=l=d$$，即和token压缩的设置是一样的，那么很简单，选出来的attn score就是$$\mathbf{p}_t^{\text {slc }}=\mathbf{p}_t^{\text {cmp }}$$。但如果不一样，给定$$l \leqslant l^{\prime}$$，$$d \mid l$$（整除）且$$d \mid l^{\prime}$$，有如下公式，其中$$[\cdot]$$是取下标，有点复杂，详见[gpt](https://chatgpt.com/s/t_6a22b41a4d8c8191a6a4b7865bd0cf2b)，本质是对第j个selection block，它聚合的是在空间上覆盖/邻近这个selection block的一组compressed block分数，然后不是均匀加，而是中间位置权重更高，即一个compressed block和selection block的空间重叠/邻近关系越强，贡献可能出现次数越多。
 
 XXX
 \mathbf{p}_t^{\mathrm{slc}}[j]=\sum_{m=0}^{\frac{l^{\prime}}{d}-1} \sum_{n=0}^{\frac{l}{d}-1} \mathbf{p}_t^{\mathrm{cmp}}\left[\frac{l^{\prime}}{d} j-m-n\right]
 XXX
 
+对于GQA和MQA来讲，$$\mathbf{p}_t^{\text {slc }^{\prime}}=\sum_{h=1}^H \mathbf{p}_t^{\text {slc },(h)}$$，其中$$h$$是head的下标，$$H$$是每个group里的query heads数，这个聚合保证了同一group内，不同head选择block的一致性。
+
 + Top-n Block Selection：
 
-+ sliding window：
+通过如下方式得到最终的$$\tilde{K}_t^{\text {slc }} \in \mathbb{R}^{d_k \times n l^{\prime}}$$
 
+XXX
+\begin{aligned}
+\mathcal{I}_t & =\left\{i \mid \operatorname{rank}\left(\mathbf{p}_t^{\text {slc' }}[i]\right) \leqslant n\right\} \\
+\tilde{K}_t^{\text {slc }} & =\operatorname{Cat}\left[\left\{\mathbf{k}_{i l^{\prime}+1:(i+1) l^{\prime}} \mid i \in \mathcal{I}_t\right\}\right]
+\end{aligned}
+XXX
+
+其中$$\operatorname{rank}(\cdot)$$表示降序的ranking位置，即1是score最高的
+
+### sliding window
+
+最近的w个token一般比较重要，会有一条专门的sliding window分支直接看原始KV，不需要依赖compression/selection才能被看到。
 
 ## FlashMLA
 
