@@ -4256,6 +4256,19 @@ XXX
 
 最近的w个token一般比较重要，会有一条专门的sliding window分支直接看原始KV，不需要依赖compression/selection才能被看到。
 
+### NSA Kernel
+
+![](../assets/nsa-kernel.png)
+
+1. group-centric data loading：在每个inner loop中，对于位置$$t$$，加载一个GQA group内的所有query head $$Q \in \mathbb{R}^{\left[h, d_k\right]}$$，以及它们共享的sparse key/value block下标$$\mathcal{I}_t$$
+2. shared KV Fetching：inner loop中，为了最小化memory加载，按顺序将连续的下标$$\mathcal{I}_t$$的key/value block $$K \in \mathbb{R}^{\left[B_k, d_k\right]}, V \in \mathbb{R}^{\left[B_k, d_v\right]}$$加载进SRAM，其中$$$B_k$是满足$$B_k \mid l^{\prime}$$的kernel block size
+3. outer loop on grid：因为不同query blocks的inner-loop长度基本差不多（inner-loop长度主要和selected block count $$n$$成正比），所以把query/output的循环放到Triton的grid scheduler里，简化并优化 kernel。
+
+这种设计能实现接近最优的arithmetic intensity，因为：
+
++ 通过group-wise sharing，消除了重复的KV传输；
++ 在GPU streaming multiprocessors之间更好地平衡计算负载
+
 ## FlashMLA
 
 [“源神”DeepSeek！突破H800性能上限，FlashMLA重磅开源，算力成本还能降](https://mp.weixin.qq.com/s/OZmMTW4JyiP4GWkzShlqAg)
