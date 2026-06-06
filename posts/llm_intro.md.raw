@@ -4261,7 +4261,7 @@ XXX
 ![](../assets/nsa-kernel.png)
 
 1. group-centric data loading：在每个inner loop中，对于位置$$t$$，加载一个GQA group内的所有query head $$Q \in \mathbb{R}^{\left[h, d_k\right]}$$，以及它们共享的sparse key/value block下标$$\mathcal{I}_t$$
-2. shared KV Fetching：inner loop中，为了最小化memory加载，按顺序将连续的下标$$\mathcal{I}_t$$的key/value block $$K \in \mathbb{R}^{\left[B_k, d_k\right]}, V \in \mathbb{R}^{\left[B_k, d_v\right]}$$加载进SRAM，其中$$$B_k$是满足$$B_k \mid l^{\prime}$$的kernel block size
+2. shared KV Fetching：inner loop中，为了最小化memory加载，按顺序将连续的下标$$\mathcal{I}_t$$的key/value block $$K \in \mathbb{R}^{\left[B_k, d_k\right]}, V \in \mathbb{R}^{\left[B_k, d_v\right]}$$加载进SRAM，其中$$B_k$$是满足$$B_k \mid l^{\prime}$$的kernel block size
 3. outer loop on grid：因为不同query blocks的inner-loop长度基本差不多（inner-loop长度主要和selected block count $$n$$成正比），所以把query/output的循环放到Triton的grid scheduler里，简化并优化 kernel。
 
 这种设计能实现接近最优的arithmetic intensity，因为：
