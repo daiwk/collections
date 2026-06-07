@@ -4466,9 +4466,49 @@ XXX
 I_{t, s}=\sum_{j=1}^{H^I} w_{t, j}^I \cdot \operatorname{ReLU}\left(\mathbf{q}_{t, j}^I \cdot \mathbf{k}_s^I\right)
 XXX
 
-其中，$$H^I$$是indexer的head数；$$\mathbf{q}_{t, j}^I \in \mathbb{R}^{d^I}$$和$$w_{t, j}^I \in \mathbb{R}$$是从qyer token $$\mathbf{h}_t$$派生的，$$\mathbf{k}_s^I \in \mathbb{R}^{d^I}$$是从之前token $$\mathbf{h}_s$$派生的。
+其中，$$H^I$$是indexer的head数；$$\mathbf{q}_{t, j}^I \in \mathbb{R}^{d^I}$$和$$w_{t, j}^I \in \mathbb{R}$$是从query token $$\mathbf{h}_t$$派生的，$$\mathbf{k}_s^I \in \mathbb{R}^{d^I}$$是从之前token $$\mathbf{h}_s$$派生的。lightning index只有少量的head，且可以用fp8实现，计算效率很可观
 
-+ fine-grained indexer: 
++ fine-grained token selection mechanism: 
+
+XXX
+\mathbf{u}_t=\operatorname{Attn}\left(\mathbf{h}_t,\left\{\mathbf{c}_s \mid I_{t, s} \in \operatorname{Top}-\mathrm{k}\left(I_{t,:}\right)\right\}\right)
+XXX
+
+核心代码[github](https://github.com/deepseek-ai/DeepSeek-V3.2-Exp/blob/main/inference/model.py#L457C1-L487C28)如下：
+
+```python
+    def forward(self, x: torch.Tensor, qr: torch.Tensor, start_pos: int, freqs_cis: torch.Tensor, mask: Optional[torch.Tensor]):
+        bsz, seqlen, _ = x.size()
+        end_pos = start_pos + seqlen
+        q = self.wq_b(qr)
+        q = q.view(bsz, seqlen, self.n_heads, self.head_dim)
+        q_pe, q_nope = torch.split(q, [self.rope_head_dim, self.head_dim - self.rope_head_dim], dim=-1)
+        # rope in indexer is not interleaved
+        q_pe = apply_rotary_emb(q_pe, freqs_cis, False)
+        q = torch.cat([q_pe, q_nope], dim=-1)
+        k = self.wk(x)
+        k = self.k_norm(k)
+        k_pe, k_nope = torch.split(k, [self.rope_head_dim, self.head_dim - self.rope_head_dim], dim=-1)
+        # rope in indexer is not interleaved
+        k_pe = apply_rotary_emb(k_pe.unsqueeze(2), freqs_cis, False).squeeze(2)
+        k = torch.cat([k_pe, k_nope], dim=-1)
+        q = rotate_activation(q)
+        k = rotate_activation(k)
+        q_fp8, q_scale = act_quant(q, block_size, self.scale_fmt)
+        k_fp8, k_scale = act_quant(k, block_size, self.scale_fmt)
+        self.k_cache[:bsz, start_pos:end_pos] = k_fp8
+        self.k_scale_cache[:bsz, start_pos:end_pos] = k_scale
+        weights = self.weights_proj(x.float()) * self.n_heads ** -0.5
+        weights = weights.unsqueeze(-1) * q_scale * self.softmax_scale
+        index_score = fp8_index(q_fp8.contiguous(), weights, self.k_cache[:bsz, :end_pos].contiguous(), self.k_scale_cache[:bsz, :end_pos].contiguous())
+        if mask is not None:
+            index_score += mask
+        topk_indices = index_score.topk(min(self.index_topk, end_pos), dim=-1)[1]
+        topk_indices_ = topk_indices.clone()
+        dist.broadcast(topk_indices_, src=0)
+        assert torch.all(topk_indices == topk_indices_), f"{topk_indices=} {topk_indices_=}"
+        return topk_indices
+```
 
 ![](../assets/mla-mqa-mha.png)
 
