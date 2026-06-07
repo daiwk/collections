@@ -4523,7 +4523,7 @@ XXX
         return topk_indices
 ```
 
-deepseek-v3.2是在MLA的MQA模式下实现的DSA，即在下图右边的基础上实现的
+在deepseek-v3.1-Terminus里，训练和prefill用的是MHA模式，decoding时用的是MQA模式。deepseek-v3.2-exp是在MLA的MQA模式下实现的DSA
 
 ![](../assets/mla-mqa-mha.png)
 
