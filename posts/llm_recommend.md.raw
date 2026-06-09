@@ -4176,7 +4176,42 @@ XXX
 
 + 应用2：data memento
 
+## Meta的LoopFM
 
+[LoopFM: Learning frOm HistOrical RePresentations of Foundation Model for Recommendation](https://arxiv.org/pdf/2605.29280)
+
+![](../assets/loopfm.png)
+
++ stage1：embedding extraction：对于每一个**样本**，FM有$$M$$层$$l_1, \ldots, l_M$$，取其中$$K$$层出来，concat到一起得到$$\mathbf{e}^{(i)}=\left[\mathbf{h}_{l_1}^{(i)} ; \ldots ; \mathbf{h}_{l_K}^{(i)}\right] \in \mathbb{R}^D$$，其中$$D=\sum_{k=1}^K d_{l_k}$$，大致在$$O\left(10^5\right)-O\left(10^6\right)$$
++ stage2：compression：原始的$$\mathbf{e}^{(i)} \in \mathbb{R}^D$$直接存储太大，用一个和FM联合训练的autoencoder来压缩成$$\mathbf{z}^{(i)} \in \mathbb{R}^d(d \ll D)$$（别的姜维方法也行，例如PCA、随机投影、可学习的codebook）：
+
+XXX
+\mathbf{z}^{(i)}=f_{\mathrm{enc}}\left(\mathbf{e}^{(i)}\right), \quad \hat{\mathbf{e}}^{(i)}=f_{\mathrm{dec}}\left(\mathbf{z}^{(i)}\right), \quad \mathcal{L}_{\mathrm{AE}}=\left\|\mathbf{e}^{(i)}-\hat{\mathbf{e}}^{(i)}\right\|_2^2
+XXX
+
+注意，autoencoder的梯度会stop-grad到FM的backbone。encoder最后一层用tanh映射到$$[-1,1]$$，然后用int4量化$$z_{\text {quant }}=\operatorname{round}(z \cdot 8) \cdot \operatorname{clamp}(-8,7) / 8$$，能比fp16节省4倍存储
+
+还用了Matryoshka compression，$$\mathcal{L}_{\mathrm{MAE}}=\sum_{d^{\prime} \in \mathcal{D}}\left\|\mathbf{e}-f_{\operatorname{dec}}^{\left(d^{\prime}\right)}\left(\mathbf{z}_{1: d^{\prime}}\right)\right\|_2^2$$
+
++ stage3：structuring：key $$k$$可以是userid、itemid sementicid，本文用的是userid，截取往前一个时间窗口（例如30天）的最多$$L$$(例如200)个item：
+
+XXX
+\mathbf{S}_k=\left[\mathbf{z}_{k, t_1}, \mathbf{z}_{k, t_2}, \ldots, \mathbf{z}_{k, t_L}\right], \quad t_L<\cdots<t_2<t_1<t_{c u r}
+XXX
+
+VM-side integration：VM拿到$$\mathbf{S}_u$$后，过一个序列encoder(可以是pooling或者attn)，然后把pool结果和其他特征concat一起过后面的网络，loss包括task loss和kd loss：$$\mathcal{L}=\mathcal{L}_{\text {task }}\left(\hat{y}^V, y\right)+\lambda \cdot \mathcal{L}_{\mathrm{KD}}\left(\hat{y}^V, \hat{y}^F\right)$$，其中$$\hat{y}^V=g\left(\mathbf{x}_{\mathrm{VM}}, \mathbf{S}_u ; \Theta_V\right)$$
+
+
+总结：
+
++ 每条样本存k层的hidden（融合了u+i的各种组合信息），压缩后得到z；
++ user level取前L个样本的z，拼起来给VM用
+
+消融了z的dim和VM中序列encoder的$$d_{model}$$的关系：
+
+1. 小的$$d_{model}$$限制迁移：固定在小$$d_{model}$$时，增加dim并没有收益，说明$$d_{model}$$需要足够大
+2. dim限制信息容量：固定在小dim时，增加$$d_{model}$$只能有非常小的提升，因为本身携带的信息有限
+3. 这两个维度需要同时scale：同时scale时，收益最大
 
 ## 字节的Rec-Distill
 
