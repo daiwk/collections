@@ -3047,6 +3047,14 @@ KDD25，[Enhanced Emotion-aware Music Recommendation via Large Language Models](
 
 [Efficient Item ID Generation for Large-Scale LLM-based Recommendation](https://arxiv.org/pdf/2509.03746)
 
+## Google的BLUE
+
+[Bridging Textual Profiles and Latent User Embeddings for Personalization](https://arxiv.org/pdf/2605.06981)
+
+![](../assets/blue.png)
+
+![](../assets/blue-arch.png)
+
 ## Meta的EmbSum
 
 [EmbSum: Leveraging the Summarization Capabilities of Large Language Models for Content-Based Recommendations](https://www.arxiv.org/pdf/2405.11441)
