@@ -4694,6 +4694,10 @@ def unified_model_forward(model, model_type: str, inputs: dict, normalize_emb: b
 
 [Improving Text Embeddings with Large Language Models](https://arxiv.org/pdf/2401.00368)
 
+## E5-V
+
+[E5-V：Universal Embeddings with Multimodal Large Language Models](https://arxiv.org/abs/2407.12580)
+
 ## GRIT
 
 [Generative Representational Instruction Tuning](https://arxiv.org/pdf/2402.09906)
