@@ -1,6 +1,12 @@
 
 github地址：[https://github.com/daiwk/collections](https://github.com/daiwk/collections)
 
+附：最近vibe出来的一些东西：
+
++ autoresearch：[https://daiwk.github.io/auto-research/](https://daiwk.github.io/auto-research/), 代码：[https://github.com/daiwk/auto-research](https://github.com/daiwk/auto-research)
++ 从0搞一个agent：[https://daiwk.github.io/building-agents-from-scratch/](https://daiwk.github.io/building-agents-from-scratch/)，代码：[https://github.com/daiwk/building-agents-from-scratch](https://github.com/daiwk/building-agents-from-scratch)
+
+
 本网站目录：
 
 + 大模型相关：
