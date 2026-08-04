@@ -1344,7 +1344,29 @@ aligner看着是一个类似ffn的结构，即norm(mlp(gelu(mlp)))
 
 [GPT-Live 底层拆解：OpenAI 如何让 95% 的音频帧不再延迟](https://mp.weixin.qq.com/s/780hzpjln3pYmKYgm8jsHQ)
 
-[GPT-Live](https://openai.com/zh-Hans-CN/index/introducing-gpt-live/)从音频路径中移除了turn detector。它的语音模型采用全双工模式(full-duplex)，意味着它可以同时聆听和说话。当需要更深入的推理或使用工具时，GPT-Live还可以参考我们前沿的模型如GPT-5.5，而不会中断对话流程。
+[GPT-Live](https://openai.com/zh-Hans-CN/index/introducing-gpt-live/)
+
+几个典型架构：
+
++ 级联式(Cascaded voice systems)：一个语音转文本模型用于转写你的语音，一个大语言模型用于生成回应，以及一个文本转语音模型用于将回应再转换成语音
+
+![](../assets/cascade-speech.png)
+
++ 轮次式(Turn-based voice models)：在单个模型内处理并生成音频，降低了延迟，让对话更流畅，但它们仍通过离散的轮次运作。模型必须等用户停止说话后才能回应，导致来回交流显得僵硬。此外，由于轮次检测基于静默，即使短暂的停顿或背景噪声也可能被误认为一轮结束，从而导致模型在不自然的时机插话。
+
+![](../assets/turn-based-speech.png)
+
++ gpt-live：
+
+  + 连续交互(Continuous interaction)：基于全双工(full-duplex)架构构建了GPT‑Live，以支持连续交互。不再处理一连串彼此独立的消息，而是在生成输出的同时连续处理输入。因此，模型可以在每秒内多次做出交互决策：是说话、继续倾听、暂停、打断，还是调用工具。这让模型能够进行更自然的来回交流，更好地把握时间，甚至执行实时翻译。
+
+![](../assets/continuous-interaction.png)
+
+  + 委派处理更深入的工作(Delegation for deeper work)：将负责连续交互的GPT‑Live与更深入的工作解耦。当一个问题需要搜索、推理或更具智能体特性的能力时，GPT‑Live可以将任务委派给GPT‑5.5等另一个模型。这使它即使在后台处理多个任务，也能保持对话继续进行。还使GPT‑Live能够持续使用最新的模型和智能体，将前沿智能与自然交互相结合。
+
+![](../assets/delegation-deeper-work.png)
+
+总结：
 
 ![](../assets/gpt-live-arch.png)
 
