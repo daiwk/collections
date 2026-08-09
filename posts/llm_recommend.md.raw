@@ -1034,7 +1034,16 @@ Event-level Personalization：点击序列比展现序列更重要，所以对�
 
 ![](../assets/slimper2.png)
 
-整体看着和longer很像
+整体看着和longer很像，图中
+
++ K/V：全部user-side tokens，数量N在千到万的量级，
++ Q：item侧或者cross的特征，搞出K个token，k大概是16到64之间
+
+过程：
+
++ 先Q和K/V做一次cross attn，得到一个qxd的向量；序列特征和sparse特征(都是作为K/V)分别搞一下，得到2个这种向量
++ 从原始Q搞出t个template，即txd，和上面cross attn的结果算点积，得到txq的lambda，即2个lambda
++ 然后做一个refine的操作，这两个lambda，还有其他的一些dense特征，concat并过mlp映射到K维，再残差一下，得到下一层输入
 
 ## 美团的NLGR
 
