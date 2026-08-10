@@ -5746,19 +5746,27 @@ XXX
 
 [Deep Reinforcement Learning for Ranking Utility Tuning in the Ad Recommender System at Pinterest](https://www.arxiv.org/pdf/2509.05292)
 
-
 # 工业推荐大模型架构研究地图
+
 本文将两条原本相对独立的工业推荐研究路线放到同一分析框架中：
+
 - Dense feature interaction 与 ranking model scaling：Wukong、RankMixer 及其后续。
 - 长用户行为序列建模：HSTU、LONGER、STCA、SlimPer 及其后续。
+
 目标不是逐篇复述，而是回答三个架构问题：
+
 1. 计算预算应该用于异构特征交互，还是用于行为序列推理？
 2. 序列特征与非序列特征应该在模型的哪个阶段融合？
 3. 当一个请求包含大量候选 item 时，哪些用户侧计算可以复用？
+
 整理范围以工业推荐、广告和搜索排序论文为主，信息更新至 2026 年 8 月。
+
 > 名称提醒：[Hiformer](https://arxiv.org/abs/2311.05884) 是 Google 的异构特征交互模型；[HyFormer](https://arxiv.org/abs/2601.12681) 是 ByteDance 的序列与特征统一模型。两者不是同一篇工作。
+
 ## 1. 核心结论
+
 工业推荐模型正在从两条独立路线走向统一：
+
 ```text
 Dense Scaling:
 DHEN / Hiformer / Wukong
@@ -5772,7 +5780,9 @@ Unified Modeling:
 InterFormer
         -> OneTrans / HyFormer / MixFormer / EST / INFNet / WHALE
 ```
+
 最重要的判断如下。
+
 - RankMixer 主要解决固定数量异构 feature tokens 的交互和 dense scaling，不直接解决长序列。
 - LONGER、STCA、SlimPer 主要解决如何让少量 Query 高效读取长历史。
 - 工业强基线常采用 `Sequence Encoder -> RankMixer`，但这是一种 late-fusion 架构。
@@ -5783,7 +5793,9 @@ InterFormer
 - OneTrans、EST、TokenFormer 试图保留原始 token 流，同时通过 Query 缩减或稀疏 attention 控制成本。
 - INFNet 使用 latent hubs 聚合后再广播回原始 tokens，是 compact bottleneck 与完整 token propagation 的折中。
 - 统一模型最终都会遇到同一个系统问题：user/item 过早混合会破坏多候选请求中的用户侧复用。
+
 可以把当前主流架构看成一个连续谱：
+
 ```text
 只保留 compact state                                      保留完整 token state
 STCA -- SlimPer -- HyFormer -- MixFormer -- INFNet -- EST -- OneTrans -- HSTU
@@ -5791,7 +5803,9 @@ STCA -- SlimPer -- HyFormer -- MixFormer -- INFNet -- EST -- OneTrans -- HSTU
 ```
 
 ## 2. 统一分析坐标
+
 记：
+
 ```text
 L: 用户历史长度
 M: 非序列 feature token 数
@@ -5801,39 +5815,58 @@ D: hidden dimension
 S: 模型层数
 C: 同一请求中的候选 item 数
 ```
+
 与其按公司或年份分类，更有效的方式是观察三个维度。
+
 **序列状态保留程度**
+
 第一类只传播 compact state：
+
 ```text
 Q_(l+1) = CrossAttention(Q_l, H, H)
 ```
+
 代表模型：
+
 - STCA。
 - SlimPer。
 - HyFormer 的高效配置。
 - MixFormer。
+
 它们不会在每层维护长度为 `L` 的历史 hidden states，激活内存主要由 `q`、`K` 或 `M` 决定。
+
 第二类传播完整或近完整 token state：
+
 ```text
 H_(l+1) = SelfAttention(H_l, H_l, H_l)
 ```
+
 代表模型：
+
 - HSTU。
 - MTGR。
 - WHALE 的 HSTU branch。
 - OneTrans 的浅层。
+
 这类模型能够直接建模行为之间的顺序、共现和高阶依赖，但每层成本通常与 `L^2` 或稀疏 attention graph 相关。
+
 第三类使用持久化摘要或 memory：
+
 ```text
 Long History -> Offline/Incremental Summary -> Online Ranking
 ```
+
 代表模型：
+
 - MIMN。
 - DV365。
 - VISTA。
 - MARM。
+
 它们把长历史计算移到离线或 nearline 阶段，在线成本最低，但候选相关性通常弱于端到端方法。
+
 **序列与 Dense 特征的融合深度**
+
 ```text
 Late Fusion:
 HistoryEncoder(H) -> summary
@@ -5848,7 +5881,9 @@ Dual Branch:
 Sequence branch and dense branch remain active
 fusion happens at every layer
 ```
+
 对应模型：
+
 | 融合方式 | 代表模型 | 主要特征 |
 |---|---|---|
 | Late Fusion | LONGER -> RankMixer、STCA -> RankMixer | 模块成熟，但信息流单向 |
@@ -5856,14 +5891,20 @@ fusion happens at every layer
 | Monolithic Stream | OneTrans、TokenFormer、EST、MTGR | 交互最直接，但计算图和复用更难 |
 | Dual Branch | InterFormer、WHALE | 保留专用算子，融合成本较高 |
 | Hub Aggregate/Broadcast | INFNet | 线性复杂度下保留完整 token state |
+
 **Request-Level Reuse**
+
 对同一用户请求中的 `C` 个候选，如果用户侧表示依赖候选 item，则计算可能重复 `C` 次。
+
 高效架构通常约束信息流：
+
 ```text
 user state 不能读取 item-specific signal
 item state 可以读取 user state
 ```
+
 代表设计：
+
 - HSTU 的 M-FALCON。
 - LONGER 和 OneTrans 的 KV cache。
 - STCA 的 Request Level Batching。
@@ -5871,61 +5912,86 @@ item state 可以读取 user state
 - UG-Sep 的 user-group separation。
 - UI-MixFormer 的 masked HeadMixing。
 - EST 的 user-candidate decoupled computation。
+
 这说明“更深融合”和“更强复用”天然存在张力。
 
 ## 3. Dense Scaling 与 RankMixer
+
 Dense scaling 关注的是：
+
 > 在固定 feature token 数量下，如何通过增加模型深度、宽度和参数量，持续提升异构特征交互能力？
+
 早期代表工作如下。
+
 | 论文 | 公司 | 交互算子 | 主要意义 |
 |---|---|---|---|
 | [DHEN](https://arxiv.org/abs/2203.11014) | Meta | DCN、self-attention、FM 等层次 ensemble | 证明统一 interaction block 可以堆叠扩展 |
 | [Hiformer](https://arxiv.org/abs/2311.05884) | Google | token-specific heterogeneous attention | 用独立 Q/K/V 处理异构 feature spaces |
 | [Wukong](https://arxiv.org/abs/2403.02545) | Meta | Factorization Machine Block + Linear Compression | 建立 feature-interaction dense scaling law |
 | [RankMixer](https://arxiv.org/abs/2507.15551) | ByteDance | parameter-free Token Mixing + Per-token FFN | 将参数和 FLOPs 放在 GPU 友好的 FFN 中 |
+
 **RankMixer 的本质**
+
 输入为固定数量的语义 feature tokens：
+
 ```text
 X = [x_1, x_2, ..., x_M] in R^(M x D)
 ```
+
 每个 token 沿 hidden dimension 切成多个 head：
+
 ```text
 x_i = [x_i^1 | x_i^2 | ... | x_i^M]
 ```
+
 再将所有 token 的同一 head 拼接成新 token：
+
 ```text
 s_j = Concat(x_1^j, x_2^j, ..., x_M^j)
 ```
+
 这个操作本质上是固定 reshape 和 transpose：
+
 ```text
 TokenMix(X) = Reshape(Transpose(Reshape(X)))
 ```
+
 随后每个 mixed token 使用独立 FFN：
+
 ```text
 y_j = FFN_j(s_j)
 ```
+
 RankMixer 的核心选择是：
+
 ```text
 异构 feature-to-feature 交互:
 不用 similarity-based self-attention
 参数容量:
 主要放入 token-specific FFN
 ```
+
 原因是 user ID、item ID、context、统计特征来自不同语义空间，向量内积未必能表示可靠相似度。
+
 RankMixer 的优势：
+
 - 不构造 feature-token attention score matrix。
 - TokenMix 无参数，计算和通信规则稳定。
 - PFFN 能隔离不同 feature subspace 的参数。
 - 大矩阵计算适合 GPU，论文报告 MFU 显著提升。
 - 易于扩展 Dense MoE 或 Sparse MoE。
+
 RankMixer 的局限：
+
 - Mixing 是固定 permutation，不随样本学习。
 - Mixing 前后 token 的语义位置可能不一致，影响 residual。
 - 深层网络存在梯度和训练稳定性问题。
 - TokenMix 扩展有效秩，但 PFFN 可能再次压缩有效秩。
 - 它只接收序列 summary，无法直接利用细粒度长历史。
 - user/item token 过早混合后，不利于用户侧请求级复用。
+
 **RankMixer 的直接演化**
+
 | 论文 | 解决的问题 | 关键改动 | 架构含义 |
 |---|---|---|---|
 | [TokenMixer-Large](https://arxiv.org/abs/2602.06563) | 深度、residual、MoE 和超大规模训练 | Mixing-and-Reverting、跨层残差、辅助 loss、Sparse-Pertoken MoE、FP8 | RankMixer 最直接的工业升级 |
@@ -5933,10 +5999,15 @@ RankMixer 的局限：
 | [UniMixer](https://arxiv.org/abs/2604.00590) | 固定 TokenMix 不可学习 | 将 permutation matrix 推广为结构化可学习 mixing | 统一 attention、TokenMixer 和 FM |
 | [RankElastor](https://arxiv.org/abs/2605.23191) | TokenMix 扩秩不足、PFFN 秩收缩 | Parameterized Full Mixing、GLU PFFN | 从有效秩角度修复深层 scaling |
 | [RankUp](https://arxiv.org/abs/2604.17878) | 深层表示发生 collapse | 随机拆分、多 embedding、global/task/pretrained tokens | 从 token 组织和输入多样性提升秩 |
+
 这些后续工作揭示了一个共同事实：
+
 > 参数量扩大并不等于有效表示容量扩大。
+
 TokenMixer-Large 更偏工程和深层训练；UniMixer 更偏 mixing 算子统一；RankElastor 和 RankUp 更关注表示谱与有效秩；UG-Sep 解决在线系统复用。
+
 因此，RankMixer 路线已经从“如何堆大模型”发展为四个子问题：
+
 ```text
 可学习 mixing
 深层训练稳定性
@@ -5945,62 +6016,93 @@ TokenMixer-Large 更偏工程和深层训练；UniMixer 更偏 mixing 算子统�
 ```
 
 ## 4. 长序列建模路线
+
 长序列路线关注的是：
+
 > 给定 `10^3` 到 `10^6` 条用户行为，如何在工业延迟和内存约束下提取候选相关兴趣？
+
 主要有四类策略。
+
 | 路线 | 代表论文 | 长历史处理 | 在线中间状态 |
 |---|---|---|---|
 | 检索后精排 | [SIM](https://arxiv.org/abs/2006.05639)、[ETA](https://arxiv.org/abs/2209.12212)、[TWIN](https://arxiv.org/abs/2302.02352) | 从完整历史检索 Top-K，再做 target attention | Top-K 子序列 |
 | Offline/Memory | [MIMN](https://arxiv.org/abs/1905.09248)、[DV365](https://arxiv.org/abs/2506.00450)、[VISTA](https://arxiv.org/abs/2510.22049) | 增量或离线压缩成 memory/summary tokens | 固定 memory |
 | Compact Query | [LONGER](https://arxiv.org/abs/2505.04421)、[STCA](https://arxiv.org/abs/2511.06077)、[SlimPer](https://arxiv.org/abs/2607.12281) | 少量 Query 读取长 K/V | 短 Query 或 knowledge slots |
 | Full/Near-Full SA | [HSTU](https://arxiv.org/abs/2402.17152)、[MTGR](https://arxiv.org/abs/2505.18654)、[ULTRA-HSTU](https://arxiv.org/abs/2602.16986) | 在完整或 semi-local token graph 上做序列推理 | 长度随历史增长 |
+
 检索路线可以扩展到极长历史，但未召回 token 无法参与后续推理。
+
 Memory 路线在线成本最低，但摘要往往是 item-independent，可能损失候选相关细节。
+
 Compact-query 路线保留完整历史作为只读证据库，重点计算 Query-to-History relevance。
+
 Full self-attention 路线保留完整 token-to-token reasoning，质量潜力高，但计算和激活成本最大。
+
 **四个关键模型**
+
 LONGER 第一层：
+
 ```text
 Q = [global tokens; sampled history], length m+k
 K,V = [global tokens; full/merged history], length m+L
 Z_1 = CrossAttention(Q, K, V)
 ```
+
 后续层：
+
 ```text
 Z_(l+1) = SelfAttention(Z_l)
 ```
+
 因此它不是在完整 `L` 上持续做 self-attention，而是在第一层输出的 `m+k` 长度上做。
+
 STCA：
+
 ```text
 Q_(l+1) = CrossAttention(Q_l, H, H)
 ```
+
 每层 target state 都重新读取完整历史，不维护 history hidden states。
+
 SlimPer：
+
 ```text
 Q_l = Project(KnowledgeBase_l)
 R_l = CrossAttention(Q_l, all user-side tokens)
 KnowledgeBase_(l+1) = MatchAndRefine(KnowledgeBase_l, R_l)
 ```
+
 它将 target state 扩展成固定大小 user-item knowledge base，并加入显式 matching/refinement。
+
 HSTU：
+
 ```text
 H_(l+1) = GatedCausalSelfAttention(H_l)
 ```
+
 它在完整输入窗口上保留 history-to-history reasoning。原始 HSTU 为二次复杂度，ULTRA-HSTU 后续转向 semi-local attention。
+
 这四个模型形成清晰取舍：
+
 | 模型 | Query 长度 | 每层重读原始历史 | history-to-history SA | 层间状态 |
 |---|---:|---|---|---|
 | LONGER | `m+k`，可随历史增长 | 主要在首层 | 在压缩长度上有 | sampled/global tokens |
 | STCA | 很小 | 是 | 无 | target state |
 | SlimPer | 固定 `q` / `K` | 是 | 无 | knowledge base |
 | HSTU | 约等于输入窗口 | 不适用 | 有 | 完整 token stream |
+
 真正的争论不是“有没有 attention”，而是：
+
 > 是否值得为 history-to-history 交互支付接近 `O(L^2)` 的成本？
+
 支持 full self-attention 的理由：
+
 - 行为间存在顺序、重复、周期和高阶依赖。
 - 单纯 target-to-history attention 不能先完成复杂的历史内部推理。
 - HSTU 和 ULTRA-HSTU 认为 self-attention 仍有更高质量上限。
+
 支持 compact-query 的理由：
+
 - 排序最终只需要少量 user-item relevance 表示。
 - 大量 history-to-history 计算与当前候选无关。
 - 深度与历史激活大小可以解耦。
@@ -6008,19 +6110,25 @@ H_(l+1) = GatedCausalSelfAttention(H_l)
 - 10k 以上历史更容易满足生产延迟。
 
 ## 5. 序列与 Dense 特征的统一建模
+
 传统生产结构通常是：
+
 ```text
 H -> LONGER/STCA/HSTU -> sequence summary
 [sequence summary; user/item/context/cross features]
     -> RankMixer/Wukong/DCN
     -> prediction
 ```
+
 这种结构的问题不是模块能力不足，而是信息流方向受限：
+
 ```text
 history -> summary -> dense interaction
 dense interaction 无法反馈到 history retrieval
 ```
+
 统一模型试图让两类信号在更深层反复交换。
+
 | 模型 | 基本结构 | 序列状态 | Dense 交互方式 | 融合位置 |
 |---|---|---|---|---|
 | [InterFormer](https://arxiv.org/abs/2411.09852) | Interaction/Sequence 双分支 + Cross Arch | 独立 sequence branch | 独立 interaction branch | 每层双向交换 |
@@ -6030,36 +6138,52 @@ dense interaction 无法反馈到 history retrieval
 | [EST](https://arxiv.org/abs/2602.10811) | LCA + Content Sparse Attention | 完整原始 tokens | token-specific interaction | 稀疏统一 graph |
 | [INFNet](https://arxiv.org/abs/2508.11565) | Hub Aggregate + Broadcast | 完整 tokens 被反复更新 | hub-mediated interaction | 每层双向 |
 | [WHALE](https://arxiv.org/abs/2607.17017) | Wukong + HSTU + Fusion | 完整 HSTU branch | Wukong FM branch | 每层跨分支 |
+
 **HyFormer 与 MixFormer**
+
 HyFormer 每层先读取历史，再增强 Query：
+
 ```text
 Q_hat_l = CrossAttention(Q_(l-1), K_l(H), V_l(H))
 Q_l = QueryBoost([Q_hat_l; F])
 ```
+
 信息流：
+
 ```text
 历史 -> Query -> 异构特征交互 -> 更强 Query -> 再读历史
 ```
+
 其优势是多序列组织清晰：
+
 ```text
 watch sequence    <-> watch query
 search sequence   <-> search query
 purchase sequence <-> purchase query
 ```
+
 不同序列不必强制拼接，跨序列交互发生在 Query Boosting 阶段。
+
 MixFormer 每层先生成高阶特征 Query，再读取历史：
+
 ```text
 Q_l = QueryMixer(F_l)
 Z_l = CrossAttention(Q_l, K_l(H), V_l(H))
 F_(l+1) = PerHeadFusion(Z_l)
 ```
+
 信息流：
+
 ```text
 高阶异构特征 -> 专门 Query heads -> 读取历史 -> 融合 -> 重复
 ```
+
 Query Mixer 使用 RankMixer 式 HeadMixing 和 per-head SwiGLU，不用 self-attention 比较异构 feature tokens。
+
 Cross Attention 仍然保留，因为 structured Query 与历史行为之间的相关性具有明确语义。
+
 两者的差别：
+
 | 维度 | HyFormer | MixFormer |
 |---|---|---|
 | 每层顺序 | 先 Cross-Attention，后 Query Boost | 先 Query Mixer，后 Cross-Attention |
@@ -6068,25 +6192,36 @@ Cross Attention 仍然保留，因为 structured Query 与历史行为之间的�
 | 主要目标 | 让异构信息持续增强下一层 Query | 让 dense 与 sequence 共享可 co-scale 参数 |
 | 多序列优势 | 明确且灵活 | 论文重点更偏统一 head |
 | 请求级复用 | 可结合 KV cache/M-FALCON | UI-MixFormer 明确加入 mask |
+
 它们都可以抽象为：
+
 ```text
 Q_l = DenseInteraction(Q_l, F)
 Q_l = CrossAttention(Q_l, H, H)
 ```
+
 HyFormer 与 MixFormer 相比 SlimPer：
+
 - 三者都只传播 compact user-item state。
 - 三者都在多层中重新读取长历史。
 - SlimPer 用显式 knowledge slots、matching 和 refinement。
 - HyFormer 用 Query Boosting 建模跨 Query、跨序列、非序列特征交互。
 - MixFormer 让 RankMixer-style heads 同时承担 dense interaction 和 sequence Query。
+
 其他统一路线代表不同折中。
+
 OneTrans 将所有 token 放入统一 causal stream，并逐层减少发出 Query 的 sequence tokens。
+
 EST 保留原始 token，但删除低价值 self-interaction，只保留 non-behavior-to-behavior cross edges 和内容相似 top-K 行为边。
+
 INFNet 用少量 hubs 聚合全局信息，再将信息广播回完整 token 流，因此避免 SlimPer 式只传播 compact state。
+
 WHALE 不折叠两种 backbone，而是同时保留 Wukong 和 HSTU，并让 Wukong 表示逐层查询 HSTU 序列表示。
 
 ## 6. 总体对比与架构选择
+
 **统一复杂度和状态对比**
+
 | 模型 | 长历史读取 | History SA | Dense 交互 | 层间状态 | 典型序列成本 | Request Reuse |
 |---|---|---|---|---|---|---|
 | RankMixer | 不直接读原始历史 | 无 | TokenMix + PFFN | `O(MD)` | 与 `L` 无关 | 原始版较弱 |
@@ -6100,18 +6235,26 @@ WHALE 不折叠两种 backbone，而是同时保留 Wukong 和 HSTU，并让 Wuk
 | INFNet | hubs 聚合后广播 | 无 dense SA | Hub flow | `O(LD)` | 线性 | 取决于 token 分组 |
 | HSTU/MTGR | 完整窗口推理 | 有 | Self-Attention | `O(LD)` | `O(SL^2D)` | M-FALCON |
 | WHALE | HSTU branch | 有 | Wukong branch | 双分支 | HSTU + Wukong | 系统优化 |
+
 表中的 Big-O 省略了 projection、FFN、head 数和 batch 相关常数，适合判断扩展趋势，不适合直接预测线上延迟。
+
 **如何选择**
+
 如果增益主要来自丰富 sparse、cross 和 context features：
+
 ```text
 优先考虑:
 RankMixer / TokenMixer-Large / UniMixer
 ```
+
 适合条件：
+
 - 序列长度较稳定。
 - 已有成熟 sequence summary。
 - GPU MFU 和 dense 参数扩展是主要瓶颈。
+
 如果增益主要来自 10k 级长历史：
+
 ```text
 成本优先:
 STCA / SlimPer
@@ -6120,7 +6263,9 @@ LONGER
 质量上限优先:
 HSTU / ULTRA-HSTU
 ```
+
 如果 dense 与 sequence 都重要，并且 late fusion 已成为瓶颈：
+
 ```text
 多序列、Query 组织优先:
 HyFormer
@@ -6131,22 +6276,30 @@ OneTrans / EST
 保留两套成熟 backbone:
 WHALE
 ```
+
 如果不希望丢弃原始 token state，但 full self-attention 太贵：
+
 ```text
 结构化稀疏:
 EST
 Latent aggregate + full-token broadcast:
 INFNet
 ```
+
 如果同一请求候选数 `C` 很大：
+
 ```text
 必须优先检查:
 用户侧状态是否依赖 candidate
 哪些 K/V、FFN 和 tokenization 可以 request-level shared
 ```
+
 此时 UG-Sep、UI-MixFormer、ROO、RLB、M-FALCON 的系统价值可能高于单纯扩大模型。
+
 **三个研究判断**
+
 第一，feature interaction 和 sequence reasoning 需要不同归纳偏置。
+
 ```text
 Feature-to-Feature:
 异构语义空间，固定 mixing、token-specific FFN、FM 往往更合适
@@ -6155,15 +6308,22 @@ Query-to-History:
 History-to-History:
 顺序和高阶依赖重要，self-attention 更强但更贵
 ```
+
 第二，统一架构的价值主要来自信息流，而不是“共享一个 Transformer 名字”。
+
 真正有效的统一应允许：
+
 ```text
 dense feature interaction 改变下一层 sequence query
 sequence evidence 反过来改变下一层 dense representation
 ```
+
 如果只是把所有输出 concat 到一起，仍然属于 late fusion。
+
 第三，生产架构不能只看单候选 FLOPs。
+
 实际成本还取决于：
+
 ```text
 候选数 C
 用户侧 token 是否复制
@@ -6173,10 +6333,13 @@ K/V 是否可缓存
 算子 MFU
 稀疏路由负载均衡
 ```
+
 这也是为什么 SlimPer、UG-Sep、UI-MixFormer 和 HSTU 系统优化都强调请求级计算图。
 
 ## 7. 阅读路线与论文索引
+
 如果只读十篇，推荐顺序如下。
+
 1. [Wukong](https://arxiv.org/abs/2403.02545)：理解 dense feature-interaction scaling。
 2. [RankMixer](https://arxiv.org/abs/2507.15551)：理解 TokenMix + PFFN 和 GPU-aware 设计。
 3. [TokenMixer-Large](https://arxiv.org/abs/2602.06563)：理解 RankMixer 的深层训练和 MoE 升级。
@@ -6187,7 +6350,9 @@ K/V 是否可缓存
 8. [HyFormer](https://arxiv.org/abs/2601.12681)：理解 Query Decoding 与 Query Boosting。
 9. [MixFormer](https://arxiv.org/abs/2602.14110)：理解 dense/sequence co-scaling。
 10. [EST](https://arxiv.org/abs/2602.10811) 或 [WHALE](https://arxiv.org/abs/2607.17017)：比较稀疏统一与双分支统一。
+
 按主题补充阅读：
+
 | 主题 | 论文 |
 |---|---|
 | Lifelong 检索 | [SIM](https://arxiv.org/abs/2006.05639)、[ETA](https://arxiv.org/abs/2209.12212)、[TWIN](https://arxiv.org/abs/2302.02352)、[TWIN-V2](https://arxiv.org/abs/2407.16357) |
@@ -6195,5 +6360,7 @@ K/V 是否可缓存
 | Full/Near-Full SA | [HSTU](https://arxiv.org/abs/2402.17152)、[MTGR](https://arxiv.org/abs/2505.18654)、[GRAB](https://arxiv.org/abs/2602.01865)、[ULTRA-HSTU](https://arxiv.org/abs/2602.16986) |
 | RankMixer 后续 | [UG-Sep](https://arxiv.org/abs/2602.10455)、[UniMixer](https://arxiv.org/abs/2604.00590)、[RankElastor](https://arxiv.org/abs/2605.23191)、[RankUp](https://arxiv.org/abs/2604.17878) |
 | 统一建模 | [InterFormer](https://arxiv.org/abs/2411.09852)、[OneTrans](https://arxiv.org/abs/2510.26104)、[TokenFormer](https://arxiv.org/abs/2604.13737)、[INFNet](https://arxiv.org/abs/2508.11565)、[EST](https://arxiv.org/abs/2602.10811)、[WHALE](https://arxiv.org/abs/2607.17017) |
+
 最终可以用一句话概括整个技术演化：
+
 > 工业推荐架构正在从“一个序列 encoder 加一个 feature interaction head”，演化为“用异构高阶特征持续构造 Query、分层读取长历史，并在多候选请求中显式复用用户侧计算”的统一模型。
