@@ -5794,12 +5794,21 @@ InterFormer
 - INFNet 使用 latent hubs 聚合后再广播回原始 tokens，是 compact bottleneck 与完整 token propagation 的折中。
 - 统一模型最终都会遇到同一个系统问题：user/item 过早混合会破坏多候选请求中的用户侧复用。
 
-可以把当前主流架构看成一个连续谱：
+可以按照“层间保留多少历史状态”理解当前主流架构：
+
+| 类型 | 代表模型 | 层间保留的状态 | 行为之间的交互 | 主要取舍 |
+|---|---|---|---|---|
+| Compact state | STCA、SlimPer、HyFormer、MixFormer | 少量 target、knowledge slot 或 feature-query tokens | 不直接维护完整 history-to-history 交互 | 激活内存低，重点建模候选与历史的相关性 |
+| Compact hubs + full tokens | INFNet | 少量 hub 和完整原始 tokens | hub 聚合后将信息广播回原始 tokens | 保留细粒度状态，但内存随历史长度增长 |
+| Sparse or shrinking token stream | EST、OneTrans | 完整或逐层缩短的 token 流 | 使用稀疏 attention，或逐层减少 Query | 在计算成本和序列推理能力之间折中 |
+| Full sequence state | HSTU | 每层完整历史 token 流 | 完整 causal history-to-history self-attention | 序列推理能力强，但计算和激活成本最高 |
+
+从左到右并不是严格的模型优劣排序，而是计算分配方式的变化：
 
 ```text
-只保留 compact state                                      保留完整 token state
-STCA -- SlimPer -- HyFormer -- MixFormer -- INFNet -- EST -- OneTrans -- HSTU
-低激活内存、强 target relevance                      强 token reasoning、高计算成本
+更多计算用于候选相关性
+    -> 更多计算用于维护细粒度历史状态
+    -> 更多计算用于历史 token 之间的序列推理
 ```
 
 ## 2. 统一分析坐标
