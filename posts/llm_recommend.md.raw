@@ -2114,6 +2114,46 @@ GR2(Generative Reasoning Reranker)：通过三阶段训练流水线赋能重排�
 
 ![](../assets/llm-context-cate-graph.png)
 
+## Meta的ConnectionMind
+
+[ConnectionMind: Leveraging Social Networks and Large Language Models for Personalized Recommendation at Meta](https://arxiv.org/pdf/2608.10187)
+
+![](../assets/connectionmind-graph.png)
+
+异构图：节点包括用户、Page/创作者、Item/视频内容。
+
+边类型包括：
+
++ 用户和用户：好友关系、行为相似关系。
++ 用户和Page：关注创作者或主页。
++ 用户和Group：加入或互动的群组。
++ Group和Item：群组内分享/讨论的内容。
++ Page和Item：创作者发布的内容。
++ Item和Item：共看关系、语义相似关系。
+
+视频会通过 OCR、ASR、视频理解模型提取文本/视觉/音频信息，再总结成紧凑文本；用户和创作者也会由历史互动内容生成语义profile。这样LLM在图上走路径时，不只是看结构，还能理解节点语义。
+
+![](../assets/connectionmind.png)
+
+推理过程：
+
++ 对目标用户采样一个紧凑的局部子图。
++ LLM看到当前路径、frontier节点的可选typed edges、节点文本描述。
++ LLM输出结构化动作，比如要扩展哪些路径、要surface哪些item。
++ 最终得到推荐item集合，以及每个item对应的证据路径。
+
+训练：
+
++ SFT：用历史正反馈行为构造从用户到正样本item的最短路径，让LLM学会合法地走图、产出结构化路径。
++ RL：用GRPO，用规则奖励继续优化完整rollout，奖励包括格式合法性、最终推荐 F1，以及中间步骤是否朝可达正样本方向探索。
+
+![](../assets/connectionmind-serving.png)
+
+serving：
+
++ 对最活跃的top 5-10%用户，直接用ConnectionMind LLM生成显式推理路径。
++ 对大多数普通用户，用LLM离线发现有效meta-path，再蒸馏训练一个轻量Student GNN，线上毫秒级服务。
+
 ## 美团的MSD
 
 [Balancing Efficiency and Effectiveness: An LLM-Infused Approach for Optimized CTR Prediction](https://arxiv.org/pdf/2412.06860)
