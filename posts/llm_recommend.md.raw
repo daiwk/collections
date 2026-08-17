@@ -1045,6 +1045,45 @@ Event-level Personalization：点击序列比展现序列更重要，所以对�
 + 从原始Q搞出t个template，即txd，和上面cross attn的结果算点积，得到txq的lambda，即2个lambda
 + 然后做一个refine的操作，这两个lambda，还有其他的一些dense特征，concat并过mlp映射到K维，再残差一下，得到下一层输入
 
+## Meta的Mosaic
+
+[Mosaic: A Fleet of User Embedding Specialists for Recommendation at Meta](https://arxiv.org/pdf/2607.24015)
+
+![](../assets/mosaic.png)
+
+不是只训练一个通用用户embedding模型，而是维护一组不同类型的用户embedding专家模型，每个专家负责捕捉用户行为的一个侧面，然后把这些embedding作为标准特征喂给下游retrieval、ranking、integrity(平台治理/生态安全之类的)等模型。
+
+四类专家：
+
++ Memorization-driven：用超大embed hash table记住细粒度用户偏好，各种纯id类特征。
++ Dense-heavy：处理大量聚合统计特征，比如1d/7d/28d的点赞、评论、分享、跨场景计数，用MHTA([Multi-Head Talking Attention](https://arxiv.org/pdf/2003.02436))、SEDot([Squeezeand-Excitation Networks](https://arxiv.org/pdf/1709.01507))、Wukong这类结构建模非线性交叉。
++ Sequential：建模用户长行为序列，基于HSTU/attention，加了上下文token、内容/行为metadata拆分token、层级attention、MoE等。
++ CoTrain：把下游ranker的梯度也接进用户塔，让embedding更贴近某个具体业务面的目标。
+
+前3个专家是上游的多任务训练，第4个专家是下游任务去训练
+
+![](../assets/mosaic-arch.png)
+
+有没有target信息？
+
++ training-only architecture：可以吃non-user features，包括item/context相关特征，并用engagement label训练。
++ user tower：吃用户侧特征，输出一个或多个 user embedding。
++ 训练时non-user分支的loss/gradient 会反传到user tower，让user embedding学到对下游任务有用的表示。
++ inference时只部署user tower，只给用户侧输入
+
+serving：
+
++ 低成本/轻模型/可在线现算：CPU online
++ 高freshness/重模型/必须现算：GPU online，用如下方式降成本：
+    + AOTI：PyTorch的Ahead-of-Time编译路径，线上推理不要每次走Python eager runtime，而是提前把模型图编译好，并尽量fuse operator，减少Python调度、kernel launch、算子间开销
+    + predictor tuning：
+        + batch coalescing：把短时间内多个请求合成batch，提高GPU利用率，但要控制等待时间。
+        + thread-pool sizing：线程池大小要合适，太小吃不满，太大会争抢CPU、调度变慢。
+        + intra/inter-op parallelism：控制单个算子内部并行和多个算子之间并行，避免线上推理过度并发导致抖动。
+    + model split：把模型拆成不同子路径，让sparse embedding部分和dense/transformer部分走更适合自己的执行方式，而不是整个模型硬塞进一个统一执行图里。
+    + memcache：用户embedding不会每秒剧烈变化，很多用户还会在短时间内多次请求。于是线上先查cache，TTL是2小时
++ 大模型/freshness可放宽/全量用户可周期更新：GPU offline batch inference，写embedding index，线上读表
+
 ## 美团的NLGR
 
 生成式重排
@@ -2491,6 +2530,14 @@ XXX
 ![](../assets/sigma-scaling-deploy.png)
 
 实验的时候是加了一路近线召回
+
+## 阿里的DREAM
+
+[DREAM Technical Report](https://arxiv.org/pdf/2608.09408)
+
+![](../assets/dream1.png)
+
+![](../assets/dream-frame.png)
 
 ## 快手的LSVCR
 
