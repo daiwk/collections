@@ -5136,6 +5136,25 @@ MSRoPE如图所示，即图像的位置编码完后，沿对角线把文本的�
 	
 和qwen3-next一样是三层linear加一层full，用了mtp，另外加了img相关的，vocab size比之前qwen3大了不少
 
+## Qwen3.8
+
+[刚刚，Qwen3.8-27B 开源了！](https://mp.weixin.qq.com/s/Ttv5cMD5p6DkUQWyoOsqCA)
+
+[https://huggingface.co/Qwen/Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B)
+
+Qwen3.8-27B是原生多模态稠密（Dense）模型，支持262K原生上下文，通过YaRN技术可外推至1M Tokens上下文。较Qwen3.6-27B，新模型在编程和办公场景的性能大幅提升，表现甚至超越了Qwen3.7-Plus；同时，模型还新增了reasoning_effort功能，根据任务难度控制思考深度，更省资源。Qwen3.8-27B也拥有Qwen3.8系列模型的共性，可以端到端完成复杂任务，直接交付经得起检验的可靠成果。
+
+![](../assets/qwen3.8-27b.png)
+
+[Qwen3.8-Flash：全新架构，更强更稳更划算](https://mp.weixin.qq.com/s/16MOkzjvg6SLfozl1HjymA)
+
+![](../assets/qwen3.8-flash.png)
+
++ Attention：采用 GDN + QSA Hybrid 架构。Gated DeltaNet（GDN）高效压缩历史信息；Qwen Sparse Attention（QSA） 通过压缩式轻量 Indexer 在 micro-block 粒度上筛选重要上下文，显著降低长序列 Attention 开销。
++ Residual：引入 Gated Residual（GR），将 Residual Stream 扩展为 4 条分支，并通过动态 Gate 控制信息读写，增强跨层信息传递和训练稳定性。
++ Embedding：引入 N-gram Embedding，利用局部上下文进行查表，以很少的额外计算扩展模型容量；Embedding Table 可以卸载到 Host Memory，并通过异步 Prefetch 与模型计算重叠。
++ Optimization：采用 Muon Optimizer，围绕正交化精度、Muon 与 AdamW 的参数分工以及融合参数拆分等策略进一步优化，并针对新架构重新拟合 Scaling Law。
+
 # Kimi系列
 
 ## MOBA
@@ -5509,6 +5528,31 @@ m层lightning attention后再接1层softmax attention，参数456B，每次推�
 + GLM-5在底层架构层面采用DSA（DeepSeek Sparse Attention），在「长文本推理能力」与「训推成本」之间取得绝佳平衡。
 + GLM-5通过异步强化学习基础设施——Slime框架，将「生成过程」与「训练过程」解耦，显著提升后训练阶段的效率。
 + Agent 强化学习算法是 GLM-5 能够更高效地从复杂、长时序交互中学习的关键。
+
+## GLM-5.3
+
+[GLM-5.3：前沿编程能力与涌现的网络安全能力](https://mp.weixin.qq.com/s/JdBx3B12L7Mhxruf4Nfr4g)
+
+[https://z.ai/blog/glm-5.3](https://z.ai/blog/glm-5.3)
+
++ 更强的编程能力。GLM-5.3是编程能力最强的开源模型，在内部自建体感评测中较GLM-5.2提升50%，在包括Terminal Bench 3.0、Agents' Last Exam (CLI)在内的公开基准测试中取得开源第一。
++ 网络安全能力。在白盒代码审查与漏洞发现等安全任务中，GLM-5.3的表现持平Mythos 5，展现出面向网络安全防御场景的强大潜力。
++ 后训练Scaling。上述全部提升都来自后训练。基于[IndexShare](https://arxiv.org/abs/2603.12201)、[SAO](https://arxiv.org/abs/2607.07508)、以及持续演进的新一代Slime框架，我们在与GLM-5.2完全相同基座上高效推进强化学习，可能我们还远未开发出这个基座的智能上界。
+
+
+
+[GLM-5.3-Flash：前沿智能进入普惠时代](https://mp.weixin.qq.com/s/O7RCVME1Kut-Z2oFYhgrkw)
+
+[https://z.ai/blog/glm-5.3-flash](https://z.ai/blog/glm-5.3-flash)
+
+![](../assets/glm5.3-flash.png)
+
+为降低模型长上下文场景下的注意力成本，采用线性注意力与稀疏注意力相结合的混合架构：
+
++ 线性注意力通过递归机制捕获局部依赖关系，
++ 稀疏注意力则借助轻量级索引器召回全局上下文
+
+引入IndexPool为进一步降低1M上下文下索引器的时延与内存开销，通过加权池化将索引器的4个缓存向量压缩为1个。
 
 # 美团
 
