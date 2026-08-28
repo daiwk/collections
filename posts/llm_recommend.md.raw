@@ -3257,6 +3257,25 @@ XXX
 
 [GR2 Technical Report](https://arxiv.org/pdf/2606.31984)
 
+## Meta的AMBER
+
+[An Event is Worth One Token: Event Tokenization for Industrial-scale LLM Recommendation](https://arxiv.org/pdf/2608.25546)
+
+一次曝光/交互发生时的user、item、context、cross和outcome等完整快照压成连续的Event Token，再让User LLM对Event Token序列做自回归ranking或retrieval。
+
++ 训练：Event Tokenizer与User LLM联训；
++ serving：在事件发生后异步计算一次并缓存
+
+但没写ab收益
+
+![](../assets/amber.png)
+
+![](../assets/amber-2tasks.png)
+
+其实和字节的ins-as-token非常像，主要区别是同时支持召回+排序task，以及user侧用了llm。文中说llm是一个预训练的1b llama初始化的，而且效果比随机初始化要好，但其实它的输入都是event-token，感觉不需要啥世界知识？下图也可以看出，一开始收益很大，但20k steps后就很小了其实。
+
+![](../assets/amber-pretrain-random.png)
+
 ## 美团的PIGEON
 
 [Open-Set Living Need Prediction with LLMs](https://arxiv.org/pdf/2506.02713)
