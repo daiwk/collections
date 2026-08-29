@@ -365,14 +365,19 @@ BP：实际相当于是一个动态规划，因为多层nn的不同参数，在�
 这个库实现了简单的自动求导，[https://github.com/karpathy/micrograd](https://github.com/karpathy/micrograd)
 
 
-# 高等代数学习
+# 线性代数(linear algebra)
 
 [MIT Gilbert Strang系列视频](https://www.bilibili.com/video/BV1rH4y1N7BW/?spm_id_from=333.788.videopod.episodes&vd_source=1ae2f94a63a5ab75ddbbb426fa107515&p=3)
 
 ## 方程组的几何解释
 
+如下的二元一次方程组，可以写成矩阵的形式，$$A$$是系数矩阵，$$\mathbf{x}$$是未知数列向量，$$b$$是结果向量
+
+![](../assets/linear-equations-matrix.png)
 
 ## 矩阵消元
+
+
 
 ## 矩阵乘法
 
@@ -457,7 +462,7 @@ XXX
 
 ==>不可逆矩阵、奇异矩阵，其列能通过线性组合得到0
 
-如何求逆？高斯-若尔当（Gauss-Jordan）思想：同时求解2个方程组
+如何求逆？高斯-若尔当（Gauss-Jordan）消元法：同时求解2个方程组
 
 增广矩阵的思想，把单位矩阵增广进去，然后进行消元，把左边变成单位矩阵，而右边就变成了逆矩阵
 
