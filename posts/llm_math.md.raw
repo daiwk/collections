@@ -76,6 +76,28 @@ col1和col2的线性组合，要得到$$[0,3]$$这个向量。我们已经知道
 
 ![](../assets/elimination-matrix-view.png)
 
+第1行是1 0 0，因为只要右边的第一行，别的不要；第3行是0 0 1，因为只要第3行；第2行是-3 1 0，因为第一行的-3倍，加上行2行原始值；这个矩阵叫$$E_{21}$$，因为是要把第2行第1列变成0
+
+![](../assets/elimination-matrix-view2.png)
+
+同理，第3行减掉2倍的第2行，就得到下图
+
+![](../assets/elimination-matrix-view3.png)
+
+最终就有$$E_{32}(E_{21}A)=U$$，但如何一次性从$$A$$到$$U$$？结合律(associative law)：$$(E_{32}E_{21})A=U$$
+
+置换矩阵（permutation matrix）：交换两行的位置，可以看到就是个类似单位矩阵的东西
+
+![](../assets/permutation-rows.png)
+
+但如果要交换列呢？P矩阵要放右边：
+
+![](../assets/permutation-cols.png)
+
+倒回来看那个$$E_{21}A=U$$，如果我想变回去，即把U变回A，那就是$$?E_{21}A=A$$，即$$?E_{21}=I$$，其实就是求逆。因为我们$$E{21}$$是第2行减去第1行的3倍，那其实就是逆向操作，即第2行不变，加回第1行的3倍就行了，不要第3行
+
+![](../assets/inverse-intro.png)
+
 ## 矩阵乘法
 
 一些有趣的性质：$$AB=C$$
