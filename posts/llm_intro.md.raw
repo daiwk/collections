@@ -4636,6 +4636,19 @@ XXX
 
 开始是[NSA](https://www.daiwk.net/1.2.llm_intro#nsa)，后再是[DSA](https://www.daiwk.net/1.2.llm_intro#deepseek-v3.2-exp)，
 
+## Deepseek V4.1 Flash
+
+[DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/DeepSeek_V41_Tech_Report.pdf)
+
+![](../assets/deepseek-v4.1-flash.png)
+
++ Causal Encoder-Decoder (CED)：参考YoLo（后面一半的层复用前面一半层的kvcache）
+    + 
+
+![](../assets/csa2-modes.png)
+
+![](../assets/hierarchical-sparse-indexer.png)
+
 
 # Qwen系列
 
