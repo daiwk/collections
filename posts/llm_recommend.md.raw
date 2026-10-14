@@ -5802,6 +5802,33 @@ LENS(Latent Expert Network Specialization)：监控专家是否真正分工
 
 [Lightweight Ranking Heads: Accelerating Multi-Task Experimentation in Production Recommender Systems](https://arxiv.org/pdf/2609.25433)
 
+## Google的FLVM
+
+[Mend the Measurement Gap: Latent User Preference Modeling for Short-Form Video Recommendation](https://arxiv.org/pdf/2609.32839)
+
+FLVM（Factorized Latent Value Model）把观看时长、播完、点赞、分享、负反馈和问卷等行为看作对“潜在用户价值”的有噪测量：先让受限 baseline 吸收视频时长、用户动作倾向和 session 上下文等测量混淆，再让 factorized latent path 学习相对 baseline 的偏好残差。
+
+同一个行为可能来自不同心理状态：看完可能是喜欢，也可能是自动播放、被动消费或走神。短视频中，时长尤其危险：
+
++ 相同观看秒数，对15秒和120秒视频含义不同；
++ 完播率天然偏爱短视频；
++ 直接优化原始互动，可能放大测量机制的偏差，而不是真正提升用户享受。
+
+![](../assets/flvm.png)
+
+三个潜在因素：
+
++ $$z_p$$：Consumption，表示消费和观看强度；
++ $$z_a$$：Active engagement，表示主动采取动作的倾向；
++ $$z_s$$：Valence，表示动作的正负方向，例如点赞与负反馈。
+
+例如三个用户都长时间观看：一个看完就划走，一个点赞，一个点踩。只看消费强度无法区分；$$z_a$$ 区分是否主动反应，$$z_s$$ 再区分正向还是负向。
+
+模型有两条路径：
+
++ Baseline path：只接收测量混淆特征，如视频时长、用户动作 propensity、session context，不能直接看到用户—视频匹配特征。
++ Latent path：完整impression特征进入变分encoder(Gaussian variational bottleneck)，得到前面说的三个latent factor；每个反馈任务通过hard sparse mask只能使用语义相关的因子（人工根据任务定义每个head能看得到哪几个z，例如时长能看到第1个，点赞能看到第1和第3个）。
++ 最终task logit等于sg(baseline logit)加上latent value advantage。Baseline使用独立辅助损失更新(其实就是baseline logit过sigmoid去和label算交叉熵)，主任务损失不能反向修改baseline，因此latent path更倾向于解释“baseline已无法解释的残差”，而不是重复学习视频时长等结构性规律。
 
 
 ## Meta的SUM
