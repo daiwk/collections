@@ -7,5 +7,7 @@ for line in sys.stdin:
         #print '<img href="%s" />' % line
         print(line + '{ height=40% }')
         continue
+    if line.lstrip().startswith(("{% embed ", "{% endembed %}")):
+        continue
     print(line.replace("$$", "$").replace("XXX", "$$").replace("<br>", "\\\n"))
 
