@@ -273,5 +273,6342 @@
 
 {% embed url="https://drive.google.com/file/d/1rq1jrJi0cU8NQlaf4GnyHgOyLwpJFZOT/view?usp=drive_link" %}
 
-## test
+## Qwen模型发展历史
 
+<details>
+
+<summary>点击展开完整prompt</summary>
+
+```
+# 项目：Qwen 模型架构进化史——高质量技术科普纪录片
+
+你是一支由 AI 架构研究员、技术史研究员、科学纪录片导演、3D Motion Designer、Creative Developer 和音视频工程师组成的专业团队。
+
+你的任务是实际制作一部中文技术科普纪录片：
+
+# 《Qwen 进化史：从 Transformer 到混合架构与原生多模态》
+
+英文标题：
+
+Qwen: The Evolution of an AI Architecture
+
+这不是论文汇报，不是 PPT，不是网页演示，也不是仅有配音的技术讲解。
+
+你需要真正制作具有高水平视觉设计、连续技术动画、自然中文旁白的 MP4 视频。
+
+---
+
+# 一、基本要求
+
+主题范围：2023 年至 2026 年 10 月 13 日 Qwen 系列模型的发展历史。
+
+目标时长：12–15 分钟。
+
+分辨率：1920×1080。
+
+帧率：30 FPS。
+
+语言：简体中文。
+
+目标观众：
+
+- 熟悉基本深度学习概念的技术爱好者。
+- 了解 Transformer 的算法工程师。
+- 对 LLM Backbone、Attention、MoE、RL、多模态架构感兴趣的观众。
+
+技术深度：
+
+比一般科技科普深入，但不要直接照搬论文。
+
+观众应该能理解每一代模型为什么修改架构、修改了什么、为什么有效，以及新方法存在什么局限。
+
+核心故事：
+
+**从传统 Dense Transformer，到稀疏 MoE，再到 Gated DeltaNet、Hybrid Attention、原生多模态和新一代长上下文架构，Qwen 是如何逐渐演进的？**
+
+整部视频围绕三个问题展开：
+
+1. 如何让模型拥有更多参数，却不必每次激活全部参数？
+2. 如何让模型理解越来越长的上下文，同时控制计算和显存开销？
+3. 如何让一个模型不仅生成文本，还能感知图像、理解环境、推理并执行复杂任务？
+
+---
+
+# 二、先研究原始资料
+
+在编写旁白和动画代码之前，必须联网研究。
+
+优先使用：
+
+- Qwen 官方 GitHub：https://github.com/QwenLM
+- Qwen 官方博客：https://qwen.ai/blog
+- Hugging Face 官方模型卡
+- arXiv 原始论文
+- 官方技术报告及配置文件
+
+至少覆盖：
+
+1. Qwen / Qwen-7B / Qwen-72B（2023）
+2. Qwen1.5（2024）
+3. Qwen1.5-MoE
+4. Qwen2（2024）
+5. Qwen2.5（2024）
+6. QwQ（2024–2025）
+7. Qwen3（2025）
+8. Qwen3-Next（2025）
+9. Qwen3.5（2026）
+10. Qwen3.6（2026）
+11. Qwen3.8（2026）
+12. Qwen3.8-Flash-Next（2026）
+
+同时研究相关的：
+
+- Qwen-VL
+- Qwen2-VL
+- Qwen2.5-VL
+- Qwen3-VL
+- Qwen-Audio
+- Qwen3-Omni
+
+根据视频主线选择有代表性的工作，不必平均分配篇幅。
+
+严格区分：
+
+A. Backbone 架构创新。
+
+B. 训练策略与优化器创新。
+
+C. 后训练和推理能力提升。
+
+D. 多模态输入及输出设计。
+
+E. 工程部署和推理系统优化。
+
+不要把版本更新误写为 Backbone 必然发生变化。
+
+对于模型参数、发布时间、Attention 类型、MoE 专家数量、激活参数和上下文长度，必须核对官方原始资料。
+
+不要编造论文公式或性能数字。
+
+如果官方没有公开完整架构细节，不得自行补充为事实。
+
+---
+
+# 三、视频五幕结构
+
+## 第一幕：2023—2024，Qwen 的起点
+
+建议时长：00:00–02:20。
+
+开场采用电影式视觉叙事。
+
+画面中出现一个庞大的 Transformer 网络。
+
+Token 逐个进入网络。
+
+镜头进入 Transformer Block 内部，展示：
+
+Token Embedding
+→ Self-Attention
+→ FFN
+→ Residual
+→ Next Token Prediction
+
+通过动画解释传统 Decoder-only Transformer 的基本工作方式。
+
+接着回到 2023 年，介绍 Qwen 系列的起点。
+
+重点突出：
+
+- 早期 Qwen 的基本 Decoder-only 架构。
+- Attention、RoPE、FFN 等组件。
+- Qwen1.5 到 Qwen2 的模型发展。
+- GQA、长上下文和效率方面的演进。
+- 模型规模与训练策略的提升。
+
+这部分不应过度展开。
+
+目标是建立一套统一的 Transformer 视觉母体，供后续模型结构升级使用。
+
+### 关键转场
+
+随着模型参数不断增长，画面中的 FFN 计算模块越来越庞大。
+
+旁白提出：
+
+“如果模型规模持续扩大，是不是每个 Token 都必须经过同样庞大的计算网络？”
+
+镜头进入 MoE 时代。
+
+---
+
+## 第二幕：从 Dense 到 MoE，计算开始变得稀疏
+
+建议时长：02:20–04:15。
+
+先介绍 Qwen1.5-MoE。
+
+通过动画展示：
+
+传统 Dense FFN：
+
+每个 Token 经过完整的 FFN。
+
+MoE：
+
+一个 Token 进入 Router。
+
+Router 选择若干 Experts。
+
+只有被选中的专家参与计算。
+
+重点解释：
+
+- Dense FFN 和 MoE FFN 的区别。
+- Router 与 Top-K Expert Selection。
+- Total Parameters 与 Activated Parameters。
+- Shared Experts 和 Routed Experts（依据具体模型确认）。
+- Expert Load Balancing。
+- 稀疏激活为什么可以减少每 Token 计算量。
+- MoE 如何增加通信、权重存储和部署复杂度。
+
+接着展示 Qwen3 中的 Dense 与 MoE 并行产品路线。
+
+例如：
+
+Qwen3-32B Dense
+
+Qwen3-30B-A3B MoE
+
+Qwen3-235B-A22B MoE
+
+必须准确解释 A3B、A22B 的含义，以及激活参数与总参数的区别。
+
+不要暗示模型激活参数少，就一定具有更低的端到端推理延迟。
+
+此幕结尾：
+
+模型计算已经变得稀疏，但 Attention 在超长上下文中仍然昂贵。
+
+转向下一个问题。
+
+---
+
+## 第三幕：Qwen3，模型学会选择如何思考
+
+建议时长：04:15–06:15。
+
+介绍 Qwen2.5、QwQ 到 Qwen3 的推理能力演进。
+
+重点：
+
+- Qwen2.5 的模型能力与训练演进。
+- QwQ 对推理模型路线的探索。
+- Qwen3 的 Thinking / Non-Thinking 模式。
+- 不同模式的输出行为和计算代价。
+- 推理训练、指令微调和偏好对齐的作用。
+- 工具使用和 Agent 能力。
+
+设计两种工作模式的动态对比。
+
+同一个数学问题：
+
+左侧：
+
+Non-Thinking → Direct Answer
+
+右侧：
+
+Thinking → Reasoning Tokens → Answer
+
+两种模式使用同一个视觉模型母体，强调模式变化与模型结构变化的区别。
+
+讲解 GRPO 或其他 RL 技术时：
+
+使用训练流程动画展示生成候选、评分、奖励信号和策略优化。
+
+不要错误地将 RL 优化器绘制成推理时 Transformer 内的固定模块。
+
+然后逐步引出下一个问题：
+
+“如果模型需要处理几十万甚至上百万 Token，传统 Attention 计算是否还适合？”
+
+---
+
+## 第四幕：Qwen3-Next 与 Qwen3.5，Attention 开始重新设计
+
+建议时长：06:15–10:45。
+
+这是整部视频的技术核心。
+
+### Chapter A：为什么传统 Attention 昂贵？
+
+展示序列长度不断增长。
+
+通过二维 Attention Matrix 让观众观察计算需求随序列长度增长的变化。
+
+然后展示 KV Cache 和显存访问的开销。
+
+必须区分：
+
+- Prefill 的计算复杂度。
+- Decode 阶段的状态存储。
+- Memory Bandwidth。
+- Attention 计算。
+- 长上下文外推与训练上下文长度。
+
+### Chapter B：Qwen3-Next 的 Gated DeltaNet
+
+从标准 Attention 结构开始。
+
+逐渐引出：
+
+Gated DeltaNet
+
+用状态随 Token 更新的动画解释其核心思想。
+
+必须展示：
+
+- 输入 Token。
+- Recurrent State。
+- 状态读取和写入。
+- Gate 如何控制信息更新。
+- 与显式 KV Cache Attention 的差异。
+
+绝不能简单说 Gated DeltaNet 就是“给 Attention 加一个 Gate”。
+
+根据官方论文和实现，准确表达它的状态更新机制。
+
+### Chapter C：Hybrid Attention
+
+展示 Qwen3-Next 中不同类型层的组合。
+
+一些层使用 Gated DeltaNet。
+
+另一些层使用 Gated Attention。
+
+让摄像机从单个 Transformer Block 拉远，展示不同层在整个网络中的排列。
+
+解释：
+
+为什么线性/递归状态结构和标准 Attention 可以互补？
+
+它们分别擅长什么？
+
+为什么需要保留部分显式 Attention？
+
+其局限又是什么？
+
+### Chapter D：High-Sparsity MoE
+
+介绍 Qwen3-Next-80B-A3B。
+
+通过同一组专家网络对比早期 MoE 和高稀疏 MoE。
+
+重点解释：
+
+- 80B Total Parameters。
+- 3B Activated Parameters。
+- 更细粒度的专家。
+- 激活比例和计算效率。
+- 负载均衡及部署代价。
+
+随后展示 Multi-Token Prediction（MTP）。
+
+区分：
+
+训练阶段多个未来 Token 的预测目标。
+
+推理阶段可能使用的辅助预测或投机解码机制。
+
+### Chapter E：Qwen3.5 的原生多模态
+
+进入 Qwen3.5。
+
+基于官方架构和模型卡解释：
+
+- Gated DeltaNet 与 MoE 体系的延续。
+- Native Vision-Language。
+- Early Fusion Training。
+- 多模态 Token 如何进入统一模型。
+- 与传统独立视觉 Encoder + 文本 LLM 方案的关系。
+- 多模态训练与推理之间的区别。
+
+用真实的图像、文字 Token 和中间表示构建连续动画。
+
+不要在没有证据时宣称所有原始像素直接进入语言模型，也不要随意省略视觉编码和投影模块。
+
+---
+
+## 第五幕：2026，Qwen3.8 与下一代架构
+
+建议时长：10:45–13:30。
+
+首先介绍 Qwen3.6 和 Qwen3.8。
+
+重点解释它们如何在 Qwen3.5 架构基础上扩大规模、提升 Agent 能力和优化训练。
+
+这些属于能力与训练系统演进的部分，应与新架构创新区分。
+
+然后将主要篇幅用于：
+
+# Qwen3.8-Flash-Next
+
+依据官方发布资料研究四项关键改进。
+
+### 1. Gated DeltaNet + Qwen Sparse Attention
+
+在此前 Hybrid Attention 动画基础上继续演化。
+
+加入 Qwen Sparse Attention（QSA）。
+
+演示：
+
+- 长上下文中的候选历史位置。
+- 轻量化 Indexer。
+- Micro-Block Selection。
+- 被选择的上下文块。
+- 最终 Attention 计算。
+
+说明：
+
+Gated DeltaNet 如何以压缩状态建模历史。
+
+QSA 如何选择部分重要上下文执行 Attention。
+
+两者为什么具有互补关系。
+
+必须对照官方实现验证可视化机制。
+
+### 2. Gated Residual
+
+先展示标准 Transformer Residual：
+
+x + F(x)
+
+接着介绍多分支 Residual Stream。
+
+展示：
+
+- 更宽的残差表示。
+- 动态 Gate。
+- 信息的读取与写入。
+- 跨层信息传递。
+
+不要把 Gated Residual 错误描述成简单地扩大 Hidden Size。
+
+### 3. N-gram Embedding
+
+展示普通 Token Embedding。
+
+然后展示由局部上下文构造的 N-gram 表示。
+
+强调：
+
+- 额外的 Embedding 容量。
+- 不同局部上下文对应的表示。
+- Embedding Lookup 过程。
+- 计算与存储的权衡。
+- Host Memory Offloading 和异步 Prefetch（如果官方技术报告确认）。
+
+视觉上要让观众理解：
+
+“模型容量增长，不一定等价于每 Token 的稠密矩阵计算等比例增长。”
+
+### 4. Muon Optimizer
+
+用一个矩阵参数更新的抽象动画介绍 Muon。
+
+展示权重矩阵、梯度、矩阵更新方向。
+
+解释它属于训练优化，不是推理网络的固定前向模块。
+
+### 最终总结
+
+将 Qwen 系列的发展分为四条并行的技术线：
+
+Attention Evolution
+
+Dense/MoE Evolution
+
+Training & Reasoning Evolution
+
+Multimodal Evolution
+
+最后汇合成一张具有空间层次的技术演进地图。
+
+注意：
+
+这是一张技术谱系图，不是单一线性的模型继承关系。
+
+对于未来 Qwen4 的内容，只能引用已正式公开的官方架构预告，并明确标注为 Preview 或 Future Direction。
+
+不要将尚未正式发布的模型架构预测描述为既定事实。
+
+---
+
+# 四、视觉风格要求
+
+目标是达到高级 Motion Graphics 科普作品的完成度。
+
+参考：
+
+- Vox：动态信息设计。
+- 3Blue1Brown：精确数学可视化。
+- Kurzgesagt：统一视觉系统。
+- 高级 3D 科技纪录片：灯光、空间感、材质和镜头调度。
+
+不得直接复制这些作品的具体图形资产。
+
+## 核心设计原则
+
+整部视频使用一套连续演化的三维模型架构。
+
+不要给每个版本画一张孤立的新架构图。
+
+例如：
+
+Qwen Dense Transformer
+→ FFN 部分变成 MoE
+→ 增加高稀疏 Expert Routing
+→ Attention 层变成混合结构
+→ 增加 Gated DeltaNet
+→ 多模态数据流加入网络
+→ QSA / Gated Residual / N-gram Embedding
+
+这只是叙事演变示意。
+
+实际画面必须准确区分哪些模型直接继承了哪些架构，不能暗示所有结构变化都发生在同一个模型上。
+
+## 图形设计
+
+Token：清晰、具有微弱材质光泽的实体。
+
+Attention：矩阵与连接关系的动态图形。
+
+KV Cache：沿上下文时间轴增长的存储状态。
+
+Gated DeltaNet：持续更新的状态容器及 Gate。
+
+MoE：空间排列的专家模块与动态 Router。
+
+Residual Stream：精确的多分支信息通道。
+
+N-gram Embedding：上下文片段与向量表之间的动态映射。
+
+多模态：视觉 Patch、文本 Token、模态融合路径。
+
+所有图形必须服务于技术解释。
+
+不能使用随机粒子或炫光替代真实数据流。
+
+## 严格禁止
+
+- PPT 翻页。
+- 静态矩形框组成的架构图。
+- 标题加几条文字的简单动画。
+- 大段论文截图。
+- 低质量积木式三维结构。
+- 没有解释意义的 Token 粒子流。
+- 只是把模型名称换掉的相同镜头。
+- 无意义的摄像机旋转。
+- 简单渐入渐出代替真正的动画设计。
+
+**如果去掉旁白，观众仍应看懂主要架构变化。**
+
+---
+
+# 五、必须制作的六个核心技术动画
+
+### Animation 1：Dense → MoE
+
+完整展示一个 Transformer Block 的 FFN 转变为 MoE。
+
+包含 Router、Expert Selection 和 Activated Parameters。
+
+### Animation 2：Thinking / Non-Thinking
+
+展示同一模型在不同推理模式下如何生成不同长度和结构的输出。
+
+必须区分后训练、推理控制与 Backbone 变化。
+
+### Animation 3：Attention → Gated DeltaNet
+
+展示标准 Attention 与 Recurrent State 模型的区别。
+
+强调状态更新与缓存行为。
+
+### Animation 4：Hybrid Attention
+
+展示不同 Attention 类型如何共同构成 Qwen3-Next。
+
+同时展示长上下文场景下的计算和存储权衡。
+
+### Animation 5：Native Multimodal
+
+真实展示图像与文本的编码、表示和模型内部信息流。
+
+### Animation 6：QSA + Gated Residual + N-gram Embedding
+
+分别展示三种创新机制，然后汇总到整体架构中。
+
+不得把三项完全不同的创新揉成一个不准确的结构图。
+
+---
+
+# 六、自然中文 TTS
+
+优先研究并测试：
+
+- IndexTTS-2.5
+- CosyVoice 3
+- Qwen3-TTS
+- Fish Audio
+- MiniMax
+
+如果本地没有适合的推理硬件，可以使用经过授权的云 API。
+
+先制作 45–60 秒声音样本。
+
+风格：
+
+成熟、沉稳、自然的男性科技纪录片旁白。
+
+有自然停顿，能体现疑问、技术转折、关键突破和总结。
+
+不要有机械的逐句朗读感。
+
+建立专有术语发音词典，包括：
+
+Qwen
+Transformer
+MoE
+GQA
+Gated DeltaNet
+Gated Attention
+Hybrid Attention
+Qwen Sparse Attention
+N-gram Embedding
+Muon
+KV Cache
+Thinking
+Non-Thinking
+Multi-Token Prediction
+
+旁白按语义段落合成。
+
+保存单段 WAV、文本、实际时长。
+
+用音频真实时长驱动视频镜头和字幕。
+
+任何发音错误都应支持局部重新生成。
+
+---
+
+# 七、技术实现
+
+建议使用：
+
+Remotion：视频编排、字幕、时间轴和最终渲染。
+
+Three.js / React Three Fiber：三维架构、状态更新、镜头运动。
+
+SVG / Canvas：Attention 矩阵、向量、数据流和二维数学可视化。
+
+Blender：需要高级材质、灯光和高质量三维展示时使用。
+
+FFmpeg：音视频合成与压制。
+
+要求：
+
+1. 所有动画确定性渲染。
+2. 每个技术场景独立组件化。
+3. 镜头支持单独预览与重新渲染。
+4. 所有公式和参数可追溯到论文。
+5. 不要通过硬编码视频帧模拟本应连续的算法动画。
+6. 有自动抽帧和画面检查能力。
+7. 有清晰的工程目录及运行说明。
+
+---
+
+# 八、分阶段制作与验收
+
+## Phase 1：技术调研
+
+输出：
+
+research.md
+timeline.md
+architecture_comparison.md
+sources.md
+
+architecture_comparison.md 需要包含：
+
+- 模型名称。
+- 发布时间。
+- 总参数。
+- 激活参数。
+- Dense / MoE。
+- Attention 类型。
+- 关键架构创新。
+- 训练方面的变化。
+- 多模态能力。
+- 相关论文与配置来源。
+
+明确区分已确认事实与推断。
+
+## Phase 2：剧本与分镜
+
+输出：
+
+script.md
+storyboard.md
+visual_system.md
+
+每个镜头必须包括：
+
+- 开始和结束时间。
+- 中文旁白。
+- 对应论文。
+- 模型或算法结构。
+- 镜头中哪些物体运动。
+- 物体状态如何变化。
+- 摄像机如何运动。
+- 技术解释目的。
+- 与前后镜头的转场关系。
+
+剧本风格应像一部技术纪录片，而不是逐篇介绍论文。
+
+## Phase 3：三个高质量动画原型
+
+第一轮只制作以下三个镜头：
+
+**Prototype A：Qwen3-Next Gated DeltaNet**
+
+20–30 秒。
+
+展示标准 Attention、Recurrent State 和 Gate 的核心机制差异。
+
+**Prototype B：Qwen3-Next Hybrid Attention + Sparse MoE**
+
+20–30 秒。
+
+展示不同 Attention 层的组合、MoE 专家激活、网络整体结构。
+
+**Prototype C：Qwen3.8-Flash-Next**
+
+20–30 秒。
+
+分镜展示 QSA、Gated Residual 和 N-gram Embedding 的关键差异。
+
+这三个原型必须真实渲染出 MP4。
+
+每个原型需要交付：
+
+preview.mp4
+关键帧 PNG
+源码
+技术解释说明
+对应论文来源
+
+## Phase 4：质量验收
+
+自动抽取关键帧并检查：
+
+- 架构表示是否正确。
+- 数据流是否准确。
+- 是否有对象重叠或遮挡。
+- 动画是否连续。
+- 技术术语是否有错。
+- 是否退化成 PPT。
+- 是否出现低质量积木感。
+- 美术风格是否统一。
+
+发现问题后主动修复，并重新渲染相关镜头。
+
+代码编译成功不意味着视觉质量通过。
+
+## Phase 5：完整视频制作
+
+只有在我确认三个动画原型后，才能进入完整 12–15 分钟视频制作。
+
+复用通过验收的视觉组件。
+
+按章节逐段渲染，避免小修改导致全片重新渲染。
+
+## Phase 6：配音与剪辑
+
+生成自然中文配音。
+
+同步字幕和动画。
+
+加入克制的背景音乐及声音效果。
+
+## Phase 7：最终审查
+
+检查：
+
+- 技术正确性。
+- 时间线正确性。
+- 引用正确性。
+- 配音术语发音。
+- 镜头连贯性。
+- 动画流畅度。
+- 字幕同步。
+- 最终视频能否播放。
+
+---
+
+# 九、交付目录
+
+qwen_evolution/
+  research/
+    research.md
+    timeline.md
+    architecture_comparison.md
+    sources.md
+
+  scripts/
+    script.md
+    storyboard.md
+
+  design/
+    visual_system.md
+
+  src/
+    视频工程源代码
+
+  prototypes/
+    gated_deltanet/
+    hybrid_attention/
+    qwen_next_architecture/
+
+  audio/
+    narration/
+    pronunciation_dictionary.json
+
+  previews/
+    关键帧和预览视频
+
+  output/
+    qwen_evolution_final.mp4
+
+  README.md
+
+---
+
+# 十、执行规则
+
+- 研究优先于制作。
+- 原始论文优先于二手文章。
+- 技术准确性优先于炫酷效果。
+- 动态演示优先于静态架构图。
+- 实际渲染优先于只生成代码。
+- 美术完成度优先于堆砌特效。
+- 不得编造性能数字。
+- 不得混淆模型架构和后训练。
+- 不得为了缩短时间退化成 PPT。
+- 不得使用未经确认的未来模型架构作为已发布事实。
+
+现在开始 Phase 1、Phase 2、Phase 3。
+
+自行完成研究、剧本、分镜及三个动画原型。
+
+确保第一轮交付三个可播放 MP4，以及相应的研究和技术解释文档。
+
+**第一轮完成后停止。未经我确认，不进入全片制作。**
+```
+
+</details>
+
+{% embed url="https://drive.google.com/file/d/1j2v2RMhlTunyBG2fB4a_8jIbL24Q2pP4/view?usp=drive_link" %}
+
+## DeepSeek模型发展历史
+
+<details>
+
+<summary>点击展开完整prompt</summary>
+
+```
+# 项目：DeepSeek 模型架构进化史——高质量技术纪录片
+
+你现在是一支具有顶级技术研究、科普叙事、3D Motion Design 和视频工程能力的制作团队。
+
+你的任务是**真正制作一部关于 DeepSeek 模型架构演进历史的高质量中文科普动画纪录片**，而不是编写 PPT、静态图文或者简单的视频脚本。
+
+你同时承担以下角色：
+
+- **AI Architecture Researcher**：深度理解 Transformer、Attention、MoE、MLA、RL、长上下文架构和模型训练技术。
+- **Technical Historian**：研究 DeepSeek 各代模型的发布时间、技术继承关系与架构变化。
+- **Science Documentary Director**：以技术矛盾、问题和突破推动故事。
+- **Motion Design Director**：具备高级三维信息设计、动态排版、镜头调度和视觉叙事能力。
+- **Creative Engineer**：精通 Remotion、Three.js、React Three Fiber、SVG、Canvas、Blender、FFmpeg。
+- **Sound Designer**：负责自然中文配音、声音设计、音乐、字幕和音画同步。
+
+你的最终交付必须包括**真实可播放的 MP4 视频**、可复现源代码以及技术研究文档。
+
+---
+
+# 一、视频定位
+
+中文标题：
+
+**《DeepSeek 进化史：从 MoE、MLA 到推理模型与百万 Token 上下文》**
+
+英文标题：
+
+**DeepSeek: The Evolution of an AI Architecture**
+
+时间范围：
+
+2023 年至 2026 年 10 月 13 日。
+
+目标时长：10–12 分钟。
+
+语言：简体中文。
+
+目标观众：
+
+- 具备基本深度学习知识的技术爱好者。
+- 了解 Transformer 的算法工程师。
+- 希望理解 DeepSeek 核心技术的人。
+- 对 LLM 模型架构、训练和推理优化感兴趣的观众。
+
+技术难度定位：
+
+比一般科普视频深入，但不需要观众已经读过 DeepSeek 论文。
+
+**核心目标：让观众真正看懂 DeepSeek 每一代模型为什么要修改架构、改了哪些结构、解决了什么问题、又引入了什么新挑战。**
+
+整个故事始终围绕一个问题展开：
+
+> 如何用更少的计算、更少的显存和更高的训练效率，构建更强大的大语言模型？
+
+不要将视频拍成 DeepSeek 品牌宣传片。
+
+所有性能结论必须有来源，也要解释技术限制与适用条件。
+
+---
+
+# 二、研究阶段：必须基于原始论文
+
+开始写视频脚本之前，必须联网查阅 DeepSeek 官方网站、技术报告、arXiv 论文、GitHub 开源实现和模型配置。
+
+优先使用以下来源：
+
+- https://www.deepseek.com/news/
+- https://www.deepseek.com/en/transparency/
+- https://github.com/deepseek-ai
+- https://arxiv.org
+
+研究范围至少包括：
+
+1. DeepSeek LLM / DeepSeek 67B
+2. DeepSeekMoE
+3. DeepSeek-V2
+4. DeepSeek-V2.5（简要）
+5. DeepSeek-V3
+6. DeepSeek-R1-Zero / DeepSeek-R1
+7. DeepSeek-V3.1
+8. DeepSeek-V3.2
+9. DeepSeek-V4
+10. DeepSeek-V4.1-Flash
+
+同时核对相关技术论文，例如 GRPO、mHC、Muon 及 DSA 等。
+
+对于每个模型建立结构化资料：
+
+- 首次发布日期。
+- 论文与官方链接。
+- 参数量及激活参数量。
+- 架构类型。
+- Attention 类型。
+- FFN / MoE 类型。
+- Token Prediction 目标。
+- 训练和优化方面的新方法。
+- 相比上一代保留了什么、改变了什么。
+- 论文报告的收益。
+- 仍然存在的限制。
+
+尤其要注意：
+
+**架构创新不等于训练方法创新，不等于后训练带来的能力提升。**
+
+不要把 R1 描述成引入全新 Attention 架构的模型。
+
+不要把 GRPO、FP8、Muon 混称为神经网络结构。
+
+不要把 V4 仅描述成参数量更大的 V3。
+
+不要把 DeepSeek-V4.1-Flash 视为 V4-Pro 的简单小参数版本，必须按照官方资料核对其架构变化。
+
+如果不同来源的发布时间、模型配置或性能指标不一致，必须明确说明。
+
+---
+
+# 三、整部纪录片的叙事结构
+
+采用五幕结构，总时长约 11 分钟。
+
+## 第一幕：一个看似不可能的问题
+
+时间：00:00–01:20
+
+开场直接进入视觉冲击力强的场景。
+
+在无边无际的黑色空间中，数以千亿计的神经网络参数逐渐点亮。
+
+摄像机穿过庞大的 Transformer 网络。
+
+每一次生成 Token，都需要复杂的矩阵计算、显存读取和专家计算。
+
+旁白引出悬念：
+
+“如果我们想让大语言模型变得更聪明，最直接的办法是什么？”
+
+“更大的模型？更多的计算？更多的显卡？”
+
+“但 DeepSeek 的研究者开始尝试另一条路线。”
+
+“能不能让模型拥有海量参数，却只激活其中一小部分？”
+
+“能不能让模型读懂更长的上下文，却不让 KV Cache 无限膨胀？”
+
+“甚至，能不能通过强化学习，让模型自己学会复杂推理？”
+
+镜头进入一个标准 Transformer Block。
+
+展示：
+
+Attention → FFN → Output
+
+这套结构将作为全片反复使用的视觉母体。
+
+接下来每次模型迭代，都尽可能从这套结构直接演变，而不是重新画一张不相关的架构图。
+
+---
+
+## 第二幕：MoE 与 MLA——模型为什么不必总是全力工作？
+
+时间：01:20–04:00
+
+### Chapter 1：从 Dense 到 DeepSeekMoE
+
+首先展示传统 Dense Transformer 的 FFN。
+
+每个 Token 都经过完整的 FFN 网络。
+
+随后出现大量不同输入 Token：
+
+数学问题、代码、自然语言、逻辑推理。
+
+通过动态视觉解释：
+
+是不是所有 Token 都必须使用完全相同的计算路径？
+
+逐渐将单个 FFN 变换成多个 Expert。
+
+Router 为不同 Token 选择专家。
+
+重点解释：
+
+- 什么是 Mixture of Experts。
+- 总参数和激活参数为什么不同。
+- Top-K Routing 如何工作。
+- Fine-Grained Expert Segmentation 的意义。
+- Shared Experts 与 Routed Experts 的区别。
+- 为什么需要负载均衡。
+- MoE 的代价：通信、负载不均、显存和部署复杂度。
+
+在同一镜头中对比 Dense 与 MoE 的计算路径。
+
+**不要简单地将 MoE 表述为参数越多、计算必然越少。必须区分计算、权重存储和通信。**
+
+### Chapter 2：DeepSeek-V2 与 MLA
+
+场景从 FFN 移动到 Transformer 的 Attention 模块。
+
+先展示传统 Multi-Head Attention：
+
+Q、K、V 分别从输入投影得到。
+
+随着序列长度增长，KV Cache 在画面中逐渐堆积。
+
+摄像机拉远，大量 KV Cache 几乎占满整个场景。
+
+旁白提出问题：
+
+“即便 MoE 减少了每个 Token 激活的 FFN 计算，长上下文推理仍然可能被 KV Cache 限制。”
+
+引入 Multi-head Latent Attention（MLA）。
+
+必须动态展示：
+
+1. 标准 MHA 的 K/V 缓存。
+2. 低秩压缩的 latent KV 表示。
+3. 压缩后的缓存如何参与 Attention 计算。
+4. Decoupled RoPE 的作用。
+5. 为什么可以降低 KV Cache 开销。
+6. 这种优化的额外计算与实现权衡。
+
+MLA 的演示必须基于论文公式和真实数据流，不能仅仅画一个“向量变短”的动画。
+
+DeepSeek-V2 这一部分是全片的重要技术高潮。
+
+---
+
+## 第三幕：DeepSeek-V3——在计算效率与模型能力之间寻找平衡
+
+时间：04:00–06:00
+
+从 DeepSeek-V2 的模型结构开始。
+
+让架构继续生长、扩展。
+
+出现 DeepSeek-V3：
+
+671B Total Parameters
+37B Activated Parameters
+
+使用精确的数据和动态视觉表达参数规模与激活计算之间的区别。
+
+重点研究和解释四项改进。
+
+### 1. Auxiliary-Loss-Free Load Balancing
+
+展示 MoE Routing 中部分专家过载、部分专家空闲的情况。
+
+解释传统辅助负载均衡损失可能带来的问题。
+
+展示 DeepSeek-V3 如何使用动态 Bias 调整专家选择倾向。
+
+必须正确区分：
+
+- Routing Score。
+- 负载均衡 Bias。
+- 专家选择。
+- 训练中的 Bias 更新。
+
+不要用错误的梯度路径解释该机制。
+
+### 2. Multi-Token Prediction（MTP）
+
+展示传统 Next Token Prediction：
+
+预测下一个 Token。
+
+然后展示 MTP：
+
+在训练中引入多个未来 Token 的预测目标。
+
+通过动画解释：
+
+- 多 Token 预测目标如何构建。
+- 为什么有助于训练信号。
+- MTP 与主模型的关系。
+- 推理时 MTP 模块如何被利用或忽略。
+
+不能将训练时的 MTP 与所有场景中的并行解码等同起来。
+
+### 3. FP8 Mixed Precision Training
+
+用直观的数值精度、内存和矩阵计算动画解释。
+
+强调 FP8 是训练与数值工程优化，不是 Transformer 架构变更。
+
+### 4. 训练系统与工程设计
+
+简要展示 Pipeline Parallelism、Expert Parallelism、计算通信重叠等技术。
+
+这里不需要深入 CUDA Kernel 代码，但要让观众理解：
+
+模型架构设计与 GPU 系统效率相互影响。
+
+---
+
+## 第四幕：DeepSeek-R1 到 V3.2——推理能力从哪里来？
+
+时间：06:00–08:20
+
+### Chapter 1：DeepSeek-R1-Zero
+
+从已有的模型 Backbone 出发。
+
+视觉上不替换整个 Transformer。
+
+而是在其外部逐步加入：
+
+Sampling
+Reward
+Policy Update
+Reinforcement Learning
+
+解释 GRPO 的基本思想。
+
+用同一个数学题生成多条推理路径。
+
+模型根据奖励信号调整生成行为。
+
+重点解释：
+
+- 为什么模型可能通过强化学习产生复杂推理行为。
+- R1-Zero 的训练特点。
+- 为什么会出现语言混杂、可读性问题。
+- 为什么后续 R1 需要冷启动数据和多阶段训练。
+
+必须将“推理能力变化”和“Backbone 结构变化”明确区分。
+
+### Chapter 2：DeepSeek-R1
+
+展示 R1 的训练路线。
+
+重点介绍：
+
+- Cold-Start Data。
+- Reinforcement Learning。
+- Rejection Sampling。
+- SFT。
+- 进一步 RL。
+- Distillation。
+
+避免把 R1 简化成“只用 GRPO 就能训练出全部能力”。
+
+### Chapter 3：DeepSeek-V3.1 与 V3.2
+
+解释 V3.1 的 Thinking / Non-Thinking 混合模式。
+
+解释模型如何适应不同的推理和工具调用场景。
+
+随后重点讲解 DeepSeek-V3.2 中的 DeepSeek Sparse Attention（DSA）。
+
+先可视化普通 Dense Attention：
+
+每个 Query 关注大量历史 Token。
+
+然后展示稀疏选择机制：
+
+哪些 Token 被选择？
+
+索引机制如何工作？
+
+稀疏注意力如何降低长序列的计算开销？
+
+注意区分：
+
+KV Cache 压缩与 Attention 稀疏化。
+
+它们不是同一件事。
+
+最后简要介绍 V3.2 的强化学习与 Agent 训练改进。
+
+---
+
+## 第五幕：DeepSeek-V4 与 V4.1——百万 Token 上下文的新架构
+
+时间：08:20–11:00
+
+这一幕是全片的视觉和技术高潮。
+
+### Chapter 1：DeepSeek-V4
+
+从 V3/V3.2 的结构继续演变。
+
+依据 DeepSeek-V4 官方论文展示：
+
+- Compressed Sparse Attention（CSA）
+- Heavily Compressed Attention（HCA）
+- Hybrid Attention Architecture
+- Manifold-Constrained Hyper-Connections（mHC）
+- MoE 结构的延续与调整
+- Muon Optimizer
+- Million-Token Context
+
+重点制作三个动画。
+
+#### 动画 A：CSA 与 HCA
+
+展示长序列的 KV Cache。
+
+先解释 MLA、DSA 的已有思路。
+
+再依据官方 V4 论文准确可视化 CSA/HCA 如何对 KV 和 Attention 计算进行不同方式的压缩与优化。
+
+突出：
+
+为什么需要同时考虑计算复杂度和缓存占用？
+
+为什么不同 Attention 类型可能存在互补关系？
+
+不得仅因为名称相似，就假设 CSA/HCA 与 MLA 或 DSA 的机制完全相同。
+
+#### 动画 B：mHC
+
+展示传统残差连接：
+
+x → F(x) → x + F(x)
+
+随后展示 Hyper-Connections 的扩展表示和信息传递。
+
+再展示 mHC 中用于约束连接结构的数学机制。
+
+尽量使用连续的三维信息流、矩阵变换和多通道连接可视化。
+
+要求：
+
+- 数学解释准确。
+- 解释为什么引入约束。
+- 解释它尝试解决什么训练稳定性问题。
+- 不要将 mHC 描述成简单增加几根 Residual 连线。
+
+#### 动画 C：Million-Token Context
+
+让用户输入序列从几千 Token 扩展到百万 Token 量级。
+
+动态对比旧架构和 V4 新架构的缓存与计算需求。
+
+数值必须来自官方论文或明确的计算推导。
+
+不得使用未经证实的倍数。
+
+### Chapter 2：DeepSeek-V4.1-Flash
+
+研究 2026 年 9 月发布的 V4.1-Flash。
+
+重点核实：
+
+- 官方所述非对称模型结构具体包含什么。
+- 相比 V4-Flash 修改了哪些模块。
+- 原生视觉理解如何实现。
+- 哪些改进来自 Backbone，哪些来自训练或多模态模块。
+- 能力和成本方面有什么经过证实的变化。
+
+根据官方公开资料设计对应动画。
+
+如果某些技术细节未公开，不允许自行编造结构图。
+
+### 最终结尾
+
+回顾整个时间线：
+
+Dense Transformer
+    ↓
+DeepSeekMoE
+    ↓
+MLA
+    ↓
+V3: MTP + Load Balancing
+    ↓
+R1: Reinforcement Learning
+    ↓
+V3.2: Sparse Attention
+    ↓
+V4: Hybrid Attention + mHC
+    ↓
+V4.1: New Architecture & Multimodal
+
+注意：这是叙事时间线，并非严格单一路径的模型继承图。结构、训练方法和能力演进应以不同视觉编码区分。
+
+结尾提出：
+
+“下一代大语言模型的进步，究竟来自更多参数、更多训练，还是对计算结构本身的重新设计？”
+
+将镜头从百万 Token 的宏大模型结构缓缓拉远。
+
+以 DeepSeek 多代架构之间的真实技术关系收尾。
+
+避免空洞的宣传式口号。
+
+---
+
+# 四、视觉美术：这次要比常规科普动画更精致
+
+总体风格：
+
+**Vox × 3Blue1Brown × 高级 3D 技术纪录片 × 现代 Motion Design**
+
+这是风格方向，不允许直接复刻已有作品。
+
+### 核心视觉原则
+
+使用一套统一的 Transformer 3D Visual Language。
+
+例如：
+
+- Token：精致、可辨认的发光实体。
+- Attention：动态连接和矩阵交互。
+- FFN：具有层次的计算结构。
+- MoE Expert：一组可激活的独立计算模块。
+- Router：动态路径分配机制。
+- KV Cache：沿序列时间轴增长的数据存储结构。
+- Latent Vector：高维表示经过压缩后的可视化形态。
+- RL：生成分支、奖励反馈、策略更新。
+- mHC：多信息通道与受约束的变换结构。
+
+以上仅是视觉隐喻，具体数据流和拓扑必须与真实算法一致。
+
+每个模型迭代都应尽可能通过同一空间结构的连续变形来完成。
+
+例如：
+
+普通 FFN
+→ 分裂成多个 Experts
+→ 加入 Router
+→ 加入 Shared Experts
+→ 扩展专家规模
+
+再例如：
+
+MHA
+→ 增长 KV Cache
+→ 引入 Latent Compression
+→ MLA
+→ Sparse Selection
+→ DSA
+→ V4 Hybrid Attention
+
+对于不存在直接结构继承关系的技术，不允许通过动画误导观众。
+
+### 画面质量要求
+
+- 1920×1080，16:9。
+- 30 FPS。
+- 优先采用有设计感的二维与三维混合视觉。
+- 精致字体、清晰排版、统一色彩。
+- 适当使用灯光、体积感、景深、镜头运动。
+- 用真实的对象变换解释模型计算。
+- 动画具有细腻的 easing、stagger 和镜头过渡。
+- 镜头之间具有视觉连续性。
+
+### 严格禁止
+
+- PPT 式换页。
+- 静态论文截图加旁白。
+- 一个标题下面放三个矩形卡片。
+- 每个镜头都使用文字渐入渐出。
+- 随机粒子和无意义科技背景。
+- 用复杂特效掩盖技术解释不足。
+- 简陋的方块和圆柱体拼成的低质量三维模型。
+- 大段文字停留在屏幕上。
+- 只做漂亮的图，而不展示计算过程。
+
+**如果关掉旁白，观众仍应该能看懂主要结构变化。**
+
+---
+
+# 五、六个必须制作的技术动画
+
+这些动画是整部视频的核心资产，必须投入足够的设计与工程资源。
+
+### 1. DeepSeekMoE：专家路由
+
+Dense FFN 变成多个 Fine-Grained Experts。
+
+展示 Shared / Routed Experts、Top-K 选择以及 Token 流动。
+
+### 2. MLA：KV Cache 压缩
+
+MHA 与 MLA 并列展示。
+
+演示低秩 KV 压缩、缓存、注意力计算以及 Decoupled RoPE。
+
+### 3. V3：MTP 与负载均衡
+
+展示 Multi-Token Prediction 的训练信号，以及无辅助损失负载均衡中的动态 Bias。
+
+这两项机制要分开解释，不能合并成一个错误的计算图。
+
+### 4. R1：强化学习驱动的推理
+
+同一个问题生成多条推理路径。
+
+展示 Group Sampling、Reward、GRPO 更新。
+
+视觉上必须区分训练过程和推理过程。
+
+### 5. V3.2：DeepSeek Sparse Attention
+
+展示普通 Attention 的稠密计算和 DSA 的选择机制。
+
+重点解释长序列的计算复杂度变化。
+
+### 6. V4：CSA/HCA + mHC
+
+将 V4 的混合 Attention 与 mHC 制作成最精致的技术镜头。
+
+真实还原官方技术报告中的结构和数据流。
+
+---
+
+# 六、中文旁白与声音设计
+
+采用成熟、沉稳、自然的中文男性科技纪录片解说风格。
+
+不能像机械朗读论文，也不能像广告配音。
+
+优先测试：
+
+- IndexTTS-2.5
+- CosyVoice 3
+- Fish Audio
+- MiniMax Speech
+
+依据实际环境、许可与试听效果决定。
+
+如果需要外部 API，先检查已有配置；不得在没有授权的情况下购买服务。
+
+先生成 45–60 秒的配音测试。
+
+测试以下术语：
+
+DeepSeek、Transformer、Mixture of Experts、MoE、MLA、Multi-head Latent Attention、GRPO、MTP、FP8、DeepSeek Sparse Attention、mHC、Muon、KV Cache。
+
+建立 pronunciation_dictionary.json。
+
+所有音频按照语义段落合成。
+
+建议每段约 10–30 秒。
+
+保存单段音频文件与时长信息。
+
+视频场景时长必须依据最终旁白音频调整，而不是让配音强行匹配固定的动画时长。
+
+字幕使用简体中文。
+
+英文技术术语保留标准英文写法。
+
+使用自然的停顿、轻微强调和背景音效。
+
+关键结构变形时可以配合精致的音效，但不能喧宾夺主。
+
+---
+
+# 七、工程制作方案
+
+根据本地环境选择适合的技术。
+
+建议：
+
+**Remotion**
+负责时间轴、动画控制、字幕和 MP4 渲染。
+
+**Three.js / React Three Fiber**
+负责三维模型结构、GPU 数据流动和镜头动画。
+
+**SVG / Canvas**
+负责数学图解、矩阵、Attention Map 和精确图表。
+
+**Blender**
+用于需要更高质量建模、材质或复杂镜头的场景。
+
+**FFmpeg**
+用于配音、音效、字幕与视频合成。
+
+所有动画必须由确定的时间轴控制。
+
+不能依赖浏览器实时帧率或无法重复的随机效果。
+
+每个场景必须可以单独渲染。
+
+优先使用组件化架构：
+
+TransformerBlock
+AttentionModule
+MoERouter
+ExpertNetwork
+KVCacheVisualization
+MLAVisualization
+MTPVisualization
+GRPOVisualization
+SparseAttention
+HybridAttention
+HyperConnections
+
+组件名称可以调整，但必须保证镜头可维护、可修改。
+
+工程中应包含：
+
+- 可复用的三维基础组件。
+- 统一的视觉 Design Tokens。
+- 镜头配置文件。
+- 模型演进时间线数据。
+- 配音和字幕同步机制。
+- 自动渲染脚本。
+- 关键帧预览工具。
+
+---
+
+# 八、制作流程：必须分阶段验收
+
+## Phase 1：Research
+
+完成技术调研。
+
+交付：
+
+research.md
+timeline.md
+architecture_comparison.md
+sources.md
+
+特别对比各代模型：
+
+- 参数规模。
+- 激活参数量。
+- Attention 机制。
+- FFN / MoE 机制。
+- 训练目标与算法。
+- 关键工程优化。
+
+必须标注原始出处。
+
+## Phase 2：Script & Storyboard
+
+完成：
+
+script.md
+storyboard.md
+visual_design.md
+
+逐镜头编写：
+
+- 时间。
+- 旁白。
+- 技术事实来源。
+- 出现的模型组件。
+- 动画起始和结束状态。
+- 对象运动方式。
+- 摄像机运动。
+- 该镜头解释的技术原理。
+- 转场方式。
+
+## Phase 3：制作三个高难度镜头原型
+
+第一轮只制作：
+
+**Prototype A：MLA 动画，15–25 秒**
+
+展示从 MHA 到 MLA 的缓存和计算结构变化。
+
+**Prototype B：DeepSeekMoE 动画，15–25 秒**
+
+展示专家分组、共享专家、路由与负载变化。
+
+**Prototype C：DeepSeek-V4 架构，15–25 秒**
+
+展示 V4 相比前代的混合 Attention 和 mHC 关键变化。
+
+三个原型必须真正渲染成 MP4。
+
+每个原型输出：
+
+- preview.mp4
+- 关键帧 PNG
+- 对应源代码
+- 技术解释说明
+
+不允许只生成静态设计稿。
+
+## Phase 4：视觉质量检查
+
+对三个原型抽取多张关键帧，并检查：
+
+1. 是否准确表达技术机制。
+2. 是否存在结构和数学错误。
+3. 三维构图是否精致。
+4. 是否存在遮挡和画面裁切。
+5. 色彩和字体是否统一。
+6. 动画节奏是否合理。
+7. 是否具有真正的解释能力。
+8. 是否出现 PPT 或低质量积木感。
+
+发现问题后主动修改并重新渲染。
+
+不要把“代码运行成功”当成“画面合格”。
+
+如果环境支持视频逐帧检查，则同时检查动画连续性。
+
+如果只能检查静态帧，要明确说明动态质量检查的局限。
+
+## Phase 5：Full Production
+
+仅在我确认三个原型后，才开始制作完整 10–12 分钟的视频。
+
+按照章节逐段制作和渲染。
+
+优先复用已经通过验收的视觉组件。
+
+## Phase 6：Final Audio & Editing
+
+生成完整中文配音。
+
+同步字幕与动画。
+
+进行声音混合、转场、音量平衡和最终导出。
+
+## Phase 7：Final Quality Assurance
+
+检查：
+
+- 模型发布时间。
+- 架构是否符合论文。
+- 参数量是否正确。
+- 是否混淆架构和训练算法。
+- 是否将论文实验与实际部署混淆。
+- 动画是否有穿模、闪烁、遮挡。
+- 字幕是否同步。
+- 是否存在音画错位。
+- 是否有视频黑帧或静音错误。
+- 是否真正输出 MP4。
+
+---
+
+# 九、最终交付结构
+
+deepseek_evolution/
+  research/
+    research.md
+    timeline.md
+    architecture_comparison.md
+    sources.md
+
+  scripts/
+    script.md
+    storyboard.md
+
+  design/
+    visual_design.md
+
+  src/
+    视频动画完整工程
+
+  prototypes/
+    mla/
+    moe/
+    v4/
+
+  audio/
+    narration/
+    pronunciation_dictionary.json
+
+  preview/
+    关键帧预览
+
+  output/
+    deepseek_evolution_final.mp4
+
+  README.md
+
+---
+
+# 十、最终执行规则
+
+1. 技术准确性与动画质量具有同等重要性。
+2. 不要为了缩短开发时间而退化为 PPT。
+3. 不要使用虚构或缺乏依据的架构图。
+4. 不要把模型版本更新等同于所有模块都发生变化。
+5. 不要把训练方法错误绘制为推理网络中的固定模块。
+6. 不要用静态截图代替实际动画。
+7. 每个重要机制必须能通过对象的运动和状态变化解释。
+8. 任何模型性能比较都必须注明来源与条件。
+9. 优先输出可渲染、可复现的工程。
+10. 真实渲染效果优先于代码行数和复杂度。
+
+**现在开始执行 Phase 1、Phase 2 和 Phase 3。**
+
+请自主完成论文研究、脚本、分镜和三个关键动画原型。
+
+发现资料不足时继续查找官方来源，不要编造。
+
+第一轮必须产出三个可播放 MP4 预览及技术文档。
+
+**完成第一轮后停止，等待我验收。未经确认不得进入完整视频制作。**
+```
+
+</details>
+
+{% embed url="https://drive.google.com/file/d/1rf9DfFvmv2mPNfSkLT5bbq8PHWt5PrOf/view?usp=drive_link" %}
+
+## LLM Infra进化史
+
+<details>
+
+<summary>点击展开完整prompt</summary>
+
+```
+# 项目：LLM Infrastructure 发展史——电影级技术科普纪录片
+
+你现在是一支专业的 AI 技术纪录片制作团队，由以下成员组成：
+
+1. **LLM Systems Researcher**：精通大模型训练、GPU 计算、分布式系统、推理服务和 CUDA Kernel。
+2. **Technical Historian**：研究关键系统论文、开源项目和技术演进的时间关系。
+3. **Science Documentary Director**：擅长通过问题、冲突、技术突破组织叙事。
+4. **Motion Design Director**：擅长高级 2D/3D 技术可视化、动态图形和电影镜头。
+5. **Creative Engineer**：精通 Remotion、Three.js、React Three Fiber、Blender、SVG、WebGL 和 FFmpeg。
+6. **Audio Director**：负责中文 TTS、声音设计、字幕和音画同步。
+
+你的任务是实际制作一部具有高质量视觉设计和技术深度的中文纪录片。
+
+不是 PPT，不是论文汇报，不是静态图文讲解，也不是仅生成代码。
+
+**必须最终交付真实、可播放的 MP4 视频。**
+
+---
+
+# 一、项目基本信息
+
+中文标题：
+
+《LLM Infra 进化史：从单卡训练到万卡集群，从逐 Token 解码到 AI 推理工厂》
+
+英文标题：
+
+The Evolution of LLM Infrastructure:
+From Training to Inference at Scale
+
+时间范围：
+
+2017 年至 2026 年 10 月 15 日。
+
+目标时长：15–18 分钟。
+
+分辨率：1920×1080。
+
+帧率：30 FPS。
+
+视频语言：简体中文。
+
+观众：
+
+- LLM / 深度学习工程师。
+- 对 GPU 和大模型技术感兴趣的开发者。
+- 熟悉基本 Transformer 概念的技术爱好者。
+- 希望系统理解 LLM Training / Inference Infra 的观众。
+
+## 纪录片的核心问题
+
+为什么训练一个大型语言模型需要数千甚至数万张 GPU？
+
+为什么模型只有几 GB，运行时却可能消耗远超权重大小的显存？
+
+为什么 GPU 理论算力很高，逐 Token 生成却仍然可能很慢？
+
+为什么增加 Batch Size 能提高吞吐，却可能损害单个请求的延迟？
+
+为什么现代 LLM Serving 不再只是把模型加载进 GPU，然后执行 forward？
+
+为什么最终的系统开始出现独立的 Prefill GPU、Decode GPU、KV Cache 存储服务与智能调度器？
+
+这部视频应该展示：
+
+**LLM Infra 的发展，本质上是围绕计算、显存、带宽、通信和调度的持续优化。**
+
+整个故事以一个虚构但技术上真实的 LLM 服务系统为主角。
+
+它从单卡实验开始，逐渐发展为生产级分布式推理平台。
+
+每一次技术突破，都表现为这个系统针对上一代瓶颈发生的实际变化。
+
+---
+
+# 二、技术研究原则
+
+必须先研究，再编写剧本和动画。
+
+优先查阅：
+
+- 原始论文
+- 官方技术博客
+- GitHub 官方开源仓库
+- NVIDIA 技术文档
+- PyTorch 官方文档
+- Microsoft DeepSpeed
+- vLLM / SGLang / TensorRT-LLM 官方资料
+- USENIX、OSDI、SOSP、MLSys、NSDI 等会议论文
+
+必须确认：
+
+1. 技术首次提出的时间。
+2. 论文发表时间。
+3. 开源实现的发布时间。
+4. 主要解决的系统问题。
+5. 技术原理。
+6. 与已有方案的区别。
+7. 适用的硬件和工作负载。
+8. 吞吐、延迟、显存的收益及代价。
+9. 论文实验和真实生产部署是否一致。
+
+尤其注意：
+
+一些技术在正式发表论文之前就已有公开实现。
+
+不能按照论文正式发表年份错误构造技术继承关系。
+
+并不是所有技术都互相替代，很多方案可以组合使用。
+
+不要将供应商提供的特定硬件性能提升倍数当作普遍规律。
+
+不要编造未经测量的吞吐提升、延迟和显存数字。
+
+---
+
+# 三、第一幕：模型已经装不进 GPU
+
+时间：00:00–03:00
+
+## Chapter 1：一张 GPU 的极限
+
+开场画面：
+
+一个大型 Transformer 正在被加载进 GPU。
+
+模型权重逐渐填满 HBM。
+
+随后训练开始。
+
+Gradient、Activation、Optimizer States 不断加入。
+
+显存占用持续上涨。
+
+最终：
+
+CUDA Out of Memory。
+
+镜头冻结。
+
+旁白：
+
+“如果一个模型连一张 GPU 都装不下，我们该怎么办？”
+
+这时从 GPU 内部拉远，展示多张 GPU 组成的计算集群。
+
+## Chapter 2：数据并行
+
+展示四张 GPU。
+
+每张 GPU 保留完整模型副本。
+
+不同数据 Batch 分别进入不同 GPU。
+
+Backward 后通过 All-Reduce 同步梯度。
+
+必须解释：
+
+- Data Parallelism。
+- Global Batch Size。
+- Gradient Synchronization。
+- 通信成本。
+- 为什么普通数据并行无法解决单份模型及训练状态过大的问题。
+
+## Chapter 3：Megatron-LM 与 Tensor Parallelism
+
+重点研究 Megatron-LM（2019）。
+
+从矩阵乘法开始：
+
+Y = XW
+
+将 W 分割到多张 GPU。
+
+展示 Column Parallel 和 Row Parallel 的计算过程。
+
+动画必须体现：
+
+- 矩阵沿哪个维度切分。
+- 每张 GPU 计算哪一部分。
+- 什么时候需要通信。
+- All-Reduce / All-Gather 的作用。
+- 为什么 Tensor Parallelism 通常更依赖高速设备互联。
+
+## Chapter 4：Pipeline Parallelism
+
+将 Transformer 的不同 Layer 放在不同 GPU。
+
+先展示低效情况：
+
+GPU0 计算，GPU1 等待。
+
+然后通过 Micro-batch 进入流水线。
+
+展示 Pipeline Bubble，以及如何利用 Micro-batch 提高利用率。
+
+解释：
+
+- Pipeline Stage。
+- Micro-batching。
+- Pipeline Bubble。
+- Pipeline 调度与显存、吞吐的权衡。
+
+## Chapter 5：DeepSpeed ZeRO
+
+重点研究 ZeRO（2020）和后续 FSDP。
+
+通过动画展示：
+
+传统 Data Parallelism 中，每张 GPU 都保存重复的：
+
+- Optimizer States
+- Gradients
+- Parameters
+
+随后分别展示：
+
+ZeRO Stage 1
+
+ZeRO Stage 2
+
+ZeRO Stage 3
+
+动画中的重复状态逐步被切分。
+
+解释：
+
+为什么能够降低单卡显存需求？
+
+又为什么会带来额外通信与参数收集成本？
+
+严格区分 ZeRO、FSDP、Tensor Parallelism。
+
+---
+
+# 四、第二幕：让数千张 GPU 像一台机器一样工作
+
+时间：03:00–06:00
+
+## Chapter 1：3D Parallelism
+
+从单机四卡扩展到多机集群。
+
+组合：
+
+Data Parallelism
+Tensor Parallelism
+Pipeline Parallelism
+
+使用三维空间展示不同并行维度。
+
+例如：
+
+一组 GPU 在 Layer 内做 Tensor Parallel。
+
+多组 GPU 之间进行 Pipeline Parallel。
+
+不同 Pipeline 副本之间进行 Data Parallel。
+
+随后引入：
+
+- Sequence / Context Parallelism。
+- Expert Parallelism。
+- MoE All-to-All。
+
+必须展示哪些数据在哪些 GPU 之间移动。
+
+不要把所有并行方式都描述成“把模型平均分配到 GPU”。
+
+## Chapter 2：通信成为新瓶颈
+
+建立统一的硬件可视化：
+
+GPU SM
+Tensor Cores
+HBM
+On-chip SRAM
+NVLink
+PCIe
+InfiniBand / 高速网络
+
+让观众观察：
+
+计算已经完成，但 GPU 仍在等待通信。
+
+解释：
+
+- All-Reduce
+- All-Gather
+- Reduce-Scatter
+- All-to-All
+- NCCL
+- Communication / Computation Overlap
+
+引入一个重要概念：
+
+不是 GPU 越多，训练就一定越快。
+
+## Chapter 3：FlashAttention
+
+重点研究 FlashAttention 及后续版本。
+
+展示传统 Attention：
+
+Q × Kᵀ
+→ Softmax
+→ Attention × V
+
+可视化中间 Attention Matrix 对内存的需求。
+
+然后进入 GPU 内部。
+
+展示：
+
+HBM ↔ SRAM
+
+将 Attention 计算拆成多个 Tile。
+
+通过连续动画展示：
+
+- Tiling。
+- 数据在 SRAM 中复用。
+- Online Softmax。
+- 减少 HBM 读写。
+- 为什么 IO 优化可以提高实际执行效率。
+
+明确说明：
+
+原始 FlashAttention 是 Exact Attention。
+
+不能错误地宣称它通过近似计算消除了标准稠密 Attention 的二次算术复杂度。
+
+不要将减少 HBM IO 等同于减少所有 FLOPs。
+
+## Chapter 4：训练集群的可靠性
+
+当集群扩大到数千甚至数万张 GPU：
+
+任何一个节点异常，都可能影响整体同步训练。
+
+展示：
+
+- Checkpoint。
+- 节点故障。
+- Straggler。
+- 分布式任务恢复。
+- 大规模训练的有效运行时间。
+
+简要介绍现代大规模训练系统的可靠性问题。
+
+这里需要引出：
+
+“即使我们解决了训练的问题，模型上线之后，还有另一组完全不同的挑战。”
+
+---
+
+# 五、第三幕：为什么推理比想象中复杂？
+
+时间：06:00–10:00。
+
+这一幕是全片最重要的技术基础。
+
+## Chapter 1：Prefill 与 Decode
+
+以用户输入一个长 Prompt 为例。
+
+第一阶段：
+
+Prefill
+
+大量输入 Token 可以在模型中并行处理。
+
+第二阶段：
+
+Decode
+
+模型逐步生成新 Token。
+
+必须准确解释：
+
+- Prefill。
+- Decode。
+- KV Cache。
+- Batch Size。
+- Arithmetic Intensity。
+- Compute-bound。
+- Memory-bandwidth-bound。
+
+演示 Roofline Model 的基本直觉。
+
+注意：
+
+Prefill 更容易体现高计算利用率。
+
+低批量 Decode 常常受到权重读取带宽约束。
+
+但具体瓶颈仍然取决于 Batch、序列长度、模型架构和硬件。
+
+不要把所有 Prefill/Decode 工作负载都描述成固定不变的瓶颈。
+
+## Chapter 2：传统 Static Batching
+
+展示四个用户请求：
+
+Request A：生成 20 Tokens。
+
+Request B：生成 100 Tokens。
+
+Request C：生成 50 Tokens。
+
+Request D：生成 200 Tokens。
+
+所有请求组成一个 Batch。
+
+随着部分请求完成，Batch 中出现闲置位置。
+
+新请求仍在队列里等待。
+
+用 GPU 时间线展示低效的调度行为。
+
+## Chapter 3：Orca 与 Continuous Batching
+
+研究 Orca（2022）的 Iteration-Level Scheduling。
+
+让 Batch 在不同 Decode Iteration 之间动态变化。
+
+完成的请求离开。
+
+新的请求进入。
+
+GPU 的计算槽位得到更高效利用。
+
+重点解释：
+
+- Request-level Scheduling。
+- Iteration-level Scheduling。
+- Selective Batching。
+- Continuous Batching。
+- Throughput 与 Latency 的关系。
+
+必须说明：
+
+Continuous Batching 的思想不是凭空由 vLLM 首次发明。
+
+## Chapter 4：KV Cache 成为新的显存瓶颈
+
+展示一个用户请求在 Decode 中不断增加 KV Cache。
+
+然后同时出现数百个用户。
+
+每个请求有不同的序列长度。
+
+显存内部出现：
+
+- 不连续的请求生命周期。
+- 内存碎片。
+- 未使用的预留空间。
+- 不必要的数据重复。
+
+通过空间可视化解释 KV Cache 的动态内存管理问题。
+
+## Chapter 5：vLLM 与 PagedAttention
+
+重点研究 vLLM（2023）。
+
+对比：
+
+传统连续 KV Cache 分配
+
+与
+
+Paged KV Cache 管理
+
+需要借鉴虚拟内存分页的视觉直觉，但真实说明：
+
+- Logical Blocks。
+- Physical Blocks。
+- Block Table。
+- KV Cache Sharing。
+- 内存碎片减少。
+- 更高有效 Batch 并发。
+
+用一个不断增长的请求展示：
+
+逻辑 Token 顺序保持连续，但 KV Block 可以存放在不同物理显存位置。
+
+重点解释：
+
+为什么减少内存浪费可能带来更高吞吐？
+
+为什么 PagedAttention 不是简单地“把 KV Cache 放进 CPU 内存”？
+
+不能错误地把分页机制与 CPU Offloading 混淆。
+
+---
+
+# 六、第四幕：每一张 GPU 还能生成更多 Token 吗？
+
+时间：10:00–14:00。
+
+## Chapter 1：Prefix Caching 与 SGLang
+
+展示两个不同请求：
+
+Request A：
+
+System Prompt + User Question A
+
+Request B：
+
+System Prompt + User Question B
+
+共同的 System Prompt 被重复 Prefill。
+
+然后引入 Prefix Caching。
+
+将公共部分 KV Cache 复用。
+
+解释：
+
+- Prefix Matching。
+- KV Cache Reuse。
+- Cache Hit / Miss。
+- RadixAttention。
+- SGLang（2023/2024）。
+- 多轮对话中缓存复用的意义。
+
+可视化 Radix Tree 中共享前缀和不同分支。
+
+不得把 Prefix Caching 误写为所有不同 Prompt 都能复用。
+
+## Chapter 2：Chunked Prefill
+
+展示一个超长 Prompt 进入 GPU。
+
+长 Prefill 阻塞其他 Decode 请求。
+
+然后将 Prefill 分成多个 Chunk。
+
+在时间轴上交错调度 Prefill 和 Decode。
+
+解释：
+
+- 为什么这样可能改善 Token 间延迟。
+- Chunk 大小与调度效率。
+- TTFT、TPOT 和吞吐之间的取舍。
+- 为什么没有对所有工作负载都最优的 Chunk Size。
+
+## Chapter 3：Speculative Decoding
+
+介绍 Speculative Decoding 的早期工作及后续改进。
+
+展示：
+
+传统方案：
+
+Large Model
+→ Token 1
+→ Token 2
+→ Token 3
+→ Token 4
+
+然后展示：
+
+Draft Model 一次提出多个候选 Token。
+
+Target Model 并行验证。
+
+通过 Accept / Reject 机制接受部分候选。
+
+解释：
+
+- Draft Model。
+- Target Model。
+- Verification。
+- Acceptance Rate。
+- 精确采样条件下输出分布如何保持一致。
+- 为什么验证多个 Token 可能更高效。
+
+再简要研究：
+
+Medusa
+EAGLE
+EAGLE-2 / EAGLE-3
+
+核实每种方法的技术差异。
+
+不要将所有方法错误描述成独立的小模型猜 Token。
+
+## Chapter 4：Kernel 优化与低精度
+
+介绍：
+
+- CUDA Graph。
+- Kernel Fusion。
+- Triton。
+- FlashDecoding。
+- FlashInfer。
+- FP8。
+- INT8 / INT4。
+- GPTQ / AWQ。
+- 更低比特量化的发展。
+
+重点解释：
+
+为什么理论 FLOPs 并不能直接决定推理延迟？
+
+为什么减少 Kernel Launch、内存读写和数据搬运同样重要？
+
+严格区分：
+
+权重量化。
+
+KV Cache 量化。
+
+Activation 量化。
+
+混合精度计算。
+
+量化可能产生精度变化，不能默认完全无损。
+
+## Chapter 5：MoE Serving
+
+从 Dense 模型切换到 MoE。
+
+展示：
+
+Router
+→ Experts
+→ All-to-All
+→ Output
+
+特别展示 Expert Parallelism：
+
+不同专家部署在不同 GPU。
+
+Token 必须跨 GPU 路由。
+
+说明：
+
+为什么 MoE 模型即使每 Token 激活参数较少，也可能面对复杂的通信和部署问题？
+
+研究 DeepSeek、Qwen 等 MoE 模型对 Serving Infra 提出的新需求。
+
+重点落在系统设计，不展开模型架构发展史。
+
+---
+
+# 七、第五幕：从推理引擎到 AI Inference Factory
+
+时间：14:00–18:00。
+
+这部分是纪录片的最终高潮。
+
+## Chapter 1：Prefill / Decode Disaggregation
+
+从传统 Colocated Serving 开始。
+
+一台 GPU 同时处理：
+
+Prefill
+Decode
+Prefill
+Decode
+
+两种任务之间产生资源竞争。
+
+然后将集群拆分为：
+
+Prefill Workers
+
+Decode Workers
+
+请求先进入 Prefill Worker。
+
+完成后将需要的 KV Cache 传递给 Decode Worker。
+
+重点研究：
+
+- DistServe。
+- Splitwise。
+- Mooncake。
+- Prefill/Decode Disaggregation。
+
+解释：
+
+- 为什么两种工作负载适合不同资源配置。
+- KV Cache Transfer。
+- 网络带宽成本。
+- TTFT 与 TPOT。
+- Goodput 与 SLO。
+- 为什么分离有时会增加通信与调度开销。
+
+必须准确区分不同系统的具体设计。
+
+不能把所有 Disaggregated Serving 都描述成完全相同的方案。
+
+## Chapter 2：KV Cache 成为集群级资源
+
+展示 GPU HBM 中的 KV Cache。
+
+随后将视角扩大到：
+
+GPU HBM
+CPU DRAM
+SSD / Remote Cache
+
+多个 Worker 可以通过统一的缓存管理机制访问可复用的 KV 数据。
+
+介绍：
+
+- Distributed KV Cache。
+- KV Cache Tiering。
+- LMCache。
+- Mooncake。
+- Cache-aware Scheduling。
+
+展示：
+
+如果用户连续发送多个具有共同前缀的请求，调度器可以根据缓存位置选择执行节点，减少重复计算。
+
+解释跨节点 KV 传输的代价。
+
+不要默认远程缓存访问总比重新 Prefill 更快。
+
+## Chapter 3：NVIDIA Dynamo 与分布式推理编排
+
+研究 NVIDIA Dynamo 的公开技术资料。
+
+展示一个完整的现代推理平台：
+
+API Gateway
+    ↓
+Request Router
+    ↓
+Scheduler
+    ↓
+Prefill Worker Pool
+    ↓
+KV Cache Transfer
+    ↓
+Decode Worker Pool
+    ↓
+Streaming Response
+
+周围增加：
+
+KV Cache Manager
+Autoscaling
+Monitoring
+Load Balancing
+Model Serving Engines
+
+解释：
+
+vLLM、SGLang、TensorRT-LLM 等可以承担推理执行引擎角色。
+
+而更上层的基础设施负责集群级路由、存储和资源编排。
+
+不要将不同开源项目的能力全部归功于单一产品。
+
+## Chapter 4：Agent 和长思考模型改变负载
+
+2025–2026 年，模型服务面对新的工作负载：
+
+- Long Reasoning。
+- Agent Tool Calling。
+- Long Context。
+- Multi-turn Conversations。
+- 多模态 Token。
+- 大规模 MoE Serving。
+
+展示同一个 Agent 连续执行：
+
+Reason
+→ Tool Call
+→ Tool Result
+→ Reason
+→ Tool Call
+→ Final Answer
+
+每次模型调用可能需要重复读取上下文。
+
+解释：
+
+为什么缓存复用、请求路由、分阶段资源分配和推理调度变得越来越重要？
+
+## 最终总结
+
+镜头逐渐从集群内部拉远。
+
+一台 GPU。
+
+八张 GPU。
+
+多个计算节点。
+
+大型训练集群。
+
+独立的推理服务。
+
+分离式 Prefill/Decode 集群。
+
+完整的 AI Inference Factory。
+
+最终通过可视化串起五条发展路线：
+
+1. **Compute Evolution**
+2. **Memory Evolution**
+3. **Parallelism Evolution**
+4. **Scheduling Evolution**
+5. **Distributed Serving Evolution**
+
+旁白总结：
+
+“我们看到的大语言模型，只是巨大系统最外面的一层。”
+
+“真正让它能够训练、运行，并服务数百万用户的，是整个基础设施的持续进化。”
+
+“模型的发展改变了 Infra，而 Infra 的突破，又反过来改变了我们能够构建什么样的模型。”
+
+结尾避免品牌宣传和空洞口号。
+
+---
+
+# 八、全片最重要的视觉要求
+
+## 统一的视觉世界
+
+从第一幕到第五幕，始终使用一致的视觉元素。
+
+GPU：
+
+具有真实空间层次的硬件模块。
+
+HBM：
+
+有容量、占用和数据流动的存储空间。
+
+SRAM：
+
+位于 GPU 计算模块内部的高速小容量存储。
+
+Token：
+
+一组能够沿计算路径移动的可视化数据单元。
+
+KV Cache：
+
+能够动态增长、分配、释放和复用的物理缓存块。
+
+Batch：
+
+由多个请求组成的动态集合。
+
+Scheduler：
+
+通过请求队列、GPU Timeline 和调度决策体现。
+
+Network：
+
+GPU 之间真实的数据流、带宽与延迟关系。
+
+### 一切动态效果都必须具有解释意义
+
+不要只让 Token 在空间里飞来飞去。
+
+必须通过动画展示：
+
+- 为什么数据要移动。
+- 哪些数据被复用。
+- 哪些 GPU 在等待。
+- 内存占用如何改变。
+- 哪些 Kernel 正在执行。
+- 哪些请求被调度。
+- 哪个技术解决了之前的瓶颈。
+
+## 视觉审美
+
+参考高级科技纪录片、Vox 式 Motion Graphics、3Blue1Brown 式数学可视化与高质量三维工业设计。
+
+不要复制具体作品。
+
+要求：
+
+- 电影级视觉层次。
+- 统一色彩语言。
+- 精确且流畅的动画。
+- 优秀的动态排版。
+- 真实的时间轴演示。
+- 细腻的 Camera Movement。
+- 精确的矩阵与显存可视化。
+- 克制的音效与灯光。
+- 适度使用景深和体积感。
+
+### 明确禁止
+
+- PPT 翻页。
+- 大量矩形框组成的静态流程图。
+- 只有文字渐入渐出。
+- 低质量积木式 3D 模型。
+- 一直旋转的 GPU 模型。
+- 无意义的数据粒子。
+- 仅仅放大和缩小论文截图。
+- 只有旁白在解释，画面没有实际演示。
+- 为了赶进度用重复镜头填充。
+- 错误的系统架构和通信拓扑。
+
+**如果关闭旁白，观众仍然应该理解主要的系统优化过程。**
+
+---
+
+# 九、必须制作的六个高质量技术动画
+
+这六个技术动画是最关键的视觉资产。
+
+### Animation A：3D Parallelism
+
+展示：
+
+Data Parallel
+Tensor Parallel
+Pipeline Parallel
+
+如何组合在一组 GPU 上。
+
+必须可视化真实的数据切分与通信模式。
+
+### Animation B：FlashAttention
+
+完整展示：
+
+HBM
+SRAM
+Tiling
+Online Softmax
+
+用数据流解释减少 IO 的核心原理。
+
+### Animation C：Continuous Batching
+
+展示：
+
+Static Batching
+vs
+Iteration-level Scheduling
+
+通过 GPU Timeline 实际体现请求加入、退出与吞吐变化。
+
+### Animation D：PagedAttention
+
+展示：
+
+连续 KV Cache 分配
+vs
+Physical Blocks + Block Table
+
+让观众真正理解分页管理。
+
+### Animation E：Speculative Decoding
+
+展示：
+
+Draft → Verify → Accept / Reject
+
+明确生成过程及其性能收益产生的条件。
+
+### Animation F：Prefill/Decode Disaggregation
+
+展示：
+
+单 GPU 混合处理
+→ 独立 Prefill/Decode Worker Pools
+→ KV Transfer
+→ KV-aware Routing
+→ 分布式缓存
+
+这是全片最重要的最终技术镜头。
+
+---
+
+# 十、技术正确性与性能指标
+
+视频需要准确解释以下指标：
+
+训练：
+
+- Model FLOPs Utilization（MFU）
+- Tokens / Second
+- Effective Global Batch Size
+- GPU Utilization
+- Memory Footprint
+- Communication Overhead
+- Time to Train
+
+推理：
+
+- Time to First Token（TTFT）
+- Time per Output Token（TPOT）
+- Inter-token Latency（ITL）
+- End-to-end Latency
+- Throughput
+- Goodput
+- Request Concurrency
+- Tokens/s/GPU
+- KV Cache Utilization
+- SLO Attainment
+
+针对每个技术优化，必须明确：
+
+优化前的瓶颈是什么。
+
+优化了哪项指标。
+
+哪些指标可能出现权衡。
+
+不要将吞吐量、延迟、成本混为一谈。
+
+例如：
+
+提高 Batch Size 可能增加总体吞吐，但不一定改善单请求延迟。
+
+Speculative Decoding 在接受率低时，可能无法获得预期加速。
+
+Disaggregated Serving 需要额外的 KV Transfer，不保证所有工作负载都更快。
+
+FlashAttention 优化 IO，并不意味着所有场景算术复杂度都降低。
+
+所有涉及真实数值的图表，必须注明论文实验条件。
+
+---
+
+# 十一、自然中文 TTS 与声音
+
+优先试听：
+
+IndexTTS-2.5
+CosyVoice 3
+Qwen3-TTS
+Fish Audio
+MiniMax Speech
+
+声音风格：
+
+成熟、自然的中文男性科技纪录片旁白。
+
+语气沉稳，具备技术解释的节奏和适当情绪。
+
+不允许机械朗读感。
+
+专业术语必须准确发音：
+
+Megatron-LM
+DeepSpeed
+ZeRO
+FSDP
+Tensor Parallelism
+Pipeline Parallelism
+NCCL
+FlashAttention
+Prefill
+Decode
+PagedAttention
+vLLM
+SGLang
+Speculative Decoding
+DistServe
+Mooncake
+Dynamo
+KV Cache
+Goodput
+
+建立 pronunciation_dictionary.json。
+
+先生成 45–60 秒试听样本。
+
+分段生成 WAV。
+
+使用真实音频时长安排画面和字幕。
+
+如果高质量 TTS 环境不可用，先保留标准化旁白文件和音轨接口，不得伪称已有自然配音成品。
+
+---
+
+# 十二、实际工程实现
+
+推荐：
+
+Remotion：
+
+管理时间轴、字幕、场景以及视频合成。
+
+Three.js / React Three Fiber：
+
+实现 GPU、集群、显存和三维数据流。
+
+SVG / Canvas：
+
+实现矩阵计算、Attention、调度时间线、吞吐图表。
+
+Blender：
+
+用于高质量三维硬件、空间镜头和需要高级材质的场景。
+
+FFmpeg：
+
+合成、检查和导出最终 MP4。
+
+所有动画必须：
+
+1. Deterministic。
+2. Frame-accurate。
+3. 支持独立渲染。
+4. 支持关键帧自动截取。
+5. 可以复用系统可视化组件。
+6. 有完整源代码。
+7. 支持配音时间轴同步。
+
+重点开发以下可复用组件：
+
+GPUNode
+GPUCluster
+MemoryHierarchy
+TensorParallelAnimation
+PipelineTimeline
+NCCLCommunication
+AttentionTiling
+RequestScheduler
+DynamicBatch
+KVCacheAllocator
+BlockTable
+SpeculativeDecoder
+PrefillWorker
+DecodeWorker
+KVTransferNetwork
+InferenceFactory
+
+组件实现必须符合对应算法原理。
+
+不要制作一个只有表面视觉效果、实际没有技术逻辑的假模拟系统。
+
+---
+
+# 十三、制作阶段
+
+## Phase 1：Research
+
+先查阅所有关键论文。
+
+交付：
+
+research.md
+timeline.md
+paper_comparison.md
+sources.md
+
+timeline.md 必须区分首次公开和正式发表时间。
+
+paper_comparison.md 必须包含：
+
+- 技术名称。
+- 发布时间。
+- 研究机构。
+- 解决的问题。
+- 核心创新。
+- 前代局限。
+- 性能与代价。
+- 主要硬件要求。
+- 原始来源。
+
+同时检查视频的叙事顺序是否符合实际发展历史。
+
+## Phase 2：Script & Storyboard
+
+生成：
+
+script.md
+storyboard.md
+visual_system.md
+
+每个分镜必须写明：
+
+- 时间范围。
+- 中文旁白。
+- 技术来源。
+- 场景对象。
+- GPU / Memory / Token 状态。
+- 动画起点。
+- 动画终点。
+- 对象运动方式。
+- Camera Movement。
+- 转场设计。
+- 要让观众理解的技术问题。
+
+视频必须具有明确的故事推进，而不是逐篇介绍论文。
+
+## Phase 3：三个最关键的动画原型
+
+第一轮只制作三个原型。
+
+**Prototype A：FlashAttention**
+
+长度：20–30 秒。
+
+展示 HBM、SRAM、Attention Tiling 与 Online Softmax。
+
+**Prototype B：vLLM PagedAttention**
+
+长度：20–30 秒。
+
+展示请求的 KV Cache 分配、Logical/Physical Blocks、Block Table 以及缓存共享。
+
+**Prototype C：Prefill/Decode Disaggregation**
+
+长度：25–35 秒。
+
+展示分离前后的请求调度、KV Transfer 与 GPU Worker 的状态变化。
+
+三个原型必须真实渲染出可播放 MP4。
+
+不要只提交网页、图片或者源代码。
+
+每段至少提供：
+
+preview.mp4
+关键帧 PNG
+源代码
+技术机制说明
+对应论文引用
+
+## Phase 4：质量检查
+
+抽取并检查动画关键帧。
+
+如果具备视频分析能力，检查实际连续运动。
+
+重点检查：
+
+1. 技术原理是否准确。
+2. 运行过程是否符合真实数据流。
+3. GPU 与显存状态是否一致。
+4. 是否存在遮挡、裁切或错误文字。
+5. 动画是否连续。
+6. 画面是否具有高级视觉完成度。
+7. 有没有退化成 PPT。
+8. 是否存在与现实不符的性能声明。
+
+对发现的问题局部修改并重新渲染。
+
+## Phase 5：完整纪录片制作
+
+只有经过我确认三个原型后，才开始完整的 15–18 分钟视频制作。
+
+逐章节实现。
+
+复用已经验收通过的系统组件。
+
+## Phase 6：Audio & Editing
+
+加入中文配音、字幕、背景音效。
+
+根据真实音轨调整镜头时长。
+
+## Phase 7：Final QA
+
+检查技术准确性、画面、声音、字幕、镜头节奏和实际文件完整性。
+
+---
+
+# 十四、最终交付
+
+llm_infra_evolution/
+  research/
+    research.md
+    timeline.md
+    paper_comparison.md
+    sources.md
+
+  scripts/
+    script.md
+    storyboard.md
+
+  design/
+    visual_system.md
+
+  src/
+    完整动画源码
+
+  prototypes/
+    flashattention/
+    paged_attention/
+    pd_disaggregation/
+
+  audio/
+    narration/
+    pronunciation_dictionary.json
+
+  previews/
+    关键帧与镜头预览
+
+  output/
+    llm_infra_evolution_final.mp4
+
+  README.md
+
+---
+
+# 十五、执行约束
+
+1. 技术准确性和画面质量同等重要。
+2. 不允许使用虚构的系统结构。
+3. 不允许用毫无意义的动画掩盖技术解释不足。
+4. 不允许把不同技术的优化目标混淆。
+5. 不允许未经验证就宣称某方案更快。
+6. 不允许用静态图或 PPT 冒充动画。
+7. 所有镜头必须支持单独重新渲染。
+8. 必须真正检查最终渲染产物。
+9. 资料不足时，应明确标注不确定性。
+10. 优先保证关键技术镜头的设计深度和解释质量。
+
+现在开始 Phase 1、Phase 2 和 Phase 3。
+
+自主完成技术研究、完整中文剧本、分镜和三个动画原型。
+
+第一轮交付三个实际渲染的 MP4，以及研究文档和可运行的源代码。
+
+**完成第一轮后停止，等待我验收。未经确认不进入完整视频制作。**
+```
+
+</details>
+
+{% embed url="https://drive.google.com/file/d/1l2l6QyhiZGvADs3sv-Ck-Ma0NW7_EleV/view?usp=drive_link" %}
+
+## 大模型后训练发展历史
+
+<details>
+
+<summary>点击展开完整prompt</summary>
+
+```
+# 项目：大模型后训练算法进化史——电影级技术科普纪录片
+
+你现在是一支专业的 AI 技术纪录片制作团队，包含以下角色：
+
+1. **LLM Post-Training Research Scientist**
+   精通 SFT、RLHF、PPO、DPO、GRPO、DAPO、GSPO、RLVR、Reward Modeling 和 Policy Optimization。
+
+2. **Reinforcement Learning Researcher**
+   精通 Policy Gradient、Importance Sampling、Advantage Estimation、KL Regularization、Clipping、Credit Assignment 和 Off-policy Optimization。
+
+3. **Technical Historian**
+   负责原始论文、算法提出时间、技术继承关系和工业实践的真实性。
+
+4. **Science Documentary Director**
+   擅长将抽象数学原理变成具有因果逻辑、悬念和节奏的科学故事。
+
+5. **Motion Graphics Director**
+   擅长 3Blue1Brown 式数学动画、Vox 式叙事视觉设计，以及高质量 2D/3D 技术可视化。
+
+6. **Creative Engineer**
+   精通 Remotion、Three.js、React、SVG、Canvas、WebGL、Manim、Blender、FFmpeg。
+
+7. **Audio Director**
+   负责自然中文配音、字幕、音效和最终视频剪辑。
+
+你的任务不是制作 PPT，也不是编写科普文章。
+
+**你必须真正制作出具有高水平美术设计、连续算法可视化和自然中文配音的 MP4 技术纪录片。**
+
+---
+
+# 一、项目基本信息
+
+中文标题：
+
+**《从模仿人类到自主推理：大模型后训练算法的进化史》**
+
+英文标题：
+
+The Evolution of LLM Post-Training:
+From Supervised Fine-Tuning to Reasoning RL
+
+时间范围：
+
+2017 年至 2026 年 10 月 15 日。
+
+目标时长：
+
+16–20 分钟。
+
+视频格式：
+
+- 1920×1080
+- 16:9
+- 30 FPS
+- 中文旁白
+- 中文字幕
+- 最终输出 MP4
+
+目标观众：
+
+熟悉深度学习和 Transformer 基础的算法工程师、计算机专业学生，以及对大模型训练技术感兴趣的技术爱好者。
+
+本片要有真正的算法深度，但不应变成逐行推导论文公式的公开课。
+
+## 核心叙事问题
+
+预训练让语言模型学会预测下一个 Token。
+
+但为什么这样训练出来的模型，不一定能理解人类指令？
+
+为什么 SFT 能教模型模仿优秀答案，却不等于真正优化回答质量？
+
+为什么研究者要引入人类偏好、Reward Model 和 PPO？
+
+为什么 DPO 可以绕过显式 Reward Model 训练与在线 PPO 流程？
+
+为什么在数学和代码等可验证任务上，强化学习又重新成为核心？
+
+为什么 PPO 逐渐衍生出 GRPO、DAPO、GSPO 等新方法？
+
+当模型能够通过 RL 学会更长的推理过程时，究竟发生了什么？
+
+贯穿全片的核心问题是：
+
+**我们如何从“教模型模仿答案”，发展到“让模型通过反馈持续改进自身生成策略”？**
+
+---
+
+# 二、研究原则
+
+必须先联网研究原始论文，再编写剧本和动画。
+
+优先来源：
+
+- arXiv 原始论文
+- OpenAI Research
+- Anthropic Research
+- Google DeepMind
+- DeepSeek 官方技术报告
+- Qwen 官方技术报告
+- 顶会论文
+- 官方开源训练框架和实现
+
+研究内容必须覆盖：
+
+## A. 指令微调
+
+- Instruction Tuning
+- FLAN
+- Supervised Fine-Tuning（SFT）
+- Self-Instruct
+- Synthetic Instruction Data
+- Rejection Sampling Fine-Tuning
+
+## B. 人类反馈强化学习
+
+- Deep Reinforcement Learning from Human Preferences
+- PPO
+- InstructGPT
+- Reward Modeling
+- Bradley-Terry Preference Model
+- KL Regularization
+- Advantage Estimation
+- RLAIF
+- Constitutional AI
+
+## C. 直接偏好优化
+
+- Direct Preference Optimization（DPO）
+- IPO
+- KTO
+- ORPO
+- SimPO
+- 其他经过核实的重要 Preference Optimization 方法
+
+## D. 推理强化学习
+
+- Process Reward Model（PRM）
+- Outcome Reward Model（ORM）
+- Reinforcement Learning with Verifiable Rewards（RLVR）
+- DeepSeekMath
+- GRPO
+- DeepSeek-R1-Zero
+- DeepSeek-R1
+
+## E. 大规模 RL 优化
+
+- DAPO
+- Dr.GRPO
+- GSPO
+- RLOO / REINFORCE 系列
+- 长 CoT 强化学习
+- RL Scaling
+- Reward Hacking
+- Entropy Collapse
+- On-policy / Off-policy Training
+- Training-Inference Mismatch
+
+## F. 2025–2026 新方向
+
+- Agentic Reinforcement Learning
+- Multi-turn RL
+- Tool-use Reinforcement Learning
+- Long-horizon Credit Assignment
+- Verifiable Reward Design
+- Process Supervision
+- Self-play / Synthetic Data
+- 在线与离线反馈协同
+- 可验证奖励下的采样与梯度估计改进
+
+对于 2026 年的工作，需要先检查是否已有公开论文和可验证结果。
+
+如果研究尚未得到充分验证，不得宣称已经形成行业共识。
+
+---
+
+# 三、最重要的技术区分
+
+整部视频必须反复区分以下概念。
+
+## 1. Pretraining vs Post-Training
+
+预训练主要通过大规模数据学习语言和世界知识。
+
+后训练则通过指令数据、偏好数据、奖励和交互反馈塑造模型行为。
+
+但这不意味着预训练不能提升推理能力，也不意味着后训练可以无限创造新知识。
+
+## 2. SFT vs Preference Optimization
+
+SFT 学习示范数据中的目标输出。
+
+Preference Optimization 利用回答之间的偏好关系调整模型分布。
+
+不能将 DPO 简单描述为“在 Chosen 上做 SFT”。
+
+## 3. Reward Model vs Verifiable Reward
+
+Reward Model 通常从偏好数据学习近似评分。
+
+Verifiable Reward 可以依据数学答案、代码测试、环境状态等规则产生反馈。
+
+二者具有不同的适用条件和局限。
+
+## 4. PPO vs DPO vs GRPO
+
+PPO：
+
+通过在线采样、奖励与优势估计优化策略，通常配合 Critic / Value Model。
+
+DPO：
+
+通过离线偏好数据以及隐式奖励表示构造直接优化目标，不需要传统 PPO-RLHF 的完整在线训练循环。
+
+GRPO：
+
+通过同一 Prompt 的一组输出构造相对优势，减少对独立 Critic 的依赖。
+
+三者不是简单的前后三代替代关系。
+
+## 5. GRPO vs DAPO vs GSPO
+
+必须依据原始公式展示关键区别。
+
+不能只画三张完全相同的训练流程图。
+
+尤其需要对比：
+
+- Advantage 的计算。
+- Importance Ratio 的粒度。
+- Clip 的位置和方式。
+- Token / Sequence Loss。
+- Prompt Group 的筛选。
+- 长输出对梯度的影响。
+- 是否需要 Reference Policy。
+- 不同实现中的归一化与 KL 选择。
+- 训练稳定性。
+- MoE RL 的特殊问题。
+
+必须以论文具体算法版本为准，不能把某个开源框架的默认配置当成算法唯一标准。
+
+---
+
+# 四、第一幕：预训练模型为什么不会好好回答问题？
+
+时间：00:00–02:40。
+
+## 开场场景
+
+一个庞大的 Transformer 模型正在持续预测下一个 Token。
+
+画面中出现：
+
+“如何向一个小学生解释黑洞？”
+
+模型却继续生成类似网页文本、文章片段或不符合用户意图的内容。
+
+旁白：
+
+“2020 年左右，大语言模型已经能够生成流畅的文字。”
+
+“但生成流畅文字，和成为一个有用的 AI 助手，并不是同一回事。”
+
+摄像机进入模型内部。
+
+展示 Next Token Prediction 的训练机制。
+
+随后提出：
+
+如果我们希望模型遵循人类指令，应该改变什么？
+
+## Chapter 1：Instruction Tuning 与 SFT
+
+从一个 Pretrained Model 开始。
+
+准备成对数据：
+
+Instruction
+→ Response
+
+展示多组训练样本。
+
+通过动画解释 Teacher Forcing：
+
+模型在给定真实历史 Token 的条件下，预测下一个目标 Token。
+
+展示 Cross-Entropy Loss。
+
+选择一个位置，通过动态概率分布展示：
+
+正确目标 Token 的概率逐渐上升。
+
+其他 Token 的分布相应变化。
+
+进一步说明：
+
+- Instruction Formatting。
+- Chat Templates。
+- Response Masking。
+- Teacher Forcing。
+- Token-level Cross Entropy。
+- 指令数据多样性。
+- Synthetic Instruction Data。
+
+这一幕需要直观说明：
+
+SFT 让模型学习高质量示范，但它并没有显式比较多个候选回答的相对优劣。
+
+---
+
+# 五、第二幕：RLHF——让人类告诉模型什么是好答案
+
+时间：02:40–06:00。
+
+## Chapter 1：人类偏好数据
+
+同一个 Prompt。
+
+模型生成两个回答：
+
+Response A
+Response B
+
+人类标注者选择更好的回答。
+
+展示大量 Pairwise Preference。
+
+引入：
+
+Chosen
+Rejected
+
+但必须解释：
+
+人类偏好可能存在噪声、分歧和标注偏差。
+
+## Chapter 2：Reward Model
+
+将偏好数据送入 Reward Model。
+
+展示：
+
+Prompt + Response
+→ Scalar Reward
+
+引入 Bradley-Terry Model。
+
+通过两个回答的 Reward 差异，解释偏好概率。
+
+必须准确展示 Pairwise Preference Loss 的数学意义。
+
+让观众看到：
+
+Reward Model 是如何从人工比较中学习评价函数的。
+
+## Chapter 3：PPO 与 RLHF
+
+构建一套完整的 RLHF 训练系统。
+
+重点展示：
+
+Policy Model
+Reference Model
+Reward Model
+Value / Critic Model
+
+同时区分 Old Policy Snapshot 等训练状态。
+
+通过动画展示完整流程：
+
+Prompt
+→ Policy Sampling
+→ Generated Response
+→ Reward Evaluation
+→ Advantage Estimation
+→ PPO Update
+→ New Policy
+
+必须深入解释：
+
+- Policy Gradient 的直觉。
+- Reward 为什么可以驱动策略更新。
+- Advantage 为什么重要。
+- PPO Importance Ratio。
+- PPO Clipping。
+- KL Penalty。
+- Reference Policy 如何限制策略漂移。
+- Value Model 的作用。
+
+在一幅真实的概率分布动画中演示：
+
+高奖励回答的概率逐渐增加。
+
+低奖励回答的概率逐渐下降。
+
+但模型不能无限制改变输出分布。
+
+## Chapter 4：PPO 为什么复杂？
+
+将摄像机从训练循环拉远。
+
+展示多个模型占据计算资源：
+
+Policy
+Reference
+Reward
+Critic
+
+展示采样、评分、训练交替进行。
+
+解释：
+
+- 多模型显存与计算开销。
+- Online Rollout 成本。
+- Reward Model 误差。
+- Training Instability。
+- Reward Hacking。
+- Policy Drift。
+
+引出下一个问题：
+
+“既然我们已经有 Chosen 和 Rejected，能不能不训练显式 Reward Model，也不执行完整 PPO 循环？”
+
+---
+
+# 六、第三幕：DPO——重新思考偏好优化
+
+时间：06:00–09:15。
+
+这是全片第一个重要算法高潮。
+
+## Chapter 1：DPO 的核心思想
+
+从 PPO-RLHF 训练架构开始。
+
+镜头聚焦于：
+
+Reward Model
+PPO Update
+Reference Policy
+
+然后根据 DPO 论文推导，逐步变换训练目标。
+
+重点解释：
+
+通过 KL-regularized RLHF 目标与隐式奖励参数化之间的关系，可以构造直接偏好优化目标。
+
+随后从：
+
+Prompt
+Chosen Response
+Rejected Response
+
+开始训练。
+
+展示 Policy 和 Reference Policy 对两条回答计算 Log Probability。
+
+通过动画形成：
+
+Policy Chosen LogProb
+Policy Rejected LogProb
+
+Reference Chosen LogProb
+Reference Rejected LogProb
+
+然后计算偏好目标。
+
+必须准确解释：
+
+- Log Probability Ratio。
+- Reference Policy。
+- Beta。
+- Chosen / Rejected 的相对 Log Probability。
+- Logistic Loss。
+- 为什么 DPO 不等于简单的 SFT。
+- DPO 的离线训练特点。
+
+使用直观的概率分布变化展示 Loss 对模型的影响。
+
+## Chapter 2：DPO 并没有解决所有问题
+
+展示偏好数据中的问题：
+
+- 长度偏好。
+- 数据噪声。
+- 分布偏移。
+- 参考模型依赖。
+- 离线优化局限。
+- 过度优化与泛化问题。
+
+随后引出不同算法路线。
+
+## Chapter 3：Preference Optimization 变体
+
+依次简要介绍：
+
+IPO
+KTO
+ORPO
+SimPO
+
+重点回答：
+
+每个方法相对于 DPO 或传统偏好训练修改了什么？
+
+为什么有人尝试移除 Reference Model？
+
+为什么需要控制响应长度带来的偏差？
+
+为什么有的方法直接结合 SFT 与偏好优化？
+
+必须通过统一的损失函数组件来展示差异。
+
+不要把这些方法描述成公认的严格排名。
+
+本章最后总结：
+
+偏好优化正在变得越来越简单。
+
+但对于数学、代码等任务，模型是否可以利用明确的正确性反馈进行更直接的学习？
+
+---
+
+# 七、第四幕：推理强化学习——从评分答案到优化推理能力
+
+时间：09:15–13:30。
+
+这是全片最重要的技术高潮。
+
+## Chapter 1：Outcome Reward 与 Process Reward
+
+以一道数学题为例。
+
+模型产生多个解题步骤。
+
+先介绍 Outcome Supervision：
+
+只检查最终答案是否正确。
+
+再介绍 Process Supervision：
+
+对中间推理步骤进行评价。
+
+展示：
+
+Outcome Reward Model（ORM）
+
+Process Reward Model（PRM）
+
+重点说明：
+
+两种监督方式各自的优点、限制和成本。
+
+不能把 PRM 错误描述成所有现代推理 RL 的必要条件。
+
+## Chapter 2：RLVR
+
+引入 Reinforcement Learning with Verifiable Rewards。
+
+用数学题或代码任务示例：
+
+Prompt
+→ Generated Response
+→ Verifier
+→ Reward
+
+数学任务通过标准答案或等价性检查判断正确性。
+
+代码任务通过测试用例判断结果。
+
+注意：
+
+可验证奖励依然可能不完善。
+
+例如测试覆盖不充分、答案解析失败、Reward Hacking。
+
+## Chapter 3：DeepSeekMath 与 GRPO
+
+必须准确说明：
+
+GRPO 于 2024 年的 DeepSeekMath 工作中提出。
+
+随后 DeepSeek-R1 推动该方向获得更广泛关注。
+
+本章节用一套精心设计的动画解释 GRPO。
+
+固定一个数学 Prompt。
+
+模型生成 8 条不同的推理轨迹。
+
+每条轨迹获得一个 Reward。
+
+展示：
+
+r1、r2、...、r8
+
+计算组内 Reward Mean。
+
+根据原论文具体公式计算 Group-relative Advantage。
+
+例如：
+
+A_i = (r_i - mean(r)) / (std(r) + epsilon)
+
+这里 epsilon 的处理应按所选论文或实现版本注明，不应宣称是唯一原始公式。
+
+让每个 Rollout 获得不同的 Advantage。
+
+之后展示：
+
+- Positive Advantage。
+- Negative Advantage。
+- Importance Sampling Ratio。
+- Clipped Policy Update。
+- Reference KL（依据具体算法版本）。
+
+解释：
+
+为什么 GRPO 可以避免独立训练 Critic？
+
+什么情况下 Group Advantage 可能失去有效区分度？
+
+为什么全对或全错的 Group 会影响学习信号？
+
+GRPO 与 PPO 主要差异究竟是什么？
+
+### 特别要求
+
+不能错误地宣称 GRPO 完全取消所有 Reference Model。
+
+不能将 Group Relative Advantage 描述成使用全局 Batch Reward 的标准化。
+
+不能把 GRPO 描述成 DeepSeek-R1 才首次提出。
+
+不能把 RLVR 与 GRPO 混为同一个概念。
+
+## Chapter 4：DeepSeek-R1-Zero 与 R1
+
+展示 DeepSeek-R1-Zero 的强化学习过程。
+
+同一个题目在训练前后，模型生成不同的推理行为。
+
+通过动态演示说明 RL 训练如何改变模型生成策略。
+
+需要涉及：
+
+- Long Chain-of-Thought。
+- Self-Verification。
+- Reflection。
+- Reward-driven Improvement。
+- R1-Zero 的语言混杂、可读性问题。
+- R1 的 Cold-Start SFT。
+- Multi-stage RL。
+- Rejection Sampling。
+- Distillation。
+
+必须区分：
+
+R1-Zero 的训练路线与 R1 的完整多阶段训练路线。
+
+不要将 R1 简化成单次 GRPO 训练。
+
+不需要展示真实模型的私有推理内容，可以使用专门构建的数学任务示例解释机制。
+
+---
+
+# 八、第五幕：DAPO、GSPO——如何让 RL 真正大规模稳定运行？
+
+时间：13:30–18:00。
+
+这是全片第二个重要高潮，也是本期最值得制作高质量数学动画的章节。
+
+## Chapter 1：GRPO 的训练挑战
+
+从 GRPO 的训练过程继续推进。
+
+让 Rollout 数量、CoT 长度和训练 Step 逐渐增加。
+
+展示几种可能的问题：
+
+- Entropy Collapse。
+- Exploration 不足。
+- 无效 Prompt Group。
+- 长 Response 的梯度权重偏差。
+- 超长输出与奖励噪声。
+- On-policy 数据陈旧。
+- 训练与推理数值不一致。
+- MoE Routing 带来的训练挑战。
+
+所有机制必须有论文或公开实验支持。
+
+## Chapter 2：DAPO
+
+重点研究 2025 年 DAPO 原始论文。
+
+将 GRPO 的训练流程作为对照。
+
+分别制作以下动画。
+
+### A. Clip-Higher
+
+先展示对称 Clip 范围。
+
+例如：
+
+1 - epsilon
+到
+1 + epsilon
+
+然后展示 DAPO 的非对称裁剪思路。
+
+通过概率比率和梯度变化，解释为什么放宽正向上界可能帮助探索。
+
+必须严格按照论文公式解释不同 Advantage 符号下的作用。
+
+### B. Dynamic Sampling
+
+同一个 Prompt 生成多条回答。
+
+一些 Group 全部正确。
+
+一些 Group 全部错误。
+
+另一些 Group 有正确也有错误。
+
+展示不同 Group 的训练信号。
+
+然后依据 DAPO 的采样策略过滤或重新采样，构造更有效的训练 Batch。
+
+强调：
+
+这是一种提高训练效率的策略，并不代表难题和简单题永远不应该参与训练。
+
+### C. Token-level Policy Gradient Loss
+
+展示两个不同长度的 Response。
+
+将其 Token 展开。
+
+解释：
+
+Sequence-level Normalization
+和
+Token-level Normalization
+
+如何影响长输出的权重。
+
+必须通过具体公式以及数值例子展示差异。
+
+### D. Overlong Reward Shaping
+
+展示超过最大长度的输出。
+
+解释简单截断或惩罚可能产生什么问题。
+
+然后介绍 DAPO 的长度奖励处理方案。
+
+总结：
+
+DAPO 的改进不是一句“比 GRPO 更好”就能解释。
+
+它是在采样、裁剪、梯度归一化和超长序列处理上进行了多个设计改动。
+
+## Chapter 3：Dr.GRPO
+
+调研 Dr.GRPO 等对 GRPO 目标中长度或归一化偏差进行研究的工作。
+
+重点关注：
+
+- Group Reward Standardization。
+- Length Normalization。
+- Gradient Weighting。
+- 潜在优化偏差。
+
+通过动画展示同样一组 Rollout：
+
+不同归一化设计为何可能产生不同的训练梯度。
+
+不要在未核实公式时自行编造 Dr.GRPO 的目标函数。
+
+## Chapter 4：GSPO
+
+重点研究 Qwen 2025 年提出的 Group Sequence Policy Optimization。
+
+将同一个长 CoT 展开为几十个 Token。
+
+左侧展示 Token-level Importance Ratio。
+
+右侧展示 Sequence-level Importance Ratio。
+
+重点解释：
+
+- Sequence Likelihood。
+- 长度归一化。
+- Importance Sampling。
+- Sequence-level Clipping。
+- 与 GRPO / DAPO 的目标差异。
+- Training Stability。
+- MoE 模型强化学习中的实际问题。
+
+必须强调：
+
+Sequence-level Ratio 不代表模型只对整个回答做一次不可微的更新。
+
+损失仍然通过序列的 Log Probability 对模型参数传播梯度。
+
+需要依据 GSPO 原始论文展示准确的目标函数。
+
+## Chapter 5：三种算法放在同一个实验中对比
+
+设计一个统一的教学示例：
+
+一个数学 Prompt。
+
+8 条 Rollout。
+
+每条 Response 长度不同。
+
+每条 Response 有不同 Reward。
+
+固定相同的假设数据，分别展示：
+
+GRPO
+DAPO
+GSPO
+
+在各自算法定义下的：
+
+- Advantage。
+- Importance Ratio。
+- Clip。
+- Loss Aggregation。
+- Gradient Weight。
+
+不得虚构算法真实训练收益。
+
+这只是用于解释目标函数差异的教学实验。
+
+如果要展示实际训练性能曲线，只能使用真实论文实验数据，并注明模型、数据集和训练配置。
+
+---
+
+# 九、第六幕：2026，后训练的下一阶段
+
+时间：18:00–20:00。
+
+研究截至 2026 年 10 月 15 日公开的新进展。
+
+重点选择具有代表性的技术方向。
+
+## A. RL Scaling
+
+讨论：
+
+增加 RL Rollout 数量、训练 Step、数据多样性，是否能持续提高推理能力？
+
+哪些因素可能限制收益？
+
+是否出现训练不稳定、奖励饱和和泛化不足？
+
+## B. 更好的奖励信号
+
+研究：
+
+- RLVR。
+- Process Reward。
+- Outcome Reward。
+- Reward Model。
+- Verifier。
+- Reward Hacking。
+- Reward Uncertainty。
+
+解释为什么奖励设计本身可能成为下一阶段的关键。
+
+## C. Agentic RL
+
+从单轮数学题切换到 Agent 任务。
+
+模型需要：
+
+Think
+→ Tool Call
+→ Observation
+→ Next Action
+→ Final Result
+
+展示：
+
+稀疏的终局奖励。
+
+多轮交互。
+
+长轨迹信用分配。
+
+工具失败与环境不确定性。
+
+强调：
+
+Agentic RL 不只是让模型生成更长的文本。
+
+它需要学习在环境中的行动策略。
+
+## D. 长轨迹强化学习
+
+讨论：
+
+- Long-horizon Credit Assignment。
+- On-policy vs Off-policy。
+- Rollout Sampling Efficiency。
+- Asynchronous RL。
+- 多轮状态与动作建模。
+
+只对已有公开证据的技术作出确定性陈述。
+
+## 最终结尾
+
+全片回顾六条主线：
+
+SFT：Learning from Demonstrations
+
+RLHF：Learning from Human Preferences
+
+DPO：Direct Preference Optimization
+
+GRPO：Learning from Relative Rewards
+
+DAPO / GSPO：Scaling Reasoning RL
+
+Agentic RL：Learning from Interaction
+
+结尾旁白围绕一个问题：
+
+“预训练让模型掌握语言。”
+
+“监督微调教会模型模仿优秀答案。”
+
+“人类偏好让模型开始优化回答质量。”
+
+“而可验证奖励和强化学习，正在让模型通过试错不断改善复杂任务中的行为。”
+
+“下一个问题是：当 AI 能够在真实环境中持续行动和学习，我们究竟应该用什么来定义一个好的奖励？”
+
+最后将时间线拉远，形成完整的算法发展图谱。
+
+明确这是一组相互影响的技术路线，而不是所有方法之间严格的线性替换。
+
+---
+
+# 十、视觉设计：数学原理必须真正动起来
+
+全片参考：
+
+- 3Blue1Brown：精确数学动画。
+- Vox：高级信息视觉与叙事。
+- Kurzgesagt：整体视觉一致性。
+- 高级 Motion Design：镜头、运动、材质、节奏。
+
+不要直接复制已有作品。
+
+## 统一的数学视觉系统
+
+所有算法使用同一套可复用图形元素：
+
+Token：
+不同颜色的可视化离散单元。
+
+Probability Distribution：
+动态概率柱状图、密度曲线和概率质量变化。
+
+Loss Surface：
+可旋转的三维优化曲面。
+
+Gradient：
+具有方向、大小和更新过程的向量。
+
+Policy：
+模型条件概率分布的可视化表示。
+
+Reference Policy：
+用另外一种统一颜色表示。
+
+Reward：
+数字评分与可视化标量信号。
+
+Advantage：
+正负数值与对应梯度方向。
+
+Rollout：
+从同一 Prompt 分叉产生的多条完整生成轨迹。
+
+Clipping：
+在 Ratio / Objective 图中展示阈值以及裁剪对优化目标的作用。
+
+## 重点要求
+
+不是所有概念都需要 3D。
+
+例如：
+
+PPO Clip 更适合二维函数曲线。
+
+DPO 的概率差异更适合动态条形图与概率分布。
+
+GRPO 的 Group Advantage 更适合树形展开与相对奖励分布。
+
+DAPO 的 Token-level Loss 更适合 Token 序列和归一化权重动画。
+
+GSPO 的 Sequence-level Ratio 更适合长序列的概率组合和 Clip 过程。
+
+必须根据数学本质选择可视化形式，而不是强行把所有内容变成三维粒子特效。
+
+### 技术正确性优先
+
+所有数学动画必须做到：
+
+- 与真实公式一致。
+- 数值变化能够通过公式复现。
+- 梯度方向符合目标函数。
+- 概率归一化正确。
+- 图表坐标轴清楚。
+- 不能通过错误的曲线夸张展示收益。
+- 示例数据与真实论文结果严格区分。
+
+允许使用教学简化，但必须在研究文档中标明简化条件。
+
+## 严格禁止
+
+- PPT 翻页。
+- 大量静态公式截图。
+- 论文截图加简单缩放。
+- 无意义的神经网络发光粒子。
+- 只有标题和文字淡入淡出。
+- 使用复杂三维场景掩盖数学解释不足。
+- 使用没有坐标轴的虚假训练曲线。
+- 不经过计算直接生成随机 Probability 曲线。
+- 用漂亮但错误的梯度动画解释算法。
+
+**如果去掉声音，观众仍应能理解主要优化目标和训练流程的变化。**
+
+---
+
+# 十一、必须建立真正的数学动画引擎
+
+建议用 Python / NumPy / PyTorch 实现教学示例的真实数值计算。
+
+例如：
+
+- SFT Cross-Entropy。
+- Bradley-Terry Preference Probability。
+- DPO Loss。
+- PPO Clipped Objective。
+- GRPO Advantage。
+- DAPO Objective。
+- GSPO Sequence Importance Ratio。
+
+这些数值计算模块必须配备测试。
+
+动画应读取计算结果，而不是反过来为预设动画编造数值。
+
+对同一组教学数据：
+
+保存原始 Token Probability、Reward、Advantage、Loss 与派生数据。
+
+能够重放每一个算法计算过程。
+
+不要依赖随机粒子模拟梯度更新。
+
+这部视频应具有“数学机制可验证”的制作质量。
+
+---
+
+# 十二、配音与声音设计
+
+使用自然的中文科技纪录片解说音色。
+
+优先试听：
+
+IndexTTS-2.5
+CosyVoice 3
+Qwen3-TTS
+Fish Audio
+MiniMax Speech
+
+建议：
+
+成熟、沉稳、自然的中文男声。
+
+像有技术理解的科普 UP 主，而不是新闻播报或广告配音。
+
+专业术语要准确：
+
+Supervised Fine-Tuning
+RLHF
+PPO
+DPO
+GRPO
+DAPO
+GSPO
+Reward Model
+Policy Gradient
+Advantage
+Clipping
+KL Divergence
+Importance Sampling
+Rollout
+RLVR
+Process Reward Model
+
+建立 pronunciation_dictionary.json。
+
+先生成约一分钟试听。
+
+按照语义段落合成音频。
+
+每段建议 10–30 秒。
+
+保存 WAV、字幕、文本和实际音频时长。
+
+必须依据旁白音轨同步动画，而不能单纯假设每个镜头固定时长。
+
+遇到术语发音错误时，支持局部重新生成。
+
+---
+
+# 十三、实际技术栈
+
+推荐：
+
+**Manim**
+
+负责：
+
+- 数学公式。
+- Loss 曲线。
+- 概率分布。
+- 向量与梯度。
+- 数学变换。
+
+**Remotion**
+
+负责：
+
+- 视频场景编排。
+- 时间轴。
+- 字幕。
+- 多层动画。
+- 最终渲染。
+
+**Three.js / React Three Fiber**
+
+负责：
+
+- 3D Loss Surface。
+- 复杂训练系统空间结构。
+- 动态决策树。
+- 长 Rollout 三维展示。
+
+**Python / NumPy / PyTorch**
+
+负责：
+
+- 数值计算。
+- 公式验证。
+- 教学示例数据生成。
+- 自动化测试。
+
+**FFmpeg**
+
+负责：
+
+- 视频合成。
+- 音轨处理。
+- 字幕与最终 MP4 输出。
+
+根据镜头需要选择技术。
+
+不要为了使用 Manim 或 Three.js 而降低视觉质量。
+
+所有动画必须：
+
+- 可复现。
+- 时间轴确定。
+- 可独立渲染。
+- 组件化。
+- 支持逐帧检查。
+- 支持局部重新渲染。
+
+---
+
+# 十四、分阶段执行
+
+## Phase 1：完整论文调研
+
+生成：
+
+research.md
+timeline.md
+algorithm_comparison.md
+sources.md
+
+algorithm_comparison.md 至少包含：
+
+- 算法名称。
+- 首次提出年份。
+- 研究机构。
+- 核心目标函数。
+- 是否需要显式 Reward Model。
+- 是否需要 Reference Model。
+- 是否需要 Critic。
+- 使用在线还是离线数据。
+- Advantage 计算方式。
+- Importance Ratio。
+- Clip 机制。
+- Loss Aggregation。
+- 核心改进。
+- 局限与适用场景。
+- 原始论文链接。
+
+所有不适用或因具体实现而变化的字段，要明确说明。
+
+## Phase 2：完整中文剧本与分镜
+
+生成：
+
+script.md
+storyboard.md
+visual_system.md
+
+每个镜头包括：
+
+- 时间范围。
+- 完整中文旁白。
+- 技术事实来源。
+- 算法公式。
+- 教学示例数据。
+- 画面内容。
+- 对象如何移动。
+- 概率或梯度如何变化。
+- 摄像机运动。
+- 转场设计。
+- 这一镜头解释的数学机制。
+
+旁白不能只是照着论文念。
+
+必须采用：
+
+问题 → 局限 → 算法设计 → 直观机制 → 新问题
+
+的叙事结构。
+
+## Phase 3：先做三个高质量核心动画原型
+
+第一轮只制作以下三个原型。
+
+### Prototype A：PPO vs DPO
+
+长度：25–35 秒。
+
+左侧：
+
+Policy / Reference / Reward / Critic。
+
+演示 PPO-RLHF 更新流程。
+
+右侧：
+
+Chosen / Rejected / Policy / Reference。
+
+展示 DPO Objective。
+
+必须动态表现两个目标的差异。
+
+### Prototype B：GRPO
+
+长度：30–40 秒。
+
+一个数学 Prompt。
+
+8 条 Rollout。
+
+Reward。
+
+Group Mean。
+
+Relative Advantage。
+
+Importance Ratio。
+
+Policy Update。
+
+所有数值必须可计算、可复现。
+
+### Prototype C：GRPO → DAPO → GSPO
+
+长度：35–45 秒。
+
+使用统一的 Prompt 和 Rollout 样例。
+
+动态展示：
+
+GRPO 目标函数。
+
+DAPO 的 Clip-Higher、Dynamic Sampling、Token-level Loss。
+
+GSPO 的 Sequence-level Ratio 和 Clipping。
+
+重点检查算法之间的数学区别是否真正体现。
+
+每个原型必须实际渲染 MP4。
+
+同时输出：
+
+- preview.mp4
+- 抽取的关键帧 PNG
+- 源代码
+- 相关公式
+- 教学数据
+- 技术说明
+- 论文引用
+
+不允许只有静态设计稿。
+
+## Phase 4：严格验收
+
+对原型进行两种独立评估：
+
+### A. 数学正确性
+
+检查：
+
+- 公式。
+- 概率。
+- Advantage。
+- Importance Ratio。
+- Clip。
+- Loss。
+- Gradient。
+- Token / Sequence Aggregation。
+- 正负更新方向。
+- 示例计算的一致性。
+
+### B. 视觉质量
+
+检查：
+
+- 画面是否高级。
+- 动画是否真正解释原理。
+- 是否存在文字遮挡。
+- 数学公式是否清晰。
+- 镜头是否具有节奏。
+- 是否存在低质量 PPT 风格。
+- 是否有不必要的 3D 特效。
+- 动画是否流畅连贯。
+
+发现问题时主动修改并重新渲染。
+
+不能把代码运行成功等同于视频质量合格。
+
+## Phase 5：完整视频制作
+
+只有在我确认三个原型之后，才能进入完整 16–20 分钟的视频制作。
+
+请复用已经通过验收的数学动画组件。
+
+逐章节渲染。
+
+## Phase 6：音频和最终剪辑
+
+生成中文配音。
+
+同步字幕。
+
+增加适量音效和背景音乐。
+
+依据音轨调整镜头长度。
+
+## Phase 7：最终质量检查
+
+检查：
+
+- 论文时间线。
+- 算法公式。
+- 数学演示。
+- 旁白术语。
+- 字幕同步。
+- 镜头连贯性。
+- MP4 可播放性。
+- 工程可复现性。
+
+---
+
+# 十五、最终交付目录
+
+llm_post_training_evolution/
+  research/
+    research.md
+    timeline.md
+    algorithm_comparison.md
+    sources.md
+
+  scripts/
+    script.md
+    storyboard.md
+
+  design/
+    visual_system.md
+
+  src/
+    完整视频工程
+
+  math/
+    教学示例
+    算法数值计算
+    公式验证测试
+
+  prototypes/
+    ppo_vs_dpo/
+    grpo/
+    dapo_vs_gspo/
+
+  audio/
+    narration/
+    pronunciation_dictionary.json
+
+  previews/
+    关键帧和镜头预览
+
+  output/
+    llm_post_training_evolution_final.mp4
+
+  README.md
+
+---
+
+# 十六、执行原则
+
+1. 原始论文优先于二手资料。
+2. 算法公式准确性优先于视觉炫酷效果。
+3. 真实数值动画优先于抽象装饰。
+4. 不得编造训练曲线。
+5. 不得把 PPO、DPO、GRPO 混为同一种方法。
+6. 不得把算法名称变化等同于架构变化。
+7. 不得把 RLVR 误描述成一种特定 Policy Optimization 算法。
+8. 不得夸大任何方法相对于其他方法的性能优势。
+9. 不得用 PPT 或静态论文截图代替真正的数学动画。
+10. 每个核心动画必须可以独立重新渲染。
+
+现在开始执行 Phase 1、Phase 2、Phase 3。
+
+自行完成技术研究、中文剧本、详细分镜、数学示例计算和三个核心动画原型。
+
+第一轮必须交付真实可播放的 MP4、源代码、关键帧和研究文档。
+
+**第一轮完成后立即停止，等待我的验收。未经我确认，不得开始完整视频制作。**
+
+```
+
+</details>
+
+{% embed url="https://drive.google.com/file/d/1y4k6Wf4NXdueLL2JoHwf2HeWuWEPMuTe/view?usp=drive_link" %}
+
+## AI agent发展历史
+
+<details>
+
+<summary>点击展开完整prompt</summary>
+
+```
+# 项目：AI Agent 发展史——电影级技术科普纪录片
+
+你现在是一支专业的 AI 技术纪录片制作团队，同时承担以下角色：
+
+1. **AI Agent Research Scientist**
+   精通 LLM Agent、Tool Calling、ReAct、Planning、Memory、Reflection、Multi-Agent、Computer Use、Agentic RL。
+
+2. **Technical Historian**
+   负责研究 Agent 技术的历史、关键论文、发展分支和产品落地。
+
+3. **Agent Systems Engineer**
+   精通 LangGraph、AutoGen、MCP、A2A、Agent SDK、工具执行、任务调度和沙箱环境。
+
+4. **Science Documentary Director**
+   擅长通过问题、技术矛盾、突破和失败来讲述技术进化史。
+
+5. **Motion Graphics Director**
+   擅长 Vox、3Blue1Brown 风格的高级信息可视化及电影级技术动画。
+
+6. **Creative Developer**
+   精通 Remotion、Three.js、React、SVG、Canvas、Blender、FFmpeg。
+
+7. **Audio Director**
+   负责自然中文配音、字幕、音效和最终剪辑。
+
+你的任务是实际制作一部完整的中文技术纪录片。
+
+不是写文章。
+不是制作 PPT。
+不是生成网页演示。
+不是只提供分镜图。
+
+**最终必须生成真实可播放的 MP4 视频和完整可复现的源代码。**
+
+---
+
+# 一、项目基本要求
+
+中文标题：
+
+《AI Agent 进化史：从 Chatbot 到自主执行任务的智能体》
+
+英文标题：
+
+The Evolution of AI Agents:
+From Language Models to Autonomous Systems
+
+时间范围：
+
+以 2022—2026 年的 LLM Agent 为核心，并简要回顾更早的智能体和工具使用研究。
+
+所有最新进展以 2026 年 10 月 16 日之前可验证的公开资料为准。
+
+目标时长：18–22 分钟。
+
+语言：简体中文。
+
+分辨率：1920×1080。
+
+帧率：30 FPS。
+
+目标观众：
+
+- 了解基本 LLM 和 Transformer 的技术爱好者。
+- AI 工程师、算法工程师和软件开发者。
+- 对 Agent 技术、自动化和 AI 系统架构感兴趣的观众。
+
+视频应有足够技术深度，但不能变成框架 API 教程或论文朗读。
+
+## 核心问题
+
+为什么 ChatGPT 早期主要负责回答问题，而今天的 Agent 可以尝试完成复杂任务？
+
+一个语言模型仅仅增加 Tool Calling，是否就变成了真正的 Agent？
+
+模型如何决定下一步调用什么工具？
+
+如何根据工具返回的结果调整原先的计划？
+
+为什么需要 Memory、Reflection 和 Planning？
+
+为什么会出现 Multi-Agent？
+
+为什么 Agent 开始需要浏览器、终端和完整计算机环境？
+
+MCP、A2A 究竟解决了什么问题？
+
+为什么依靠 Prompt 和工具编排还不够，研究者又开始探索 Agentic RL？
+
+最重要的是：
+
+**Agent 从“生成文本的模型”，发展为“在外部环境中观察、决策、行动和纠错的系统”，究竟经历了哪些关键技术变化？**
+
+---
+
+# 二、核心叙事方式
+
+整部视频始终跟随一个不断进化的虚拟 Agent。
+
+这个 Agent 接到同一类型的复杂任务：
+
+“研究几种开源 LLM 推理引擎，查找可靠资料，比较性能与实现方式，创建一个小型测试项目，运行测试，然后输出报告。”
+
+任务包含：
+
+- 搜索外部资料。
+- 判断信息是否可靠。
+- 制定执行计划。
+- 获取与整理文件。
+- 编写代码。
+- 执行测试。
+- 发现错误。
+- 修改代码。
+- 分析测试结果。
+- 输出报告。
+
+随着技术的发展，让同一个 Agent 逐渐获得以下能力：
+
+Level 0：Text Generation
+
+Level 1：Tool Calling
+
+Level 2：Reason + Act
+
+Level 3：Planning + Memory + Reflection
+
+Level 4：Multi-Agent Collaboration
+
+Level 5：Computer / Browser / Code Use
+
+Level 6：Learning from Environment Feedback
+
+注意：
+
+这些 Level 只是一条便于科普的能力展示顺序。
+
+并不是正式的行业等级标准，也不是所有 Agent 系统都必须经历的线性架构升级。
+
+部分技术路线是并行发展的。
+
+视频必须让观众亲眼看到：
+
+同一个任务在不同 Agent 技术下发生了什么变化。
+
+不要只是在不同年份展示不同的产品 Logo。
+
+---
+
+# 三、研究要求
+
+开始制作动画前，必须联网查阅原始论文、开源实现和官方技术报告。
+
+研究范围至少覆盖以下工作。
+
+## A. Agent 的早期思想
+
+简要介绍：
+
+- Classical AI Agent。
+- Reinforcement Learning Agent。
+- Environment / State / Action / Reward。
+- WebGPT。
+- Chain-of-Thought 与交互式决策的关系。
+
+重点解释：
+
+Agent 概念远早于 LLM。
+
+LLM Agent 是智能体研究在大模型时代的一条重要发展路线，并非 2023 年突然出现的全新概念。
+
+## B. Reasoning 与 Tool Use
+
+重点研究：
+
+- ReAct（2022 预印本 / 2023 会议论文）。
+- Toolformer（2023）。
+- Function Calling。
+- Tool-use Fine-Tuning。
+- External API Interaction。
+
+区分：
+
+Prompt-based Tool Use。
+
+Model-trained Tool Use。
+
+Agent Runtime Tool Execution。
+
+不要将 ReAct、Toolformer 和厂商 Function Calling API 当作同一种技术。
+
+## C. Planning、Reflection 与 Memory
+
+重点研究：
+
+- Reflexion（2023）。
+- Generative Agents（2023）。
+- Plan-and-Execute。
+- Tree of Thoughts。
+- Self-Reflection。
+- Episodic Memory。
+- Long-term Memory。
+- Task Decomposition。
+- Replanning。
+
+必须解释：
+
+Agent 的 Memory 通常由外部系统保存和检索，并不等同于模型权重获得永久记忆。
+
+Reflexion 中通过语言反馈改进后续决策，不等于常规强化学习中的梯度更新。
+
+## D. Multi-Agent
+
+重点研究：
+
+- CAMEL。
+- AutoGen。
+- MetaGPT。
+- Multi-Agent Debate。
+- Role-based Collaboration。
+- Supervisor / Worker。
+- Hierarchical Agent Architecture。
+
+必须说明：
+
+多个 Agent 实例不代表它们一定使用不同模型。
+
+也不意味着多 Agent 必然优于单 Agent。
+
+## E. Agent 工程化
+
+重点研究：
+
+- LangChain / LangGraph。
+- SWE-agent。
+- CodeAct。
+- Agent-Computer Interface。
+- Agent State Management。
+- Checkpoint / Resume。
+- Tool Error Recovery。
+- Sandboxed Execution。
+- Human-in-the-loop。
+
+## F. Computer Use 与产品化
+
+重点研究：
+
+- Anthropic Computer Use。
+- OpenAI Operator / Computer-Using Agent。
+- Deep Research。
+- Claude Code。
+- OpenAI Codex。
+- Browser Automation Agents。
+
+必须区分：
+
+使用结构化 API 调用工具。
+
+使用终端操作系统。
+
+通过视觉观察和鼠标键盘操作 GUI。
+
+三者具有不同的能力边界、错误来源和可靠性问题。
+
+## G. Agent 协议与互操作
+
+重点研究：
+
+- Model Context Protocol（MCP）。
+- Agent2Agent Protocol（A2A）。
+- Tool Schema。
+- Tool Discovery。
+- Agent Communication。
+- Authentication / Permissions。
+- Context and Artifact Exchange。
+
+不要混淆 MCP 与 A2A。
+
+## H. Agentic RL
+
+重点研究：
+
+- Agentic Reinforcement Learning。
+- Tool-use RL。
+- Multi-turn RL。
+- Environment Feedback。
+- Trajectory Reward。
+- Process Reward。
+- Long-horizon Credit Assignment。
+- Agent Lightning。
+- WebRL 等具有可靠原始资料的工作。
+
+研究截至 2026 年 10 月已公开的重要进展。
+
+不能把普通的 Reflection 或 Prompt 优化描述成真正的模型参数强化学习。
+
+## I. Agent Evaluation
+
+重点研究：
+
+- AgentBench。
+- WebArena。
+- OSWorld。
+- SWE-bench。
+- τ-bench。
+- 其他经核实的重要 Agent Benchmark。
+
+要解释：
+
+为什么语言模型在普通问答 Benchmark 上得分很高，不代表它一定能可靠完成复杂的真实任务？
+
+---
+
+# 四、第一幕：Chatbot 为什么还不是一个真正的任务执行系统？
+
+时间：00:00–02:30。
+
+## 开场
+
+画面中出现一名用户输入任务：
+
+“研究三个开源 LLM 推理引擎，运行一个性能测试，并给出报告。”
+
+一个传统 Chatbot 生成一大段文字。
+
+它介绍各个框架的优缺点，提供一些测试建议。
+
+但画面逐渐拉远。
+
+我们看到：
+
+没有真实搜索。
+
+没有代码执行。
+
+没有测试结果。
+
+没有真正生成文件。
+
+旁白引出问题：
+
+“回答一个问题，和完成一项任务，究竟有什么区别？”
+
+随后展示经典 Agent 与环境交互的基本结构：
+
+Agent
+→ Action
+→ Environment
+→ Observation
+→ Agent
+
+重点解释：
+
+- Agent。
+- Environment。
+- Observation。
+- Action。
+- Goal。
+- Feedback。
+- State。
+
+逐渐将 LLM 放入 Agent 结构中的决策位置。
+
+让观众理解：
+
+LLM 是 Agent 的重要组成部分，但 Agent 系统还包括工具、状态、运行时、外部环境和执行控制。
+
+## 核心动画
+
+从单次：
+
+Prompt → LLM → Answer
+
+变为：
+
+Goal
+→ Model
+→ Action
+→ Environment
+→ Observation
+→ Updated Context
+→ Model
+
+整个循环必须连续播放，而不是静态流程图。
+
+让观众看见每一轮环境状态真的发生变化。
+
+---
+
+# 五、第二幕：ReAct——语言模型第一次学会边想边做？
+
+时间：02:30–06:00。
+
+这是整部视频第一个技术高潮。
+
+## Chapter 1：ReAct
+
+研究 ReAct 原始论文。
+
+通过一个具体任务展示：
+
+用户需要找到三个框架的真实技术信息。
+
+模型首先判断缺少哪些信息。
+
+选择调用搜索工具。
+
+工具返回结果。
+
+模型根据结果决定进一步打开哪个网页。
+
+然后根据新信息选择下一步行动。
+
+动画应展示：
+
+Question
+→ Decision
+→ Tool Call
+→ Observation
+→ Next Decision
+→ Tool Call
+→ Observation
+→ Final Answer
+
+技术细节：
+
+- Interleaved Reasoning and Acting。
+- Tool Action。
+- Observation。
+- Environment Feedback。
+- Action Selection。
+- Iterative Task Solving。
+
+重点解释：
+
+为什么动作和观察需要交替进行？
+
+为什么静态 Chain-of-Thought 并不能完全替代真实的外部信息获取？
+
+为什么工具返回的结果可能改变原先的计划？
+
+特别注意：
+
+ReAct 的 Reasoning Trace 是论文中特定方法的外显文本表示。
+
+不要声称所有现代模型都会公开其完整内部推理过程。
+
+演示可以使用教学用的简短决策摘要，不应伪装成真实模型的私有内部思考。
+
+## Chapter 2：Toolformer
+
+从 ReAct 的 Agent Runtime 进入训练层面。
+
+展示一个模型如何通过训练数据学习：
+
+什么时候需要调用工具？
+
+该调用什么工具？
+
+应该传递哪些参数？
+
+如何利用结果继续生成文本？
+
+重点对比：
+
+ReAct：
+
+通过 Prompt、动作和环境反馈构建交互模式。
+
+Toolformer：
+
+通过自监督数据构造与训练学习工具调用行为。
+
+解释二者解决的问题和实现层次不同。
+
+## Chapter 3：Function Calling
+
+展示模型输出结构化工具请求。
+
+例如：
+
+search(query)
+
+read_file(path)
+
+run_test(command)
+
+外部 Runtime 根据 Schema 解析调用，再把结果返回模型。
+
+必须解释：
+
+模型并不是通过生成一段 JSON 就自动执行了外部动作。
+
+真正执行动作的是具有权限和运行环境的工具系统。
+
+展示：
+
+参数校验。
+
+工具超时。
+
+执行失败。
+
+重试。
+
+错误返回。
+
+## 技术转场
+
+Agent 已经能执行简单任务。
+
+但当任务变得复杂，它开始迷失方向。
+
+连续调用错误工具。
+
+重复搜索。
+
+忘记先前得到的信息。
+
+为下一幕引出 Planning、Memory 和 Reflection。
+
+---
+
+# 六、第三幕：Planning、Memory、Reflection——Agent 如何完成长任务？
+
+时间：06:00–10:00。
+
+## Chapter 1：Planning
+
+给 Agent 一个需要十多个步骤才能完成的任务。
+
+首先展示没有规划的 Agent：
+
+调用一次工具。
+
+得到结果。
+
+又尝试另一个工具。
+
+目标逐渐偏离。
+
+随后加入 Planning。
+
+模型将目标分解为：
+
+Research
+→ Compare
+→ Implement
+→ Test
+→ Report
+
+展示每个 Subtask 的依赖关系。
+
+使用动态任务图而不是简单 Checklist。
+
+让观众看到：
+
+有些任务可以并行。
+
+有些任务必须等待其他任务完成。
+
+某一步失败后，后续计划需要调整。
+
+解释：
+
+- Task Decomposition。
+- Plan-and-Execute。
+- Dependency Graph。
+- Replanning。
+- Dynamic Planning vs Fixed Workflow。
+
+不能把事先写好的固定流程全部称为智能规划。
+
+## Chapter 2：Memory
+
+从一个执行了很久的 Agent 开始。
+
+Context 不断增长。
+
+某些先前信息被截断。
+
+Agent 忘记已经做过的步骤。
+
+随后引入外部 Memory。
+
+重点解释：
+
+- Working Context。
+- Episodic Memory。
+- Long-term Memory。
+- Memory Retrieval。
+- State Persistence。
+- Summary / Compression。
+- 检索错误与记忆污染。
+
+用时间线展示 Agent 的多个 Episode。
+
+当后续任务需要过去的信息时，从 Memory 中检索相关内容，再加入当前上下文。
+
+不要将 Vector Database 描述成 Agent Memory 的唯一形式。
+
+## Chapter 3：Reflexion
+
+展示 Agent 第一次尝试执行代码测试。
+
+测试失败。
+
+它读取测试日志。
+
+将失败原因总结为一条 Reflection。
+
+第二次尝试时，利用历史反馈调整执行策略。
+
+从失败轨迹走向成功轨迹。
+
+必须准确说明：
+
+原始 Reflexion 重点通过语言反馈和外部记忆改进决策，不要求对模型权重进行梯度更新。
+
+区分：
+
+Reflection。
+
+Error Recovery。
+
+Model Fine-Tuning。
+
+Reinforcement Learning。
+
+## Chapter 4：Generative Agents
+
+借鉴 Generative Agents 中的 Memory、Reflection 和 Planning 结构。
+
+用一个精致的微型虚拟城市展示多个角色：
+
+角色能够观察环境。
+
+积累经历。
+
+回忆历史。
+
+形成计划。
+
+产生相互影响的行为。
+
+强调这是 Agent 社会行为模拟研究，不应与生产级任务执行 Agent 混为一谈。
+
+这一段建议采用高质量 Isometric 3D 微缩场景。
+
+但不得使用简陋的 LEGO 式方块人物。
+
+允许用抽象化的人物图标和精致环境模型代替复杂的三维角色动画。
+
+---
+
+# 七、第四幕：Multi-Agent——一个模型不够，为什么要多个 Agent？
+
+时间：10:00–13:00。
+
+## Chapter 1：单 Agent 的局限
+
+回到贯穿全片的任务。
+
+这个 Agent 需要：
+
+研究论文。
+
+编写代码。
+
+运行测试。
+
+评价结果。
+
+生成报告。
+
+展示单 Agent 在长流程中遇到的问题：
+
+- Context 污染。
+- 角色和目标混杂。
+- 无法并行的顺序工作。
+- 自我检查不足。
+- 工具调用复杂。
+
+这些只是可能出现的问题，不应声称单 Agent 必然失败。
+
+## Chapter 2：AutoGen、CAMEL、MetaGPT
+
+引入角色分工：
+
+Planner
+Researcher
+Coder
+Reviewer
+Executor
+
+展示任务由 Supervisor 分发。
+
+Researcher 搜集资料。
+
+Coder 生成代码。
+
+Executor 执行测试。
+
+Reviewer 对结果进行检查。
+
+失败反馈返回 Planner，任务再次分配。
+
+所有 Agent 的消息与工具调用必须具有明确因果关系。
+
+不能只是让五个卡片在屏幕上互相发送光线。
+
+## Chapter 3：Multi-Agent Communication
+
+准确解释：
+
+- Agent Roles。
+- Message Passing。
+- Shared Context。
+- Private Context。
+- Supervisor。
+- Delegation。
+- Handoff。
+- Parallel Execution。
+- Verification。
+- Conflict Resolution。
+
+动态展示一张真正运行的 Agent Collaboration Graph。
+
+每个节点具有：
+
+当前任务。
+
+输入状态。
+
+输出 Artifact。
+
+执行耗时。
+
+结果状态。
+
+## Chapter 4：Multi-Agent 一定更好吗？
+
+对比：
+
+Single Agent。
+
+Multi-Agent。
+
+使用同一个教学任务，展示：
+
+任务完成情况。
+
+LLM 调用次数。
+
+Token 消耗。
+
+总执行耗时。
+
+错误传播路径。
+
+所有示例数值必须来自实际模拟或明确标注为教学假设，不得冒充真实基准测试。
+
+强调：
+
+当任务能够清晰分解，并存在并行执行或独立验证需求时，多 Agent 可能有价值。
+
+但多个 Agent 也可能导致额外成本、通信开销、上下文丢失和错误传播。
+
+不要把 Agent 数量越多描述成系统必然越智能。
+
+---
+
+# 八、第五幕：Computer Use——AI 开始真正操作电脑
+
+时间：13:00–17:00。
+
+这一幕是整部纪录片最具视觉冲击力的章节。
+
+## Chapter 1：从工具 API 到计算机界面
+
+Agent 最初通过结构化 API 调用工具。
+
+随后可以使用终端：
+
+ls
+grep
+python
+git
+pytest
+
+再进一步，通过屏幕截图、鼠标、键盘操作图形界面。
+
+必须准确区分：
+
+API-based Agent。
+
+CLI / Code Agent。
+
+GUI / Computer-Using Agent。
+
+## Chapter 2：SWE-agent
+
+研究 SWE-agent 的 Agent-Computer Interface（ACI）。
+
+展示一个真实的软件开发任务：
+
+用户提交一个 GitHub Issue。
+
+Agent 读取仓库。
+
+搜索代码。
+
+定位 Bug。
+
+修改文件。
+
+运行测试。
+
+根据失败日志修改代码。
+
+最终生成 Patch。
+
+重点解释：
+
+- Agent-Computer Interface。
+- Shell Commands。
+- Repository Navigation。
+- Edit / Test Loop。
+- Execution Feedback。
+- Tool Interface Design。
+
+强调：
+
+Agent 的能力不仅由 LLM 决定。
+
+工具接口设计会显著影响它是否能够高效、正确地完成任务。
+
+## Chapter 3：Computer Use
+
+研究：
+
+Anthropic Computer Use。
+
+OpenAI Operator / Computer-Using Agent。
+
+构建精致的虚拟浏览器和桌面环境。
+
+通过动画展示：
+
+Screenshot
+→ Visual Understanding
+→ Action Selection
+→ Mouse Click / Keyboard Input
+→ Updated Screenshot
+→ Next Action
+
+例如：
+
+Agent 打开浏览器。
+
+搜索技术报告。
+
+找到下载链接。
+
+保存文件。
+
+打开编辑器。
+
+处理数据。
+
+生成报告。
+
+注意：
+
+演示应在本地可控的模拟 UI 或测试环境中完成。
+
+不得把预制动画谎称为真实产品的实时运行录像。
+
+## Chapter 4：为什么 Computer Use 难？
+
+展示几个典型失败：
+
+- 按钮位置变化。
+- 弹窗遮挡。
+- 页面加载延迟。
+- 点击错误。
+- 表单状态不一致。
+- 多步骤任务偏离目标。
+- 网站内容包含恶意提示词。
+- 工具权限不足。
+
+然后展示：
+
+Observation。
+
+Validation。
+
+Recovery。
+
+Retry。
+
+Human Approval。
+
+必须明确：
+
+Agent 能操作电脑，不等于它能安全、可靠地执行任意任务。
+
+涉及购买、发送、删除或其他不可逆动作时，应有明确授权和审批机制。
+
+## Chapter 5：MCP 与 A2A
+
+从复杂的工具连接关系开始。
+
+多个 Agent 分别需要访问：
+
+GitHub。
+
+Database。
+
+Filesystem。
+
+Search。
+
+Browser。
+
+Calendar。
+
+展示每个 Agent 自行开发大量专有接口的复杂性。
+
+然后引入 MCP：
+
+Host / Client / Server。
+
+Tool Discovery。
+
+Tool Invocation。
+
+Resources。
+
+Context。
+
+解释 MCP 如何为工具和上下文连接提供标准化接口。
+
+再引入 A2A：
+
+Agent Discovery。
+
+Task Delegation。
+
+Agent-to-Agent Communication。
+
+Task Status。
+
+Artifact Exchange。
+
+必须强调：
+
+MCP 不等于 A2A。
+
+MCP 不负责让所有 Agent 自动协作。
+
+A2A 也不是对 MCP 的简单替代。
+
+根据各自官方协议准确设计通信动画。
+
+---
+
+# 九、第六幕：Agentic RL——Agent 能否通过行动反馈真正学习？
+
+时间：17:00–20:30。
+
+这是技术层面的最终高潮。
+
+## Chapter 1：Prompt Engineering 的局限
+
+展示一个基于固定模型和 Prompt 的 Agent。
+
+它可以通过规划、工具和反思改进任务执行，但模型权重通常没有变化。
+
+对于复杂任务，它仍可能反复出现相似的错误。
+
+提出问题：
+
+“如果我们能利用完整任务执行结果来训练模型，它是否能学会更好的行动策略？”
+
+## Chapter 2：Agentic RL
+
+构建真正的强化学习训练循环：
+
+Environment State
+→ Policy
+→ Action
+→ Environment Transition
+→ Observation
+→ Reward
+→ Policy Optimization
+
+使用一个可复现的小型任务环境。
+
+例如：
+
+Agent 必须找到一份文件、修改其中的代码、运行测试，并通过最终验证。
+
+展示完整 Agent Trajectory：
+
+State 0
+→ Action 1
+→ State 1
+→ Action 2
+→ State 2
+→ ...
+→ Terminal Reward
+
+重点解释：
+
+- Agent Trajectory。
+- Multi-turn Interaction。
+- State / Action / Reward。
+- Terminal Reward。
+- Sparse Reward。
+- Credit Assignment。
+- On-policy / Off-policy。
+- Tool-use RL。
+- Environment Feedback。
+
+必须展示训练和推理之间的区别。
+
+在训练阶段，环境反馈可以通过优化算法更新模型参数。
+
+在推理阶段，模型使用训练后的策略完成任务。
+
+不能把普通 Reflection 当成 RL Weight Update。
+
+## Chapter 3：Agent Lightning 等技术
+
+研究 Agent Lightning 及其他经核实的 Agentic RL 工作。
+
+解释为什么训练框架开始尝试把：
+
+Agent Runtime。
+
+Environment Interaction。
+
+Trajectory Collection。
+
+Reward Computation。
+
+Policy Optimization。
+
+进行模块化分离。
+
+着重解释：
+
+为什么长轨迹 Agent 的 Credit Assignment 比单轮答案评分更困难？
+
+如果最终任务失败，如何判断究竟是哪一步导致了失败？
+
+为什么工具和环境的状态变化会影响训练数据分布？
+
+## Chapter 4：Evaluation 与可靠性
+
+研究：
+
+AgentBench。
+
+WebArena。
+
+OSWorld。
+
+SWE-bench。
+
+τ-bench。
+
+解释：
+
+- Task Success Rate。
+- End-to-End Completion。
+- Tool Accuracy。
+- Recovery Rate。
+- Cost per Successful Task。
+- Latency。
+- Pass@k / 多次运行稳定性。
+- 安全性与权限控制。
+
+展示 Agent 在长任务中可能出现的错误累积。
+
+例如，在一个教学用的独立假设模型里：
+
+如果每一步成功率为 p，且各步骤独立，那么连续 n 步全部成功的概率为 p^n。
+
+用动态曲线展示任务长度增加时的可靠性挑战。
+
+必须标注这只是独立性假设下的简化模型，不代表真实 Agent 的实测成功率。
+
+对任何真实 Benchmark 指标，必须使用同版本、同环境、同任务设置的可比较结果。
+
+不要跨不同年份、不同 Benchmark 直接拼接成虚假的 Agent 能力提升曲线。
+
+---
+
+# 十、最后一幕：Agent 的下一步是什么？
+
+时间：20:30–22:00。
+
+回顾整部视频。
+
+从最初的文本生成模型开始。
+
+一步步增加：
+
+Tool Use。
+
+Reason-Act Loop。
+
+Planning。
+
+Memory。
+
+Reflection。
+
+Multi-Agent。
+
+Computer Use。
+
+Agentic RL。
+
+Evaluation & Safety。
+
+展示同一个任务从最初无法实际执行，到逐步形成完整工作闭环的过程。
+
+随后提出尚未完全解决的问题：
+
+1. 长时间自主执行是否足够可靠？
+2. Memory 如何避免错误积累和污染？
+3. 多 Agent 如何避免通信开销与错误传播？
+4. 如何实现长轨迹信用分配？
+5. Agent 如何在真实环境中安全地探索？
+6. 能否让 Agent 在任务经验中持续学习？
+7. 如何让评估结果反映真实用户任务完成度？
+8. 任务权限与人类控制应当如何设计？
+
+最终结论：
+
+**Agent 的发展，不仅是给 LLM 增加更多工具，而是逐渐建立起一个能够感知环境、做出决策、执行动作、验证结果并根据反馈调整行为的完整系统。**
+
+对 2026 年后的发展只能作为展望，不得把尚未证实的能力当作已实现事实。
+
+---
+
+# 十一、视觉设计：不要 PPT，要真正的 Agent 世界
+
+本片视觉风格参考：
+
+- Vox 的信息叙事。
+- 3Blue1Brown 的算法可视化。
+- 高级科技纪录片的空间镜头。
+- 现代 Motion Design 的排版和运动。
+- 高质量桌面 UI 与交互状态动画。
+
+但不能复制任何具体作品的受版权保护素材。
+
+## 统一的 Agent Visual Universe
+
+全片始终复用一套视觉系统。
+
+Agent Core：
+
+代表决策模块的精致三维实体。
+
+Environment：
+
+可以实时改变状态的虚拟世界。
+
+Tool：
+
+具备明确输入、输出和执行状态的工具。
+
+Memory：
+
+能够写入和检索信息的动态存储空间。
+
+Plan：
+
+带有依赖、状态和重新规划路径的任务图。
+
+Multi-Agent：
+
+具备消息流、工具权限和 Artifact 传递的协作网络。
+
+Computer：
+
+具有真实交互反馈的桌面和浏览器环境。
+
+RL：
+
+具有 State、Action、Reward 的环境轨迹与训练数据。
+
+## 重要设计原则
+
+Agent 必须具有连续性。
+
+不能每一个技术阶段都换成完全不相关的架构图。
+
+例如：
+
+LLM
+→ 加入 Tool Runtime
+→ 形成 ReAct Loop
+→ 加入 Planner 和 Memory
+→ 加入 Reflection
+→ 扩展为 Multi-Agent
+→ 获得 Computer Interface
+→ 增加 RL Training Loop
+
+这是一条便于理解的视觉叙事路线，不代表所有真实产品都严格使用同一架构。
+
+## 严格禁止
+
+- PPT 式翻页。
+- 静态流程图加旁白。
+- 大量文字卡片渐入渐出。
+- 低质量积木式 3D 角色。
+- 不断旋转的抽象 AI 大脑。
+- 无意义的发光粒子。
+- 多个方块互相发射光线却没有真实消息内容。
+- 只展示 Agent 名称而不演示运行机制。
+- 仅用产品界面截图代替算法动画。
+- 虚构真实产品没有公开的内部架构。
+
+### SHOW, DON'T JUST TELL
+
+如果旁白说：
+
+“Agent 会根据环境反馈修改计划。”
+
+画面必须展示：
+
+原始计划。
+
+工具执行失败。
+
+错误 Observation。
+
+Plan 更新。
+
+新的 Action。
+
+成功验证。
+
+不能只用一根箭头表达 Replanning。
+
+如果旁白说：
+
+“多 Agent 可以协作。”
+
+画面必须出现可追踪的消息、任务分配、Artifact、失败反馈和协作结果。
+
+---
+
+# 十二、必须开发可运行的 Agent 教学模拟器
+
+不能只生成看起来像 Agent 在运行的假动画。
+
+使用 Python 或 TypeScript 实现一个确定性的教学模拟器。
+
+模拟器应具有：
+
+- Task State。
+- Action Space。
+- Tool Invocation。
+- Tool Result。
+- Observation。
+- Task Planner。
+- External Memory。
+- Agent Message。
+- Error Injection。
+- Retry / Recovery。
+- Verification。
+- Reward。
+
+所有技术动画应读取模拟器生成的事件日志：
+
+timestamp
+agent_id
+task_id
+action_type
+tool_name
+arguments
+observation
+state_before
+state_after
+result
+latency
+
+以统一结构记录。
+
+不必真实运行大型 LLM 或接入昂贵 API。
+
+对于无需真实模型推理即可讲清楚的场景，可以使用可复现的模拟事件。
+
+但必须区分：
+
+真实运行轨迹。
+
+教学模拟轨迹。
+
+官方论文中的实验数据。
+
+不要把预设教学模拟误称为真实模型评测。
+
+动画必须能根据 Trace 重新生成。
+
+---
+
+# 十三、六个核心技术动画
+
+## Animation A：ReAct Loop
+
+展示：
+
+Reasoning Summary
+→ Action
+→ Tool Execution
+→ Observation
+→ Updated Decision
+
+要求能真实跟踪同一任务的状态变化。
+
+## Animation B：Memory + Reflection + Replanning
+
+展示一个 Agent 第一次执行失败、保存反馈并重新规划成功的完整过程。
+
+## Animation C：Multi-Agent Collaboration
+
+展示 Planner、Researcher、Coder、Reviewer 的消息交换、任务依赖与交付物。
+
+## Animation D：Computer Use
+
+展示 Agent 通过屏幕截图获取环境状态，再使用鼠标、键盘和工具执行动作。
+
+## Animation E：MCP vs A2A
+
+左侧展示 Agent 与外部工具、数据源连接。
+
+右侧展示 Agent 与其他 Agent 之间的任务委派和通信。
+
+两种协议的用途必须准确。
+
+## Animation F：Agentic RL
+
+展示：
+
+Agent Rollout
+→ Environment Feedback
+→ Reward
+→ Trajectory
+→ Policy Update
+
+让观众理解 Prompt-based Agent 与 Trained Agent Policy 的区别。
+
+---
+
+# 十四、中文 TTS 和音效
+
+优先试听：
+
+IndexTTS-2.5。
+
+CosyVoice 3。
+
+Qwen3-TTS。
+
+Fish Audio。
+
+MiniMax Speech。
+
+选用自然、沉稳、带有轻微故事感的中文男性科技科普旁白。
+
+类似成熟的技术纪录片解说，而不是广告播音腔。
+
+需要准确处理：
+
+AI Agent
+ReAct
+Toolformer
+Reflexion
+AutoGen
+MetaGPT
+LangGraph
+SWE-agent
+Computer Use
+MCP
+A2A
+Agentic RL
+Tool Calling
+Planning
+Memory
+Reflection
+Credit Assignment
+Trajectory
+Rollout
+
+先生成约 60 秒试听样本。
+
+构建 pronunciation_dictionary.json。
+
+按自然语义段落生成音频，每段建议 10–30 秒。
+
+保存原始 WAV、文字和实际时长。
+
+字幕应跟随最终音频进行同步。
+
+不能强行将长句加速塞入过短镜头。
+
+如果没有合适的本地 TTS 环境，不得未经授权调用付费云服务。
+
+---
+
+# 十五、实现技术栈
+
+建议：
+
+Remotion：
+负责视频编排、场景切换、字幕、时间轴。
+
+Three.js / React Three Fiber：
+负责 Agent 世界、执行环境、任务图、多智能体协作与空间镜头。
+
+SVG / Canvas：
+负责状态图、消息传递、环境反馈和协议时序图。
+
+Python / TypeScript：
+负责可复现的 Agent 模拟器、事件日志、状态变化和验证。
+
+Blender：
+负责高质量三维场景与材质。
+
+FFmpeg：
+负责片段合成、字幕、音频和最终导出。
+
+所有动画必须：
+
+- Deterministic。
+- Frame-accurate。
+- 组件化。
+- 支持独立渲染。
+- 支持自动抽帧。
+- 支持局部重新渲染。
+- 保留完整源码。
+
+建议开发：
+
+AgentCore
+EnvironmentSimulator
+ToolExecutor
+ReActLoop
+TaskPlanner
+MemoryStore
+ReflectionEngine
+MultiAgentOrchestrator
+MessageBus
+ComputerInterface
+ProtocolVisualizer
+AgentTrajectory
+RewardVisualizer
+TaskVerifier
+
+以上仅为工程组件建议，最终实现以可维护性和渲染质量为准。
+
+---
+
+# 十六、分阶段制作
+
+## Phase 1：Research
+
+查阅所有关键论文。
+
+交付：
+
+research.md
+timeline.md
+architecture_comparison.md
+sources.md
+
+要求：
+
+将每个代表性工作按照以下维度分类：
+
+- 发布时间。
+- 主要研究者或机构。
+- 核心创新。
+- Prompt 方法还是模型训练方法。
+- 单 Agent 还是 Multi-Agent。
+- 是否依赖外部工具。
+- 是否依赖外部 Memory。
+- 是否需要实际环境交互。
+- 是否进行参数更新。
+- 是否有真实 Benchmark。
+- 相关技术局限。
+
+不能将开源框架、研究算法、协议标准和商业产品混成同一种技术进展。
+
+## Phase 2：Script & Storyboard
+
+生成：
+
+script.md
+storyboard.md
+visual_system.md
+
+每个镜头必须有：
+
+- 起止时间。
+- 完整中文旁白。
+- 对应技术来源。
+- Agent 当前状态。
+- 当前任务目标。
+- 动作与工具结果。
+- 环境状态变化。
+- 动画对象。
+- 运动方式。
+- Camera Movement。
+- 转场。
+- 希望观众理解的核心技术。
+
+剧本按：
+
+问题 → 现有方法局限 → 新技术 → 运行机制 → 新问题
+
+推进。
+
+避免每一章节都以“接下来我们介绍某某论文”开头。
+
+## Phase 3：三个核心动画原型
+
+第一轮只制作三个真正的 MP4 原型。
+
+### Prototype A：ReAct + Tool Use
+
+长度：30–40 秒。
+
+展示一个 Agent：
+
+接到任务。
+
+搜索资料。
+
+读取结果。
+
+发现信息不足。
+
+进一步调用工具。
+
+根据新信息作出决策。
+
+最终输出验证结果。
+
+必须有真实的连续状态变化。
+
+### Prototype B：Multi-Agent + Planning + Recovery
+
+长度：35–45 秒。
+
+展示：
+
+Planner 分配任务。
+
+Researcher 产生资料。
+
+Coder 执行代码。
+
+Reviewer 发现错误。
+
+Planner 重新安排任务。
+
+Executor 执行修正。
+
+最终验证成功。
+
+每一条消息和任务状态变化都来自模拟 Trace。
+
+### Prototype C：Computer Use + Agentic RL
+
+长度：40–50 秒。
+
+制作两个连续小节：
+
+第一小节：
+
+Agent 观察屏幕，选择动作，操作虚拟桌面，处理失败并完成任务。
+
+第二小节：
+
+展示一条任务轨迹如何产生 Reward，进入训练流程，形成策略更新。
+
+必须明确区分：
+
+一次任务内的纠错。
+
+跨训练迭代的参数优化。
+
+两个过程不应混淆。
+
+## Phase 4：质量验收
+
+对三个原型进行技术和视觉检查。
+
+技术检查：
+
+- Agent State 是否一致。
+- Tool Result 是否符合执行事件。
+- Planning 是否具有真实依赖关系。
+- Reflection 是否正确区别于 RL。
+- Multi-Agent 消息是否可追踪。
+- Computer Use 的 Observation 和 Action 是否匹配。
+- RL Trajectory 是否具有正确的状态转移。
+- 是否存在虚构的 Benchmark 或性能数据。
+
+视觉检查：
+
+- 动画是否真正解释机制。
+- 是否有 PPT 感。
+- 是否存在简陋的积木人物。
+- 是否存在过量文字。
+- 镜头是否具有空间感。
+- Agent 的执行过程是否容易理解。
+- 画面层次是否统一。
+- 是否存在遮挡、裁切、闪烁。
+- 动画是否流畅。
+
+发现问题主动修复，并重新渲染相关镜头。
+
+不能把代码编译成功视为视频通过验收。
+
+## Phase 5：完整视频制作
+
+只有在我确认三个原型后，才开始制作完整 18–22 分钟视频。
+
+按章节独立开发、预览和渲染。
+
+最大限度复用已经通过验收的视觉组件和模拟器。
+
+## Phase 6：音频及剪辑
+
+加入自然中文配音。
+
+生成中文字幕。
+
+根据实际配音长度调整镜头时长。
+
+添加克制、符合内容的音乐和音效。
+
+## Phase 7：Final QA
+
+检查：
+
+- 论文时间线。
+- 技术分类和事实准确性。
+- 动画数据一致性。
+- 实际播放流畅性。
+- 配音术语发音。
+- 字幕同步。
+- 音画衔接。
+- MP4 文件完整性。
+- 工程可复现性。
+
+---
+
+# 十七、最终目录
+
+agent_evolution/
+  research/
+    research.md
+    timeline.md
+    architecture_comparison.md
+    sources.md
+
+  scripts/
+    script.md
+    storyboard.md
+
+  design/
+    visual_system.md
+
+  simulator/
+    agent_runtime/
+    environments/
+    scenarios/
+    traces/
+    tests/
+
+  src/
+    完整动画工程
+
+  prototypes/
+    react_tool_use/
+    multi_agent/
+    computer_use_rl/
+
+  audio/
+    narration/
+    pronunciation_dictionary.json
+
+  previews/
+    keyframes/
+    videos/
+
+  output/
+    agent_evolution_final.mp4
+
+  README.md
+
+---
+
+# 十八、执行规则
+
+1. 原始论文与官方资料优先。
+2. 技术准确性和视觉质量同等重要。
+3. 不把 Agent 等同于 Tool Calling。
+4. 不把 Reflection 等同于 RL。
+5. 不把多 Agent 描述成必然优于单 Agent。
+6. 不把 MCP 与 A2A 混为同一种协议。
+7. 不把固定 Workflow 都描述成自主规划。
+8. 不把预制 UI 动画冒充真实产品执行录像。
+9. 不编造 Benchmark、性能数字或未来技术。
+10. 不通过静态框图和 PPT 敷衍技术解释。
+11. 以可复现的状态、动作、观察和反馈驱动动画。
+12. 所有关键场景都必须能独立重新渲染。
+13. 不得在未授权情况下连接真实账户、发送消息、购买商品或修改外部资源。
+14. 第一轮优先保证三个动画原型的技术准确性和美术完成度，不要为了赶完整视频降低标准。
+
+现在开始执行：
+
+Phase 1：论文与技术发展史研究。
+
+Phase 2：完整中文剧本、视觉设计和逐镜头分镜。
+
+Phase 3：三个高质量技术动画原型。
+
+第一轮必须交付：
+
+- 三个实际可播放的 MP4。
+- 动画源码。
+- Agent Simulator 和事件轨迹。
+- 关键帧预览。
+- 对应研究资料。
+- 技术解释说明。
+- 可重复渲染的操作方法。
+
+**第一轮完成后停止，交给我验收。未经我确认，不得进入整部视频制作。**
+```
+
+</details>
+
+{% embed url="https://drive.google.com/file/d/1CckAWe6FN1RHc3OZGR8rQxy3EIHyp4cb/view?usp=drive_link" %}
+
+## template
+
+<details>
+
+<summary>点击展开完整prompt</summary>
+
+```
+
+```
+
+</details>
+
+{% embed url="" %}
