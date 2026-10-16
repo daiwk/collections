@@ -9,6 +9,7 @@ github地址：[https://github.com/daiwk/collections](https://github.com/daiwk/c
 
 本网站目录：
 
++ ai知识科普视频：[01.ai_videos](https://www.daiwk.net/01.ai_videos)
 + 大模型相关：
     + 大模型之前的时代：[pre_llm](https://www.daiwk.net/1.1.pre_llm)
     + 大模型介绍：[llm_intro](https://www.daiwk.net/1.2.llm_intro)

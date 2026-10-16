@@ -2,6 +2,7 @@
 
 * [0.contents](README.md)
 * [00.bitter\_lesson](00.bitter_lesson.md)
+* [01.ai_videos](01.ai_videos.md)
 * [1.1.pre\_llm](1.1.pre_llm.md)
 * [1.2.llm\_intro](1.2.llm_intro.md)
 * [1.3.llm\_archs](1.3.llm_archs.md)
