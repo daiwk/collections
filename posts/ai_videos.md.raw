@@ -6599,6 +6599,1105 @@ Phase 3：三个高质量技术动画原型。
 
 {% embed url="https://drive.google.com/file/d/1CckAWe6FN1RHc3OZGR8rQxy3EIHyp4cb/view?usp=drive_link" %}
 
+## 多模态大模型发展历史
+
+<details>
+
+<summary>点击展开完整prompt</summary>
+
+```
+项目：多模态大模型进化史——电影级技术科普纪录片
+你现在是一支专业的 AI 科学纪录片制作团队，同时承担以下角色：
+
+1. Multimodal AI Research Scientist
+精通 CLIP、Vision Transformer、Vision-Language Models、Multimodal LLM、Omni Models、Cross-Modal Alignment、Audio/Video Understanding 和 Multimodal Generation。
+2. AI Architecture Researcher
+精通 Vision Encoder、Visual Tokenizer、Projector、Q-Former、Cross-Attention、Early Fusion、Multimodal Transformer、Audio Codec、Video Tokenization。
+3. Technical Historian
+负责研究多模态大模型的技术起源、关键论文、架构迭代和不同研究路线之间的关系。
+4. Science Documentary Director
+擅长将复杂技术转化为有故事、有悬念、具有清晰因果关系的科学纪录片。
+5. Motion Graphics Director
+擅长高级 2D/3D 科学动画、数学可视化、空间镜头、真实媒体与抽象算法图形的结合。
+6. Creative Engineer
+精通 Remotion、Three.js、React Three Fiber、SVG、Canvas、Manim、Blender 和 FFmpeg。
+7. Audio Director
+负责中文配音、音效、背景音乐、字幕和音画同步。
+
+你的任务是实际制作一部关于多模态大模型技术发展历史的中文纪录片。
+最终交付必须是真实可播放的 MP4、完整源代码、研究资料和可复现的动画工程。
+不能只生成文章、PPT、静态分镜或网页 Demo。
+一、视频基本信息
+中文标题：
+《从看懂图片到理解世界：多模态大模型的进化史》
+英文标题：
+The Evolution of Multimodal AI:
+From Vision-Language Models to Omni Intelligence
+时间范围：
+2021 年至 2026 年 10 月 17 日。
+允许简要回顾 ViT、图像表征学习和早期视觉语言研究。
+时长：18–22 分钟。
+分辨率：1920×1080。
+帧率：30 FPS。
+语言：简体中文。
+目标观众：
+
+* 具有基础深度学习知识的技术爱好者。
+* 熟悉 Transformer 的算法工程师。
+* 对多模态大模型架构和训练算法感兴趣的研究人员。
+* 希望理解 AI 如何处理图像、视频和语音的开发者。
+
+视频定位：
+具有技术深度的科学纪录片，而不是论文综述幻灯片。
+核心问题
+语言模型原本只能处理文字。
+但真实世界包含图像、声音、运动、时间和空间。
+那么：
+
+1. 如何让模型第一次建立图像与文字的联系？
+2. 图片怎样才能变成 Transformer 可以处理的表示？
+3. Vision Encoder 和 LLM 为什么需要连接模块？
+4. Projector、Q-Former 和 Cross-Attention 有什么本质区别？
+5. 为什么理解单张图片，不等于理解视频？
+6. 为什么视频中的时间和空间信息这么重要？
+7. 为什么最初的语音助手需要 ASR、LLM、TTS 三个独立模块？
+8. 原生多模态模型与多个单模态模型拼接起来的系统，到底有什么区别？
+9. 如何让模型既能理解图片，又能生成图片，甚至生成语音与视频？
+10. 未来能否实现真正统一的感知、推理和生成？
+
+全片的核心故事是：
+AI 如何从只能处理文字，逐步学会将图像、声音、时间和空间组织成能够共同推理的表示？
+二、最重要的叙事设计
+不要按论文顺序逐篇介绍。
+整部纪录片始终跟随同一段现实场景。
+贯穿全片的场景
+一个十字路口。
+街道上有行人、汽车、自行车和交通信号灯。
+一辆红色汽车正在接近路口。
+一名骑行者经过。
+信号灯变化。
+汽车减速停车。
+背景中出现汽车鸣笛声、人声与城市环境音。
+用户提出问题：
+“刚才路口发生了什么？汽车为什么停下来了？我听到了什么声音？”
+这个场景会随着技术演进，不断增加信息维度。
+第一阶段：只有文字
+LLM 只能接收用户输入的文字。
+它无法直接查看现实场景。
+第二阶段：加入图片
+模型可以看到路口的一张静态照片。
+可以识别汽车、行人、交通信号灯等可见对象。
+但单张图片不能完整确定整个事件过程。
+第三阶段：加入视频
+模型可以分析连续的视频帧。
+逐步理解：
+汽车位置变化。
+信号灯状态变化。
+车辆减速。
+行人的移动。
+不同事件之间的先后关系。
+第四阶段：加入声音
+模型开始同时接收视频与环境声音。
+它可以结合时间戳分析：
+什么时候出现汽车鸣笛？
+声音与画面中哪个事件同时发生？
+画面和声音是否提供互补信息？
+第五阶段：实时多模态交互
+模型持续观察场景。
+用户通过语音提出问题。
+模型以自然语音回答。
+整个过程体现实时输入、流式处理、跨模态融合和低延迟生成。
+注意：
+这只是科普教学场景。
+不能把照片中的单一视觉线索当作确定的事件原因，也不能把时间相关性误当作已证明的因果关系。
+不能把未经验证的场景解释描述为真实模型的可靠判断。
+三、研究范围与关键论文
+必须先联网研究原始论文和官方技术资料。
+优先使用：
+
+* arXiv
+* 顶会论文
+* OpenAI Research
+* Google DeepMind
+* Meta AI
+* Salesforce Research
+* Qwen 官方技术报告
+* DeepSeek 官方技术报告
+* 官方 GitHub
+* Hugging Face 官方模型卡
+
+至少研究以下代表性工作。
+A. 图文表示对齐
+
+* CLIP（2021）
+* ALIGN（2021）
+* Vision Transformer 相关基础工作
+
+核心概念：
+
+* Image Encoder
+* Text Encoder
+* Contrastive Learning
+* InfoNCE / Contrastive Loss
+* Shared Embedding Space
+* Zero-shot Classification
+
+B. 视觉与语言模型融合
+
+* Flamingo（2022）
+* BLIP-2（2023）
+* InstructBLIP（2023）
+* LLaVA（2023）
+* LLaVA-1.5
+* GPT-4V（2023）
+
+重点：
+
+* Vision Encoder
+* Q-Former
+* Perceiver Resampler
+* Linear / MLP Projector
+* Cross-Attention
+* Visual Instruction Tuning
+* Frozen vs Trainable Modules
+
+C. 原生多模态与长上下文
+
+* Gemini 1.0
+* Gemini 1.5
+* GPT-4o
+* 其他经过核实的重要统一多模态模型
+
+对于闭源模型：
+只采用官方公开的架构描述。
+不得虚构具体 Vision Encoder、Attention Layer 或 Tokenizer 内部结构。
+D. 高分辨率视觉与视频理解
+
+* Qwen-VL
+* Qwen2-VL
+* Qwen2.5-VL
+* Qwen3-VL
+* InternVL 系列
+* 其他有明确架构创新的代表性 VLM
+
+重点：
+
+* Dynamic Resolution
+* Image Patches
+* Visual Tokens
+* Token Compression
+* MRoPE
+* Temporal Position Encoding
+* Video Frame Sampling
+* Spatial-Temporal Alignment
+* Long Video Understanding
+
+E. 统一多模态理解与生成
+
+* Chameleon（2024）
+* Emu3（2024）
+* Janus（2024）
+* Janus-Pro（2025）
+* 其他公开的 Unified Understanding / Generation 模型
+
+重点：
+
+* Discrete Visual Tokens
+* Visual Tokenizer
+* Autoregressive Image Generation
+* Understanding vs Generation Encoding
+* Unified Transformer
+* Diffusion vs Autoregressive Generation
+
+F. Audio-Language 与 Omni Models
+
+* Whisper
+* AudioPaLM
+* SpeechGPT
+* GPT-4o
+* Qwen2-Audio
+* Qwen2.5-Omni
+* Qwen3-Omni
+* 2026 年已公开的新一代 Omni 模型
+
+重点：
+
+* Audio Encoder
+* Spectrogram / Acoustic Features
+* Audio Tokens
+* Speech Codec
+* Thinker-Talker
+* Streaming Generation
+* Speech-Text Synchronization
+* Audio-Visual Synchronization
+* End-to-End Training
+
+G. 2026 年新方向
+联网确认截至 2026 年 10 月 17 日的代表性工作。
+优先关注：
+
+* 原生多模态联合训练
+* 统一理解与生成
+* 多模态推理
+* Real-time Omni Interaction
+* Streaming Audio/Video
+* 更高效的视觉 Tokenizer
+* 视频长上下文压缩
+* Spatial Reasoning
+* Embodied Multimodal Models
+* Multimodal Agents
+
+不是所有新论文都需要进入视频。
+只选择能够解释重大技术问题、具有可靠公开资料的代表性工作。
+对于尚未公开详细架构的商业模型，不要编造内部设计。
+四、第一幕：2021，图片与文字第一次进入共同的语义空间
+时间：00:00–03:00。
+开场
+画面从一个复杂的真实世界开始。
+汽车、街道、动物、文字、自然风景。
+镜头逐渐拉远。
+这些图像被转换为数据。
+另一边出现大量文本：
+“一辆红色汽车。”
+“一只在草地上奔跑的狗。”
+“一名骑自行车的人。”
+图像和文本分别进入两个不同的神经网络。
+最初两个空间中的表示彼此独立。
+然后引入 CLIP。
+CLIP 的核心动画
+建立两个 Encoder：
+Image Encoder
+Text Encoder
+展示一批图文配对数据。
+例如四张图片、四段文字。
+分别编码：
+Image Embeddings
+Text Embeddings
+进行归一化和相似度计算。
+得到完整的图文相似度矩阵。
+矩阵对角线上是正确匹配的图文对。
+其他位置是 Batch 内负样本。
+使用真实数值动画展示：
+Contrastive Loss 如何使正样本对的相似度提高。
+错误配对如何受到相对抑制。
+必须准确说明：
+CLIP 学习的是跨模态表示对齐。
+它本身不是能够自由生成解释文本的聊天式多模态 LLM。
+然后引出新的问题：
+如果一个模型可以判断图片与文字是否匹配，它是否已经能够像人一样围绕图片进行复杂对话？
+答案是还不够。
+下一步，需要将视觉表示连接到语言生成模型。
+五、第二幕：2022–2023，给 LLM 装上眼睛
+时间：03:00–07:00。
+这一幕是第一个重要的架构高潮。
+Chapter 1：Vision Encoder 如何处理图片
+显示一张高质量街景图片。
+在画面上叠加规则网格。
+将图片切分成多个 Patch。
+每个 Patch 映射为一个向量。
+通过 Vision Transformer 得到视觉表示。
+需要动态解释：
+
+* Image Patch
+* Patch Embedding
+* Visual Features
+* Position Information
+* Vision Transformer
+* Global and Local Representations
+
+强调：
+并非所有视觉模型都使用完全相同的切分和编码方法。
+关键动画
+真实图片逐渐分解成视觉 Patch。
+Patch 从二维平面进入高维向量空间。
+随后作为一组可视化 Visual Features 流向跨模态连接模块。
+不能简单用“图片变成文字”来描述这个过程。
+Chapter 2：Flamingo
+依据原始论文展示：
+Frozen Vision Encoder。
+Perceiver Resampler。
+Frozen Language Model。
+Gated Cross-Attention。
+让观众理解：
+视觉信息如何通过跨注意力机制影响语言生成。
+重点解释：
+Cross-Attention 与直接拼接 Token 的差异。
+不要错误地把 Flamingo 表述成一个简单的 Linear Projector 架构。
+Chapter 3：BLIP-2
+从 Flamingo 的架构转向另一条路线。
+引入：
+Frozen Image Encoder。
+Q-Former。
+Frozen LLM。
+重点可视化：
+Q-Former 的可学习 Query 如何从大量视觉特征中提取适合连接语言模型的信息。
+展示：
+Visual Features
+→ Query Interaction
+→ Compressed Visual Representations
+→ LLM
+说明：
+为什么需要桥接两个预训练模块的表示空间？
+为什么可以降低需要训练的参数量？
+Chapter 4：LLaVA
+使用同一张图片。
+Vision Encoder 产生视觉特征。
+Projector 将视觉特征转换到语言模型的表示维度。
+视觉表示与文本 Prompt 一起进入语言模型。
+动态演示：
+Image
+→ Vision Encoder
+→ Projector
+→ Visual Tokens
+→ LLM
+→ Answer
+必须解释：
+
+* Projector 的作用。
+* Vision Encoder 与 LLM 表示维度可能不同。
+* Visual Instruction Tuning。
+* Multimodal Conversation Data。
+* 不同训练阶段哪些模块被冻结、哪些被更新。
+
+要让观众直观看到：
+Flamingo、BLIP-2、LLaVA 的连接方式为何不同。
+Chapter 5：统一对比
+在同一场景中对比：
+Flamingo：Cross-Attention。
+BLIP-2：Q-Former。
+LLaVA：Projection-based Connector。
+突出连接位置、信息流动方式、训练策略和推理路径的差异。
+这些路线并不是严格的前后替代关系。
+六、第三幕：2023–2025，从单张图片走向视频理解
+时间：07:00–11:00。
+Chapter 1：为什么图片理解不等于视频理解？
+回到贯穿全片的街景。
+显示一帧图片。
+观众可以看到一辆红色汽车。
+但无法仅根据这一帧确定：
+汽车正在加速还是减速？
+交通信号灯刚刚发生了什么变化？
+行人与汽车的运动先后顺序是什么？
+然后将一张静态图片扩展成连续视频。
+用时间轴展示：
+Frame 0
+Frame 1
+Frame 2
+...
+Frame N
+说明：
+视频不仅包含空间信息，还包含时间信息。
+Chapter 2：视频 Tokenization
+用真实的帧序列演示：
+Video
+→ Frame Sampling
+→ Vision Encoder
+→ Visual Tokens
+→ Temporal Representation
+视频帧沿时间轴展开。
+每一帧进一步分解为二维视觉 Patch。
+随后将时间、空间位置与视觉特征结合。
+重点解释：
+
+* Frame Sampling
+* Frame Rate
+* Temporal Redundancy
+* Video Token Budget
+* Video Compression
+* Spatial-Temporal Encoding
+* Temporal Grounding
+
+说明：
+均匀采样视频帧可能遗漏短暂发生的重要事件。
+视频 Token 数量也会迅速增加。
+但不能把所有视频模型都描述成只做固定间隔抽帧。
+Chapter 3：Qwen2-VL 系列
+研究 Qwen2-VL 的动态分辨率设计。
+重点展示：
+同一个图像在不同分辨率下，产生数量不同的视觉 Token。
+随后解释 MRoPE。
+用三维坐标展示：
+Time
+Height
+Width
+这些维度如何被用于位置编码。
+再结合 Qwen2.5-VL、Qwen3-VL 研究其后续演进。
+具体位置编码和视频输入结构必须以相应版本的官方论文为准，不能把不同版本的设计混在一起。
+Chapter 4：Gemini 的长多模态上下文
+引入 Gemini 1.5。
+利用长视频和文本混合输入说明：
+模型如何在长上下文中检索跨时间的信息？
+为什么多模态上下文长度不仅取决于文本 Token？
+研究模型在长视频、音频和文档上的公开能力。
+注意：
+对闭源模型的内部架构，只能展示官方公开的信息。
+如果采用概念性计算图，必须明确标注为教学示意。
+本幕结尾
+模型已经能够处理多帧画面。
+但是现实世界不只有画面。
+汽车鸣笛、人的讲话、音乐和环境声音同样携带重要信息。
+镜头从视频画面逐渐转入声波。
+七、第四幕：2024–2025，从看见世界到听见世界
+时间：11:00–15:00。
+这是第二个重要技术高潮。
+Chapter 1：传统语音助手的 Pipeline
+首先展示经典语音助手流程：
+User Speech
+→ ASR
+→ Text
+→ LLM
+→ Response Text
+→ TTS
+→ Speech Output
+使用一段真实可播放的声音。
+让声音波形进入 ASR。
+转化为文字。
+文本进入 LLM。
+LLM 生成答案。
+最后进入 TTS。
+通过音频时间轴展示每个阶段。
+解释：
+为什么模块化 Pipeline 容易构建？
+为什么它也可能丢失：
+语调。
+情绪。
+说话节奏。
+部分声学线索。
+多说话人信息。
+以及实时交互中的时间关系？
+同时说明，模块化语音系统并非已经过时，它在可控性、部署和成本上依然有价值。
+Chapter 2：从 Audio Features 到 Audio Tokens
+展示：
+Audio Waveform。
+Spectrogram。
+Acoustic Features。
+Audio Encoder。
+Audio Tokens。
+解释声音如何变成可用于模型处理的表示。
+必须区分：
+连续声学特征。
+离散音频 Codec Token。
+用于识别与用于生成的音频表示。
+不能把所有音频模型都描述成同一种 Tokenizer。
+Chapter 3：GPT-4o
+介绍 GPT-4o 于 2024 年公开展示的实时多模态交互路线。
+重点解释：
+文本、图像和声音不再只是简单串联的独立输入输出接口，而是出现了更紧密的端到端联合建模方案。
+展示：
+Audio Input
+Visual Input
+Text Context
+→ Multimodal Processing
+→ Text / Audio Response
+如果官方未公布具体内部网络模块，不允许自行画出虚构的 GPT-4o 私有架构。
+可以采用明确标注的概念性模型视图。
+Chapter 4：Qwen2.5-Omni 与 Qwen3-Omni
+研究 Qwen 官方技术报告。
+重点展示：
+Thinker-Talker 架构。
+Thinker 负责生成文本或高层表示。
+Talker 根据相关表示进行流式语音生成。
+尤其要展示：
+Audio Codec Tokens。
+多码本语音 Token。
+Streaming Generation。
+Chunk-level Output。
+Text / Speech Synchronization。
+注意 Qwen2.5-Omni 和 Qwen3-Omni 的音频生成模块存在技术迭代，必须基于各自论文区分。
+不要把两个版本错误画成完全相同的内部结构。
+Chapter 5：真实时间线动画
+同一段用户语音：
+“刚才路口发生了什么？”
+在传统 Pipeline 中展示：
+识别结束。
+语言处理。
+语音合成。
+在流式模型中展示：
+音频持续输入。
+模型逐步处理。
+输出语音片段。
+音频逐块播放。
+通过并列时间轴解释：
+First Audio Packet Latency。
+Streaming Response。
+End-to-End Latency。
+不得虚构真实测量值。
+如果使用教学数值，必须明确标注。
+八、第五幕：多模态模型不只要理解，还要生成
+时间：15:00–18:00。
+Chapter 1：理解与生成的区别
+展示同一张图片。
+理解任务：
+Image → Text Description
+生成任务：
+Text Description → Image
+再展示：
+Video → Description
+Text → Video
+Speech → Text
+Text → Speech
+说明：
+多模态理解与多模态生成所需要的表示，未必完全相同。
+Chapter 2：视觉生成模型的不同路线
+简要对比：
+Diffusion-based Generation。
+Autoregressive Visual Token Generation。
+重点解释：
+Diffusion 通过逐步去噪等机制进行生成。
+自回归视觉 Token 路线通过预测离散 Token 序列构建图像或视频表示。
+不要把扩散模型简单描述成 Decoder-only LLM 的一个普通分支。
+Chapter 3：Chameleon
+研究 Chameleon 的混合模态 Early-Fusion。
+展示一段交替出现的序列：
+Text Tokens。
+Image Tokens。
+Text Tokens。
+Image Tokens。
+说明：
+如何在统一的 Token 序列中进行联合建模？
+为什么训练这种混合模态模型可能面临优化和稳定性挑战？
+Chapter 4：Emu3
+重点研究：
+Text Tokens。
+Image Tokens。
+Video Tokens。
+Unified Next-Token Prediction。
+通过连续动画展示：
+图像被离散 Tokenizer 编码。
+Transformer 自回归预测视觉 Token。
+视觉 Token 被解码回图片或视频。
+解释：
+为什么研究者开始尝试把多种模态的生成统一为 Token Prediction？
+它与 Diffusion 的主要区别是什么？
+Chapter 5：Janus / Janus-Pro
+重点展示理解任务和生成任务对视觉编码方式的不同需求。
+一侧：
+Understanding Encoder。
+另一侧：
+Generation Encoder / Visual Tokenization Path。
+两条视觉路径连接到共享的模型主体。
+根据原论文准确解释：
+为什么区分两条表示路径，可能有利于同时处理理解与生成任务？
+不要把 Janus、Chameleon、Emu3 描述成完全相同的统一架构。
+九、第六幕：2025–2026，迈向真正统一的多模态智能
+时间：18:00–22:00。
+研究截至 2026 年 10 月 17 日已公开的最新工作。
+优先选取有明确技术细节的代表性架构。
+重点讨论五个问题。
+1. 更统一的跨模态表示
+不同模态能否共享更多计算模块？
+哪些层需要模态专用 Encoder？
+哪些层适合共享 Transformer？
+为什么有些模型仍保留独立的输入和输出模块？
+2. 实时音视频交互
+展示连续的视频输入与音频输入。
+模型需要：
+持续获取观察。
+维护时间信息。
+处理音视频同步。
+生成低延迟语音回答。
+解释：
+Streaming Perception。
+Streaming Generation。
+Synchronization。
+Turn-taking。
+Interruption Handling。
+3. 长视频与高分辨率输入
+随着视频时长和图像分辨率增加：
+Visual Token 数量不断增长。
+计算量、KV Cache 和延迟可能显著增加。
+研究：
+Dynamic Resolution。
+Token Compression。
+Frame Selection。
+Temporal Sampling。
+Long-context Attention。
+跨时间检索。
+不得假设单纯扩大上下文窗口就自动解决了长视频理解问题。
+4. Spatial Reasoning 与 Embodied Intelligence
+模型不仅需要识别：
+“这里有一辆汽车。”
+还可能需要理解：
+“汽车与行人的相对位置是什么？”
+“车辆运动方向如何变化？”
+“下一时刻可能发生什么？”
+进一步引出：
+Video Understanding。
+Spatial Reasoning。
+Vision-Language-Action Models。
+Embodied Agents。
+但必须区分：
+语言中的空间描述能力。
+几何和运动推理能力。
+真实物理环境中的可靠行动能力。
+这些不等于同一种水平的世界理解。
+5. 多模态推理与训练
+研究：
+Multimodal Instruction Tuning。
+Cross-modal Alignment。
+Multimodal Preference Optimization。
+Multimodal RL。
+Visual Reasoning。
+Audio-Visual Reasoning。
+讨论：
+为什么模型即使能够感知图像，也可能在视觉推理过程中出现幻觉？
+为什么更高的视觉识别准确率，不一定意味着更好的跨模态推理？
+为什么真实世界中的时间、空间和因果关系仍然是困难的问题？
+十、全片总结
+最后不要简单地罗列模型名称。
+镜头回到最初的十字路口。
+先展示 CLIP 能建立图文语义联系。
+接着展示 VLM 能回答静态图片问题。
+随后加入视频帧，模型能够分析时间变化。
+继续加入声音，开始融合视觉和听觉信息。
+最终展示一个持续进行的音视频交互系统。
+镜头从真实场景缓缓拉远，进入模型内部。
+整个多模态发展历程形成四条交汇的技术路线：
+
+1. Representation Alignment
+图文语义对齐。
+2. Multimodal Architecture
+视觉、语言、音频和视频的结构融合。
+3. Unified Understanding & Generation
+多模态理解与生成。
+4. Real-time Interactive Intelligence
+实时感知、推理和交互。
+
+最后提出：
+“让 AI 看见一张图片，是一个重要的开始。”
+“让它理解图像、声音和时间之间的联系，是更艰难的一步。”
+“而下一代多模态智能真正需要解决的问题，是如何让模型形成更加准确、稳定、可验证的世界表示。”
+不要宣称多模态模型已经真正理解整个物理世界。
+不要将未来研究方向包装为已经实现的能力。
+十一、视觉设计：真正的电影级科学动画
+视觉风格参考：
+
+* Vox：信息叙事和动态图形。
+* 3Blue1Brown：数学与算法可视化。
+* Kurzgesagt：统一视觉系统。
+* 高级 Motion Design：动态字体、空间构图和动画节奏。
+* 科学纪录片：真实世界和抽象机制之间的自然镜头转换。
+
+不得直接复制上述作品的具体视觉资产。
+视觉设计的核心特点
+真实场景与抽象计算相互转换
+例如：
+摄像机正在拍摄一辆红色汽车。
+画面突然冻结。
+镜头穿过图像平面。
+图片被分割为 Visual Patches。
+Patches 变为 Embeddings。
+Embeddings 进入 Transformer。
+然后进入跨模态对齐空间。
+再通过连续镜头回到真实街景。
+这种物理世界与计算世界之间的变形，是全片重要的视觉语言。
+统一视觉组件
+ImagePatch。
+VisualEmbedding。
+TextToken。
+AudioWaveform。
+Spectrogram。
+AudioCodecToken。
+VideoFrame。
+TemporalTimeline。
+VisionEncoder。
+Projector。
+QFormer。
+CrossAttention。
+MultimodalTransformer。
+ThinkerTalker。
+StreamingAudio。
+所有视觉组件应在整部视频中复用。
+强制技术可解释性
+任何算法动画都必须正确反映对应论文中的核心机制。
+例如：
+CLIP 必须展示成对的视觉与文本表示，以及对比学习目标。
+BLIP-2 必须展示 Query Tokens 如何从视觉表示提取信息。
+LLaVA 必须展示视觉特征投影到语言模型可处理的表示空间。
+视频理解必须展示时间维度。
+音视频流必须展示时间对齐。
+流式语音生成必须展示分块输出。
+不能通过随机粒子或无意义的光线替代真实数据流。
+十二、严格禁止低质量视觉表现
+不允许：
+
+* PPT 翻页。
+* 静态架构图加旁白。
+* 每个镜头都只是文字淡入淡出。
+* 大量论文截图。
+* 低质量方块组成的“AI 大脑”。
+* 不断旋转的 Transformer 方块。
+* 无意义粒子填满屏幕。
+* 多个彩色模块互相发光却没有实际计算意义。
+* 只有语音解释，画面没有演示。
+* 不同模型使用几乎相同的动画，只替换名称。
+* 低质量积木人物。
+* 画面中大量密集技术文字。
+* 错误的架构连接关系。
+
+特别强调：
+整个视频必须是一部具有连续电影镜头和强烈视觉叙事的纪录片，而不是带转场特效的技术 PPT。
+如果去掉配音，观众仍应理解主要架构变化。
+十三、必须制作的六个核心动画
+Animation A：CLIP Contrastive Learning
+真实图文样本。
+Image Encoder。
+Text Encoder。
+Similarity Matrix。
+Contrastive Loss。
+视觉表示空间逐步对齐。
+使用实际计算的相似度数据驱动动画。
+Animation B：Flamingo vs BLIP-2 vs LLaVA
+使用同一张图片和同一个问题。
+并排展示三种架构：
+Cross-Attention。
+Q-Former。
+Projector。
+重点突出实际信息流和连接机制。
+Animation C：Image → Visual Tokens → LLM
+从真实图片切割到 Patch。
+经过 Vision Encoder。
+输出视觉特征。
+通过连接模块进入 LLM。
+再生成文字回答。
+Animation D：Video Tokenization & Temporal Understanding
+同一段十字路口视频。
+展示 Frame Sampling。
+Image Patches。
+Temporal Positions。
+Spatial-Temporal Alignment。
+解释动态场景为什么比单图理解复杂。
+Animation E：Audio Pipeline vs Omni Model
+左侧：
+ASR → LLM → TTS。
+右侧：
+Audio Encoder → Multimodal Processing → Streaming Speech。
+重点解释信息流、语音特征、输出时序和低延迟。
+对于闭源模型不得虚构内部实现。
+Animation F：Unified Multimodal Understanding & Generation
+展示：
+Text Tokens。
+Image Tokens。
+Video Tokens。
+Audio Tokens。
+不同模态的表示进入统一或共享模型主体。
+并通过不同输出路径生成文本、图像或声音。
+必须分别说明 Chameleon、Emu3、Janus 和 Qwen3-Omni 等方案之间的差异。
+不能错误地把所有模型画成完全相同的统一 Transformer。
+十四、制作真实可复现的可视化数据
+本项目不仅需要精致视觉，还应尽可能由真实机制驱动动画。
+使用 Python、NumPy、PyTorch 或 TypeScript 构建教学示例。
+例如：
+CLIP：
+真实计算图文向量相似度与对比学习损失。
+Vision Patches：
+按照实际输入尺寸和 Patch Size 划分。
+Projector：
+展示符合矩阵维度的特征映射。
+Q-Former：
+使用可验证的 Query/Key/Value 维度与注意力连接关系。
+Video：
+真实记录 Frame Index、Timestamp 和采样结果。
+Audio：
+从实际 WAV 提取 Waveform 和 Spectrogram。
+Streaming：
+根据真实音频片段时长构建时间线。
+这些数据需要保存为可复现文件。
+视觉动画读取这些文件生成画面。
+不要反过来为了动画效果编造计算过程。
+如果某些大型模型无法本地运行，允许使用符合论文机制的简化教学模拟。
+但必须清楚标注：
+教学模拟。
+真实模型运行。
+论文报告结果。
+不可混淆。
+十五、中文 TTS
+优先试听：
+
+* IndexTTS-2.5
+* CosyVoice 3
+* Qwen3-TTS
+* Fish Audio
+* MiniMax Speech
+
+声音风格：
+自然、沉稳、有叙事感的成熟中文科技科普男声。
+避免机器人式朗读。
+必须准确处理：
+CLIP。
+Vision Transformer。
+Vision-Language Model。
+Flamingo。
+BLIP-2。
+LLaVA。
+Q-Former。
+Cross-Attention。
+Visual Token。
+Projector。
+GPT-4o。
+Gemini。
+Qwen3-Omni。
+Thinker-Talker。
+MRoPE。
+Autoregressive Generation。
+Diffusion。
+Streaming Audio。
+Multimodal Alignment。
+建立 pronunciation_dictionary.json。
+先生成 45–60 秒试听。
+根据实际音频调整动画时间线。
+字幕必须与音轨准确同步。
+音画时间轴在视频理解、语音交互章节尤其重要。
+不能为了固定镜头长度而强行加速旁白。
+如果无法部署合适的 TTS，不得使用质量明显不达标的配音冒充最终版本。
+十六、实际工程技术栈
+推荐：
+Remotion
+负责统一视频时间轴、镜头编排、文字动画、字幕与最终渲染。
+Three.js / React Three Fiber
+负责三维视觉空间、Encoder、Transformer、Token 流动和镜头移动。
+SVG / Canvas
+负责矩阵、Attention Map、向量表示、音频波形、时间线。
+Manim
+负责需要严格数学表达的 Contrastive Loss、Attention 和表示空间动画。
+Python / NumPy / PyTorch
+负责数值计算、教学模拟及计算正确性验证。
+Blender
+负责高级三维场景、材质、真实空间和精致的视觉资产。
+FFmpeg
+负责音视频同步、视频片段拼接和最终输出。
+采用模块化工程结构。
+每个镜头必须能够独立渲染。
+所有动画必须基于确定性时间轴，支持固定随机种子和逐帧复现。
+不能依赖浏览器实时帧率来决定最终动画。
+素材使用
+可以使用：
+自制三维场景。
+原创 SVG 图形。
+符合许可证的图片、音频和视频。
+经授权的视频片段。
+不要依赖付费视频生成 API。
+如果没有第三方视频素材，可自行使用 Three.js / Blender / Remotion 构建高质量、可控的街景教学场景。
+不能因为没有视频生成 API 就退化成静态 PPT。
+所有第三方素材记录来源与许可证。
+不允许未经授权抓取有版权限制的作品并直接嵌入成片。
+十七、分阶段执行
+Phase 1：Research
+研究原始论文和官方技术资料。
+生成：
+research.md
+timeline.md
+architecture_comparison.md
+sources.md
+architecture_comparison.md 至少包含：
+
+* 模型名称。
+* 首次公开时间。
+* 研究机构。
+* 输入模态。
+* 输出模态。
+* Vision Encoder。
+* Audio Encoder。
+* Video Processing。
+* Connector / Fusion。
+* Language Backbone。
+* 训练目标。
+* 是否支持生成。
+* 是否端到端。
+* 是否具备流式处理。
+* 核心创新。
+* 主要限制。
+* 论文及实现来源。
+
+未公开的架构字段必须标记为 Unknown，不能猜测。
+Phase 2：Script & Storyboard
+生成：
+script.md
+storyboard.md
+visual_system.md
+每个镜头必须写明：
+
+* 起止时间。
+* 完整中文旁白。
+* 技术事实来源。
+* 场景中有哪些对象。
+* 真实媒体如何变化。
+* Visual Token 如何生成。
+* 数据进入哪些模块。
+* 对象的运动路径。
+* Camera Movement。
+* 前后镜头转场方式。
+* 技术解释目标。
+
+叙事必须围绕：
+问题 → 前代局限 → 新方法 → 真实机制 → 新问题
+而不是论文名称列表。
+Phase 3：先制作三个高质量原型
+第一轮只制作三个动画原型。
+Prototype A：从真实图像到多模态 LLM
+长度：25–35 秒。
+内容：
+真实街景图像。
+Patch Tokenization。
+Vision Encoder。
+Projector / Q-Former。
+LLM。
+Visual Question Answering。
+必须具有精致的镜头转换。
+不能只用架构方框图。
+Prototype B：从单图到视频理解
+长度：30–40 秒。
+内容：
+真实或程序化制作的街道路口短视频。
+抽取多个 Frame。
+生成 Visual Tokens。
+叠加 Time / Height / Width 位置维度。
+形成时空序列。
+展示为什么只观察单帧无法完整理解动态事件。
+Prototype C：从语音 Pipeline 到 Omni Model
+长度：35–45 秒。
+左侧展示：
+ASR → LLM → TTS。
+右侧展示：
+Audio/Video Input → Omni Model → Streaming Text/Audio。
+重点演示：
+Waveform。
+Audio Tokens。
+Thinker-Talker。
+时间对齐。
+Streaming Output。
+需要至少一段真实可听的中文音频。
+如果没有合适的 TTS，先使用授权的示例音轨，并标明这是原型素材。
+三个原型必须真正渲染 MP4。
+每个输出：
+preview.mp4。
+关键帧 PNG。
+动画源代码。
+对应论文。
+技术说明。
+媒体素材来源。
+Phase 4：质量验收
+技术检查：
+
+* Patch 数量与实际划分是否一致。
+* 特征维度是否正确。
+* Projector / Q-Former / Cross-Attention 是否区分。
+* 模型架构是否符合原论文。
+* 视频时间戳是否正确。
+* Audio 与 Video 是否同步。
+* 理解和生成任务是否区分。
+* 是否有虚构的模型结构。
+* 是否错误混淆独立模块与统一训练。
+
+视觉检查：
+
+* 是否存在 PPT 感。
+* 是否出现低质量积木结构。
+* 画面是否具有空间层次。
+* 动画是否真正解释技术。
+* 是否存在对象遮挡、裁切。
+* 字幕和数学公式是否易读。
+* 镜头是否平滑连续。
+* 视觉系统是否统一。
+* 实际视频是否能播放。
+
+请通过实际渲染、自动抽帧和逐镜头检查完成 QA。
+发现明显问题主动修改，重新渲染。
+不能只运行代码然后宣称视频通过验收。
+Phase 5：完整视频制作
+仅在我确认三个原型后，才开始制作完整 18–22 分钟视频。
+采用章节化制作和独立渲染，避免一次局部修改导致整部视频重新渲染。
+Phase 6：自然中文配音与音效
+生成完整音轨。
+根据真实语音时长调整各章节。
+同步中文字幕。
+根据情节加入环境声音、数据转换音效和克制的背景音乐。
+Phase 7：最终审查
+检查：
+技术准确性。
+论文时间线。
+模型架构关系。
+视觉清晰度。
+声音自然度。
+音画同步。
+片段衔接。
+MP4 完整性。
+工程可复现性。
+十八、最终交付目录
+multimodal_llm_evolution/
+research/
+research.md
+timeline.md
+architecture_comparison.md
+sources.md
+scripts/
+script.md
+storyboard.md
+design/
+visual_system.md
+simulation/
+clip_alignment/
+vision_tokens/
+video_timeline/
+audio_processing/
+tests/
+src/
+完整动画工程
+assets/
+images/
+videos/
+audio/
+licenses.md
+prototypes/
+image_to_llm/
+video_understanding/
+omni_streaming/
+previews/
+keyframes/
+videos/
+audio/
+narration/
+pronunciation_dictionary.json
+output/
+multimodal_llm_evolution_final.mp4
+README.md
+十九、最终执行约束
+
+1. 原始论文与官方资料优先。
+2. 技术准确性与视觉审美同等重要。
+3. 不得将 CLIP 描述为聊天式多模态 LLM。
+4. 不得混淆不同视觉连接架构。
+5. 不得把单图理解等同于视频理解。
+6. 不得将所有音频模型描述成同一种 Tokenizer。
+7. 不得把所有 Omni 模型描述成完全相同的架构。
+8. 不得虚构闭源模型内部结构。
+9. 不得把多模态输入能力等同于多模态生成能力。
+10. 不得把图文语义匹配等同于可靠的世界理解。
+11. 不得通过随机粒子替代算法解释。
+12. 不得用 PPT 或静态图冒充高质量技术动画。
+13. 不得在未经授权的情况下调用付费 API。
+14. 必须实际渲染并检查所有原型视频。
+15. 原型应优先体现电影级镜头设计与精确的技术解释。
+16. 所有动画必须可复现、可编辑、可独立渲染。
+
+现在执行 Phase 1、Phase 2 和 Phase 3。
+自主完成论文研究、完整中文剧本、分镜、数学与数据示例，以及三个高质量动画原型。
+第一轮必须交付：
+三个实际可播放的 MP4。
+完整源码。
+关键帧预览。
+研究文档。
+技术解释。
+素材来源和许可证。
+可重复渲染的操作说明。
+完成第一轮后停止，等待我的验收。未经我确认，不得进入完整视频制作。
+```
+
+</details>
+
+{% embed url="https://drive.google.com/file/d/1LArWS77xJbkYCx7g0K0lNIXW-vDE082W/view?usp=drive_link" %}
+
+
 ## template
 
 <details>
