@@ -1333,6 +1333,25 @@ All-domain Moveline Evolution Network (AMEN)：
 
 ![](../assets/grc.png)
 
+## 阿里的UniSGR-V2
+
+[UniSGR-V2: Stepwise Target-Side Feature Anticipation and Crossing for Generative Recommendation](https://arxiv.org/pdf/2610.16132v1)
+
+生成式推荐在逐级生成目标商品SID时，尚不能直接读取最终商品的完整属性，限制了生成与排序中的特征交叉。论文提出TacGR，在每级语义码之前预测连续的目标侧特征，并在解码器内部与历史语义表示交叉，供后续码生成及多目标排序共同使用。
+
+真实商品属性进入辅助排序塔，为可学习的特征回归目标提供语义锚定，抑制表示坍缩；单向可见掩码限制预测token的噪声传播。历史编码端以门控卷积和记忆漏斗压缩长行为，排序端使用多任务结构处理点击与支付等目标。
+
+![](../assets/unisgr-v2.png)
+
+```
+上一 SID 位置的 hidden + 当前 sideinfo 位置的 hidden
+    → 拼接到生成 head → 生成当前层 SID
+
+此前缓存的 SID hidden + 刚生成的 SID 的 embedding
+    → Pred → 预估下一阶段的 sideinfo
+    → 和刚生成的 SID 一起送入下一次 Decoder
+```
+
 ## 快手的RecGPT
 
 [RecGPT: Generative Personalized Prompts for Sequential Recommendation via ChatGPT Training Paradigm](https://arxiv.org/pdf/2404.08675)
@@ -1745,6 +1764,17 @@ GPR的延续，模型包括召回（step1+2）和排序（step3）部分，
 + step3 排序：一层trans
     + k/v：step1的k/v和step2的双通道表征，共历史长度+task数个token
     + q：一个特殊的task token
+
+## 腾讯的WeGR
+
+[WeGR: Unified Generative Retrieval for Industrial Search Systems in WeChat](https://arxiv.org/pdf/2610.16979v1)
+
+微信电商搜索，加了一路gr召回。WeGR联合处理语义标识质量与生成检索的稀疏奖励。
+
++ CoCo-VAE通过查询—商品、商品—商品共现学习连续表示，再用残差量化、低使用率码字刷新、残差保真与碰撞惩罚，提高离散码本的信息保留和利用率。
++ Dynamic Horizon Preference Optimization（DHPO）从较短SID前缀开始优化，逐步扩展到完整标识。奖励匹配范围和策略梯度作用的token范围随horizon同步增加，多正例SFT(MSFT)则为稀疏反馈提供稳定监督。
+
+![](../assets/wegr.png)
 
 
 ## Shopee的OnePiece
@@ -5636,6 +5666,22 @@ GEARS (Generative Engine for Agentic Ranking Systems)
 [Agentic ML Exploration (A-MLE) for Ads Ranking](https://arxiv.org/pdf/2609.08248v1)
 
 ![](../assets/a-mle.png)
+
+## Meta的EvoPilot
+
+[Verify, Don't Trust: Agentic Model Development for Video Discovery Retrieval at Scale](https://arxiv.org/pdf/2609.21257v1)
+
+将在线实验看成一个protocal，而非一个prompt
+
++ 每次plan均需经由人类批准，独立的worker通过版本化的领域技能和适配器执行各类变体。verifier检查基于成果的对比结果。
++ analyst更新假设树，planner将证据转化为下一轮所需的变体(variants)，这些变体同样需要新的审批。
++ 事件日志、先验结果、实验叙述以及事故目录共同保留各轮次之间的上下文信息。这种记忆在某一经验成为对成果或状态转移的可执行检查之前，始终处于建议性状态。
+
+![](../assets/evopilot.png)
+
+让claude看了下这个evopilot发挥的作用：
+
+![](../assets/evopilot-exp.png)
 
 ## 虾皮的Sortify
 
