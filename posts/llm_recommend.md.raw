@@ -1352,6 +1352,16 @@ All-domain Moveline Evolution Network (AMEN)：
     → 和刚生成的 SID 一起送入下一次 Decoder
 ```
 
+## 阿里的SID Topology
+
+[Don't Rewrite the SID Map: Topology Preservation for Generative Retrieval in Dynamic E-Commerce Search](https://arxiv.org/pdf/2610.26105v1)
+
+生成式检索学习从query到多级SID的解码路径，重排旧商品的SID会改变已学路径的含义。该论文将映射更新与模型继续训练分开研究，发现宽beam会掩盖映射漂移，而短预算warm-start无法任意修复旧路径重写造成的退化。
+
+方法冻结所有旧商品的完整SID，仅为新商品分配路径；新商品使用语义前缀和当前业务价值进行插入，必要时允许碰撞，避免为消除碰撞而移动旧商品。模型周期性从旧checkpoint继续训练，更新后直接使用新checkpoint。
+
+![](../assets/sid-topology.png)
+
 ## 快手的RecGPT
 
 [RecGPT: Generative Personalized Prompts for Sequential Recommendation via ChatGPT Training Paradigm](https://arxiv.org/pdf/2404.08675)
@@ -1966,6 +1976,12 @@ infer：
 基于的这个模板：[https://github.com/ashleve/lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template)
 
 新论文介绍了落地情况：[Semantic IDs for Recommender Systems at Snapchat: Use Cases, Technical Challenges, and Design Choices](https://arxiv.org/pdf/2604.03949)
+
+升级版本：[GRP v0.1 Technical Report](https://arxiv.org/pdf/2609.36688v1)
+
+GRP使用encoder–decoder根据长行为历史生成多模态Semantic ID，并以独立block解码控制目标间的可见性。联合训练的MHP排序模块读取经过stop-gradient的历史与SID表示，避免排序损失直接改写生成路径；后训练时冻结该模块作为奖励模型。
+
+mGRPO在组相对策略优化中加入针对日志目标的单边margin保护，仅当策略过度降低原目标概率时施加约束，以限制优化奖励时的召回退化。生产部署从新增召回源开始，逐步调整配额、绕过早期排序并替换较弱来源。
 
 ### RQ-VAE回顾
 
@@ -2644,6 +2660,16 @@ XXX
 
 ![](../assets/dream-frame.png)
 
+## 阿里的FineSID
+
+[Progressive Learning from Content to Relevance to Personalization for CTR Prediction](https://arxiv.org/pdf/2610.29138v1)
+
+FineSID针对单一内容向量易丢失局部细节、仅迁移Embedding难以初始化最终交互网络的问题，将细粒度视觉与文本离散token输入同一共享预测器，依次完成内容编码、语义相关性预训练和个性化CTR微调。
+
+视觉侧使用多尺度离散编码并保留空间位置，文本侧保留字段身份并做查询条件聚合，再经有序融合、HiFormer和共享MLP建模。相关性阶段以Qwen3.5 教师提供的四类软标签更新整个共享网络；CTR阶段保留共享参数和归一化状态，更换预测头并重置优化器累积状态。
+
+![](../assets/finesid.png)
+
 ## 快手的LSVCR
 
 [Enhancing Sequential Recommender with Large Language Models for Joint Video and Comment Recommendation](https://arxiv.org/pdf/2403.13574) Recsys25
@@ -2866,6 +2892,18 @@ item侧也复用了类似的流程，把输入的(hist, item)改成(item, pos, n
 
 [TrackRec: Iterative Alternating Feedback with Chain-of-Thought via Preference Alignment for Recommendation](https://arxiv.org/abs/2508.15388)
 
+## 快手的Align3GR
+
+[Align3GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation](https://arxiv.org/pdf/2511.11255)
+
+![](../assets/align3gr.png)
+
+![](../assets/align3gr-arch.png)
+
+![](../assets/behavior-modeling-level-align.png)
+
+基于llama2-7b
+
 ## 快手的OneRec-Think
 
 [OneRec-Think: In-Text Reasoning for Generative Recommendation](https://arxiv.org/abs/2510.11639)
@@ -2923,17 +2961,25 @@ def run():
 
 数据集：[https://huggingface.co/datasets/OpenOneRec/OpenOneRec-RecIF](https://huggingface.co/datasets/OpenOneRec/OpenOneRec-RecIF)
 
-## 快手的Align3GR
+## 快手的OneReason
 
-[Align3GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation](https://arxiv.org/pdf/2511.11255)
+[OneReason Technical Report](https://arxiv.org/pdf/2606.06260)
 
-![](../assets/align3gr.png)
+![](../assets/onereason.png)
 
-![](../assets/align3gr-arch.png)
+## 快手的OneLatent
 
-![](../assets/behavior-modeling-level-align.png)
+[OneLatent: Latent Reasoning for Efficient Foundation Recommendation Models](https://arxiv.org/pdf/2610.30675v1)
 
-基于llama2-7b
+![](../assets/onelatent.png)
+
+OneLatent针对推荐基础模型显式生成长推理文本所带来的时延，以探索、评价和归因三个视角构造自适应教师监督，再通过单视角理由重建、多视角理由重建、请求上下文中的下一SID预测三个阶段，学习由潜在token条件化的推荐模型。
+
+多视角训练先对每条理由按token数平均，再对可用视角平均，避免长推理天然获得更大权重。后训练按高活跃至低活跃用户逐步适配，并混合有、无潜在token的推荐监督。线上仅生成三层SID，行为触发的异步调度与候选缓存将基础模型推理移出请求关键路径。
+
+推理架构：
+
+![](../assets/onelatent-infer.png)
 
 ## 字节的HLLM-Creator
 
